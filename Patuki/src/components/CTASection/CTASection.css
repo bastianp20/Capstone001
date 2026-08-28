@@ -1,0 +1,41 @@
+.cta {
+  background: var(--ink);
+  color: #fdf8f1;
+  border-radius: var(--radius-lg);
+  padding: 64px 56px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta:before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 20%, rgba(238, 122, 79, 0.28), rgba(238, 122, 79, 0) 55%);
+}
+.cta h2 {
+  color: #fff;
+  position: relative;
+  z-index: 1;
+}
+.cta p {
+  color: #cfc7b9;
+  max-width: 480px;
+  margin: 0 auto 30px;
+  position: relative;
+  z-index: 1;
+}
+.cta-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 960px) {
+  .cta {
+    padding: 40px 26px;
+  }
+}

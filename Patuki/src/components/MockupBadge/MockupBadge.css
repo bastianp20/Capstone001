@@ -1,0 +1,15 @@
+.badge-note {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 50;
+  background: var(--ink);
+  color: var(--cream);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border-radius: 999px;
+  opacity: 0.85;
+  font-weight: 600;
+}
