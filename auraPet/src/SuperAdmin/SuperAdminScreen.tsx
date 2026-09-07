@@ -12,11 +12,6 @@ const badge = Badge;
 export const SuperAdminScreen = () => {
   const [solicitudARechazar, setSolicitudARechazar] = useState<SolicitudPendiente | null>(null);
   const [solicitudes, setSolicitudes] = useState(solicitudesPendientesMock);
-
-  // Antes esto venía de Data/Citas.ts, un segundo array escrito a mano
-  // con los datos ya aplanados. Ahora se resuelve desde el único
-  // modelo real (Data/Cita.ts) uniendo mascotas/dueños/veterinarios/
-  // centros — así nunca se desincroniza con el resto de la app.
   const citasMock = getCitasResumen();
 
   const navItems = [
