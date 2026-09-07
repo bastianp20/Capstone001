@@ -15,6 +15,13 @@
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
+  /* Alias usadas por los componentes del panel de SuperAdmin
+     (Modal.module.css, etc.) — antes no existían y las variables
+     simplemente no se aplicaban. */
+  --color-text: var(--text-h);
+  --color-text-muted: #6b7280;
+  --color-border: var(--border);
+
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
   color-scheme: light dark;
@@ -50,12 +57,16 @@
   }
 }
 
+/* El panel de SuperAdmin (y el resto de las pantallas de la app) usan
+   todo el ancho de la ventana (sidebar + contenido). El #root que
+   trae la plantilla de Vite lo limitaba a 1126px centrado, pensado
+   para una landing — eso achicaba y centraba el panel en pantallas
+   anchas. Se deja a ancho completo. */
 #root {
-  width: 1126px;
+  width: 100%;
   max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
+  margin: 0;
+  text-align: left;
   min-height: 100svh;
   display: flex;
   flex-direction: column;

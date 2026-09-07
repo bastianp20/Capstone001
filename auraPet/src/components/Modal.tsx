@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { RechazarModalProps } from "../../src/interfaces";
+import type { RechazarModalProps } from "../interfaces";
 import styles from "./Modal.module.css";
 
 export const RechazarModal = ({ nombreSolicitud, onCancelar, onConfirmar }: RechazarModalProps) => {

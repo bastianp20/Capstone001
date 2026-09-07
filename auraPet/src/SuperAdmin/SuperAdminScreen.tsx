@@ -1,30 +1,23 @@
 import { useState } from "react";
-import type {SolicitudPendiente} from '../interfaces'; 
-import {solicitudesPendientesMock, citasMock} from '../Data/DatosFalsos'; 
-import {Colors, Badge, badgeStyles, ESTADO_LABEL, URGENCIA_LABEL} from '../constants'; 
-import {RechazarModal} from '../components/Modal'; 
+import type {SolicitudPendiente} from '../interfaces';
+import {Colors, Badge, badgeStyles, ESTADO_LABEL, URGENCIA_LABEL} from '../constants';
+import {RechazarModal} from '../components/Modal';
 import { KpiCard } from "../Card/kpi";
+import { solicitudesPendientesMock } from "../Data/SolicitudPendiente";
+import { getCitasResumen } from "../Api/getInfo";
 
-const colors = Colors; 
-const badge = Badge; 
-
-// ---------- Vista principal ----------
+const colors = Colors;
+const badge = Badge;
 
 export const SuperAdminScreen = () => {
-  const [solicitudes, setSolicitudes] = useState(solicitudesPendientesMock);
   const [solicitudARechazar, setSolicitudARechazar] = useState<SolicitudPendiente | null>(null);
+  const [solicitudes, setSolicitudes] = useState(solicitudesPendientesMock);
 
-  const aprobar = (id: string) => {
-    // TODO: llamar a la API/Supabase para marcar la solicitud como aprobada
-    setSolicitudes((prev) => prev.filter((s) => s.id !== id));
-  };
-
-  const confirmarRechazo = (razon: string) => {
-    if (!solicitudARechazar) return;
-    // TODO: llamar a la API/Supabase enviando { id: solicitudARechazar.id, razon }
-    setSolicitudes((prev) => prev.filter((s) => s.id !== solicitudARechazar.id));
-    setSolicitudARechazar(null);
-  };
+  // Antes esto venía de Data/Citas.ts, un segundo array escrito a mano
+  // con los datos ya aplanados. Ahora se resuelve desde el único
+  // modelo real (Data/Cita.ts) uniendo mascotas/dueños/veterinarios/
+  // centros — así nunca se desincroniza con el resto de la app.
+  const citasMock = getCitasResumen();
 
   const navItems = [
     { label: "Resumen", active: true },
@@ -33,6 +26,16 @@ export const SuperAdminScreen = () => {
     { label: "Aprobaciones", active: false },
     { label: "Citas", active: false },
   ];
+// TODO: llamar a la API/Supabase enviando { id: solicitudARechazar.id, razon }
+const confirmarRechazo = (_razon: string) => {
+    if (!solicitudARechazar) return;
+    setSolicitudes((prev) => prev.filter((s) => s.id !== solicitudARechazar.id));
+    setSolicitudARechazar(null);
+  };
+  // TODO: llamar a la API/Supabase para marcar la solicitud como aprobada
+const aprobar = (id: string) => {
+    setSolicitudes((prev) => prev.filter((s) => s.id !== id));
+  };
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: colors.bg, fontFamily: "system-ui, sans-serif" }}>
