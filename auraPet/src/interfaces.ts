@@ -8,19 +8,19 @@ export type EspecieMascota = "perro" | "gato" | "ave" | "conejo" | "otro";
 
 
 export interface SolicitudPendiente {
-  id: string;
+  id: number;
   nombre: string;
   tipo: TipoSolicitud;
   fechaRegistro: string;
 }
 
 export interface CitaResumen {
-  id: string;
+  id: number;
   mascota: string;
   dueno: string;
   veterinario: string;
   centro: string;
-  fechaHora: string;
+  fechaHora: string; // ya viene formateada para mostrar ("dd/mm · HH:mm"), a diferencia de Cita.fechaHora que es la fecha cruda en number
   estado: EstadoCita;
   urgencia: UrgenciaCita;
 }
@@ -39,55 +39,55 @@ export interface KpiCardProps {
 }
 
 export interface Usuario {
-  id: string;
+  id: number;
   nombre: string;
   email: string;
   rol: Rol;
-  telefono?: string;
+  telefono?: number; // ya que un numero telefonico siempre será un numero 
   avatarUrl?: string;
-  creadoEn: string; // ISO date
+  creadoEn: number; // si nos da un valor de date lo más seguro es que sea decimal por ende podemos truncarlo y extraer los valores que necesitamos
 }
 
 export interface Mascota {
-  id: string;
-  duenoId: string; // FK -> Usuario (rol dueno)
+  id: number;
+  duenoId: number; // FK -> Usuario (rol dueno)
   nombre: string;
   especie: EspecieMascota;
   raza: string;
-  fechaNacimiento: string; // ISO date
+  fechaNacimiento: number; // lo mismo, si nos da un valor tipo float o date podemos truncarlo y dejarlo prolijo 
   sexo: "macho" | "hembra";
-  esterilizado: boolean;
+  esterilizado: boolean; // pa saber si es verdadero o falso 
   fotoUrl?: string;
 }
 
 export interface Centro {
-  id: string;
+  id: number;
   nombre: string;
   direccion: string;
   comuna: string;
-  telefono: string;
-  horarioApertura: string; // "09:00"
-  horarioCierre: string; // "19:00"
+  telefono: number;
+  horarioApertura: number // y este lo mismo que con el horario de cierre. 
+  horarioCierre: number // puede que nos de un valor tipo 19.40, si fuese el caso, podemos mapearlo y extraer los valores.
   diasAtencion: string[]; // ["lunes", "martes", ...]
   especialidades: string[];
 }
 
 
 export interface Veterinario {
-  id: string;
-  usuarioId: string; // FK -> Usuario (rol veterinario)
-  centroIds: string[]; // FK -> Centro (puede atender en varios)
+  id: number;
+  usuarioId: number // FK -> Usuario (rol veterinario)
+  centroIds: number[]; // FK -> Centro (puede atender en varios)
   especialidad: string;
   numeroColegiado: string;
 }
 
 export interface Cita {
-  id: string;
-  mascotaId: string; // FK -> Mascota
-  duenoId: string; // FK -> Usuario
-  veterinarioId?: string; // FK -> Veterinario (puede no estar asignado aun)
-  centroId: string; // FK -> Centro
-  fechaHora: string; // ISO datetime
+  id: number;
+  mascotaId: number; // FK -> Mascota
+  duenoId: number; // FK -> Usuario
+  veterinarioId?: number; // FK -> Veterinario (puede no estar asignado aun)
+  centroId: number; // FK -> Centro
+  fechaHora: number // este tipo de dato tiene que estar en number para que luego podamos mapearlo y extraer los atributs, tales como la hora o la fecha :p
   motivo: string;
   estado: EstadoCita;
   urgencia: UrgenciaCita; // sugerida por el sistema de IA
@@ -97,27 +97,27 @@ export interface Cita {
 
 
 export interface Diagnostico {
-  id: string;
-  citaId: string; // FK -> Cita
-  mascotaId: string; // FK -> Mascota
-  veterinarioId: string; // FK -> Veterinario
-  fecha: string; // ISO date
+  id: number;
+  citaId: number; // FK -> Cita
+  mascotaId: number; // FK -> Mascota
+  veterinarioId: number; // FK -> Veterinario
+  fecha: number; // ISO date
   descripcion: string;
   tratamiento?: string;
   derivadoA?: {
     tipo: "veterinario" | "centro";
-    id: string;
+    id: number;
     motivo: string;
   };
 }
 
 
 export interface RegistroHistorialMedico {
-  id: string;
-  mascotaId: string; // FK -> Mascota
-  fecha: string; // ISO date
+  id: number;
+  mascotaId: number; // FK -> Mascota
+  fecha: number; // 
   tipo: "diagnostico" | "vacuna" | "cirugia" | "control" | "otro";
   descripcion: string;
-  veterinarioId?: string;
-  centroId?: string;
+  veterinarioId?: number;
+  centroId?: number;
 }

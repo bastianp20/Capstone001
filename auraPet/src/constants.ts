@@ -1,7 +1,14 @@
 import type { CSSProperties } from "react";
 import type {EstadoCita, UrgenciaCita} from '../src/interfaces'; 
+import {
+  Menu, Search, Bell, User, UserCircle, LogOut, Settings, Calendar, Filter, ChevronDown, ChevronRight, X, Plus, MoreVertical, Home,
+  PawPrint, Heart, CalendarPlus, History, FileText,Stethoscope, Syringe, ClipboardList, ClipboardPlus, Share2, Microscope, Activity,
+  Building2, Clock, MapPin, Phone, Users, ShieldCheck, Building, Settings2, AlertTriangle, AlertCircle, Info, Brain, ListOrdered,
+  CheckCircle2, XCircle, Clock3, Loader2, Dog, Cat, ShieldPlus, Scissors,
+} from 'lucide-react';
+
 export const Colors = {
-  bg: "#f4f5f7",
+  bg: "rgb(31, 27, 27)",
   sidebarBg: "#12181f",
   sidebarActive: "#0f8f80",
   sidebarText: "#b8c1cc",
@@ -51,3 +58,70 @@ export const Badge = (style: CSSProperties): CSSProperties => ({
   whiteSpace: "nowrap",
   ...style,
 });
+
+
+export const Iconos = {
+  // y esto es de caracter general nmas
+  menu: Menu,
+  buscar: Search,
+  notificaciones: Bell,
+  usuario: User,
+  perfil: UserCircle,
+  cerrarSesion: LogOut,
+  configuracion: Settings,
+  calendario: Calendar,
+  filtro: Filter,
+  flechaAbajo: ChevronDown,
+  flechaDerecha: ChevronRight,
+  cerrar: X,
+  agregar: Plus,
+  opciones: MoreVertical,
+  inicio: Home,
+
+  // esto es pa los dueños de mascotas
+  huella: PawPrint,
+  favoritos: Heart,
+  solicitarCita: CalendarPlus,
+  historial: History,
+  fichaMedica: FileText,
+
+  // esto es pa los veterinarios :P 
+  diagnostico: Stethoscope,
+  vacuna: Syringe,
+  receta: ClipboardList,
+  nuevoDiagnostico: ClipboardPlus,
+  derivacion: Share2,
+  muestra: Microscope,
+  signosVitales: Activity,
+
+  // esto es pa los centros 
+  centro: Building2,
+  horario: Clock,
+  ubicacion: MapPin,
+  telefono: Phone,
+
+  // para el super admin :p 
+  usuarios: Users,
+  permisos: ShieldCheck,
+  veterinarias: Building,
+  configuracionSistema: Settings2,
+
+  // esto es para el sistema de ia y su agrupación por urgencia
+  urgenciaAlta: AlertTriangle,
+  urgenciaMedia: AlertCircle,
+  urgenciaBaja: Info,
+  ia: Brain,
+  prioridad: ListOrdered,
+
+  // esto es para los estados 
+  completado: CheckCircle2,
+  cancelado: XCircle,
+  pendiente: Clock3,
+  cargando: Loader2,
+
+  // esto se usará para el modulo de adopción
+  perro: Dog,
+  gato: Cat,
+  vacunasAlDia: ShieldPlus,
+  esterilizado: Scissors,
+};

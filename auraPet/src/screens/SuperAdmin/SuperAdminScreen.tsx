@@ -1,10 +1,10 @@
 import { useState } from "react";
-import type {SolicitudPendiente} from '../interfaces';
-import {Colors, Badge, badgeStyles, ESTADO_LABEL, URGENCIA_LABEL} from '../constants';
-import {RechazarModal} from '../components/Modal';
-import { KpiCard } from "../Card/kpi";
-import { solicitudesPendientesMock } from "../Data/SolicitudPendiente";
-import { getCitasResumen } from "../Api/getInfo";
+import type {SolicitudPendiente} from '../../interfaces';
+import {Colors, Badge, badgeStyles, ESTADO_LABEL, URGENCIA_LABEL} from '../../constants';
+import {RechazarModal} from '../../Modal/ReachazarModal';
+import { KpiCard } from "../../Card/kpi";
+import { solicitudesPendientesMock } from "../../Data/SolicitudPendiente";
+import { getCitasResumen } from "../../Api/getInfo";
 
 const colors = Colors;
 const badge = Badge;
@@ -28,7 +28,7 @@ const confirmarRechazo = (_razon: string) => {
     setSolicitudARechazar(null);
   };
   // TODO: llamar a la API/Supabase para marcar la solicitud como aprobada
-const aprobar = (id: string) => {
+const aprobar = (id: number) => {
     setSolicitudes((prev) => prev.filter((s) => s.id !== id));
   };
 

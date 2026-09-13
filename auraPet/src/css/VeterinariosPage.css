@@ -1,0 +1,259 @@
+/* Paleta de colores (primario/secundario/terciario + estados) — un solo
+   lugar para todos los var(--color-*) que se usan en este archivo. */
+@import './theme.css';
+
+/* contenedor de la page */
+.vet-page {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-bg);
+  font-family: system-ui, sans-serif;
+  color: var(--color-accent);
+}
+
+/* menú lateral :p  */
+.vet-sidebar {
+  width: 236px;
+  flex-shrink: 0;
+  background: var(--color-sidebar-bg);
+  border-right: 1px solid var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  padding: 22px 16px;
+}
+
+.vet-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px 26px;
+}
+
+.vet-sidebar-brand-name {
+  font-weight: 700;
+  font-size: 19px;
+}
+
+.vet-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Ítem de navegación del menú lateral (Mi Agenda, Historial, Recetas, Configuración) */
+.vet-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.vet-nav-item-label {
+  font-size: 14px;
+}
+
+/* Columna principal */
+.vet-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-accent);
+}
+
+/* Barra superior con el avatar y el nombre/centro del veterinario logueado */
+.vet-topbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 18px 32px;
+  gap: 10px;
+}
+
+.vet-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.vet-user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.vet-user-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: aliceblue; 
+}
+
+.vet-user-centro {
+  font-size: 12px;
+  color: aliceblue;
+}
+
+/* ---------- Contenido (título, stats, agenda) ---------- */
+.vet-content {
+  flex: 1;
+  padding: 0 32px 40px;
+}
+
+.vet-content-title {
+  margin: 0 0 20px;
+  font-size: 26px;
+  font-weight: 700;
+  color: aliceblue;
+}
+
+/* Fila de 3 tarjetas: Citas Totales / Urgencias-Críticas / Completadas */
+.vet-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.vet-stat {
+  padding: 16px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* separador entre tarjetas de stats, en vez de calcularlo a mano con el índice del .map() */
+.vet-stat:not(:first-child) {
+  border-left: 1px solid var(--color-border);
+}
+
+.vet-stat-label {
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+}
+
+.vet-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* Encabezado de columnas de la tabla de agenda (Hora / Mascota / Dueño / Motivo / Estado) */
+.vet-columns-header {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr 1.3fr 1.8fr 1.4fr;
+  padding: 0 20px;
+  margin-bottom: 8px;
+}
+
+.vet-column-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* ---------- Filas de la agenda ---------- */
+.vet-agenda {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vet-agenda-empty {
+  padding: 24px 20px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+}
+
+.vet-agenda-row {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr 1.3fr 1.8fr 1.4fr;
+  align-items: center;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 14px 20px;
+}
+
+/* variante de la fila cuando la cita está "en_curso" */
+.vet-agenda-row--en-curso {
+  border: 1.5px solid var(--color-accent-soft);
+}
+
+.vet-agenda-hora {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.vet-agenda-mascota-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vet-agenda-mascota-nombre {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.vet-agenda-mascota-detalle {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+.vet-agenda-dueno,
+.vet-agenda-motivo {
+  font-size: 13.5px;
+}
+
+/* Columna "Estado / Urgencia" cuando la cita está en curso: label + botón de acción */
+.vet-agenda-estado-curso {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.vet-agenda-estado-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.vet-agenda-btn-diagnostico {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  background: var(--color-sidebar-active);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* Columna "Estado / Urgencia" cuando la cita NO está en curso: badge + flecha */
+.vet-agenda-estado-pendiente {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vet-agenda-flecha {
+  color: var(--color-text-muted);
+  display: flex;
+}

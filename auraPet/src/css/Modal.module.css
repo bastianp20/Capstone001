@@ -1,3 +1,11 @@
+/* Paleta de colores (--color-primario, --color-secundario, --color-terciario-*,
+   más los alias --color-text, --color-border, etc.) — se importa acá mismo
+   para que cualquier modal que use este CSS Module tenga los colores
+   disponibles, sin depender de que la pantalla que lo abre haya cargado
+   VeterinariosPage.css (ej. SuperAdminScreen usa RechazarModal y no carga
+   ese archivo). */
+@import './theme.css';
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -9,7 +17,7 @@
 }
 
 .modal {
-  background: white;
+  background: rgb(15, 15, 15);
   border-radius: 14px;
   width: 420px;
   padding: 22px;
@@ -70,7 +78,7 @@
   padding: 9px 16px;
   border-radius: 8px;
   border: 1px solid var(--color-border);
-  background: white;
+  background: rgb(15, 14, 14);
   font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
@@ -81,13 +89,33 @@
   border-radius: 8px;
   border: none;
   background: var(--color-text);
-  color: white;
+  color: rgb(12, 1, 1);
   font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
 }
 
 .btnConfirmar:disabled {
-  background: #94a3a1;
+  background: #076a5d;
   cursor: not-allowed;
+}
+
+/* ---- usadas por AgendaModal (y cualquier otro modal de solo lectura) ---- */
+.content {
+  max-height: 60vh;
+  overflow-y: auto;
+  font-size: 13px;
+  color: var(--color-text);
+}
+
+.agendaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.agendaItem:last-child {
+  border-bottom: none;
 }

@@ -1,0 +1,131 @@
+/* ============================================================
+   Paleta de colores de AuraPet — fuente única de verdad en CSS.
+   ------------------------------------------------------------
+   Corresponde 1:1 al objeto `Colors` de src/constants.ts (ese sigue
+   siendo la fuente de verdad para los estilos en JS/TSX, ej. el prop
+   `color` de los íconos de lucide-react). Este archivo es la versión
+   para usar directo en CSS con var(--nombre-variable), sin escribir
+   el código hexadecimal en cada archivo.
+
+   Cómo usarlo en otro .css:
+     @import '../css/theme.css';   (ajusta la ruta según dónde estés)
+     .mi-clase { color: var(--color-primario); }
+
+   Como esto vive en :root, con importarlo UNA vez ya queda disponible
+   para toda la página (no hace falta importarlo en cada archivo si ya
+   se importó en uno que se carga siempre, pero se puede repetir el
+   @import sin problema: el navegador no lo vuelve a aplicar dos veces
+   de forma conflictiva).
+   ============================================================ */
+
+:root {
+  /* ============ COLOR PRIMARIO ============ */
+  /* Color de marca: acciones principales, ítem activo del menú lateral,
+     fondo del panel principal. En Colors (constants.ts) es "accent" y
+     "sidebarActive" (mismo valor). */
+  --color-primario: #0f8f80; /* verde azulado (teal) */
+
+  /* ============ COLOR SECUNDARIO ============ */
+  /* Versión clara/suave del primario. Se usa para fondos resaltados o
+     tarjetas que necesitan destacar sin competir con el primario.
+     En Colors es "accentSoft". */
+  --color-secundario: #e3f5f2; /* teal muy claro */
+
+  /* ============ COLORES TERCIARIOS (neutros / estructura) ============ */
+  --color-terciario-fondo: rgb(31, 27, 27); /* Colors.bg — fondo general oscuro */
+  --color-terciario-sidebar: #12181f; /* Colors.sidebarBg — fondo del menú lateral */
+  --color-terciario-texto: #1a1f27; /* Colors.text — texto principal */
+  --color-terciario-texto-muted: #6b7280; /* Colors.textMuted — texto secundario/gris */
+  --color-terciario-texto-sidebar: #b8c1cc; /* Colors.sidebarText — texto sobre el sidebar oscuro */
+  --color-terciario-borde: #e4e6ea; /* Colors.border — bordes de tarjetas/inputs */
+
+  /* ---- Alias con los nombres cortos que ya se usan en VeterinariosPage.css ---- */
+  /* (para no tener que reescribir ese archivo: apuntan a los mismos valores) */
+  --color-bg: var(--color-terciario-fondo);
+  --color-sidebar-bg: var(--color-terciario-sidebar);
+  --color-sidebar-active: var(--color-primario);
+  --color-border: var(--color-terciario-borde);
+  --color-text: var(--color-terciario-texto);
+  --color-text-muted: var(--color-terciario-texto-muted);
+  --color-accent: var(--color-primario);
+  --color-accent-soft: var(--color-secundario);
+
+  /* ============ COLORES DE ESTADO (semánticos, no son de marca) ============ */
+  /* Vienen de badgeStyles en constants.ts — estado de una cita */
+  --color-estado-confirmada: #2452a8; /* azul — confirmada */
+  --color-estado-completada: #177a4f; /* verde — completada */
+  --color-estado-cancelada: #a4272a; /* rojo — cancelada */
+  --color-estado-pendiente: #4b5563; /* gris — pendiente */
+
+  /* Urgencia de una cita (fondo + texto, porque cada nivel usa su par) */
+  --color-urgencia-critica-bg: #e0403f; /* rojo fuerte — urgencia crítica */
+  --color-urgencia-critica-texto: #ffffff;
+  --color-urgencia-alta-bg: #f4a13a; /* naranja — urgencia alta */
+  --color-urgencia-alta-texto: #5a3600;
+  --color-urgencia-media-bg: #f0d251; /* amarillo — urgencia media */
+  --color-urgencia-media-texto: #5a4b00;
+  --color-urgencia-baja-bg: var(--color-secundario); /* usa el secundario — urgencia baja */
+  --color-urgencia-baja-texto: var(--color-estado-completada);
+}
+
+/* ============================================================
+   Combinaciones listas para usar (utilidades). Cada una deja en el
+   comentario qué variable(s) — y de qué categoría — está usando.
+   ============================================================ */
+
+/* Botón de acción principal (ej: "Registrar Diagnóstico") */
+.btn-primario {
+  background: var(--color-primario); /* primario */
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Tarjeta o bloque resaltado, sin la fuerza visual del primario */
+.tarjeta-secundaria {
+  background: var(--color-secundario); /* secundario */
+  color: var(--color-terciario-texto); /* terciario — texto */
+  border: 1px solid var(--color-terciario-borde); /* terciario — borde */
+  border-radius: 12px;
+}
+
+/* Ítem activo de un menú lateral oscuro */
+.nav-item-activo {
+  background: var(--color-primario); /* primario */
+  color: #ffffff;
+}
+
+/* Texto normal de un menú lateral oscuro (item NO activo) */
+.nav-item {
+  color: var(--color-terciario-texto-sidebar); /* terciario — texto sobre sidebar */
+}
+
+/* Fondo estructural de un sidebar */
+.superficie-sidebar {
+  background: var(--color-terciario-sidebar); /* terciario */
+}
+
+/* Texto secundario/hint dentro de una tarjeta blanca */
+.texto-hint {
+  color: var(--color-terciario-texto-muted); /* terciario */
+}
+
+/* Encabezado con acento: fondo secundario + detalle primario a la izquierda */
+.header-con-acento {
+  background: var(--color-secundario); /* secundario */
+  border-left: 4px solid var(--color-primario); /* primario, como acento */
+  color: var(--color-terciario-texto); /* terciario */
+}
+
+/* Badges de estado de una cita */
+.badge-confirmada { background: #e3edfb; color: var(--color-estado-confirmada); }
+.badge-completada { background: #dff3ea; color: var(--color-estado-completada); }
+.badge-cancelada  { background: #fbe4e4; color: var(--color-estado-cancelada); }
+.badge-pendiente  { background: #eceef1; color: var(--color-estado-pendiente); }
+
+/* Badges de urgencia de una cita */
+.badge-urgencia-critica { background: var(--color-urgencia-critica-bg); color: var(--color-urgencia-critica-texto); }
+.badge-urgencia-alta    { background: var(--color-urgencia-alta-bg); color: var(--color-urgencia-alta-texto); }
+.badge-urgencia-media   { background: var(--color-urgencia-media-bg); color: var(--color-urgencia-media-texto); }
+.badge-urgencia-baja    { background: var(--color-urgencia-baja-bg); color: var(--color-urgencia-baja-texto); }
