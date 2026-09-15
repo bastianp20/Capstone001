@@ -16,7 +16,7 @@ export const ModalAgenda = ({ veterinarioId, onCerrar }: ModalAgendaProps) => {
     <div className={styles.overlay} onClick={onCerrar}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h3 className={styles.title}>Mi Agenda</h3>
+          <h3 className={styles.title}>Mi Agenda Hoy  </h3>
           <button className={styles.closeButton} onClick={onCerrar}>
             ×
           </button>
