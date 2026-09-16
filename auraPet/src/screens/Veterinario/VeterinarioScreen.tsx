@@ -2,6 +2,7 @@ import { useState, type CSSProperties } from 'react';
 import { Colors, Iconos } from '../../constants';
 import { getInfoVeterinario } from '../../Api/getInfo';
 import { ModalAgenda } from '../../Modal/AgendaModal';
+import {PacientesModal} from '../../Modal/PacientesModal'; 
 import '../../css/VeterinariosPage.css';
 
 const colors = Colors;
@@ -26,10 +27,6 @@ const temaVars = {
 } as CSSProperties;
 
 export const VeterinarioScreen = () => {
-  // Toda la info de este veterinario (nombre, centro(s)) y su agenda se
-  // resuelve por id desde Api/getInfo.tsx, que a su vez hace el "join"
-  // contra Data/Usuarios, Data/Veterinarios, Data/Centros y Data/Cita.
-  // Así evitamos recorrer los mocks completos "a mano" en la vista.
   const infoVeterinario = getInfoVeterinario(veterinarioIdActual);
 
   // Un veterinario puede no estar vinculado a ningún centro (atención
@@ -43,7 +40,7 @@ export const VeterinarioScreen = () => {
   // Controla qué modal está abierto. Por ahora solo existe el de agenda;
   // cuando armemos Historial/Recetas se suman como más valores posibles
   // ("historial" | "recetas" | ...) en vez de un booleano por modal.
-  const [modalAbierto, setModalAbierto] = useState<"agenda" | null>(null);
+  const [modalAbierto, setModalAbierto] = useState<"agenda" | "pacientes"| null>(null);
 
   // esto es para el avatar, que ocupe las iniciales de la persona cuando no hay foto de perfil cargada. 
   const getIniciales = (nombreCompleto: string): string => {
@@ -68,7 +65,7 @@ export const VeterinarioScreen = () => {
             <iconos.calendario size={18} />
             <span className="vet-nav-item-label">Mi Agenda</span>
           </div>
-          <div className="vet-nav-item">
+          <div className="vet-nav-item" onClick={() => setModalAbierto("pacientes")}>
             <iconos.fichaMedica size={18} />
             <span className="vet-nav-item-label">Pacientes</span>
           </div>
@@ -101,6 +98,9 @@ export const VeterinarioScreen = () => {
 
       {modalAbierto === "agenda" && (
         <ModalAgenda veterinarioId={veterinarioIdActual} onCerrar={() => setModalAbierto(null)} />
+      )}
+      {modalAbierto === "pacientes" && (
+      <PacientesModal veterinarioId={veterinarioIdActual} onCerrar={() => setModalAbierto(null)} />
       )}
     </div>
   );

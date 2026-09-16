@@ -121,3 +121,13 @@ export interface RegistroHistorialMedico {
   veterinarioId?: number;
   centroId?: number;
 }
+
+export interface PacienteVeterinario {
+  id: number; // mascotaId
+  nombre: string;
+  especie: string;
+  raza: string;
+  dueno: string;
+  ultimaVisita: string;
+  totalVisitas: number;
+}

@@ -1,6 +1,6 @@
 
 
-import type { Cita, CitaResumen, EstadoCita, Mascota, RegistroHistorialMedico, UrgenciaCita } from "../interfaces";
+import type { Cita, CitaResumen, EstadoCita, Mascota, PacienteVeterinario, RegistroHistorialMedico, UrgenciaCita } from "../interfaces";
 import { mascotasMock } from "../Data/Mascota";
 import { historialMedicoMock } from "../Data/HistorialMedico";
 import { citasMock } from "../Data/Cita";
@@ -102,10 +102,6 @@ export interface CitaAgendaItem {
 
 export interface InfoVeterinario {
   nombre: string;
-  // Nombres de TODOS los centros en los que atiende (Veterinario.centroIds
-  // puede traer varios). Si el veterinario no está vinculado a ningún
-  // centro (atiende de forma independiente) esto llega como arreglo vacío,
-  // en vez de forzar un "centro" único que no existe.
   centros: string[];
 }
 
@@ -153,3 +149,29 @@ export const getAgendaVeterinario = (veterinarioId: number): CitaAgendaItem[] =>
         urgencia: c.urgencia,
       };
     });
+
+  export const getPacienteByVeterinarioId = (veterinarioId: number) => {
+    const citasVet = citasMock.filter((c) => c.veterinarioId === veterinarioId);
+    const citasPorMascota = new Map<number, Cita[]>();
+    citasVet.forEach((c) => {
+    const citas = citasPorMascota.get(c.mascotaId) ?? [];
+    citas.push(c);
+    citasPorMascota.set(c.mascotaId, citas);
+    }); 
+      return Array.from(citasPorMascota.entries())
+    .map(([mascotaId, citas]) => {
+      const mascota = mascotasMock.find((m) => m.id === mascotaId);
+      const dueno = mascota ? usuariosMock.find((u) => u.id === mascota.duenoId) : undefined;
+      const ultimaCita = [...citas].sort((a, b) => b.fechaHora - a.fechaHora)[0];
+    return {
+        id: mascotaId,
+        nombre: mascota?.nombre ?? "Mascota desconocida",
+        especie: mascota ? capitalize(mascota.especie) : "—",
+        raza: mascota?.raza ?? "—",
+        dueno: dueno?.nombre ?? "Dueño desconocido",
+        ultimaVisita: formatFechaHora(ultimaCita.fechaHora),
+        totalVisitas: citas.length,
+      };
+    })
+    .sort((a, b) => a.nombre.localeCompare(b.nombre));
+};
