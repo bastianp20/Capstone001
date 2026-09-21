@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type {EstadoCita, UrgenciaCita} from '../src/interfaces'; 
+import type {EstadoCita, UrgenciaCita, EspecieMascota} from '../src/interfaces'; 
 import {
   Menu, Search, Bell, User, UserCircle, LogOut, Settings, Calendar, Filter, ChevronDown, ChevronRight, X, Plus, MoreVertical, Home,
   PawPrint, Heart, CalendarPlus, History, FileText,Stethoscope, Syringe, ClipboardList, ClipboardPlus, Share2, Microscope, Activity,
@@ -17,6 +17,29 @@ export const Colors = {
   textMuted: "#6b7280",
   accent: "#0f8f80",
   accentSoft: "#e3f5f2",
+  primario: "#0f8f80",
+  secundario: "#e3f5f2",
+
+  oscuro: "rgb(31, 27, 27)",
+  sidebarOscuro: "#12181f",
+  texto: "#1a1f27",
+  textoSuave: "#6b7280",
+  textoSidebar: "#b8c1cc",
+  borde: "#e4e6ea",
+
+  estadoConfirmada: "#2452a8",
+  estadoCompletada: "#177a4f",
+  estadoCancelada: "#a4272a",
+  estadoPendiente: "#4b5563",
+
+  urgenciaCriticaFondo: "#e0403f",
+  urgenciaCriticaTexto: "#ffffff",
+  urgenciaAltaFondo: "#f4a13a",
+  urgenciaAltaTexto: "#5a3600",
+  urgenciaMediaFondo: "#f0d251",
+  urgenciaMediaTexto: "#5a4b00",
+  urgenciaBajaFondo: "#e3f5f2",
+  urgenciaBajaTexto: "#177a4f",
 };
 
 export const badgeStyles: Record<string, CSSProperties> = {
@@ -124,4 +147,50 @@ export const Iconos = {
   gato: Cat,
   vacunasAlDia: ShieldPlus,
   esterilizado: Scissors,
+};
+
+// Fechas en formato YYYYMMDD (8 dígitos) — se usan en Mascota.fechaNacimiento
+// y RegistroHistorialMedico.fecha. A diferencia de Cita.fechaHora (12 dígitos,
+// con hora y minutos), acá basta con convertir a string sin rellenar, porque
+// el año siempre ocupa los 4 dígitos.
+const parseFechaCorta = (fecha: number) => {
+  const s = String(fecha);
+  return { anio: Number(s.slice(0, 4)), mes: Number(s.slice(4, 6)), dia: Number(s.slice(6, 8)) };
+};
+
+const MESES_ABREV = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
+// Edad en años a partir de la fecha de nacimiento (le resta 1 si todavía
+// no ha cumplido años este año calendario).
+export const calcularEdad = (fechaNacimiento: number): number => {
+  const { anio, mes, dia } = parseFechaCorta(fechaNacimiento);
+  const hoy = new Date();
+  let edad = hoy.getFullYear() - anio;
+  const noHaCumplidoAun = hoy.getMonth() + 1 < mes || (hoy.getMonth() + 1 === mes && hoy.getDate() < dia);
+  if (noHaCumplidoAun) edad -= 1;
+  return edad;
+};
+
+// "20 dic 2025" — para ítems de historial médico.
+export const formatFechaLarga = (fecha: number): string => {
+  const { anio, mes, dia } = parseFechaCorta(fecha);
+  return `${dia} ${MESES_ABREV[mes - 1]} ${anio}`;
+};
+
+// dia: "05", mes: "SEP" — para el cuadradito de fecha de una cita.
+// Cita.fechaHora trae 12 dígitos (YYYYMMDDHHmm), por eso acá sí usamos
+// padStart igual que formatFechaHora en Api/getInfo.tsx.
+export const formatFechaCaja = (fechaHora: number): { dia: string; mes: string } => {
+  const s = String(fechaHora).padStart(12, "0");
+  const dia = s.slice(6, 8);
+  const mesNum = Number(s.slice(4, 6));
+  return { dia, mes: MESES_ABREV[mesNum - 1].toUpperCase() };
+};
+
+export const EMOJI_ESPECIE: Record<EspecieMascota, string> = {
+  perro: "🐕",
+  gato: "🐈",
+  ave: "🐦",
+  conejo: "🐇",
+  otro: "🐾",
 };

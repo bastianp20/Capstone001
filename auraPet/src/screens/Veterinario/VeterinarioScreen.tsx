@@ -3,7 +3,9 @@ import { Colors, Iconos } from '../../constants';
 import { getInfoVeterinario } from '../../Api/getInfo';
 import { ModalAgenda } from '../../Modal/AgendaModal';
 import {PacientesModal} from '../../Modal/PacientesModal'; 
+import type { NuevaReceta } from '../../interfaces';
 import '../../css/VeterinariosPage.css';
+import { RecetaModal } from '../../Modal/RecetasModal';
 
 const colors = Colors;
 const iconos = Iconos;
@@ -40,7 +42,7 @@ export const VeterinarioScreen = () => {
   // Controla qué modal está abierto. Por ahora solo existe el de agenda;
   // cuando armemos Historial/Recetas se suman como más valores posibles
   // ("historial" | "recetas" | ...) en vez de un booleano por modal.
-  const [modalAbierto, setModalAbierto] = useState<"agenda" | "pacientes"| null>(null);
+  const [modalAbierto, setModalAbierto] = useState<"agenda" | "pacientes" | "receta" | null>(null);
 
   // esto es para el avatar, que ocupe las iniciales de la persona cuando no hay foto de perfil cargada. 
   const getIniciales = (nombreCompleto: string): string => {
@@ -69,7 +71,7 @@ export const VeterinarioScreen = () => {
             <iconos.fichaMedica size={18} />
             <span className="vet-nav-item-label">Pacientes</span>
           </div>
-          <div className="vet-nav-item">
+          <div className="vet-nav-item" onClick = {() => setModalAbierto("receta")}>
             <iconos.receta size={18} />
             <span className="vet-nav-item-label">Recetas</span>
           </div>
@@ -90,10 +92,6 @@ export const VeterinarioScreen = () => {
             <span className="vet-user-centro">{centroLabel}</span>
           </div>
         </div>
-
-        {/* CONTENT: la agenda de hoy ahora se muestra en el modal
-            (ModalAgenda, abierto desde "Mi Agenda" en el menú), así que
-            ya no se repite acá también. */}
       </div>
 
       {modalAbierto === "agenda" && (
@@ -101,6 +99,15 @@ export const VeterinarioScreen = () => {
       )}
       {modalAbierto === "pacientes" && (
       <PacientesModal veterinarioId={veterinarioIdActual} onCerrar={() => setModalAbierto(null)} />
+      )}
+      {modalAbierto === "receta" && (
+      <RecetaModal 
+        veterinarioId = {veterinarioIdActual}
+        onCerrar={() => setModalAbierto(null)}
+        onGuardar={(receta: NuevaReceta) => {
+          console.log('receta guardada Master :p ', receta)
+        }
+        }/>
       )}
     </div>
   );

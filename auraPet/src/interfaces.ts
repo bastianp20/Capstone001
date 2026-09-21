@@ -131,3 +131,44 @@ export interface PacienteVeterinario {
   ultimaVisita: string;
   totalVisitas: number;
 }
+
+export interface MedicamentoReceta {
+  nombre: string;
+  dosis: string;
+  frecuencia: string;
+  duracion: string;
+}
+
+export interface NuevaReceta {
+  mascotaId: number;
+  veterinarioId: number;
+  fecha: number; // YYYYMMDD, se genera al guardar — mismo formato que el resto del mock
+  medicamentos: MedicamentoReceta[];
+  indicaciones: string;
+  proximoControl?: string;
+}
+export interface RecetaModalProps {
+  veterinarioId: number;
+  onCerrar: () => void;
+  // El guardado real (Supabase) se define después; por ahora el padre
+  // decide qué hacer con la receta ya armada (loguearla, mostrarla, etc.).
+  onGuardar: (receta: NuevaReceta) => void;
+}
+export interface CitaProximaDueno {
+  id: number;
+  mascotaId: number;
+  mascota: string;
+  centro: string;
+  dia: string;
+  mes: string;
+  motivo: string;
+  estado: EstadoCita;
+  urgencia: UrgenciaCita;
+}
+
+export interface HistorialRecienteItem {
+  id: number;
+  mascota: string;
+  descripcion: string;
+  fecha: string;
+}

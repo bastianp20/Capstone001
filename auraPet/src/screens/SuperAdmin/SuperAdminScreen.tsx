@@ -33,7 +33,7 @@ const aprobar = (id: number) => {
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: colors.bg, fontFamily: "system-ui, sans-serif" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: colors.accentSoft, fontFamily: "system-ui, sans-serif" }}>
       {/* SIDEBAR */}
       <div style={{ width: 236, flexShrink: 0, background: colors.sidebarBg, display: "flex", flexDirection: "column", padding: "20px 14px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 8px 22px" }}>
@@ -84,9 +84,9 @@ const aprobar = (id: number) => {
               maxWidth: 420,
               padding: "9px 14px",
               borderRadius: 9,
-              border: `1px solid ${colors.border}`,
+              border: `1px solid ${colors.oscuro}`,
               fontSize: 13.5,
-              background: colors.bg,
+              background: colors.accentSoft,
             }}
           />
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
@@ -117,7 +117,7 @@ const aprobar = (id: number) => {
             <div style={{ padding: "14px 18px", borderBottom: `1px solid ${colors.border}`, fontSize: 14.5, fontWeight: 700 }}>
               Solicitudes pendientes (aprobaciones)
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "2.4fr 1.2fr 1.4fr 1.6fr", padding: "10px 18px", background: colors.bg, fontSize: 11.5, fontWeight: 700, color: colors.textMuted, textTransform: "uppercase" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "2.4fr 1.2fr 1.4fr 1.6fr", padding: "10px 18px", background: colors.border, fontSize: 11.5, fontWeight: 700, color: colors.textMuted, textTransform: "uppercase" }}>
               <span>Solicitud</span>
               <span>Tipo</span>
               <span>Fecha de registro</span>
@@ -156,7 +156,7 @@ const aprobar = (id: number) => {
             <div style={{ padding: "14px 18px", borderBottom: `1px solid ${colors.border}`, fontSize: 14.5, fontWeight: 700 }}>
               Citas recientes y próximas
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1.4fr 1.4fr 1.2fr 1fr 1fr", padding: "10px 18px", background: colors.bg, fontSize: 11.5, fontWeight: 700, color: colors.textMuted, textTransform: "uppercase" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1.4fr 1.4fr 1.2fr 1fr 1fr", padding: "10px 18px", background: colors.border  , fontSize: 11.5, fontWeight: 700, color: colors.textMuted, textTransform: "uppercase" }}>
               <span>Mascota / Dueño</span>
               <span>Veterinario</span>
               <span>Centro</span>

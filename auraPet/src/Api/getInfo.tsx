@@ -1,12 +1,13 @@
 
-
-import type { Cita, CitaResumen, EstadoCita, Mascota, PacienteVeterinario, RegistroHistorialMedico, UrgenciaCita } from "../interfaces";
+import type { Cita, CitaResumen, EstadoCita, Mascota, UrgenciaCita,
+CitaProximaDueno, RegistroHistorialMedico, HistorialRecienteItem } from "../interfaces";
 import { mascotasMock } from "../Data/Mascota";
 import { historialMedicoMock } from "../Data/HistorialMedico";
 import { citasMock } from "../Data/Cita";
 import { usuariosMock } from "../Data/Usuarios";
 import { veterinariosMock } from "../Data/Veterinarios";
 import { centrosMock } from "../Data/Centros";
+import { formatFechaCaja, formatFechaLarga } from "../constants";
 
 //  Aquí traemos las mascotas por el id del dueño
 export const getMascotasPorDueno = (duenoId: number): Mascota[] =>
@@ -174,4 +175,49 @@ export const getAgendaVeterinario = (veterinarioId: number): CitaAgendaItem[] =>
       };
     })
     .sort((a, b) => a.nombre.localeCompare(b.nombre));
+};
+
+// ---------- Vista "Inicio" del dueño ----------
+
+export const getProximasCitasDueno = (duenoId: number): CitaProximaDueno[] =>
+  citasMock
+    .filter((c) => c.duenoId === duenoId)
+    .sort((a, b) => a.fechaHora - b.fechaHora)
+    .map((c) => {
+      const mascota = mascotasMock.find((m) => m.id === c.mascotaId);
+      const centro = centrosMock.find((ce) => ce.id === c.centroId);
+      const { dia, mes } = formatFechaCaja(c.fechaHora);
+
+      return {
+        id: c.id,
+        mascotaId: c.mascotaId,
+        mascota: mascota?.nombre ?? "Mascota desconocida",
+        centro: centro?.nombre ?? "Centro desconocido",
+        dia,
+        mes,
+        motivo: c.motivo,
+        estado: c.estado,
+        urgencia: c.urgencia,
+      };
+    });
+
+// Junta el historial de TODAS las mascotas de este dueño (no de una sola),
+// ordenado del más reciente al más antiguo — para el panel "Historial
+// reciente" de Inicio. `limite` corta cuántos mostrar ahí.
+export const getHistorialRecienteDueno = (duenoId: number, limite = 5): HistorialRecienteItem[] => {
+  const mascotaIds = getMascotasPorDueno(duenoId).map((m) => m.id);
+
+  return historialMedicoMock
+    .filter((h) => mascotaIds.includes(h.mascotaId))
+    .sort((a, b) => b.fecha - a.fecha)
+    .slice(0, limite)
+    .map((h) => {
+      const mascota = mascotasMock.find((m) => m.id === h.mascotaId);
+      return {
+        id: h.id,
+        mascota: mascota?.nombre ?? "Mascota desconocida",
+        descripcion: h.descripcion,
+        fecha: formatFechaLarga(h.fecha),
+      };
+    });
 };

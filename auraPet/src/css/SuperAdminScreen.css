@@ -1,7 +1,8 @@
+@import './theme.css';
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 20, 25, 0.45);
+  background: rgba(106, 107, 107, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9,11 +10,11 @@
 }
 
 .modal {
-  background: white;
+  background: #94a3a1;
   border-radius: 14px;
   width: 420px;
   padding: 22px;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 20px 45px rgba(192, 4, 4, 0.18);
 }
 
 .header {
@@ -27,7 +28,7 @@
   margin: 0;
   font-size: 16.5px;
   font-weight: 700;
-  color: var(--color-text);
+  color: aliceblue;
 }
 
 .closeButton {
@@ -41,7 +42,7 @@
 .label {
   font-size: 13px;
   font-weight: 600;
-  color: var(--color-text);
+  color: aliceblue;
 }
 
 .required {
@@ -53,7 +54,7 @@
   margin-top: 6px;
   padding: 10px;
   border-radius: 9px;
-  border: 1px solid var(--color-border);
+  border: 1px solid #94a3a1;
   font-family: inherit;
   font-size: 13.5px;
   resize: vertical;
@@ -69,7 +70,7 @@
 .btnCancelar {
   padding: 9px 16px;
   border-radius: 8px;
-  border: 1px solid var(--color-border);
+  border: 1px solid aliceblue;
   background: white;
   font-size: 13.5px;
   font-weight: 600;
