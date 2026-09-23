@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { MedicamentoReceta, RecetaModalProps } from "../interfaces";
 import { getPacienteByVeterinarioId } from "../Api/getInfo";
 import styles from "../css/Modal.module.css";
+import {getFechaHoy} from '../constants'; 
 
 
 const medicamentoVacio = (): MedicamentoReceta => ({
@@ -9,16 +10,7 @@ const medicamentoVacio = (): MedicamentoReceta => ({
   dosis: "",
   frecuencia: "",
   duracion: "",
-});
-
-// fecha de hoy en formato YYYYMMDD
-const getFechaHoy = (): number => {
-  const hoy = new Date();
-  const yyyy = hoy.getFullYear();
-  const mm = String(hoy.getMonth() + 1).padStart(2, "0");
-  const dd = String(hoy.getDate()).padStart(2, "0");
-  return Number(`${yyyy}${mm}${dd}`);
-};
+}); 
 
 // Modal solo de escritura: el veterinario elige a cuál de sus pacientes
 // le está recetando (getPacientesPorVeterinario ya trae la lista de

@@ -6,13 +6,11 @@ import {PacientesModal} from '../../Modal/PacientesModal';
 import type { NuevaReceta } from '../../interfaces';
 import '../../css/VeterinariosPage.css';
 import { RecetaModal } from '../../Modal/RecetasModal';
+import { useAuth } from '../../Auth/AuthContext';
+import { veterinariosMock } from '../../Data/Veterinarios';
 
 const colors = Colors;
 const iconos = Iconos;
-
-// TODO: cuando exista login real, este id lo entrega la sesión (auth)
-// este id corresponde a valentina, se usará así para acceder al vet mediante su id. 
-const veterinarioIdActual = 1;
 
 // Variables CSS con los colores del tema (Colors, en constants.ts es la
 // única fuente de verdad) para que VeterinariosPage.css los use como
@@ -29,6 +27,15 @@ const temaVars = {
 } as CSSProperties;
 
 export const VeterinarioScreen = () => {
+  const { usuarioActual } = useAuth();
+
+  // OJO: usuarioActual.id es el id de Usuario. Las funciones de
+  // Api/getInfo.tsx (getInfoVeterinario, getAgendaVeterinario,
+  // getPacientesPorVeterinario) esperan el id de Veterinario (otra
+  // tabla), enlazado vía Veterinario.usuarioId.
+  const veterinario = veterinariosMock.find((v) => v.usuarioId === usuarioActual!.id);
+  const veterinarioIdActual = veterinario!.id;
+
   const infoVeterinario = getInfoVeterinario(veterinarioIdActual);
 
   // Un veterinario puede no estar vinculado a ningún centro (atención

@@ -5,11 +5,13 @@ import {RechazarModal} from '../../Modal/ReachazarModal';
 import { KpiCard } from "../../Card/kpi";
 import { solicitudesPendientesMock } from "../../Data/SolicitudPendiente";
 import { getCitasResumen } from "../../Api/getInfo";
+import { useAuth } from "../../Auth/AuthContext";
 
 const colors = Colors;
 const badge = Badge;
 
 export const SuperAdminScreen = () => {
+  const { usuarioActual } = useAuth();
   const [solicitudARechazar, setSolicitudARechazar] = useState<SolicitudPendiente | null>(null);
   const [solicitudes, setSolicitudes] = useState(solicitudesPendientesMock);
   const citasMock = getCitasResumen();
@@ -95,7 +97,7 @@ const aprobar = (id: number) => {
               <div style={{ width: 30, height: 30, borderRadius: 999, background: colors.accentSoft, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: colors.accent }}>
                 SA
               </div>
-              <span style={{ fontSize: 13.5, fontWeight: 600, color: colors.text }}>SuperAdmin</span>
+              <span style={{ fontSize: 13.5, fontWeight: 600, color: colors.text }}>{usuarioActual?.nombre ?? "SuperAdmin"}</span>
             </div>
           </div>
         </div>

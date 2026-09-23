@@ -46,6 +46,7 @@ export interface Usuario {
   telefono?: number; // ya que un numero telefonico siempre será un numero 
   avatarUrl?: string;
   creadoEn: number; // si nos da un valor de date lo más seguro es que sea decimal por ende podemos truncarlo y extraer los valores que necesitamos
+  password: string; // esto es solo momentaneo 
 }
 
 export interface Mascota {
@@ -171,4 +172,10 @@ export interface HistorialRecienteItem {
   mascota: string;
   descripcion: string;
   fecha: string;
+}
+
+export interface AuthContextValue {
+  usuarioActual: Usuario | null;
+  login: (email: string, password: string) => boolean;
+  logout: () => void;
 }

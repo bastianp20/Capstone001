@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react';
 import { Colors, Iconos, Badge, badgeStyles, ESTADO_LABEL, URGENCIA_LABEL, EMOJI_ESPECIE,calcularEdad } from '../../constants';
 import { getMascotasPorDueno, getProximasCitasDueno, getHistorialRecienteDueno } from '../../Api/getInfo';
 import { getIniciales } from '../../utils';
-import {dueno} from '../../Data/Usuarios'; 
+import { useAuth } from '../../Auth/AuthContext';
 import '../../css/duenoPage.css';
 
 const colors = Colors;
@@ -20,13 +20,13 @@ const temaVars = {
 } as CSSProperties;
 
 export const DuenoScreen = () => {
-const duenoIdActual = 7;
+  const { usuarioActual } = useAuth();
+  const duenoIdActual = usuarioActual!.id; // App.tsx ya garantiza que hay sesión antes de montar esta pantalla
+  const nombreDueno = usuarioActual!.nombre;
+
   const mascotas = getMascotasPorDueno(duenoIdActual);
   const proximasCitas = getProximasCitasDueno(duenoIdActual).slice(0, 3);
   const historialReciente = getHistorialRecienteDueno(duenoIdActual, 3);
-
-    const usuarioDueno = dueno.find( (d) => d.id === duenoIdActual); 
-    const nombreDueno = usuarioDueno?.nombre ?? "Dueno"; 
   return (
     <div className="dueno-page" style={temaVars}>
       <div className="dueno-sidebar">

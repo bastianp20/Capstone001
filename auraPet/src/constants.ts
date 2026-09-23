@@ -194,3 +194,11 @@ export const EMOJI_ESPECIE: Record<EspecieMascota, string> = {
   conejo: "🐇",
   otro: "🐾",
 };
+
+export const getFechaHoy = (): number => {
+  const hoy = new Date();
+  const yyyy = hoy.getFullYear();
+  const mm = String(hoy.getMonth() + 1).padStart(2, "0");
+  const dd = String(hoy.getDate()).padStart(2, "0");
+  return Number(`${yyyy}${mm}${dd}`);
+};
