@@ -1,18 +1,27 @@
-// import { useState } from 'react'
-// import heroImg from './assets/hero.png'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useAuth } from './Auth/AuthContext';
+import { LoginScreen } from './screens/Login/LoginScreen';
+import { DuenoScreen } from './screens/dueños/duenos';
+import { VeterinarioScreen } from './screens/Veterinario/VeterinarioScreen';
+import { SuperAdminScreen } from './screens/SuperAdmin/SuperAdminScreen';
 
-function App() {
-  // const [count, setCount] = useState(0)
+// Sin router todavía: esta es la única pieza que decide qué pantalla
+// se muestra, según el usuario logueado (o ninguna -> LoginScreen).
+export const App = () => {
+  const { usuarioActual } = useAuth();
 
-  return (
-    <>
-    <h1> Bienvenido al proyecto de Aura Pet</h1>
-    <p>Farmea Aura con tu mascota</p>
-    </>
-  )
-}
+  if (!usuarioActual) return <LoginScreen />;
 
-export default App
+  switch (usuarioActual.rol) {
+    case 'dueno':
+      return <DuenoScreen />;
+    case 'veterinario':
+      return <VeterinarioScreen />;
+    case 'superadmin':
+      return <SuperAdminScreen />;
+    case 'centro':
+      // TODO: todavía no existe pantalla para el rol "centro".
+      return <LoginScreen />;
+    default:
+      return <LoginScreen />;
+  }
+};

@@ -1,0 +1,80 @@
+:root {
+  --color-primario: #0f8f80;
+  --color-secundario: #e3f5f2;
+
+  --color-terciario-texto: #1a1f27;
+  --color-terciario-texto-muted: #6b7280;
+  --color-terciario-texto-sidebar: #b8c1cc;
+  --color-terciario-borde: #e4e6ea;
+  --color-terciario-sidebar: #12181f;
+
+  --color-estado-confirmada: #2452a8;
+  --color-estado-completada: #177a4f;
+  --color-estado-cancelada: #a4272a;
+  --color-estado-pendiente: #4b5563;
+
+  --color-urgencia-critica-bg: #e0403f;
+  --color-urgencia-critica-texto: #ffffff;
+  --color-urgencia-alta-bg: #f4a13a;
+  --color-urgencia-alta-texto: #5a3600;
+  --color-urgencia-media-bg: #f0d251;
+  --color-urgencia-media-texto: #5a4b00;
+  --color-urgencia-baja-bg: #e3f5f2;
+  --color-urgencia-baja-texto: #177a4f;
+}
+.btn-primario {
+  background: var(--color-primario); /* primario */
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Tarjeta o bloque resaltado, sin la fuerza visual del primario */
+.tarjeta-secundaria {
+  background: var(--color-secundario); /* secundario */
+  color: var(--color-terciario-texto); /* terciario — texto */
+  border: 1px solid var(--color-terciario-borde); /* terciario — borde */
+  border-radius: 12px;
+}
+
+/* Ítem activo de un menú lateral oscuro */
+.nav-item-activo {
+  background: var(--color-primario); /* primario */
+  color: #ffffff;
+}
+
+/* Texto normal de un menú lateral oscuro (item NO activo) */
+.nav-item {
+  color: var(--color-terciario-texto-sidebar); /* terciario — texto sobre sidebar */
+}
+
+/* Fondo estructural de un sidebar */
+.superficie-sidebar {
+  background: var(--color-terciario-sidebar); /* terciario */
+}
+
+/* Texto secundario/hint dentro de una tarjeta blanca */
+.texto-hint {
+  color: var(--color-terciario-texto-muted); /* terciario */
+}
+
+/* Encabezado con acento: fondo secundario + detalle primario a la izquierda */
+.header-con-acento {
+  background: var(--color-secundario); /* secundario */
+  border-left: 4px solid var(--color-primario); /* primario, como acento */
+  color: var(--color-terciario-texto); /* terciario */
+}
+
+/* Badges de estado de una cita */
+.badge-confirmada { background: #e3edfb; color: var(--color-estado-confirmada); }
+.badge-completada { background: #dff3ea; color: var(--color-estado-completada); }
+.badge-cancelada  { background: #fbe4e4; color: var(--color-estado-cancelada); }
+.badge-pendiente  { background: #eceef1; color: var(--color-estado-pendiente); }
+
+/* Badges de urgencia de una cita */
+.badge-urgencia-critica { background: var(--color-urgencia-critica-bg); color: var(--color-urgencia-critica-texto); }
+.badge-urgencia-alta    { background: var(--color-urgencia-alta-bg); color: var(--color-urgencia-alta-texto); }
+.badge-urgencia-media   { background: var(--color-urgencia-media-bg); color: var(--color-urgencia-media-texto); }
+.badge-urgencia-baja    { background: var(--color-urgencia-baja-bg); color: var(--color-urgencia-baja-texto); }
+
