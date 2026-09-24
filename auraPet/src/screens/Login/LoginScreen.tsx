@@ -60,7 +60,13 @@ export const LoginScreen = () => {
         </form>
 
         {/* TODO: quitar este hint cuando exista un flujo real de registro */}
-        <p className="login-hint">Mock: usa cualquier email de Data/Usuarios.ts con la contraseña de credenciales-login-aurapet.txt.</p>
+        <p className="login-hint"> 
+          Así es como se debería de ver una pestaña de inicio,
+          la idea es que más adelante podamos agregar algun fondo difuminado o lo que sea 
+          ya q por ahora esto es un modal.  
+          XUPALO ALAN DEAAAA 
+          </p>
+
       </div>
     </div>
   );

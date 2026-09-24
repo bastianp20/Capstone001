@@ -6,6 +6,7 @@ import {PacientesModal} from '../../Modal/PacientesModal';
 import type { NuevaReceta } from '../../interfaces';
 import '../../css/VeterinariosPage.css';
 import { RecetaModal } from '../../Modal/RecetasModal';
+import { ConfiguracionModal } from '../../Modal/ConfiguracionModal';
 import { useAuth } from '../../Auth/AuthContext';
 import { veterinariosMock } from '../../Data/Veterinarios';
 
@@ -49,7 +50,7 @@ export const VeterinarioScreen = () => {
   // Controla qué modal está abierto. Por ahora solo existe el de agenda;
   // cuando armemos Historial/Recetas se suman como más valores posibles
   // ("historial" | "recetas" | ...) en vez de un booleano por modal.
-  const [modalAbierto, setModalAbierto] = useState<"agenda" | "pacientes" | "receta" | null>(null);
+  const [modalAbierto, setModalAbierto] = useState<"agenda" | "pacientes" | "receta" | "configuracion" | null>(null);
 
   // esto es para el avatar, que ocupe las iniciales de la persona cuando no hay foto de perfil cargada. 
   const getIniciales = (nombreCompleto: string): string => {
@@ -82,7 +83,7 @@ export const VeterinarioScreen = () => {
             <iconos.receta size={18} />
             <span className="vet-nav-item-label">Recetas</span>
           </div>
-          <div className="vet-nav-item">
+          <div className="vet-nav-item" onClick={() => setModalAbierto("configuracion")}>
             <iconos.configuracion size={18} />
             <span className="vet-nav-item-label">Configuración</span>
           </div>
@@ -115,6 +116,9 @@ export const VeterinarioScreen = () => {
           console.log('receta guardada Master :p ', receta)
         }
         }/>
+      )}
+      {modalAbierto === "configuracion" && (
+        <ConfiguracionModal onCerrar={() => setModalAbierto(null)} />
       )}
     </div>
   );
