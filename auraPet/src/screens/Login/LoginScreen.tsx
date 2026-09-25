@@ -6,7 +6,11 @@ import '../../css/LoginPage.css';
 const colors = Colors;
 const iconos = Iconos;
 
-export const LoginScreen = () => {
+interface LoginScreenProps {
+  onCerrar: () => void;
+}
+
+export const LoginScreen = ({ onCerrar }: LoginScreenProps) => {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,11 +24,18 @@ export const LoginScreen = () => {
       return;
     }
     setError('');
+    // no hace falta llamar onCerrar acá: en cuanto usuarioActual deja de
+    // ser null, App.tsx deja de montar el LandingScreen (y este modal
+    // con él) y pasa directo a LoginRol.
   };
 
   return (
-    <div className="login-page">
-      <div className="login-card">
+    <div className="login-overlay" onClick={onCerrar}>
+      <div className="login-card" onClick={(e) => e.stopPropagation()}>
+        <button className="login-close-btn" onClick={onCerrar} aria-label="Cerrar">
+          ×
+        </button>
+
         <div className="login-brand">
           <iconos.huella size={26} color={colors.accent} />
           <span>AuraPet</span>
@@ -60,13 +71,9 @@ export const LoginScreen = () => {
         </form>
 
         {/* TODO: quitar este hint cuando exista un flujo real de registro */}
-        <p className="login-hint"> 
-          Así es como se debería de ver una pestaña de inicio,
-          la idea es que más adelante podamos agregar algun fondo difuminado o lo que sea 
-          ya q por ahora esto es un modal.  
-          XUPALO ALAN DEAAAA 
-          </p>
-
+        <p className="login-hint">
+          Usa cualquier cuenta de credenciales-login-aurapet.txt para probar.
+        </p>
       </div>
     </div>
   );

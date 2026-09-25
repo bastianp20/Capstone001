@@ -13,8 +13,7 @@ const STORAGE_KEY = 'aurapet_usuario_id';
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [usuarioActual, setUsuarioActual] = useState<Usuario | null>(null);
 
-  // Al montar, si había una sesión guardada (mock, en localStorage),
-  // la restauramos buscando el usuario por id.
+  // si hubo una sesión guardada, al montar la página se asigna ese id que estuvo guardado de forma local
   useEffect(() => {
     const idGuardado = localStorage.getItem(STORAGE_KEY);
     if (!idGuardado) return;
@@ -22,11 +21,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (usuario) setUsuarioActual(usuario);
   }, []);
 
+  // si el email y el password coinciden arroja true. 
   const login = (email: string, password: string): boolean => {
     const usuario = usuariosMock.find(
       (u) => u.email.toLowerCase() === email.trim().toLowerCase() && u.password === password
     );
-    if (!usuario) return false;
+    if (!usuario) return false; 
 
     setUsuarioActual(usuario);
     localStorage.setItem(STORAGE_KEY, String(usuario.id));
