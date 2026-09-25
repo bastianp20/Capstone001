@@ -1,8 +1,9 @@
-import type { CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { Colors, Iconos, Badge, badgeStyles, ESTADO_LABEL, URGENCIA_LABEL, EMOJI_ESPECIE,calcularEdad } from '../../constants';
 import { getMascotasPorDueno, getProximasCitasDueno, getHistorialRecienteDueno } from '../../Api/getInfo';
 import { getIniciales } from '../../utils';
 import { useAuth } from '../../Auth/AuthContext';
+import { ConfiguracionModal } from '../../Modal/ConfiguracionModal';
 import '../../css/duenoPage.css';
 
 const colors = Colors;
@@ -27,6 +28,8 @@ export const DuenoScreen = () => {
   const mascotas = getMascotasPorDueno(duenoIdActual);
   const proximasCitas = getProximasCitasDueno(duenoIdActual).slice(0, 3);
   const historialReciente = getHistorialRecienteDueno(duenoIdActual, 3);
+
+  const [modalAbierto, setModalAbierto] = useState<"configuracion" | null>(null);
   return (
     <div className="dueno-page" style={temaVars}>
       <div className="dueno-sidebar">
@@ -52,7 +55,7 @@ export const DuenoScreen = () => {
             <iconos.historial size={18} />
             <span className="dueno-nav-item-label">Historial Médico</span>
           </div>
-          <div className="dueno-nav-item">
+          <div className="dueno-nav-item" onClick={() => setModalAbierto("configuracion")}>
             <iconos.configuracion size={18} />
             <span className="dueno-nav-item-label">Configuración</span>
           </div>
@@ -183,6 +186,10 @@ export const DuenoScreen = () => {
           </div>
         </div>
       </div>
+
+      {modalAbierto === "configuracion" && (
+        <ConfiguracionModal onCerrar={() => setModalAbierto(null)} />
+      )}
     </div>
   );
 };

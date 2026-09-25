@@ -179,3 +179,13 @@ export interface AuthContextValue {
   login: (email: string, password: string) => boolean;
   logout: () => void;
 }
+
+export interface ModalPacientesProps {
+  veterinarioId: number;
+  onCerrar: () => void;
+}
+
+export interface ConocenosModalProps {
+  onCerrar:() => void; 
+
+}

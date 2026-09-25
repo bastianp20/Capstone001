@@ -6,13 +6,17 @@ import { KpiCard } from "../../Card/kpi";
 import { solicitudesPendientesMock } from "../../Data/SolicitudPendiente";
 import { getCitasResumen } from "../../Api/getInfo";
 import { useAuth } from "../../Auth/AuthContext";
+import { ConfiguracionModal } from "../../Modal/ConfiguracionModal";
+import { Iconos } from "../../constants";
 
 const colors = Colors;
 const badge = Badge;
+const iconos = Iconos;
 
 export const SuperAdminScreen = () => {
   const { usuarioActual } = useAuth();
   const [solicitudARechazar, setSolicitudARechazar] = useState<SolicitudPendiente | null>(null);
+  const [mostrarConfiguracion, setMostrarConfiguracion] = useState(false);
   const [solicitudes, setSolicitudes] = useState(solicitudesPendientesMock);
   const citasMock = getCitasResumen();
 
@@ -93,6 +97,12 @@ const aprobar = (id: number) => {
           />
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             <span style={{ fontSize: 18 }}>🔔</span>
+            <iconos.configuracion
+              size={18}
+              color={colors.textMuted}
+              style={{ cursor: "pointer" }}
+              onClick={() => setMostrarConfiguracion(true)}
+            />
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <div style={{ width: 30, height: 30, borderRadius: 999, background: colors.accentSoft, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: colors.accent }}>
                 SA
@@ -189,6 +199,9 @@ const aprobar = (id: number) => {
           onCancelar={() => setSolicitudARechazar(null)}
           onConfirmar={confirmarRechazo}
         />
+      )}
+      {mostrarConfiguracion && (
+        <ConfiguracionModal onCerrar={() => setMostrarConfiguracion(false)} />
       )}
     </div>
   );

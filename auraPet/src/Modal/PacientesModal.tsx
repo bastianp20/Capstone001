@@ -1,10 +1,7 @@
 import { getPacienteByVeterinarioId } from "../Api/getInfo";
 import styles from "../css/Modal.module.css";
+import type { ModalPacientesProps } from "../interfaces";
 
-interface ModalPacientesProps {
-  veterinarioId: number;
-  onCerrar: () => void;
-}
 
 // muestra los pacientes (mascotas únicas) de éste veterinario, resueltos
 // por id desde Api/getInfo.tsx — no las citas, sino la mascota agrupada.
