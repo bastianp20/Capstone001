@@ -294,3 +294,136 @@
   .landing-navbar-links { display: none; }
   .landing-navbar-menu-icono { display: block; }
 }
+
+/* Pantalla de nostros :p */
+.nosotros-page {
+  font-family: "Inter", sans-serif;
+  color: var(--landing-texto);
+  background: #ffffff;
+}
+
+.landing-navbar-link-activo {
+  color: var(--landing-primario) !important;
+  font-weight: 600;
+}
+
+/* Hero */
+.nosotros-hero {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  padding: 56px 48px;
+}
+.nosotros-hero-texto { flex: 1; }
+.nosotros-hero-etiqueta {
+  display: inline-block;
+  font-size: 13px;
+  color: var(--landing-texto-suave);
+  margin-bottom: 8px;
+}
+.nosotros-hero-texto h1 { font-size: 32px; line-height: 1.2; margin-bottom: 14px; }
+.nosotros-hero-texto p { font-size: 14px; color: var(--landing-texto-suave); max-width: 460px; }
+.nosotros-hero-imagen {
+  flex: 1;
+  height: 220px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--landing-primario), #2c3e42);
+}
+
+/* Secciones */
+.nosotros-seccion { padding: 40px 48px; }
+.nosotros-seccion h2 { font-size: 22px; margin-bottom: 24px; }
+
+.nosotros-mision-vision-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.nosotros-mv-card {
+  background: var(--landing-secundario);
+  border-radius: 12px;
+  padding: 24px;
+}
+.nosotros-mv-card h3 { font-size: 16px; margin-bottom: 8px; }
+.nosotros-mv-card p { font-size: 13px; color: var(--landing-texto-suave); }
+
+.nosotros-valores-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.nosotros-valor-card {
+  background: #faf6ef;
+  border: 1px solid var(--landing-borde);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+.nosotros-valor-icono {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--landing-secundario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+}
+.nosotros-valor-card h4 { font-size: 14px; margin-bottom: 4px; }
+.nosotros-valor-card p { font-size: 12px; color: var(--landing-texto-suave); }
+
+.nosotros-equipo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  text-align: center;
+}
+.nosotros-persona-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--landing-secundario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+}
+.nosotros-persona-nombre { display: block; font-size: 13px; font-weight: 600; }
+.nosotros-persona-cargo { display: block; font-size: 12px; color: var(--landing-texto-suave); }
+
+/* Logros */
+.nosotros-logros {
+  background: var(--landing-sidebar-oscuro);
+  color: #ffffff;
+  padding: 48px;
+  text-align: center;
+}
+.nosotros-logros h2 { font-size: 22px; margin-bottom: 24px; }
+.nosotros-logros-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.nosotros-logro-numero {
+  display: block;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--landing-primario);
+}
+.nosotros-logro-descripcion {
+  display: block;
+  font-size: 13px;
+  color: var(--landing-texto-sidebar);
+  margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+  .nosotros-hero,
+  .nosotros-mision-vision-grid { flex-direction: column; }
+  .nosotros-mision-vision-grid,
+  .nosotros-valores-grid,
+  .nosotros-equipo-grid,
+  .nosotros-logros-grid { grid-template-columns: repeat(2, 1fr); }
+}

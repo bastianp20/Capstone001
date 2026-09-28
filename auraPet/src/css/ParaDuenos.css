@@ -1,0 +1,184 @@
+.paraduenos-page {
+  font-family: "Inter", sans-serif;
+  color: var(--landing-texto);
+  background: #ffffff;
+}
+
+.landing-navbar-link-activo {
+  color: var(--landing-primario) !important;
+  font-weight: 600;
+}
+
+/* Hero */
+.paraduenos-hero {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  padding: 48px;
+}
+.paraduenos-hero-texto { flex: 1; }
+.paraduenos-hero-texto h1 { font-size: 32px; line-height: 1.2; margin-bottom: 14px; }
+.paraduenos-hero-texto p { font-size: 14px; color: var(--landing-texto-suave); max-width: 440px; margin-bottom: 20px; }
+.paraduenos-hero-imagen {
+  flex: 1;
+  height: 260px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--landing-primario), #2c3e42);
+}
+
+/* Secciones */
+.paraduenos-seccion { padding: 48px; text-align: center; }
+.paraduenos-seccion h2 { font-size: 24px; margin-bottom: 28px; }
+.paraduenos-seccion-suave { background: var(--landing-secundario); }
+.paraduenos-etiqueta {
+  display: block;
+  font-size: 12px;
+  color: var(--landing-texto-suave);
+  margin-bottom: 6px;
+}
+
+.paraduenos-beneficios-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.paraduenos-beneficio-card {
+  background: #ffffff;
+  border: 1px solid var(--landing-borde);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
+}
+.paraduenos-beneficio-icono {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--landing-secundario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.paraduenos-beneficio-card p { font-size: 13px; font-weight: 500; }
+
+/* Sección oscura con mockup celular */
+.paraduenos-seccion-oscura {
+  background: var(--landing-sidebar-oscuro);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  padding: 56px 48px;
+}
+.paraduenos-mockup-celular {
+  width: 220px;
+  background: #1c232c;
+  border-radius: 20px;
+  padding: 16px;
+  border: 1px solid #2a323d;
+  margin: 0 auto;
+}
+.paraduenos-mockup-header { font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+.paraduenos-mockup-mascotas { display: flex; gap: 8px; margin-bottom: 12px; }
+.paraduenos-mockup-mascota {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--landing-primario);
+}
+.paraduenos-mockup-linea {
+  height: 8px;
+  width: 100%;
+  background: #2a323d;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+.paraduenos-seccion-oscura-texto { flex: 1; text-align: left; }
+.paraduenos-seccion-oscura-texto h2 { font-size: 22px; margin-bottom: 10px; }
+.paraduenos-seccion-oscura-texto p { font-size: 13px; color: var(--landing-texto-sidebar); }
+
+/* Testimonios */
+.paraduenos-testimonios-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.paraduenos-testimonio-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 18px;
+  text-align: left;
+  font-size: 13px;
+}
+.paraduenos-testimonio-card p { margin-bottom: 10px; }
+.paraduenos-testimonio-nombre { display: block; font-weight: 600; }
+.paraduenos-testimonio-mascota { display: block; color: var(--landing-texto-suave); font-size: 12px; }
+
+/* Cómo empiezo */
+.paraduenos-pasos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.paraduenos-paso { text-align: center; }
+.paraduenos-paso-numero {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--landing-texto);
+  color: #ffffff;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 8px;
+}
+.paraduenos-paso-icono {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--landing-secundario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 8px;
+}
+.paraduenos-paso p { font-size: 13px; font-weight: 500; }
+
+/* CTA final */
+.paraduenos-cta-final {
+  position: relative;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  padding: 40px 48px;
+  color: #ffffff;
+  overflow: hidden;
+}
+.paraduenos-cta-final-imagen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, var(--landing-oscuro), #2c3e42);
+  z-index: -1;
+}
+.paraduenos-cta-final-texto h2 { font-size: 22px; margin-bottom: 16px; max-width: 420px; }
+
+/* Newsletter input footer */
+.paraduenos-newsletter-input {
+  background: #1c232c;
+  border: 1px solid #2a323d;
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: #ffffff;
+  font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  .paraduenos-hero,
+  .paraduenos-seccion-oscura { flex-direction: column; }
+  .paraduenos-beneficios-grid,
+  .paraduenos-testimonios-grid,
+  .paraduenos-pasos-grid { grid-template-columns: repeat(2, 1fr); }
+}

@@ -14,8 +14,10 @@ import {
 import { Colors } from "../../constants";
 import { LoginScreen } from "../Login/LoginScreen";
 import "../../css/HomePage.css";
-import { ConocenosModal } from "../../Modal/ConocenosModal";
-
+import {Nosotros} from '../Home/NosotrosScreen'; 
+import { ParaDuenos } from "./ParaDuenosScreen";
+import {ParaVeterinarias} from '../Home/ParaVeterinariasScreen'; 
+import { ComoFunciona } from "./ComoFuncionaScreen";
 const colors = Colors;
 
 // variables de tema que le pasamos al contenedor raíz, mismo patrón que
@@ -75,10 +77,12 @@ const preguntasFrecuentes = [
 
 export const HomeScreen = () => {
   const [mostrarLogin, setMostrarLogin] = useState(false);
-  const [mostrarConocerModal, setMostrarConocerModal] = useState(false); 
+//   const [mostrarConocer, setMostrarConocer] = useState(false); 
   const [testimonioActual, setTestimonioActual] = useState(0);
   const [faqAbierta, setFaqAbierta] = useState<number | null>(null);
   const [formulario, setFormulario] = useState({ nombre: "", correo: "", mensaje: "" });
+
+  const [vista, setVista] = useState<"Home" | "nosotros" | "Pdueños" | "Pveterinarias" | "ComoFunciona">("Home");
 
   const testimoniosVisibles = 3;
   const maxIndice = Math.max(0, testimonios.length - testimoniosVisibles);
@@ -93,6 +97,22 @@ export const HomeScreen = () => {
     setFormulario({ nombre: "", correo: "", mensaje: "" });
   };
 
+    if (vista === "nosotros") {
+    return <Nosotros onVolver={() => setVista("Home")} onIngresar={() => setMostrarLogin(true)} />;
+  }
+
+  if (vista === "Pdueños") {
+    return <ParaDuenos onVolver= {() => setVista("Home")} onIngresar={() => setMostrarLogin}/> 
+  }
+
+  if (vista === "Pveterinarias"){
+    return <ParaVeterinarias onVolver={() => setVista("Home")} onIngresar={() => setMostrarLogin}/>
+  }
+
+  if (vista === "ComoFunciona") {
+    return <ComoFunciona onVolver = {() => setVista("Home")} onIngresar={() => setMostrarLogin}/>
+  }
+
   return (
     <div className="landing-page" style={temaVars}>
       {/* Navbar */}
@@ -102,10 +122,31 @@ export const HomeScreen = () => {
           <span>AuraPet</span>
         </div>
         <div className="landing-navbar-links">
-          <a href="#como-funciona">Cómo funciona</a>
-          <a href="#veterinarias">Para veterinarias</a>
-          <a href="#duenos">Para dueños</a>
-          <a href="#nosotros" onClick={() => setMostrarConocerModal(true)}>Nosotros</a>
+
+        {/* Vista del Como Funciona, que es la misma wea que está en la página principal */}
+          <a href="#como-funciona" onClick={(e) => {
+            e.preventDefault(); 
+            setVista('ComoFunciona'); 
+          }}>Cómo funciona</a>
+
+        {/* Vista del Para Veterinarios que sería como una pagina informativa para el veterinario */}
+          <a href="#veterinarias" onClick={(e) => {
+            e.preventDefault(); 
+            setVista("Pveterinarias"); 
+          }}>Para veterinarias</a>
+
+        {/* Vista de la Page de el Para Dueños */}
+          <a href="#duenos" onClick={(e) => {
+            e.preventDefault(); 
+            setVista("Pdueños"); 
+          }}>Para dueños</a>
+
+        {/* Vista de la Page de nosotros o conocenos que es la misma wea xd  */}
+          <a href="#Nosotros" onClick={(e) => {
+            e.preventDefault(); 
+            setVista("nosotros"); 
+          }}>Nosotros</a>
+
           <a href="#contacto">Contacto</a>
         </div>
         <button className="landing-btn-primario" onClick={() => setMostrarLogin(true)}>
@@ -325,7 +366,7 @@ export const HomeScreen = () => {
       </footer>
 
       {mostrarLogin && <LoginScreen onCerrar={() => setMostrarLogin(false)} />}
-      {mostrarConocerModal && <ConocenosModal onCerrar= {() => setMostrarConocerModal(false)}/> }
+      {/* {mostrarConocer && <Nosotros onCerrar= {() => setMostrarConocer(false)}/> } */}
     </div>
   );
 };
