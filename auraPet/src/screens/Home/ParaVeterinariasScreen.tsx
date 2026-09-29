@@ -8,6 +8,8 @@ import {
   CalendarCheck,
 } from "lucide-react";
 import { Colors } from "../../constants";
+import { NavBar } from "../../components/NavBar";
+import type { VistaHome } from "../../interfaces";
 import "../../css/ParaVeterinarias.css";
 
 const colors = Colors;
@@ -44,29 +46,14 @@ const pasos = [
 ];
 
 interface ParaVeterinariasScreenProps {
-  onVolver?: () => void;
+  onNavegar?: (vista: VistaHome) => void;
   onIngresar?: () => void;
 }
 
-export const ParaVeterinarias = ({ onVolver, onIngresar }: ParaVeterinariasScreenProps) => {
+export const ParaVeterinarias = ({ onNavegar, onIngresar }: ParaVeterinariasScreenProps) => {
   return (
     <div className="paravets-page" style={temaVars}>
-      {/* Navbar */}
-      <nav className="landing-navbar">
-        <div className="landing-navbar-logo" onClick={onVolver} style={{ cursor: "pointer" }}>
-          <span className="landing-logo-icono">🐾</span>
-          <span>AuraPet</span>
-        </div>
-        <div className="landing-navbar-links">
-          <a href="#veterinarias" className="landing-navbar-link-activo">Para veterinarias</a>
-          <a href="#duenos">Para dueños</a>
-          <a href="#nosotros">Nosotros</a>
-          <a href="#contacto">Contacto</a>
-        </div>
-        <button className="landing-btn-primario" onClick={onIngresar}>
-          Ingresar
-        </button>
-      </nav>
+      <NavBar vistaActiva="veterinarias" onNavegar={onNavegar} onIngresar={onIngresar} />
 
       {/* Hero */}
       <header className="paravets-hero">

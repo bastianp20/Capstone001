@@ -9,10 +9,11 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Menu,
 } from "lucide-react";
 import { Colors } from "../../constants";
 import { LoginScreen } from "../Login/LoginScreen";
+import { NavBar } from "../../components/NavBar";
+import type { VistaHome } from "../../interfaces";
 import "../../css/HomePage.css";
 import {Nosotros} from '../Home/NosotrosScreen'; 
 import { ParaDuenos } from "./ParaDuenosScreen";
@@ -82,7 +83,7 @@ export const HomeScreen = () => {
   const [faqAbierta, setFaqAbierta] = useState<number | null>(null);
   const [formulario, setFormulario] = useState({ nombre: "", correo: "", mensaje: "" });
 
-  const [vista, setVista] = useState<"Home" | "nosotros" | "Pdueños" | "Pveterinarias" | "ComoFunciona">("Home");
+  const [vista, setVista] = useState<VistaHome>("landing");
 
   const testimoniosVisibles = 3;
   const maxIndice = Math.max(0, testimonios.length - testimoniosVisibles);
@@ -98,62 +99,25 @@ export const HomeScreen = () => {
   };
 
     if (vista === "nosotros") {
-    return <Nosotros onVolver={() => setVista("Home")} onIngresar={() => setMostrarLogin(true)} />;
+    return <Nosotros onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
   }
 
-  if (vista === "Pdueños") {
-    return <ParaDuenos onVolver= {() => setVista("Home")} onIngresar={() => setMostrarLogin}/> 
+  if (vista === "duenos") {
+    return <ParaDuenos onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
   }
 
-  if (vista === "Pveterinarias"){
-    return <ParaVeterinarias onVolver={() => setVista("Home")} onIngresar={() => setMostrarLogin}/>
+  if (vista === "veterinarias") {
+    return <ParaVeterinarias onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
   }
 
-  if (vista === "ComoFunciona") {
-    return <ComoFunciona onVolver = {() => setVista("Home")} onIngresar={() => setMostrarLogin}/>
+  if (vista === "como-funciona") {
+    return <ComoFunciona onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
   }
 
   return (
     <div className="landing-page" style={temaVars}>
       {/* Navbar */}
-      <nav className="landing-navbar">
-        <div className="landing-navbar-logo">
-          <span className="landing-logo-icono">🐾</span>
-          <span>AuraPet</span>
-        </div>
-        <div className="landing-navbar-links">
-
-        {/* Vista del Como Funciona, que es la misma wea que está en la página principal */}
-          <a href="#como-funciona" onClick={(e) => {
-            e.preventDefault(); 
-            setVista('ComoFunciona'); 
-          }}>Cómo funciona</a>
-
-        {/* Vista del Para Veterinarios que sería como una pagina informativa para el veterinario */}
-          <a href="#veterinarias" onClick={(e) => {
-            e.preventDefault(); 
-            setVista("Pveterinarias"); 
-          }}>Para veterinarias</a>
-
-        {/* Vista de la Page de el Para Dueños */}
-          <a href="#duenos" onClick={(e) => {
-            e.preventDefault(); 
-            setVista("Pdueños"); 
-          }}>Para dueños</a>
-
-        {/* Vista de la Page de nosotros o conocenos que es la misma wea xd  */}
-          <a href="#Nosotros" onClick={(e) => {
-            e.preventDefault(); 
-            setVista("nosotros"); 
-          }}>Nosotros</a>
-
-          <a href="#contacto">Contacto</a>
-        </div>
-        <button className="landing-btn-primario" onClick={() => setMostrarLogin(true)}>
-          Ingresar
-        </button>
-        <Menu className="landing-navbar-menu-icono" size={22} />
-      </nav>
+      <NavBar vistaActiva="landing" onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />
 
       {/* Hero */}
       <header className="landing-hero">

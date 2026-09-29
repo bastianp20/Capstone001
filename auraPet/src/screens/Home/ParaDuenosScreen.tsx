@@ -9,6 +9,8 @@ import {
   CalendarCheck,
 } from "lucide-react";
 import { Colors } from "../../constants";
+import { NavBar } from "../../components/NavBar";
+import type { VistaHome } from "../../interfaces";
 import "../../css/ParaDuenos.css";
 
 const colors = Colors;
@@ -45,30 +47,14 @@ const pasos = [
 ];
 
 interface ParaDuenosScreenProps {
-  onVolver?: () => void;
+  onNavegar?: (vista: VistaHome) => void;
   onIngresar?: () => void;
 }
 
-export const ParaDuenos = ({ onVolver, onIngresar }: ParaDuenosScreenProps) => {
+export const ParaDuenos = ({ onNavegar, onIngresar }: ParaDuenosScreenProps) => {
   return (
     <div className="paraduenos-page" style={temaVars}>
-      {/* Navbar */}
-      <nav className="landing-navbar">
-        <div className="landing-navbar-logo" onClick={onVolver} style={{ cursor: "pointer" }}>
-          <span className="landing-logo-icono">🐾</span>
-          <span>AuraPet</span>
-        </div>
-        <div className="landing-navbar-links">
-          <a href="#como-funciona">Cómo funciona</a>
-          <a href="#veterinarias">Para veterinarias</a>
-          <a href="#duenos" className="landing-navbar-link-activo">Para dueños</a>
-          <a href="#nosotros">Nosotros</a>
-          <a href="#contacto">Contacto</a>
-        </div>
-        <button className="landing-btn-primario" onClick={onIngresar}>
-          Ingresar
-        </button>
-      </nav>
+      <NavBar vistaActiva="duenos" onNavegar={onNavegar} onIngresar={onIngresar} />
 
       {/* Hero */}
       <header className="paraduenos-hero">

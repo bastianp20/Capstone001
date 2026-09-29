@@ -6,6 +6,8 @@ import {
   User,
 } from "lucide-react";
 import { Colors } from "../../constants";
+import { NavBar } from "../../components/NavBar";
+import type { VistaHome } from "../../interfaces";
 import "../../css/HomePage.css";
 
 const colors = Colors;
@@ -44,29 +46,13 @@ const logros = [
 
 interface NosotrosScreenProps {
   onIngresar?: () => void;
-  onVolver?: () => void; 
+  onNavegar?: (vista: VistaHome) => void;
 }
 
-export const Nosotros = ({ onIngresar }: NosotrosScreenProps) => {
+export const Nosotros = ({ onIngresar, onNavegar }: NosotrosScreenProps) => {
   return (
     <div className="nosotros-page" style={temaVars}>
-      {/* Navbar (mismo patrón que LandingScreen) */}
-      <nav className="landing-navbar">
-        <div className="landing-navbar-logo">
-          <span className="landing-logo-icono">🐾</span>
-          <span>AuraPet</span>
-        </div>
-        <div className="landing-navbar-links">
-          <a href="#como-funciona">Cómo funciona</a>
-          <a href="#veterinarias">Para veterinarias</a>
-          <a href="#duenos">Para dueños</a>
-          <a href="#nosotros" className="landing-navbar-link-activo">Nosotros</a>
-          <a href="#contacto">Contacto</a>
-        </div>
-        <button className="landing-btn-primario" onClick={onIngresar}>
-          Ingresar
-        </button>
-      </nav>
+      <NavBar vistaActiva="nosotros" onNavegar={onNavegar} onIngresar={onIngresar} />
 
       {/* Hero */}
       <section className="nosotros-hero">

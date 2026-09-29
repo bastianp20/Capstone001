@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type {EstadoCita, UrgenciaCita, EspecieMascota} from '../src/interfaces'; 
+import type {EstadoCita, UrgenciaCita, EspecieMascota, VistaHome} from '../src/interfaces'; 
 import {
   Menu, Search, Bell, User, UserCircle, LogOut, Settings, Calendar, Filter, ChevronDown, ChevronRight, X, Plus, MoreVertical, Home,
   PawPrint, Heart, CalendarPlus, History, FileText,Stethoscope, Syringe, ClipboardList, ClipboardPlus, Share2, Microscope, Activity,
@@ -202,3 +202,10 @@ export const getFechaHoy = (): number => {
   const dd = String(hoy.getDate()).padStart(2, "0");
   return Number(`${yyyy}${mm}${dd}`);
 };
+
+export const links: { vista: VistaHome; label: string }[] = [
+  { vista: "como-funciona", label: "Cómo funciona" },
+  { vista: "veterinarias", label: "Para veterinarias" },
+  { vista: "duenos", label: "Para dueños" },
+  { vista: "nosotros", label: "Nosotros" },
+];

@@ -10,6 +10,8 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { Colors } from "../../constants";
+import { NavBar } from "../../components/NavBar";
+import type { VistaHome } from "../../interfaces";
 import "../../css/ComoFunciona.css";
 
 const colors = Colors;
@@ -47,11 +49,11 @@ const preguntasFrecuentes = [
 ];
 
 interface ComoFuncionaScreenProps {
-  onVolver?: () => void;
+  onNavegar?: (vista: VistaHome) => void;
   onIngresar?: () => void;
 }
 
-export const ComoFunciona = ({ onVolver, onIngresar }: ComoFuncionaScreenProps) => {
+export const ComoFunciona = ({ onNavegar, onIngresar }: ComoFuncionaScreenProps) => {
   const [pestanaActiva, setPestanaActiva] = useState<"duenos" | "veterinarias">("duenos");
   const [faqAbierta, setFaqAbierta] = useState<number | null>(null);
 
@@ -59,23 +61,7 @@ export const ComoFunciona = ({ onVolver, onIngresar }: ComoFuncionaScreenProps) 
 
   return (
     <div className="comofunciona-page" style={temaVars}>
-      {/* Navbar */}
-      <nav className="landing-navbar">
-        <div className="landing-navbar-logo" onClick={onVolver} style={{ cursor: "pointer" }}>
-          <span className="landing-logo-icono">🐾</span>
-          <span>AuraPet</span>
-        </div>
-        <div className="landing-navbar-links">
-          <a href="#como-funciona" className="landing-navbar-link-activo">Cómo funciona</a>
-          <a href="#veterinarias">Para veterinarias</a>
-          <a href="#duenos">Para dueños</a>
-          <a href="#nosotros">Nosotros</a>
-          <a href="#contacto">Contacto</a>
-        </div>
-        <button className="landing-btn-primario" onClick={onIngresar}>
-          Ingresar
-        </button>
-      </nav>
+      <NavBar vistaActiva="como-funciona" onNavegar={onNavegar} onIngresar={onIngresar} />
 
       {/* Hero */}
       <header className="comofunciona-hero">

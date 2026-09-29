@@ -1,21 +1,9 @@
+import { Menu } from "lucide-react";
+import { links } from '../constants';
 import '../css/NavBar.css';
+import type { NavbarProps } from '../interfaces';
 
-export type VistaLanding = "landing" | "como-funciona" | "veterinarias" | "duenos" | "nosotros";
-
-interface LandingNavbarProps {
-  vistaActiva?: VistaLanding;
-  onNavegar?: (vista: VistaLanding) => void;
-  onIngresar?: () => void;
-}
-
-const links: { vista: VistaLanding; label: string }[] = [
-  { vista: "como-funciona", label: "Cómo funciona" },
-  { vista: "veterinarias", label: "Para veterinarias" },
-  { vista: "duenos", label: "Para dueños" },
-  { vista: "nosotros", label: "Nosotros" },
-];
-
-export const NavBar = ({ vistaActiva, onNavegar, onIngresar }: LandingNavbarProps) => {
+export const NavBar = ({ vistaActiva, onNavegar, onIngresar }: NavbarProps) => {
   return (
     <nav className="landing-navbar">
       <div
@@ -48,6 +36,7 @@ export const NavBar = ({ vistaActiva, onNavegar, onIngresar }: LandingNavbarProp
       <button className="landing-btn-primario" onClick={onIngresar}>
         Ingresar
       </button>
+      <Menu className="landing-navbar-menu-icono" size={22} />
     </nav>
   );
 };
