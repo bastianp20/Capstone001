@@ -51,4 +51,9 @@ export const mascotasMock: Mascota[] = [
   { id: 24, duenoId: 16, nombre: "Rex", especie: "perro", raza: "Golden Retriever", fechaNacimiento: 20230411, sexo: "macho", esterilizado: false },
   { id: 25, duenoId: 16, nombre: "Nina", especie: "gato", raza: "Común europeo", fechaNacimiento: 20220829, sexo: "hembra", esterilizado: true },
   { id: 26, duenoId: 16, nombre: "Bono", especie: "perro", raza: "Beagle", fechaNacimiento: 20240303, sexo: "macho", esterilizado: false },
+
+  // Sofia Herrera 
+    { id: 24, duenoId: 16, nombre: "Rex", especie: "perro", raza: "Golden Retriever", fechaNacimiento: 20230411, sexo: "macho", esterilizado: false },
+    { id: 25, duenoId: 16, nombre: "Nina", especie: "gato", raza: "Común europeo", fechaNacimiento: 20220829, sexo: "hembra", esterilizado: true },
+    { id: 26, duenoId: 16, nombre: "Bono", especie: "perro", raza: "Beagle", fechaNacimiento: 20240303, sexo: "macho", esterilizado: false },
 ];

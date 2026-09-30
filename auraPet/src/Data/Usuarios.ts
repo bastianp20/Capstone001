@@ -43,6 +43,8 @@ export const Veterinarios: Usuario[] = [
   { id: 19, nombre: "Rodrigo Vidal", email: "rodrigo.vidal@auravet.com", rol: "veterinario", telefono: 56977854432, creadoEn: 20231201, password: "rodrigo19" },
   { id: 20, nombre: "Bárbara Fuenzalida", email: "barbara.fuenzalida@auravet.com", rol: "veterinario", telefono: 56988965543, creadoEn: 20240519, password: "barbara20" },
   { id: 21, nombre: "Matías Ojeda", email: "matias.ojeda@auravet.com", rol: "veterinario", telefono: 56999076654, creadoEn: 20250327, password: "matias21" },
+  { id: 98, nombre: "Sofia Herrera", email: "sofia.Herrera@auravet.com", rol: "veterinario", telefono: 56911234567, creadoEn: 20250327, password: "sofia98" },
+
 ];
 
 export const centros: Usuario[] = [

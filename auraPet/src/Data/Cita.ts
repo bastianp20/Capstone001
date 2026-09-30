@@ -35,4 +35,6 @@ export const citasMock: Cita[] = [
   { id: 31, mascotaId: 11, duenoId: 10, veterinarioId: 3, centroId: 2, fechaHora: 202607091300, motivo: "Control dermatológico", estado: "confirmada", urgencia: "baja", sintomasReportados: [], creadaEn: "2026-07-07T09:00:00Z" },
   { id: 32, mascotaId: 13, duenoId: 10, veterinarioId: 7, centroId: 5, fechaHora: 202609081000, motivo: "Extracción de sarro", estado: "confirmada", urgencia: "baja", sintomasReportados: [], creadaEn: "2026-09-06T09:00:00Z" },
   { id: 33, mascotaId: 23, duenoId: 15, veterinarioId: undefined, centroId: 3, fechaHora: 202609060830, motivo: "Decaimiento y fiebre", estado: "pendiente", urgencia: "critica", sintomasReportados: ["fiebre", "decaimiento severo", "no come"], creadaEn: "2026-09-05T22:10:00Z" },
+  { id: 33, mascotaId: 23, duenoId: 15, veterinarioId: 98, centroId: 3, fechaHora: 202609060830, motivo: "Decaimiento y fiebre", estado: "pendiente", urgencia: "critica", sintomasReportados: ["fiebre", "decaimiento severo", "no come"], creadaEn: "2026-09-05T22:10:00Z" },
+
 ];

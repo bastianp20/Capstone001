@@ -2,8 +2,13 @@ import { Menu } from "lucide-react";
 import { links } from '../constants';
 import '../css/NavBar.css';
 import type { NavbarProps } from '../interfaces';
+import logoAuraPet from '../assets/LogoAuraPet.png'; 
+import { useState } from "react";
+import { LoginScreen } from "../screens/Login/LoginScreen";
 
-export const NavBar = ({ vistaActiva, onNavegar, onIngresar }: NavbarProps) => {
+export const NavBar = ({ vistaActiva, onNavegar}: NavbarProps) => {
+
+  const [login, setLogin] = useState(false); 
   return (
     <nav className="landing-navbar">
       <div
@@ -11,8 +16,8 @@ export const NavBar = ({ vistaActiva, onNavegar, onIngresar }: NavbarProps) => {
         onClick={() => onNavegar?.("landing")}
         style={{ cursor: "pointer" }}
       >
-        <span className="landing-logo-icono">🐾</span>
-        <span>AuraPet</span>
+       <img src={logoAuraPet} alt="AuraPet" className="landing-logo-icono" />
+      <span>AuraPet</span>
       </div>
 
       <div className="landing-navbar-links">
@@ -33,10 +38,12 @@ export const NavBar = ({ vistaActiva, onNavegar, onIngresar }: NavbarProps) => {
         <a href="#contacto">Contacto</a>
       </div>
 
-      <button className="landing-btn-primario" onClick={onIngresar}>
+      <button className="landing-btn-primario" onClick = {() => setLogin(true)}>
         Ingresar
       </button>
       <Menu className="landing-navbar-menu-icono" size={22} />
+      {login && <LoginScreen onCerrar={() => setLogin(false)} />}
     </nav>
+    
   );
 };
