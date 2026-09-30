@@ -9,4 +9,6 @@ export const veterinariosMock: Veterinario[] = [
   { id: 5, usuarioId: 19, centroIds: [4], especialidad: "Traumatología", numeroColegiado: "COL-7344" },
   { id: 6, usuarioId: 20, centroIds: [1, 5], especialidad: "Oftalmología", numeroColegiado: "COL-8112" },
   { id: 7, usuarioId: 21, centroIds: [5], especialidad: "Odontología veterinaria", numeroColegiado: "COL-9207" },
+  { id: 8, usuarioId: 98, centroIds: [5], especialidad: "Medica General", numeroColegiado: "COL-9207" },
+
 ];

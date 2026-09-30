@@ -1,0 +1,195 @@
+.paravets-page {
+  font-family: "Inter", sans-serif;
+  color: var(--landing-texto);
+  background: #ffffff;
+}
+
+.landing-navbar-link-activo {
+  color: var(--landing-primario) !important;
+  font-weight: 600;
+}
+
+/* Hero */
+.paravets-hero {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  padding: 48px;
+}
+.paravets-hero-texto { flex: 1; }
+.paravets-hero-texto h1 { font-size: 32px; line-height: 1.2; margin-bottom: 12px; }
+.paravets-hero-texto p { font-size: 14px; color: var(--landing-texto-suave); margin-bottom: 20px; }
+.paravets-hero-imagen {
+  flex: 1;
+  height: 260px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--landing-primario), #2c3e42);
+}
+
+/* Secciones */
+.paravets-seccion { padding: 48px; text-align: center; }
+.paravets-seccion h2 { font-size: 24px; margin-bottom: 28px; }
+.paravets-seccion-suave { background: var(--landing-secundario); }
+.paravets-etiqueta {
+  display: block;
+  font-size: 12px;
+  color: var(--landing-texto-suave);
+  margin-bottom: 6px;
+}
+
+.paravets-beneficios-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.paravets-beneficio-card {
+  background: #ffffff;
+  border: 1px solid var(--landing-borde);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
+}
+.paravets-beneficio-icono {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--landing-secundario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.paravets-beneficio-card p { font-size: 13px; font-weight: 500; }
+
+/* Sección oscura con mockup de panel (estilo monitor de escritorio) */
+.paravets-seccion-oscura {
+  background: var(--landing-sidebar-oscuro);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  padding: 56px 48px;
+}
+.paravets-mockup-panel { flex: 1; display: flex; justify-content: center; }
+.paravets-mockup-monitor { width: 260px; }
+.paravets-mockup-pantalla {
+  background: #1c232c;
+  border-radius: 10px;
+  padding: 14px;
+  border: 1px solid #2a323d;
+}
+.paravets-mockup-titulo { font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+.paravets-mockup-fila {
+  height: 18px;
+  background: #2a323d;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+.paravets-mockup-barras {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 50px;
+  margin-top: 10px;
+}
+.paravets-mockup-barras div {
+  flex: 1;
+  background: var(--landing-primario);
+  border-radius: 3px 3px 0 0;
+}
+.paravets-mockup-base {
+  width: 60px;
+  height: 10px;
+  background: #2a323d;
+  border-radius: 0 0 6px 6px;
+  margin: 0 auto;
+}
+.paravets-seccion-oscura-texto { flex: 1; text-align: left; }
+.paravets-seccion-oscura-texto h2 { font-size: 22px; margin-bottom: 10px; }
+.paravets-seccion-oscura-texto p { font-size: 13px; color: var(--landing-texto-sidebar); }
+
+/* Testimonios */
+.paravets-testimonios-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.paravets-testimonio-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 18px;
+  text-align: left;
+  font-size: 13px;
+}
+.paravets-testimonio-card p { margin-bottom: 10px; }
+.paravets-testimonio-nombre { display: block; font-weight: 600; }
+.paravets-testimonio-especialidad { display: block; color: var(--landing-texto-suave); font-size: 12px; }
+
+/* Cómo me sumo */
+.paravets-pasos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.paravets-paso { text-align: center; }
+.paravets-paso-numero {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--landing-texto);
+  color: #ffffff;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 8px;
+}
+.paravets-paso-icono {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--landing-secundario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 8px;
+}
+.paravets-paso p { font-size: 13px; font-weight: 500; }
+
+/* CTA final */
+.paravets-cta-final {
+  position: relative;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  padding: 40px 48px;
+  color: #ffffff;
+  overflow: hidden;
+}
+.paravets-cta-final-imagen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, var(--landing-oscuro), #2c3e42);
+  z-index: -1;
+}
+.paravets-cta-final-texto h2 { font-size: 22px; margin-bottom: 16px; max-width: 420px; }
+
+/* Newsletter input footer */
+.paravets-newsletter-input {
+  background: #1c232c;
+  border: 1px solid #2a323d;
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: #ffffff;
+  font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  .paravets-hero,
+  .paravets-seccion-oscura { flex-direction: column; }
+  .paravets-beneficios-grid,
+  .paravets-testimonios-grid,
+  .paravets-pasos-grid { grid-template-columns: repeat(2, 1fr); }
+}

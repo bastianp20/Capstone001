@@ -9,13 +9,17 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Menu,
 } from "lucide-react";
 import { Colors } from "../../constants";
-import { LoginScreen } from "../Login/LoginScreen";
+// import { LoginScreen } from "../Login/LoginScreen";
+import { NavBar } from "../../components/NavBar";
+import type { VistaHome } from "../../interfaces";
 import "../../css/HomePage.css";
-import { ConocenosModal } from "../../Modal/ConocenosModal";
-
+import {Nosotros} from '../Home/NosotrosScreen'; 
+import { ParaDuenos } from "./ParaDuenosScreen";
+import {ParaVeterinarias} from '../Home/ParaVeterinariasScreen'; 
+import { ComoFunciona } from "./ComoFuncionaScreen";
+import { ContactoScreen } from "./ContactoScreen";
 const colors = Colors;
 
 // variables de tema que le pasamos al contenedor raíz, mismo patrón que
@@ -73,12 +77,14 @@ const preguntasFrecuentes = [
   { pregunta: "¿Cómo elimino mi cuenta de AuraPet?", respuesta: "Puedes solicitarlo desde Configuración o escribiéndonos por el formulario de contacto." },
 ];
 
-export const HomeScreen = () => {
+export const HomeScreen = () => { 
   const [mostrarLogin, setMostrarLogin] = useState(false);
-  const [mostrarConocerModal, setMostrarConocerModal] = useState(false); 
+//   const [mostrarConocer, setMostrarConocer] = useState(false); 
   const [testimonioActual, setTestimonioActual] = useState(0);
   const [faqAbierta, setFaqAbierta] = useState<number | null>(null);
   const [formulario, setFormulario] = useState({ nombre: "", correo: "", mensaje: "" });
+
+  const [vista, setVista] = useState<VistaHome>("landing");
 
   const testimoniosVisibles = 3;
   const maxIndice = Math.max(0, testimonios.length - testimoniosVisibles);
@@ -93,26 +99,30 @@ export const HomeScreen = () => {
     setFormulario({ nombre: "", correo: "", mensaje: "" });
   };
 
+    if (vista === "nosotros") {
+    return <Nosotros onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
+  }
+
+  if (vista === "duenos") {
+    return <ParaDuenos onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
+  }
+
+  if (vista === "veterinarias") {
+    return <ParaVeterinarias onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
+  }
+
+  if (vista === "como-funciona") {
+    return <ComoFunciona onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
+  }
+
+  if (vista === "contacto") {
+    return <ContactoScreen onNavegar={setVista} onIngresar={ () => setMostrarLogin(true)}/>
+  }
+
   return (
     <div className="landing-page" style={temaVars}>
       {/* Navbar */}
-      <nav className="landing-navbar">
-        <div className="landing-navbar-logo">
-          <span className="landing-logo-icono">🐾</span>
-          <span>AuraPet</span>
-        </div>
-        <div className="landing-navbar-links">
-          <a href="#como-funciona">Cómo funciona</a>
-          <a href="#veterinarias">Para veterinarias</a>
-          <a href="#duenos">Para dueños</a>
-          <a href="#nosotros" onClick={() => setMostrarConocerModal(true)}>Nosotros</a>
-          <a href="#contacto">Contacto</a>
-        </div>
-        <button className="landing-btn-primario" onClick={() => setMostrarLogin(true)}>
-          Ingresar
-        </button>
-        <Menu className="landing-navbar-menu-icono" size={22} />
-      </nav>
+      <NavBar vistaActiva="landing" onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />
 
       {/* Hero */}
       <header className="landing-hero">
@@ -324,8 +334,8 @@ export const HomeScreen = () => {
         </div>
       </footer>
 
-      {mostrarLogin && <LoginScreen onCerrar={() => setMostrarLogin(false)} />}
-      {mostrarConocerModal && <ConocenosModal onCerrar= {() => setMostrarConocerModal(false)}/> }
+      {/* {mostrarLogin && <LoginScreen onCerrar={() => setMostrarLogin(false)} />} */}
+      {/* {mostrarConocer && <Nosotros onCerrar= {() => setMostrarConocer(false)}/> } */}
     </div>
   );
 };

@@ -4,6 +4,8 @@ export type UrgenciaCita = "baja" | "media" | "alta" | "critica";
 export type EstadoCita = "pendiente" | "confirmada" | "en_curso" | "completada" | "cancelada";
 export type Rol = "dueno" | "veterinario" | "centro" | "superadmin";
 export type EspecieMascota = "perro" | "gato" | "ave" | "conejo" | "otro";
+export type VistaHome = "landing" | "como-funciona" | "veterinarias" | "duenos" | "nosotros" | "contacto";
+
 
 
 
@@ -189,3 +191,12 @@ export interface ConocenosModalProps {
   onCerrar:() => void; 
 
 }
+
+export interface NavbarProps {
+  vistaActiva?: VistaHome;
+  onNavegar?: (vista: VistaHome) => void;
+  onIngresar?: () => void;
+}
+
+
+
