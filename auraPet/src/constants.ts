@@ -208,4 +208,5 @@ export const links: { vista: VistaHome; label: string }[] = [
   { vista: "veterinarias", label: "Para veterinarias" },
   { vista: "duenos", label: "Para dueños" },
   { vista: "nosotros", label: "Nosotros" },
+  { vista: "contacto", label: "contacto"}
 ];

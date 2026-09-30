@@ -11,7 +11,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Colors } from "../../constants";
-import { LoginScreen } from "../Login/LoginScreen";
+// import { LoginScreen } from "../Login/LoginScreen";
 import { NavBar } from "../../components/NavBar";
 import type { VistaHome } from "../../interfaces";
 import "../../css/HomePage.css";
@@ -19,6 +19,7 @@ import {Nosotros} from '../Home/NosotrosScreen';
 import { ParaDuenos } from "./ParaDuenosScreen";
 import {ParaVeterinarias} from '../Home/ParaVeterinariasScreen'; 
 import { ComoFunciona } from "./ComoFuncionaScreen";
+import { ContactoScreen } from "./ContactoScreen";
 const colors = Colors;
 
 // variables de tema que le pasamos al contenedor raíz, mismo patrón que
@@ -76,7 +77,7 @@ const preguntasFrecuentes = [
   { pregunta: "¿Cómo elimino mi cuenta de AuraPet?", respuesta: "Puedes solicitarlo desde Configuración o escribiéndonos por el formulario de contacto." },
 ];
 
-export const HomeScreen = () => {
+export const HomeScreen = () => { 
   const [mostrarLogin, setMostrarLogin] = useState(false);
 //   const [mostrarConocer, setMostrarConocer] = useState(false); 
   const [testimonioActual, setTestimonioActual] = useState(0);
@@ -112,6 +113,10 @@ export const HomeScreen = () => {
 
   if (vista === "como-funciona") {
     return <ComoFunciona onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
+  }
+
+  if (vista === "contacto") {
+    return <ContactoScreen onNavegar={setVista} onIngresar={ () => setMostrarLogin(true)}/>
   }
 
   return (
@@ -329,7 +334,7 @@ export const HomeScreen = () => {
         </div>
       </footer>
 
-      {mostrarLogin && <LoginScreen onCerrar={() => setMostrarLogin(false)} />}
+      {/* {mostrarLogin && <LoginScreen onCerrar={() => setMostrarLogin(false)} />} */}
       {/* {mostrarConocer && <Nosotros onCerrar= {() => setMostrarConocer(false)}/> } */}
     </div>
   );

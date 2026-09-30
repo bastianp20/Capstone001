@@ -21,6 +21,8 @@ export const NavBar = ({ vistaActiva, onNavegar}: NavbarProps) => {
       </div>
 
       <div className="landing-navbar-links">
+        {/* Aquí se navega a las distintas Páginas, todas estas vistas que son del NavBar 
+        se agregan o cambian en el archivo de constants */}
         {links.map((link) => (
           <a
             key={link.vista}
@@ -34,8 +36,6 @@ export const NavBar = ({ vistaActiva, onNavegar}: NavbarProps) => {
             {link.label}
           </a>
         ))}
-        {/* TODO: "Contacto" todavía no tiene su propia vista, queda como ancla suelta */}
-        <a href="#contacto">Contacto</a>
       </div>
 
       <button className="landing-btn-primario" onClick = {() => setLogin(true)}>
