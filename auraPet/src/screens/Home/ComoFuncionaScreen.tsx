@@ -13,6 +13,7 @@ import { Colors } from "../../constants";
 import { NavBar } from "../../components/NavBar";
 import type { VistaHome } from "../../interfaces";
 import "../../css/ComoFunciona.css";
+import { Footer } from "../../components/Footer";
 
 const colors = Colors;
 
@@ -137,6 +138,7 @@ export const ComoFunciona = ({ onNavegar, onIngresar }: ComoFuncionaScreenProps)
         ))}
       </section>
 
+        {/* el cta es el llamado a la acción */}
       {/* CTA final */}
       <section className="comofunciona-cta">
         <h2>CTA</h2>
@@ -144,40 +146,7 @@ export const ComoFunciona = ({ onNavegar, onIngresar }: ComoFuncionaScreenProps)
       </section>
 
       {/* Footer */}
-      <footer className="landing-footer">
-        <div className="landing-footer-col">
-          <div className="landing-navbar-logo">
-            <span className="landing-logo-icono">🐾</span>
-            <span>AuraPet</span>
-          </div>
-          <p>Portal que conecta a un dueño de mascota o una clínica veterinaria.</p>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Links</h4>
-          <a href="#como-funciona" className="landing-navbar-link-activo">Cómo funciona</a>
-          <a href="#veterinarias">Para veterinarias</a>
-          <a href="#duenos">Para dueños</a>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Para veterinarias</h4>
-          <a href="#veterinarias">Para veterinarias</a>
-          <a href="#duenos">Para dueños</a>
-          <a href="#nosotros">Nosotros</a>
-          <a href="#contacto">Contacto</a>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Social</h4>
-          <div className="comofunciona-footer-social">
-            <span>f</span>
-            <span>t</span>
-            <span>o</span>
-            <span>in</span>
-          </div>
-        </div>
-        <div className="landing-footer-bottom">
-          Copyright © {new Date().getFullYear()} AuraPet Inc.
-        </div>
-      </footer>
+        <Footer/>
     </div>
   );
 };

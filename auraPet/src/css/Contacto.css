@@ -1,0 +1,150 @@
+.contacto-page {
+  font-family: "Inter", sans-serif;
+  color: var(--landing-texto);
+  background: #ffffff;
+}
+
+/* Hero */
+.contacto-hero {
+  text-align: center;
+  padding: 40px 48px;
+  background: var(--landing-secundario);
+}
+.contacto-hero h1 { font-size: 26px; margin-bottom: 8px; }
+.contacto-hero p { font-size: 14px; color: var(--landing-texto-suave); }
+
+/* Formulario + info */
+.contacto-principal {
+  display: flex;
+  gap: 24px;
+  padding: 40px 48px;
+  align-items: flex-start;
+}
+
+.contacto-form {
+  flex: 1.4;
+  background: #ffffff;
+  border: 1px solid var(--landing-borde);
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+}
+.contacto-label { font-size: 12px; color: var(--landing-texto-suave); margin-top: 10px; }
+.contacto-form input,
+.contacto-form select,
+.contacto-form textarea {
+  border: 1px solid var(--landing-borde);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--landing-texto);
+}
+.contacto-form textarea { min-height: 90px; resize: vertical; }
+.contacto-form button { margin-top: 16px; align-self: flex-start; padding: 10px 24px; }
+
+.contacto-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.contacto-info-card {
+  background: #ffffff;
+  border: 1px solid var(--landing-borde);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+}
+.contacto-info-item { display: flex; align-items: flex-start; gap: 10px; }
+.contacto-info-icono {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--landing-primario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.contacto-info-titulo { font-size: 12px; color: var(--landing-texto-suave); margin: 0; }
+.contacto-info-valor { font-size: 13px; font-weight: 600; margin: 2px 0 0; }
+
+.contacto-horarios {
+  background: var(--landing-secundario);
+  border-radius: 14px;
+  padding: 18px 20px;
+  font-size: 13px;
+}
+.contacto-horarios-titulo { font-weight: 600; margin-bottom: 8px; }
+.contacto-horarios p { margin: 4px 0; color: var(--landing-texto-suave); }
+
+/* Otras formas de contacto */
+.contacto-otras {
+  text-align: center;
+  padding: 32px 48px;
+}
+.contacto-otras h2 { font-size: 20px; margin-bottom: 24px; }
+.contacto-otras-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.contacto-otras-card {
+  background: #ffffff;
+  border: 1px solid var(--landing-borde);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+.contacto-otras-icono {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--landing-secundario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+}
+.contacto-otras-card h3 { font-size: 14px; margin-bottom: 6px; }
+.contacto-otras-card p { font-size: 12px; color: var(--landing-texto-suave); margin-bottom: 8px; }
+.contacto-otras-card a { font-size: 12px; color: var(--landing-primario); text-decoration: none; font-weight: 600; }
+
+/* FAQ */
+.contacto-faq {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px 48px 40px;
+}
+.contacto-faq-item { border-bottom: 1px solid var(--landing-borde); padding: 14px 0; }
+.contacto-faq-pregunta {
+  width: 100%;
+  background: none;
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--landing-texto);
+}
+.contacto-faq-respuesta { margin-top: 8px; font-size: 13px; color: var(--landing-texto-suave); }
+
+.contacto-footer-social {
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--landing-texto-sidebar);
+}
+
+@media (max-width: 900px) {
+  .contacto-principal { flex-direction: column; }
+  .contacto-otras-grid { grid-template-columns: 1fr; }
+}

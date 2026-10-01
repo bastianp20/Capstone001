@@ -2,7 +2,7 @@ import { Menu } from "lucide-react";
 import { links } from '../constants';
 import '../css/NavBar.css';
 import type { NavbarProps } from '../interfaces';
-import logoAuraPet from '../assets/LogoAuraPet.png'; 
+import logoAuraPet from '../assets/logo/LogoAuraPet.png'; 
 import { useState } from "react";
 import { LoginScreen } from "../screens/Login/LoginScreen";
 

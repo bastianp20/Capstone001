@@ -10,7 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { Colors } from "../../constants";
+import { Colors} from "../../constants";
 // import { LoginScreen } from "../Login/LoginScreen";
 import { NavBar } from "../../components/NavBar";
 import type { VistaHome } from "../../interfaces";
@@ -20,6 +20,8 @@ import { ParaDuenos } from "./ParaDuenosScreen";
 import {ParaVeterinarias} from '../Home/ParaVeterinariasScreen'; 
 import { ComoFunciona } from "./ComoFuncionaScreen";
 import { ContactoScreen } from "./ContactoScreen";
+import { Footer } from "../../components/Footer";
+import { getPreguntasFrecuentes } from "../../Api/getInfo";
 const colors = Colors;
 
 // variables de tema que le pasamos al contenedor raíz, mismo patrón que
@@ -69,13 +71,6 @@ const pasos = [
   { numero: 3, titulo: "Agenda tu cita", descripcion: "Elige el horario que más te acomode y listo." },
 ];
 
-const preguntasFrecuentes = [
-  { pregunta: "¿Cómo registro a mi mascota?", respuesta: "Desde tu cuenta de dueño puedes agregar una mascota nueva con sus datos básicos y ficha médica." },
-  { pregunta: "¿Cómo encuentro veterinarias cercanas?", respuesta: "Usa el buscador por ubicación en la sección 'Para dueños' para ver centros y veterinarios disponibles." },
-  { pregunta: "¿Puedo cambiar una cita ya agendada?", respuesta: "Sí, puedes reprogramar o cancelar desde tu panel de citas con anticipación." },
-  { pregunta: "¿Cómo accedo al historial médico?", respuesta: "El historial está disponible en tu perfil de dueño, actualizado por cada veterinaria que atendió a tu mascota." },
-  { pregunta: "¿Cómo elimino mi cuenta de AuraPet?", respuesta: "Puedes solicitarlo desde Configuración o escribiéndonos por el formulario de contacto." },
-];
 
 export const HomeScreen = () => { 
   const [mostrarLogin, setMostrarLogin] = useState(false);
@@ -257,11 +252,11 @@ export const HomeScreen = () => {
         <div className="landing-cta-final-imagen" />
       </section>
 
-      {/* FAQ + contacto */}
+      {/* Preguntas Frecuentes + contacto */}
       <section className="landing-seccion landing-faq-contacto" id="contacto">
         <div className="landing-faq">
           <h2>¿Tienes dudas?</h2>
-          {preguntasFrecuentes.map((item, i) => (
+          {getPreguntasFrecuentes().map((item, i) => (
             <div className="landing-faq-item" key={item.pregunta}>
               <button
                 className="landing-faq-pregunta"
@@ -305,37 +300,8 @@ export const HomeScreen = () => {
         </form>
       </section>
 
-      {/* Footer */}
-      <footer className="landing-footer">
-        <div className="landing-footer-col">
-          <div className="landing-navbar-logo">
-            <span className="landing-logo-icono">🐾</span>
-            <span>AuraPet</span>
-          </div>
-          <p>Conectando dueños y veterinarias en un solo lugar.</p>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Explora</h4>
-          <a href="#como-funciona">Cómo funciona</a>
-          <a href="#veterinarias">Para veterinarias</a>
-          <a href="#duenos">Para dueños</a>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Contacto</h4>
-          <a href="mailto:contacto@aurapet.com">Correo</a>
-          <a href="#">WhatsApp</a>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Newsletter</h4>
-          <p>Únete y accede a contenido exclusivo.</p>
-        </div>
-        <div className="landing-footer-bottom">
-          © {new Date().getFullYear()} AuraPet. Todos los derechos reservados.
-        </div>
-      </footer>
-
-      {/* {mostrarLogin && <LoginScreen onCerrar={() => setMostrarLogin(false)} />} */}
-      {/* {mostrarConocer && <Nosotros onCerrar= {() => setMostrarConocer(false)}/> } */}
+        {/* Footer */}
+        <Footer/>
     </div>
   );
 };

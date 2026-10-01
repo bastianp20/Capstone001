@@ -198,5 +198,34 @@ export interface NavbarProps {
   onIngresar?: () => void;
 }
 
+export interface ContactoScreenProps {
+  onNavegar?: (vista: VistaHome) => void;
+  onIngresar?: () => void;
+}
 
+export interface FooterProps {
+  vistaActiva?: VistaHome;
+  onNavegar?: (vista: VistaHome) => void;
+}
+
+export interface Contacto {
+  id: number;
+  nombre: string;
+  correo: string;
+  telefono?: number;        // opcional, no todos van a dejar número
+  asunto: string;           // esto es tu "razon" — el motivo de la consulta, en palabras propias de cada persona
+  mensaje: string;
+  categoria: string;        // a qué tema real pertenece el mensaje (login, precios, notificaciones, etc).
+                             // Dos personas casi nunca escriben el mismo "asunto", pero sí preguntan
+                             // por el mismo tema de fondo — por eso agrupamos/contamos por categoria
+                             // y no por el texto exacto del asunto.
+  creadoEn: number;         // mismo formato que usas en Usuario/Cita (ej: 20251001)
+  estado: "pendiente" | "respondido" | "cerrado"; // para que el superadmin sepa qué falta ver
+}
+
+export interface PreguntaFrecuente {
+  pregunta: string;
+  respuesta: string;
+  cantidad: number; // cuántos mensajes de contactoMock caen en esta categoria (para mostrar la "moda")
+}
 

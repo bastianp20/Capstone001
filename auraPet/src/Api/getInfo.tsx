@@ -1,13 +1,14 @@
 
 import type { Cita, CitaResumen, EstadoCita, Mascota, UrgenciaCita,
-CitaProximaDueno, RegistroHistorialMedico, HistorialRecienteItem } from "../interfaces";
+CitaProximaDueno, RegistroHistorialMedico, HistorialRecienteItem, PreguntaFrecuente } from "../interfaces";
 import { mascotasMock } from "../Data/Mascota";
 import { historialMedicoMock } from "../Data/HistorialMedico";
 import { citasMock } from "../Data/Cita";
 import { usuariosMock } from "../Data/Usuarios";
 import { veterinariosMock } from "../Data/Veterinarios";
 import { centrosMock } from "../Data/Centros";
-import { formatFechaCaja, formatFechaLarga } from "../constants";
+import { contactoMock } from "../Data/Contacto";
+import { formatFechaCaja, formatFechaLarga, respuestasPorCategoria } from "../constants";
 
 //  Aquí traemos las mascotas por el id del dueño
 export const getMascotasPorDueno = (duenoId: number): Mascota[] =>
@@ -220,4 +221,26 @@ export const getHistorialRecienteDueno = (duenoId: number, limite = 5): Historia
         fecha: formatFechaLarga(h.fecha),
       };
     });
+};
+
+
+// Cuenta cuántos mensajes hay por categoria y devuelve las `limite` más
+// repetidas (la moda), con su pregunta/respuesta ya redactadas.
+export const getPreguntasFrecuentes = (limite = 6): PreguntaFrecuente[] => {
+  const conteoPorCategoria = new Map<string, number>();
+  for (const mensaje of contactoMock) {
+    conteoPorCategoria.set(
+      mensaje.categoria,
+      (conteoPorCategoria.get(mensaje.categoria) ?? 0) + 1
+    );
+  }
+
+  return Array.from(conteoPorCategoria.entries())
+    .sort((a, b) => b[1] - a[1]) // de la categoria con más mensajes a la que tiene menos
+    .slice(0, limite)
+    .filter(([categoria]) => respuestasPorCategoria[categoria]) // por si se agrega una categoria sin redactar aún
+    .map(([categoria, cantidad]) => ({
+      ...respuestasPorCategoria[categoria],
+      cantidad,
+    }));
 };

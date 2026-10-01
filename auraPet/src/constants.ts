@@ -208,5 +208,57 @@ export const links: { vista: VistaHome; label: string }[] = [
   { vista: "veterinarias", label: "Para veterinarias" },
   { vista: "duenos", label: "Para dueños" },
   { vista: "nosotros", label: "Nosotros" },
-  { vista: "contacto", label: "contacto"}
+  { vista: "contacto", label: "Contacto"}
 ];
+
+// --- Preguntas Frecuentes de Contacto ---
+//
+// Las preguntas que se muestran NO están escritas a mano en un archivo:
+// se calculan contando cuántos mensajes de contactoMock caen en cada
+// "categoria" (el tema de fondo de la consulta) y mostrando las
+// categorías que más se repiten, osea la moda. El texto de la
+// respuesta sí es contenido nuestro (alguien tiene que redactarlo),
+// pero cuáles preguntas aparecen y en qué orden depende 100% de los
+// datos de contactoMock.
+export const respuestasPorCategoria: Record<string, { pregunta: string; respuesta: string }> = {
+  "precios": {
+    pregunta: "¿Cuánto cuesta usar AuraPet?",
+    respuesta: "AuraPet es gratuito para los dueños de mascotas. Las veterinarias y centros tienen sus propios planes para administrar pacientes, agenda y fichas clínicas.",
+  },
+  "login": {
+    pregunta: "Olvidé mi contraseña, ¿cómo la recupero?",
+    respuesta: "Desde la pantalla de inicio de sesión puedes solicitar restablecer tu contraseña con tu correo registrado. Te llegará un enlace para crear una nueva.",
+  },
+  "notificaciones": {
+    pregunta: "¿Por qué no me llegan los recordatorios de mis citas?",
+    respuesta: "Puede deberse a los permisos de notificaciones de tu dispositivo o a un correo desactualizado en tu perfil. Si ya revisaste eso y sigue sin llegarte, escríbenos para revisarlo.",
+  },
+  "historial-celular": {
+    pregunta: "¿Puedo ver el historial médico de mi mascota desde el celular?",
+    respuesta: "Sí, el historial de vacunas, diagnósticos y tratamientos se ve igual desde el celular que desde el computador, apenas tu veterinaria lo vaya registrando.",
+  },
+  "registro-veterinaria": {
+    pregunta: "¿Cómo registro mi veterinaria o centro en la plataforma?",
+    respuesta: "Escríbenos contándonos sobre tu centro (sucursales, cantidad de veterinarios) y nuestro equipo te guía en el proceso de validación y alta.",
+  },
+  "cobertura": {
+    pregunta: "¿AuraPet funciona fuera de la Región Metropolitana?",
+    respuesta: "Estamos sumando veterinarias de otras regiones de forma progresiva. Si en tu ciudad aún no hay centros afiliados, escríbenos y te avisamos apenas se sumen.",
+  },
+  "cuenta-eliminar": {
+    pregunta: "¿Puedo eliminar mi cuenta y mis datos?",
+    respuesta: "Sí, puedes solicitar la eliminación de tu cuenta y tu historial escribiéndonos desde este formulario. Lo procesamos manualmente para confirmar que seas tú.",
+  },
+  "bugs-app": {
+    pregunta: "La app se cierra o se traba al usarla, ¿qué hago?",
+    respuesta: "Cuéntanos el modelo de tu celular y en qué paso exacto se cierra (agendar, subir una foto, etc.) para poder reproducir el error y arreglarlo lo antes posible.",
+  },
+  "cambio-veterinaria": {
+    pregunta: "¿Puedo cambiar a mi mascota de veterinaria sin perder su historial?",
+    respuesta: "Sí, el historial queda asociado a tu mascota, no al centro. Al agendar en una nueva veterinaria afiliada, el equipo puede ver sus registros anteriores.",
+  },
+  "multi-veterinario": {
+    pregunta: "¿Cómo agrego a otros veterinarios de mi centro a la plataforma?",
+    respuesta: "Como encargada o encargado del centro puedes invitar a tus colegas desde el panel de tu centro para que vean y actualicen las fichas de los pacientes.",
+  },
+};
