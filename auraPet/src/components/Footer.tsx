@@ -43,10 +43,10 @@ export const Footer = ({ vistaActiva, onNavegar }: FooterProps) => {
       <div className="landing-footer-col">
         <h4>Social</h4>
         <div className="contacto-footer-social">
-          <span>f</span>
-          <span>o</span>
-          <span>t</span>
-          <span>yt</span>
+          <span>facebook</span>
+          <span>instagram</span>
+          <span>twitter</span>
+          <span>youtube</span>
         </div>
       </div>
 

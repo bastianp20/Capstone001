@@ -1,8 +1,6 @@
 import { useState } from "react";
 import {
   Calendar,
-  FileText,
-  MapPin,
   UserPlus,
   Search,
   Quote,
@@ -21,7 +19,9 @@ import {ParaVeterinarias} from '../Home/ParaVeterinariasScreen';
 import { ComoFunciona } from "./ComoFuncionaScreen";
 import { ContactoScreen } from "./ContactoScreen";
 import { Footer } from "../../components/Footer";
+import { Servicios } from "../../components/Servicios";
 import { getPreguntasFrecuentes } from "../../Api/getInfo";
+import fondo from '../../assets/Home/fondo.png';
 const colors = Colors;
 
 // variables de tema que le pasamos al contenedor raíz, mismo patrón que
@@ -37,26 +37,6 @@ const temaVars = {
   "--landing-texto-sidebar": colors.textoSidebar,
   "--landing-borde": colors.borde,
 } as React.CSSProperties;
-
-// TODO: esto es contenido mock, más adelante puede venir de Api/getInfo.tsx
-// o directo de un CMS si se arma uno.
-const servicios = [
-  {
-    icono: Calendar,
-    titulo: "Agendar citas",
-    descripcion: "Reserva hora con la veterinaria que prefieras en pocos clics.",
-  },
-  {
-    icono: FileText,
-    titulo: "Historial médico digital",
-    descripcion: "Toda la ficha clínica de tu mascota disponible cuando la necesites.",
-  },
-  {
-    icono: MapPin,
-    titulo: "Encontrar veterinarios cercanos",
-    descripcion: "Busca centros y especialistas cerca de ti, con reseñas reales.",
-  },
-];
 
 const testimonios = [
   { texto: "Agendar hora para mi perro nunca había sido tan fácil.", nombre: "Camila Rojas", rol: "Dueña de mascota" },
@@ -120,7 +100,7 @@ export const HomeScreen = () => {
       <NavBar vistaActiva="landing" onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />
 
       {/* Hero */}
-      <header className="landing-hero">
+      <header className="landing-hero" style={{ backgroundImage: `url(${fondo})` }}>
         <div className="landing-hero-overlay" />
         <div className="landing-hero-contenido">
           <h1>
@@ -143,23 +123,7 @@ export const HomeScreen = () => {
       </header>
 
       {/* Servicios */}
-      <section className="landing-seccion">
-        <h2>¿Qué puedes hacer en AuraPet?</h2>
-        <div className="landing-servicios-grid">
-          {servicios.map((servicio) => {
-            const Icono = servicio.icono;
-            return (
-              <div className="landing-servicio-card" key={servicio.titulo}>
-                <div className="landing-servicio-icono">
-                  <Icono size={22} color={colors.primario} />
-                </div>
-                <h3>{servicio.titulo}</h3>
-                <p>{servicio.descripcion}</p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      <Servicios />
 
       {/* Bloque oscuro con "imagen" (mockup de historial) + texto */}
       <section className="landing-seccion-oscura">

@@ -47,20 +47,30 @@
 /* Hero */
 .landing-hero {
   position: relative;
-  min-height: 480px;
+  min-height: 520px;
   display: flex;
   align-items: center;
-  background: linear-gradient(120deg, var(--landing-oscuro), #2c3e42);
+  background-color: var(--landing-oscuro); /* respaldo mientras carga */
+  background-size: cover;
+  background-position: right center;
+  background-repeat: no-repeat;
   color: #ffffff;
   overflow: hidden;
 }
 .landing-hero-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.25);
+  background: linear-gradient(
+    90deg,
+    rgba(26, 26, 26, 1) 0%,
+    rgba(26, 26, 26, 0.85) 30%,
+    rgba(26, 26, 26, 0) 60%
+  );
+  pointer-events: none;
 }
 .landing-hero-contenido {
   position: relative;
+  z-index: 1;
   padding: 48px;
   max-width: 520px;
 }
@@ -83,30 +93,6 @@
 .landing-seccion h2 { font-size: 26px; margin-bottom: 32px; }
 .landing-seccion-suave { background: var(--landing-secundario); }
 
-.landing-servicios-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-.landing-servicio-card {
-  background: #ffffff;
-  border: 1px solid var(--landing-borde);
-  border-radius: 12px;
-  padding: 24px;
-  text-align: left;
-}
-.landing-servicio-icono {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: var(--landing-secundario);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 12px;
-}
-.landing-servicio-card h3 { font-size: 16px; margin-bottom: 6px; }
-.landing-servicio-card p { font-size: 13px; color: var(--landing-texto-suave); }
 
 /* Sección oscura con mockup */
 .landing-seccion-oscura {
@@ -285,7 +271,6 @@
 }
 
 @media (max-width: 900px) {
-  .landing-servicios-grid,
   .landing-testimonios-grid,
   .landing-pasos-grid { grid-template-columns: 1fr; }
   .landing-seccion-oscura,

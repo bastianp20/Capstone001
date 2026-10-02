@@ -1,0 +1,43 @@
+/* Servicios (Home) */
+.landing-servicios-grid {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;                 /* scroll horizontal */
+  scroll-snap-type: x mandatory;    /* cada tarjeta "encaja" al soltar */
+  scroll-behavior: smooth;
+  padding: 4px 4px 16px;            /* espacio para la sombra y la barra */
+}
+.landing-servicio-card {
+  flex: 0 0 calc((100% - 40px) / 3); /* 3 tarjetas visibles en escritorio */
+  scroll-snap-align: start;
+  background: #ffffff;
+  border: 1px solid var(--landing-borde);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: left;
+}
+.landing-servicio-icono {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--landing-secundario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+.landing-servicio-card h3 { font-size: 16px; margin-bottom: 6px; }
+.landing-servicio-card p { font-size: 13px; color: var(--landing-texto-suave); }
+
+/* Barra de scroll fina */
+.landing-servicios-grid::-webkit-scrollbar { height: 6px; }
+.landing-servicios-grid::-webkit-scrollbar-thumb {
+  background: var(--landing-borde);
+  border-radius: 3px;
+}
+.landing-servicios-grid { scrollbar-width: thin; }
+
+@media (max-width: 900px) {
+  /* en celular se ve 1 tarjeta y se asoma la siguiente */
+  .landing-servicio-card { flex-basis: 80%; }
+}

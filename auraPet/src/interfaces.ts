@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react";
 
 export type TipoSolicitud = "veterinario" | "centro";
 export type UrgenciaCita = "baja" | "media" | "alta" | "critica";
@@ -227,5 +228,18 @@ export interface PreguntaFrecuente {
   pregunta: string;
   respuesta: string;
   cantidad: number; // cuántos mensajes de contactoMock caen en esta categoria (para mostrar la "moda")
+}
+
+// Servicios que se mostrarán en el home 
+export interface Servicio {
+  icono: LucideIcon;
+  titulo: string;
+  descripcion: string;
+}
+
+export interface ServiciosProps {
+  titulo?: string;               // por defecto "¿Qué puedes hacer en AuraPet?"
+  servicios?: Servicio[];        // si no se pasa, usa los mock del componente
+  onIngresar?: () => void;       // por si agregas un botón "Agenda una cita"
 }
 

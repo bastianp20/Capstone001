@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type {EstadoCita, UrgenciaCita, EspecieMascota, VistaHome} from '../src/interfaces'; 
+import type {EstadoCita, UrgenciaCita, EspecieMascota, VistaHome, Servicio} from '../src/interfaces'; 
 import {
   Menu, Search, Bell, User, UserCircle, LogOut, Settings, Calendar, Filter, ChevronDown, ChevronRight, X, Plus, MoreVertical, Home,
   PawPrint, Heart, CalendarPlus, History, FileText,Stethoscope, Syringe, ClipboardList, ClipboardPlus, Share2, Microscope, Activity,
@@ -262,3 +262,27 @@ export const respuestasPorCategoria: Record<string, { pregunta: string; respuest
     respuesta: "Como encargada o encargado del centro puedes invitar a tus colegas desde el panel de tu centro para que vean y actualicen las fichas de los pacientes.",
   },
 };
+
+// los servicios que estarán disponibles en la web y app 
+export const servicios: Servicio[] = [
+    {
+        icono: Calendar,
+        titulo: "Agendar citas",
+        descripcion: "Reserva hora con la veterinaria que prefieras en pocos clics.",
+    },
+    {
+        icono: FileText,
+        titulo: "Historial médico digital",
+        descripcion: "Toda la ficha clínica de tu mascota disponible cuando la necesites.",
+    },
+    {
+        icono: MapPin,
+        titulo: "Encontrar veterinarios cercanos",
+        descripcion: "Busca centros y especialistas cerca de ti, con reseñas reales.",
+    },
+    {
+      icono: Heart,
+      titulo: "Adopciones Responsables",
+      descripcion: "Conecta con refugios y adopta mascotas de manera segura y responsable."
+    }
+];
