@@ -8,9 +8,9 @@ import {
   CalendarCheck,
 } from "lucide-react";
 import { Colors } from "../../constants";
-import { NavBar } from "../../components/NavBar";
-import type { VistaHome } from "../../interfaces";
 import "../../css/ParaVeterinarias.css";
+import PrimeraFoto from '../../assets/ParaVeterinarias/PrimeraFoto.png'; 
+import PanelProfesional from '../../assets/ParaVeterinarias/PanelProfesional.png'; 
 
 const colors = Colors;
 
@@ -45,16 +45,9 @@ const pasos = [
   { numero: 3, icono: CalendarCheck, titulo: "Empieza a recibir pacientes" },
 ];
 
-interface ParaVeterinariasScreenProps {
-  onNavegar?: (vista: VistaHome) => void;
-  onIngresar?: () => void;
-}
-
-export const ParaVeterinarias = ({ onNavegar, onIngresar }: ParaVeterinariasScreenProps) => {
+export const ParaVeterinarias = () => {
   return (
     <div className="paravets-page" style={temaVars}>
-      <NavBar vistaActiva="veterinarias" onNavegar={onNavegar} onIngresar={onIngresar} />
-
       {/* Hero */}
       <header className="paravets-hero">
         <div className="paravets-hero-texto">
@@ -62,7 +55,7 @@ export const ParaVeterinarias = ({ onNavegar, onIngresar }: ParaVeterinariasScre
           <p>Más pacientes, menos papeleo.</p>
           <button className="landing-btn-primario">Únete como veterinaria</button>
         </div>
-        <div className="paravets-hero-imagen" />
+        <img src={PrimeraFoto} alt="Mockup de siguiente paso" className="paravets-hero-imagen" />
       </header>
 
       {/* Beneficios */}
@@ -89,19 +82,14 @@ export const ParaVeterinarias = ({ onNavegar, onIngresar }: ParaVeterinariasScre
         <div className="paravets-mockup-panel">
           <div className="paravets-mockup-monitor">
             <div className="paravets-mockup-pantalla">
-              <div className="paravets-mockup-titulo">Mis pacientes</div>
-              {[1, 2, 3].map((n) => (
-                <div className="paravets-mockup-fila" key={n} />
-              ))}
-              <div className="paravets-mockup-barras">
-                <div style={{ height: "60%" }} />
-                <div style={{ height: "85%" }} />
-                <div style={{ height: "40%" }} />
-                <div style={{ height: "70%" }} />
-              </div>
+              <img
+                src={PanelProfesional}
+                alt="Panel profesional de AuraPet con pacientes, registros y gráfica de visitas"
+                className="paravets-mockup-imagen"
+              />
             </div>
             <div className="paravets-mockup-base" />
-          </div>
+          </div>  
         </div>
         <div className="paravets-seccion-oscura-texto">
           <h2>Panel profesional completo y fácil de usar.</h2>
@@ -150,36 +138,6 @@ export const ParaVeterinarias = ({ onNavegar, onIngresar }: ParaVeterinariasScre
           <button className="landing-btn-primario">Únete como veterinaria</button>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="landing-footer">
-        <div className="landing-footer-col">
-          <div className="landing-navbar-logo">
-            <span className="landing-logo-icono">🐾</span>
-            <span>AuraPet</span>
-          </div>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Explora</h4>
-          <a href="#como-funciona">Cómo funciona</a>
-          <a href="#mascotas">Mascotas</a>
-          <a href="#veterinarias">Para veterinarias</a>
-          <a href="#duenos">Para dueños</a>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Contacto</h4>
-          <a href="#nosotros">Nosotros</a>
-          <a href="#veterinarias">Para veterinarias</a>
-          <a href="#contacto">Contacto</a>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Newsletter</h4>
-          <input type="email" placeholder="Suscribir a newsletter" className="paravets-newsletter-input" />
-        </div>
-        <div className="landing-footer-bottom">
-          © {new Date().getFullYear()} AuraPet. Todos los derechos reservados.
-        </div>
-      </footer>
     </div>
   );
 };

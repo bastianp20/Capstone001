@@ -103,26 +103,39 @@
   gap: 48px;
   padding: 64px 48px;
 }
+.landing-seccion-oscura-texto {
+  flex: 1;
+  min-width: 0;              /* lo mismo para la columna de texto */
+  text-align: left;
+}
 .landing-mockup-historial {
   flex: 1;
-  background: #1c232c;
+  min-width: 0;              /* clave: deja que se achique */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.landing-mockup-imagen {
+  width: 100%;
+  max-width: 480px;          /* tope en pantallas grandes */
+  max-height: 380px;         /* para que no quede muy alta */
+  height: auto;
+  object-fit: contain;
+  display: block;
   border-radius: 14px;
-  padding: 20px;
-  border: 1px solid #2a323d;
 }
-.landing-mockup-header {
-  height: 14px;
-  width: 60%;
-  background: var(--landing-primario);
-  border-radius: 4px;
-  margin-bottom: 16px;
+.landing-mockup-siguientepaso {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  max-width: 480px;          /* tope en pantallas grandes */
+  max-height: 380px;         /* para que no quede muy alta */
+  height: auto;
+  object-fit: contain;
+  display: block;
+  border-radius: 14px;
 }
-.landing-mockup-linea {
-  height: 10px;
-  background: #2a323d;
-  border-radius: 4px;
-  margin-bottom: 10px;
-}
+
 .landing-seccion-oscura-texto { flex: 1; text-align: left; }
 .landing-seccion-oscura-texto h2 { font-size: 24px; margin-bottom: 12px; }
 .landing-seccion-oscura-texto p {
@@ -260,7 +273,9 @@
 }
 .landing-footer-col { flex: 1; min-width: 160px; font-size: 13px; display: flex; flex-direction: column; gap: 8px; }
 .landing-footer-col h4 { color: #ffffff; font-size: 14px; margin-bottom: 4px; }
-.landing-footer-col a { color: var(--landing-texto-sidebar); text-decoration: none; }
+.landing-footer-col a { color: var(--landing-texto-sidebar); text-decoration: none; transition: color 0.15s; }
+.landing-footer-col a:hover { color: #ffffff; }
+.landing-footer-col a.landing-footer-link-activo { color: var(--landing-primario); font-weight: 600; }
 .landing-footer-bottom {
   width: 100%;
   border-top: 1px solid #2a323d;

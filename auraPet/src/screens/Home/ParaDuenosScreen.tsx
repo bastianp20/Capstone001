@@ -9,8 +9,6 @@ import {
   CalendarCheck,
 } from "lucide-react";
 import { Colors } from "../../constants";
-import { NavBar } from "../../components/NavBar";
-import type { VistaHome } from "../../interfaces";
 import "../../css/ParaDuenos.css";
 
 const colors = Colors;
@@ -46,15 +44,10 @@ const pasos = [
   { numero: 3, icono: CalendarCheck, titulo: "Agenda tu primera cita" },
 ];
 
-interface ParaDuenosScreenProps {
-  onNavegar?: (vista: VistaHome) => void;
-  onIngresar?: () => void;
-}
 
-export const ParaDuenos = ({ onNavegar, onIngresar }: ParaDuenosScreenProps) => {
+export const ParaDuenos = () => {
   return (
     <div className="paraduenos-page" style={temaVars}>
-      <NavBar vistaActiva="duenos" onNavegar={onNavegar} onIngresar={onIngresar} />
 
       {/* Hero */}
       <header className="paraduenos-hero">
@@ -150,35 +143,6 @@ export const ParaDuenos = ({ onNavegar, onIngresar }: ParaDuenosScreenProps) => 
         <div className="paraduenos-cta-final-imagen" />
       </section>
 
-      {/* Footer */}
-      <footer className="landing-footer">
-        <div className="landing-footer-col">
-          <div className="landing-navbar-logo">
-            <span className="landing-logo-icono">🐾</span>
-            <span>AuraPet</span>
-          </div>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Explora</h4>
-          <a href="#como-funciona">Cómo funciona</a>
-          <a href="#mascotas">Mascotas</a>
-          <a href="#veterinarias">Para veterinarias</a>
-          <a href="#duenos">Para dueños</a>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Contacto</h4>
-          <a href="#nosotros">Nosotros</a>
-          <a href="#veterinarias">Para veterinarias</a>
-          <a href="#contacto">Contacto</a>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Newsletter</h4>
-          <input type="email" placeholder="Suscribir a newsletter" className="paraduenos-newsletter-input" />
-        </div>
-        <div className="landing-footer-bottom">
-          © {new Date().getFullYear()} AuraPet. Todos los derechos reservados.
-        </div>
-      </footer>
     </div>
   );
 };

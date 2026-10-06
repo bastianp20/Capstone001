@@ -9,11 +9,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { Colors } from "../../constants";
-import { NavBar } from "../../components/NavBar";
-import type { ContactoScreenProps, 
-} from "../../interfaces";
 import "../../css/Contacto.css";
-import { Footer } from "../../components/Footer";
 import { getPreguntasFrecuentes } from "../../Api/getInfo";
 
 const colors = Colors;
@@ -50,7 +46,7 @@ const otrasFormas = [
   },
 ];
 
-export const ContactoScreen = ({ onNavegar, onIngresar }: ContactoScreenProps) => {
+export const ContactoScreen = () => {
   const [formulario, setFormulario] = useState({
     nombre: "",
     correo: "",
@@ -69,7 +65,6 @@ export const ContactoScreen = ({ onNavegar, onIngresar }: ContactoScreenProps) =
 
   return (
     <div className="contacto-page" style={temaVars}>
-      <NavBar vistaActiva="contacto" onNavegar={onNavegar} onIngresar={onIngresar} />
 
       {/* Hero */}
       <header className="contacto-hero">
@@ -196,8 +191,6 @@ export const ContactoScreen = ({ onNavegar, onIngresar }: ContactoScreenProps) =
           </div>
         ))}
       </section>
-
-        <Footer/>
     </div>
   );
 };

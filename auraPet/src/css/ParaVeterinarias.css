@@ -71,35 +71,23 @@
   padding: 56px 48px;
 }
 .paravets-mockup-panel { flex: 1; display: flex; justify-content: center; }
-.paravets-mockup-monitor { width: 260px; }
+.paravets-mockup-monitor { width: 100%; max-width: 520px; }
 .paravets-mockup-pantalla {
   background: #1c232c;
-  border-radius: 10px;
-  padding: 14px;
+  border-radius: 12px;
+  padding: 8px; /* marco del monitor */
   border: 1px solid #2a323d;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
 }
-.paravets-mockup-titulo { font-size: 12px; font-weight: 600; margin-bottom: 10px; }
-.paravets-mockup-fila {
-  height: 18px;
-  background: #2a323d;
-  border-radius: 4px;
-  margin-bottom: 6px;
-}
-.paravets-mockup-barras {
-  display: flex;
-  align-items: flex-end;
-  gap: 6px;
-  height: 50px;
-  margin-top: 10px;
-}
-.paravets-mockup-barras div {
-  flex: 1;
-  background: var(--landing-primario);
-  border-radius: 3px 3px 0 0;
+.paravets-mockup-imagen {
+  display: block;
+  width: 100%;
+  height: auto; /* mantiene la proporción de la captura */
+  border-radius: 6px;
 }
 .paravets-mockup-base {
-  width: 60px;
-  height: 10px;
+  width: 90px;
+  height: 12px;
   background: #2a323d;
   border-radius: 0 0 6px 6px;
   margin: 0 auto;

@@ -10,10 +10,19 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { Colors } from "../../constants";
-import { NavBar } from "../../components/NavBar";
-import type { VistaHome } from "../../interfaces";
 import "../../css/ComoFunciona.css";
-import { Footer } from "../../components/Footer";
+
+// Para los dueños
+import CrearCuenta from "../../assets/ComoFunciona/ParaDuenos/CrearCuenta.png";
+import AgregarTuMascota from "../../assets/ComoFunciona/ParaDuenos/AgregaTuMascota.png";
+import BuscaTuVeterinaria from "../../assets/ComoFunciona/ParaDuenos/BuscaTuVeterinaria.png";
+import AgendaCita from "../../assets/ComoFunciona/ParaDuenos/AgendaCita.png";
+
+// Para los Veterinarios
+import PerfilVet from "../../assets/ComoFunciona/ParaVeterinarias/PerfilVet.png";
+import VerificaTuVet from "../../assets/ComoFunciona/ParaVeterinarias/VerificaTuVet.png";
+import RecibeSolicitudes from "../../assets/ComoFunciona/ParaVeterinarias/RecibeSolicitudes.png";
+import GestionPacientes from "../../assets/ComoFunciona/ParaVeterinarias/GestionPacientes.png";
 
 const colors = Colors;
 
@@ -30,17 +39,17 @@ const temaVars = {
 
 // TODO: contenido mock, ajustar cuando tengamos copy real de marketing.
 const pasosDuenos = [
-  { numero: 1, icono: UserPlus, titulo: "Crea tu cuenta", descripcion: "Crea tu cuenta y regístrate como dueño de mascota." },
-  { numero: 2, icono: PawPrint, titulo: "Agrega a tu mascota", descripcion: "Agrega a tu mascota y su información básica." },
-  { numero: 3, icono: Search, titulo: "Busca una veterinaria", descripcion: "Busca una clínica o especialista cerca de ti." },
-  { numero: 4, icono: Calendar, titulo: "Agenda tu cita", descripcion: "Agenda tu cita según la disponibilidad de la veterinaria." },
+  { numero: 1, icono: UserPlus, titulo: "Crea tu cuenta", descripcion: "Crea tu cuenta y regístrate como dueño de mascota.", imagen: CrearCuenta, alt: "Formulario de registro de AuraPet" },
+  { numero: 2, icono: PawPrint, titulo: "Agrega a tu mascota", descripcion: "Agrega a tu mascota y su información básica.", imagen: AgregarTuMascota, alt: "Ficha de una mascota registrada" },
+  { numero: 3, icono: Search, titulo: "Busca una veterinaria", descripcion: "Busca una clínica o especialista cerca de ti.", imagen: BuscaTuVeterinaria, alt: "Buscador de veterinarias cercanas" },
+  { numero: 4, icono: Calendar, titulo: "Agenda tu cita", descripcion: "Agenda tu cita según la disponibilidad de la veterinaria.", imagen: AgendaCita, alt: "Calendario con horas disponibles" },
 ];
 
 const pasosVeterinarias = [
-  { numero: 1, icono: UserPlus, titulo: "Crea tu perfil profesional", descripcion: "Regístrate como veterinaria o veterinario independiente." },
-  { numero: 2, icono: Building2, titulo: "Verifica tu clínica", descripcion: "Valida tus datos y los de tu centro veterinario." },
-  { numero: 3, icono: Users, titulo: "Recibe solicitudes", descripcion: "Nuevos dueños te encuentran y agendan contigo." },
-  { numero: 4, icono: ClipboardCheck, titulo: "Gestiona tus pacientes", descripcion: "Lleva la agenda, el historial y las recetas desde un solo lugar." },
+  { numero: 1, icono: UserPlus, titulo: "Crea tu perfil profesional", descripcion: "Regístrate como veterinaria o veterinario independiente.", imagen: PerfilVet, alt: "Perfil profesional de una veterinaria" },
+  { numero: 2, icono: Building2, titulo: "Verifica tu clínica", descripcion: "Valida tus datos y los de tu centro veterinario.", imagen: VerificaTuVet, alt: "Validación de datos de la clínica" },
+  { numero: 3, icono: Users, titulo: "Recibe solicitudes", descripcion: "Nuevos dueños te encuentran y agendan contigo.", imagen: RecibeSolicitudes, alt: "Lista de solicitudes de citas" },
+  { numero: 4, icono: ClipboardCheck, titulo: "Gestiona tus pacientes", descripcion: "Lleva la agenda, el historial y las recetas desde un solo lugar.", imagen: GestionPacientes, alt: "Panel de agenda y pacientes" },
 ];
 
 const preguntasFrecuentes = [
@@ -49,12 +58,8 @@ const preguntasFrecuentes = [
   { pregunta: "¿Cómo verifican a las veterinarias?", respuesta: "Cada clínica o profesional pasa por una validación de datos antes de aparecer en la búsqueda." },
 ];
 
-interface ComoFuncionaScreenProps {
-  onNavegar?: (vista: VistaHome) => void;
-  onIngresar?: () => void;
-}
 
-export const ComoFunciona = ({ onNavegar, onIngresar }: ComoFuncionaScreenProps) => {
+export const ComoFunciona = () => {
   const [pestanaActiva, setPestanaActiva] = useState<"duenos" | "veterinarias">("duenos");
   const [faqAbierta, setFaqAbierta] = useState<number | null>(null);
 
@@ -62,7 +67,6 @@ export const ComoFunciona = ({ onNavegar, onIngresar }: ComoFuncionaScreenProps)
 
   return (
     <div className="comofunciona-page" style={temaVars}>
-      <NavBar vistaActiva="como-funciona" onNavegar={onNavegar} onIngresar={onIngresar} />
 
       {/* Hero */}
       <header className="comofunciona-hero">
@@ -98,7 +102,9 @@ export const ComoFunciona = ({ onNavegar, onIngresar }: ComoFuncionaScreenProps)
                 <h3>{paso.titulo}</h3>
                 <p>{paso.descripcion}</p>
               </div>
-              <div className="comofunciona-paso-mockup" />
+              <div className="comofunciona-paso-mockup">
+                <img src={paso.imagen} alt={paso.alt} loading="lazy" />
+              </div>
             </div>
           );
         })}
@@ -141,12 +147,10 @@ export const ComoFunciona = ({ onNavegar, onIngresar }: ComoFuncionaScreenProps)
         {/* el cta es el llamado a la acción */}
       {/* CTA final */}
       <section className="comofunciona-cta">
-        <h2>CTA</h2>
+        <h2> Registrate y lleva tu responsabilidad al siguiente nivel!</h2>
         <button className="landing-btn-primario">Comienza ahora</button>
       </section>
 
-      {/* Footer */}
-        <Footer/>
     </div>
   );
 };

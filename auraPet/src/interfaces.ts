@@ -6,6 +6,7 @@ export type EstadoCita = "pendiente" | "confirmada" | "en_curso" | "completada" 
 export type Rol = "dueno" | "veterinario" | "centro" | "superadmin";
 export type EspecieMascota = "perro" | "gato" | "ave" | "conejo" | "otro";
 export type VistaHome = "landing" | "como-funciona" | "veterinarias" | "duenos" | "nosotros" | "contacto";
+export type ModoLogin = 'ingresar' | 'crear';
 
 
 
@@ -241,5 +242,15 @@ export interface ServiciosProps {
   titulo?: string;               // por defecto "¿Qué puedes hacer en AuraPet?"
   servicios?: Servicio[];        // si no se pasa, usa los mock del componente
   onIngresar?: () => void;       // por si agregas un botón "Agenda una cita"
+}
+
+export interface LoginScreenProps {
+  onCerrar: () => void;
+  onSolicitarCentro?: () => void; // abre el formulario de solicitud para centros
+}
+
+export interface ParaDuenosScreenProps {
+  onNavegar?: (vista: VistaHome) => void;
+  onIngresar?: () => void;
 }
 

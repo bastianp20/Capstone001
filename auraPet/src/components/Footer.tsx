@@ -1,43 +1,38 @@
-import type { FooterProps, VistaHome } from "../interfaces";
-import '../css/Contacto.css'; 
+import { Link, NavLink } from "react-router-dom";
+import { links } from "../constants";
+import '../css/Contacto.css';
 import '../css/NavBar.css';
 import LogoAuraPetSinFondo from '../assets/logo/LogoAuraPetSinFondo.png'
 
+const claseLink = ({ isActive }: { isActive: boolean }) =>
+  isActive ? "landing-footer-link-activo" : "";
 
-export const Footer = ({ vistaActiva, onNavegar }: FooterProps) => {
-  const irA = (vista: VistaHome) => (e: React.MouseEvent) => {
-    e.preventDefault();
-    onNavegar?.(vista);
-  };
-
+export const Footer = () => {
   return (
     <footer className="landing-footer">
       <div className="landing-footer-col">
-        <div className="landing-navbar-logo">
-        <img src={LogoAuraPetSinFondo} alt="AuraPet" className="landing-logo-icono" /> 
+        <Link to="/" className="landing-navbar-logo">
+          <img src={LogoAuraPetSinFondo} alt="AuraPet" className="landing-logo-icono" />
           <span>AuraPet</span>
-        </div>
+        </Link>
+        <p>Conectando dueños y veterinarias en un solo lugar.</p>
       </div>
 
       <div className="landing-footer-col">
-        <h4>Rápida links</h4>
-        <a href="#duenos" onClick={irA("duenos")}>Soporte técnico</a>
-        <a href="#duenos" onClick={irA("duenos")}>Para dueños</a>
-        <a href="#veterinarias" onClick={irA("veterinarias")}>Para veterinarias</a>
+        <h4>Navegación</h4>
+        {/* "end" hace que Inicio solo quede activo en "/" exacto */}
+        <NavLink to="/" end className={claseLink}>Inicio</NavLink>
+        {links.map((link) => (
+          <NavLink key={link.ruta} to={link.ruta} className={claseLink}>
+            {link.label}
+          </NavLink>
+        ))}
       </div>
 
       <div className="landing-footer-col">
-        <h4>Para veterinarias</h4>
-        <a href="#nosotros" onClick={irA("nosotros")}>Nosotros</a>
-        <a href="#veterinarias" onClick={irA("veterinarias")}>Para veterinarias</a>
-        <a
-          href="#contacto"
-          className={vistaActiva === "contacto" ? "landing-navbar-link-activo" : ""}
-          onClick={irA("contacto")}
-        >
-          Contacto
-        </a>
-        <a href="#">Otro</a>
+        <h4>Ayuda</h4>
+        <Link to="/contacto">Soporte técnico</Link>
+        <Link to="/como-funciona">Preguntas frecuentes</Link>
       </div>
 
       <div className="landing-footer-col">

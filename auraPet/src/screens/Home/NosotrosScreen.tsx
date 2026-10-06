@@ -6,10 +6,7 @@ import {
   User,
 } from "lucide-react";
 import { Colors } from "../../constants";
-import { NavBar } from "../../components/NavBar";
-import type { VistaHome } from "../../interfaces";
 import "../../css/HomePage.css";
-
 const colors = Colors;
 
 const temaVars = {
@@ -44,16 +41,10 @@ const logros = [
   { numero: "+1000", descripcion: "citas agendadas" },
 ];
 
-interface NosotrosScreenProps {
-  onIngresar?: () => void;
-  onNavegar?: (vista: VistaHome) => void;
-}
 
-export const Nosotros = ({ onIngresar, onNavegar }: NosotrosScreenProps) => {
+export const Nosotros = () => {
   return (
     <div className="nosotros-page" style={temaVars}>
-      <NavBar vistaActiva="nosotros" onNavegar={onNavegar} onIngresar={onIngresar} />
-
       {/* Hero */}
       <section className="nosotros-hero">
         <div className="nosotros-hero-texto">
@@ -138,35 +129,6 @@ export const Nosotros = ({ onIngresar, onNavegar }: NosotrosScreenProps) => {
           ))}
         </div>
       </section>
-
-      {/* Footer (mismo patrón que LandingScreen) */}
-      <footer className="landing-footer">
-        <div className="landing-footer-col">
-          <div className="landing-navbar-logo">
-            <span className="landing-logo-icono">🐾</span>
-            <span>AuraPet</span>
-          </div>
-          <p>Conectando dueños y veterinarias en un solo lugar.</p>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Explora</h4>
-          <a href="#como-funciona">Cómo funciona</a>
-          <a href="#duenos">Para dueños</a>
-          <a href="#nosotros">Nosotros</a>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Contacto</h4>
-          <a href="mailto:contacto@aurapet.com">Correo</a>
-          <a href="#">WhatsApp</a>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Newsletter</h4>
-          <p>Únete y accede a contenido exclusivo.</p>
-        </div>
-        <div className="landing-footer-bottom">
-          © {new Date().getFullYear()} AuraPet. Todos los derechos reservados.
-        </div>
-      </footer>
     </div>
   );
 };

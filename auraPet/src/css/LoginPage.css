@@ -6,96 +6,244 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
-  font-family: system-ui, sans-serif;
+  padding: 16px;
+  background: rgba(18, 24, 31, 0.55);
+  backdrop-filter: blur(6px);
+  font-family: "Inter", system-ui, sans-serif;
   z-index: 100;
 }
 
 .login-card {
-  position: relative;
+  display: flex;
   width: 100%;
-  max-width: 360px;
-  background: white;
-  border-radius: 16px;
-  padding: 32px 28px;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+  max-width: 760px;
+  max-height: calc(100vh - 48px);   /* nunca más alto que la pantalla */
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+}
+
+/* Panel izquierdo */
+.login-panel-imagen {
+  position: relative;
+  flex: 0 0 42%;
+  background-size: cover;
+  background-position: center top;  /* prioriza la cara del perro */
+  display: flex;
+  align-items: flex-end;
+}
+.login-panel-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(18, 24, 31, 0) 30%, rgba(15, 143, 128, 0.85) 100%);
+}
+.login-panel-texto {
+  position: relative;
+  padding: 28px;
+  color: #ffffff;
+}
+.login-panel-texto h2 { font-size: 22px; line-height: 1.2; margin: 0 0 6px; }
+.login-panel-texto p  { font-size: 13px; margin: 0; opacity: 0.9; }
+
+/* Panel derecho */
+.login-panel-form {
+  position: relative;
+  flex: 1;
+  min-height: 0;                    /* permite que el contenido haga scroll */
+  display: flex;
+  flex-direction: column;
+}
+.login-contenido {
+  flex: 1;
+  padding: 36px 36px 24px;
+  overflow-y: auto;                 /* si la pantalla es muy baja, scrollea adentro */
 }
 
 .login-close-btn {
   position: absolute;
   top: 14px;
   right: 14px;
-  background: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   border: none;
-  font-size: 20px;
-  line-height: 1;
-  color: var(--color-text-muted);
-  cursor: pointer;
-}
-
-.login-brand {
+  background: #f1f3f4;
+  color: var(--color-terciario-texto-muted);
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 4px;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1;
 }
+.login-close-btn:hover { background: var(--color-terciario-borde); }
 
-.login-brand span {
+.login-titulo {
+  font-size: 22px;
   font-weight: 700;
-  font-size: 20px;
-  color: var(--color-text);
+  color: var(--color-terciario-texto);
+  margin: 0 0 2px;
 }
-
 .login-subtitulo {
-  margin: 0 0 22px;
+  margin: 0 0 18px;
   font-size: 13.5px;
-  color: var(--color-text-muted);
+  color: var(--color-terciario-texto-muted);
 }
 
+/* Pestañas */
+.login-tabs {
+  display: flex;
+  background: #f1f3f4;
+  border-radius: 999px;
+  padding: 4px;
+  margin-bottom: 18px;
+}
+.login-tab {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-terciario-texto-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.login-tab-activo {
+  background: #ffffff;
+  color: var(--color-primario);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Formulario */
 .login-label {
   display: block;
   font-size: 13px;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-terciario-texto);
   margin-bottom: 6px;
 }
-
 .login-input {
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 9px;
-  border: 1px solid var(--color-border);
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background: #f7f8f9;
   font-family: inherit;
-  font-size: 13.5px;
-  margin-bottom: 16px;
+  font-size: 14px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+  transition: border-color 0.2s, background 0.2s;
 }
-
 .login-input:focus {
   outline: none;
-  border-color: var(--color-accent);
+  border-color: var(--color-primario);
+  background: #ffffff;
+}
+
+.login-input-wrapper { position: relative; }
+.login-input-wrapper .login-input { padding-right: 44px; }
+.login-ojo-btn {
+  position: absolute;
+  top: 0;
+  right: 8px;
+  height: 42px;
+  background: none;
+  border: none;
+  color: var(--color-terciario-texto-muted);
+  cursor: pointer;
+}
+
+.login-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-primario);
+  text-decoration: none;
+  cursor: pointer;
+}
+.login-olvidaste {
+  display: block;
+  text-align: right;
+  font-size: 12.5px;
+  margin: -4px 0 16px;
 }
 
 .login-error {
-  color: #a4272a;
+  color: var(--color-estado-cancelada);
   font-size: 12.5px;
-  margin: -8px 0 14px;
+  margin: -8px 0 12px;
 }
 
 .login-btn {
   width: 100%;
-  padding: 11px;
-  border-radius: 9px;
+  height: 44px;
+  border-radius: 10px;
   border: none;
-  background: var(--color-accent);
-  color: white;
-  font-size: 14px;
-  font-weight: 700;
+  background: var(--color-primario);
+  color: #ffffff;
+  font-size: 14.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   cursor: pointer;
+  transition: filter 0.2s;
 }
+.login-btn:hover { filter: brightness(1.08); }
 
 .login-hint {
-  margin: 16px 0 0;
+  margin: 12px 0 0;
   font-size: 11.5px;
-  color: var(--color-text-muted);
+  color: var(--color-terciario-texto-muted);
   text-align: center;
+}
+
+/* Crear cuenta: elegir rol */
+.login-roles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.login-rol-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 12px;
+  border-radius: 14px;
+  border: 2px solid var(--color-terciario-borde);
+  background: #ffffff;
+  color: var(--color-terciario-texto);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.login-rol-card:hover {
+  border-color: var(--color-primario);
+  background: var(--color-secundario);
+  color: var(--color-primario);
+}
+
+/* Footer */
+.login-footer {
+  border-top: 1px solid var(--color-terciario-borde);
+  padding: 12px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--color-terciario-texto-muted);
+  background: #fafbfb;
+}
+
+/* Celular: se oculta la imagen y queda solo el formulario */
+@media (max-width: 768px) {
+  .login-panel-imagen { display: none; }
+  .login-card { max-width: 420px; }
+  .login-contenido { padding: 44px 24px 20px; }
 }

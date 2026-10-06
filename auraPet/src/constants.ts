@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react";
-import type {EstadoCita, UrgenciaCita, EspecieMascota, VistaHome, Servicio} from '../src/interfaces'; 
+import type {EstadoCita, UrgenciaCita, EspecieMascota, 
+  // VistaHome, 
+  Servicio} from '../src/interfaces'; 
 import {
   Menu, Search, Bell, User, UserCircle, LogOut, Settings, Calendar, Filter, ChevronDown, ChevronRight, X, Plus, MoreVertical, Home,
   PawPrint, Heart, CalendarPlus, History, FileText,Stethoscope, Syringe, ClipboardList, ClipboardPlus, Share2, Microscope, Activity,
@@ -203,12 +205,12 @@ export const getFechaHoy = (): number => {
   return Number(`${yyyy}${mm}${dd}`);
 };
 
-export const links: { vista: VistaHome; label: string }[] = [
-  { vista: "como-funciona", label: "Cómo funciona" },
-  { vista: "veterinarias", label: "Para veterinarias" },
-  { vista: "duenos", label: "Para dueños" },
-  { vista: "nosotros", label: "Nosotros" },
-  { vista: "contacto", label: "Contacto"}
+export const links: { ruta: string; label: string }[] = [
+  { ruta: "/como-funciona", label: "Cómo funciona" },
+  { ruta: "/veterinarias", label: "Para veterinarias" },
+  { ruta: "/duenos", label: "Para dueños" },
+  { ruta: "/nosotros", label: "Nosotros" },
+  { ruta: "/contacto", label: "Contacto" },
 ];
 
 // --- Preguntas Frecuentes de Contacto ---

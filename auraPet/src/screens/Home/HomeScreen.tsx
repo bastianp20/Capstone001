@@ -9,19 +9,13 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Colors} from "../../constants";
-// import { LoginScreen } from "../Login/LoginScreen";
-import { NavBar } from "../../components/NavBar";
-import type { VistaHome } from "../../interfaces";
+import { LoginScreen } from "../Login/LoginScreen";
 import "../../css/HomePage.css";
-import {Nosotros} from '../Home/NosotrosScreen'; 
-import { ParaDuenos } from "./ParaDuenosScreen";
-import {ParaVeterinarias} from '../Home/ParaVeterinariasScreen'; 
-import { ComoFunciona } from "./ComoFuncionaScreen";
-import { ContactoScreen } from "./ContactoScreen";
-import { Footer } from "../../components/Footer";
 import { Servicios } from "../../components/Servicios";
 import { getPreguntasFrecuentes } from "../../Api/getInfo";
 import fondo from '../../assets/Home/fondo.png';
+import Historial from '../../assets/Home/Historial.png'; 
+import siguientePaso from '../../assets/Home/siguientePaso.png'; 
 const colors = Colors;
 
 // variables de tema que le pasamos al contenedor raíz, mismo patrón que
@@ -59,8 +53,6 @@ export const HomeScreen = () => {
   const [faqAbierta, setFaqAbierta] = useState<number | null>(null);
   const [formulario, setFormulario] = useState({ nombre: "", correo: "", mensaje: "" });
 
-  const [vista, setVista] = useState<VistaHome>("landing");
-
   const testimoniosVisibles = 3;
   const maxIndice = Math.max(0, testimonios.length - testimoniosVisibles);
 
@@ -74,31 +66,9 @@ export const HomeScreen = () => {
     setFormulario({ nombre: "", correo: "", mensaje: "" });
   };
 
-    if (vista === "nosotros") {
-    return <Nosotros onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
-  }
-
-  if (vista === "duenos") {
-    return <ParaDuenos onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
-  }
-
-  if (vista === "veterinarias") {
-    return <ParaVeterinarias onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
-  }
-
-  if (vista === "como-funciona") {
-    return <ComoFunciona onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
-  }
-
-  if (vista === "contacto") {
-    return <ContactoScreen onNavegar={setVista} onIngresar={ () => setMostrarLogin(true)}/>
-  }
 
   return (
     <div className="landing-page" style={temaVars}>
-      {/* Navbar */}
-      <NavBar vistaActiva="landing" onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />
-
       {/* Hero */}
       <header className="landing-hero" style={{ backgroundImage: `url(${fondo})` }}>
         <div className="landing-hero-overlay" />
@@ -126,14 +96,11 @@ export const HomeScreen = () => {
       <Servicios />
 
       {/* Bloque oscuro con "imagen" (mockup de historial) + texto */}
-      <section className="landing-seccion-oscura">
-        <div className="landing-mockup-historial">
-          <div className="landing-mockup-header" />
-          {[1, 2, 3, 4].map((n) => (
-            <div className="landing-mockup-linea" key={n} />
-          ))}
+      <section className="landing-seccion-oscura" >
+        <div className="landing-mockup-historial" >
+          <img src={Historial} alt="Mockup de historial médico" className = "landing-mockup-imagen"/>
         </div>
-        <div className="landing-seccion-oscura-texto">
+        <div className="landing-seccion-oscura-texto" >
           <h2>Todo el historial de tu mascota en un solo lugar</h2>
           <p>
             Consulta diagnósticos, tratamientos y recetas anteriores desde
@@ -213,7 +180,7 @@ export const HomeScreen = () => {
             Agenda una cita
           </button>
         </div>
-        <div className="landing-cta-final-imagen" />
+        <img src={siguientePaso} alt="Mockup de siguiente paso" className = "landing-mockup-siguientepaso"/>
       </section>
 
       {/* Preguntas Frecuentes + contacto */}
@@ -264,8 +231,8 @@ export const HomeScreen = () => {
         </form>
       </section>
 
-        {/* Footer */}
-        <Footer/>
+      {/* Modal de login que abren los botones "Agenda una cita" */}
+      {mostrarLogin && <LoginScreen onCerrar={() => setMostrarLogin(false)} />}
     </div>
   );
 };
