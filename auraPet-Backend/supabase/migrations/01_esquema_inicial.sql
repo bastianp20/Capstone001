@@ -314,7 +314,7 @@ create index on mensajes_contacto (categoria);
 
 
 -- =====================================================================
--- PERFIL AUTOMÁTICO AL REGISTRARSE
+-- PERFIL AUTOMÁTICO AL REGISTRARSE 
 -- Supabase Auth crea la fila en auth.users; este trigger crea su perfil.
 -- El front manda nombre, teléfono y tipo de cuenta en options.data del signUp:
 --   supabase.auth.signUp({ email, password,

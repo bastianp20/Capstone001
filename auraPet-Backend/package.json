@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "gen:types": "supabase gen types typescript --linked > ../auraPet/src/lib/database.types.ts",
+    "db:push": "supabase db push"
   },
   "keywords": [],
   "author": "",
