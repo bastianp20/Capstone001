@@ -1,98 +1,112 @@
 
-import type { Cita, CitaResumen, EstadoCita, Mascota, UrgenciaCita,
-CitaProximaDueno, RegistroHistorialMedico, HistorialRecienteItem, PreguntaFrecuente } from "../interfaces";
-import { mascotasMock } from "../Data/Mascota";
-import { historialMedicoMock } from "../Data/HistorialMedico";
-import { citasMock } from "../Data/Cita";
-import { usuariosMock } from "../Data/Usuarios";
-import { veterinariosMock } from "../Data/Veterinarios";
-import { centrosMock } from "../Data/Centros";
-import { contactoMock } from "../Data/Contacto";
-import { formatFechaCaja, formatFechaLarga, respuestasPorCategoria } from "../constants";
+// aquí van todas las consultas a la base de datos
 
-//  Aquí traemos las mascotas por el id del dueño
-export const getMascotasPorDueno = (duenoId: number): Mascota[] =>
-    mascotasMock.filter((m) => m.duenoId === duenoId
-);
+//   3. Si hay error, lo lanza (throw) para que la pantalla lo muestre.
+//   4. Transforma las filas al formato que la pantalla ya conocía.
+//
+// OJO: lo que cada persona puede ver lo deciden las reglas RLS de la base.
+// Si una tabla aún no tiene reglas para un rol, la consulta devuelve [].
 
-// Aquí traemos el historial medico de las mascotas mediante el id de la mascota, para poder mostrar su historial medico.
-export const getHistorialPorMascota = (
-  mascotaId: number): RegistroHistorialMedico[] =>
-    historialMedicoMock
-        .filter((h) => h.mascotaId === mascotaId)
-        .sort((a, b) => (a.fecha < b.fecha ? 1 : -1)
-);
+// Tipos que ya usaban las pantallas (formato "listo para mostrar").
+import type {
+  CitaProximaDueno,        // cita para el cuadradito del panel del dueño
+  CitaResumen,             // cita para la tabla del superadmin
+  EstadoCita,              // "pendiente" | "confirmada" | ...
+  HistorialRecienteItem,   // ítem de "historial reciente" del dueño
+  Mascota,                 // mascota con los campos que muestra la app
+  PreguntaFrecuente,       // pregunta + respuesta + cantidad de consultas
+  SolicitudPendiente,      // centro o veterinario esperando aprobación
+  UrgenciaCita,            // "baja" | "media" | "alta" | "critica"
+} from "../interfaces";
+// auí importamos supabase para poder hacer las consutas a la base de datos. 
+import { supabase } from "../lib/supabase";
+// Funciones para mostrar las fechas que vienen de la base.
+import { formatFechaCaja, formatFechaCorta, formatFechaHora, formatFechaLarga, formatHora12h } from "../lib/fechas";
 
-// Aquí traemos la info de las citas mediante el id del dueño, para poder mostrar las citas que tiene asignadas.
-export const getCitasPorDueno = (duenoId: number): Cita[] =>
-  citasMock.filter((c) => c.duenoId === duenoId
-);
-
-// Aquí traermos la info mediante el id del veterinario, para poder mostrar las citas que tiene asignadas.
-export const getCitasPorVeterinario = (veterinarioId: number): Cita[] =>
-  citasMock.filter((c) => c.veterinarioId === veterinarioId
-);
-
-// fechaHora / fecha llegan como number en formato YYYYMMDDHHmm (ver
-// interfaces.ts), así que primero los pasamos a string para poder
-// extraer año, mes, día, hora y minutos por posición.
-const formatFechaHora = (fechaHora: number): string => {
-  const s = String(fechaHora).padStart(12, "0");
-  const dia = s.slice(6, 8);
-  const mes = s.slice(4, 6);
-  const hora = s.slice(8, 10);
-  const minutos = s.slice(10, 12);
-  return `${dia}/${mes} · ${hora}:${minutos}`;
-};
-
-// Formatea solo la hora, en formato 12h (para la agenda del veterinario).
-const formatHora12h = (fechaHora: number): string => {
-  const s = String(fechaHora).padStart(12, "0");
-  let horas = Number(s.slice(8, 10));
-  const minutos = s.slice(10, 12);
-  const sufijo = horas >= 12 ? "PM" : "AM";
-  horas = horas % 12;
-  if (horas === 0) horas = 12;
-  return `${horas}:${minutos} ${sufijo}`;
-};
-
+// Pone la primera letra en mayúscula: "perro" -> "Perro".
 const capitalize = (s: string): string => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
-// Antes existía un segundo archivo (Data/Citas.ts) con un "citasMock"
-// distinto, escrito a mano con los nombres ya aplanados. Eso duplicaba
-// la fuente de verdad y se desincronizaba fácil. Esta función resuelve
-// el detalle (mascota, dueño, veterinario, centro) a partir del único
-// modelo relacional (Data/Cita.ts) — igual que haría una query real
-// con JOIN una vez que esto se conecte a Supabase.
-export const getCitasResumen = (): CitaResumen[] =>
-  citasMock.map((c) => {
-    const mascota = mascotasMock.find((m) => m.id === c.mascotaId);
-    const dueno = usuariosMock.find((u) => u.id === c.duenoId);
-    const veterinario = c.veterinarioId
-      ? veterinariosMock.find((v) => v.id === c.veterinarioId)
-      : undefined;
-    const veterinarioUsuario = veterinario
-      ? usuariosMock.find((u) => u.id === veterinario.usuarioId)
-      : undefined;
-    const centro = centrosMock.find((ce) => ce.id === c.centroId);
 
-    return {
-      id: c.id,
-      mascota: mascota?.nombre ?? "Mascota desconocida",
-      dueno: dueno?.nombre ?? "Dueño desconocido",
-      veterinario: veterinarioUsuario?.nombre ?? "Sin asignar",
-      centro: centro?.nombre ?? "Centro desconocido",
-      fechaHora: formatFechaHora(c.fechaHora),
-      estado: c.estado,
-      urgencia: c.urgencia,
-    };
-  });
+// =====================================================================
+// PANEL DEL DUEÑO
+// =====================================================================
 
-// ---------- Vista "Mi Agenda" del veterinario ----------
+// Las mascotas de un dueño.
+export const getMascotasPorDueno = async (duenoId: string): Promise<Mascota[]> => {
+  const { data, error } = await supabase          // "await" = esperar la respuesta de la base
+    .from("mascotas")                             // de la tabla mascotas...
+    .select("id, dueno_id, nombre, especie, raza, fecha_nacimiento, sexo, esterilizado, foto_url") // ...estas columnas...
+    .eq("dueno_id", duenoId)                      // ...solo las de este dueño (where dueno_id = ...)
+    .order("nombre");                             // ...ordenadas por nombre
+  if (error) throw error;                         // si la base respondió con error, se avisa a la pantalla
+  return (data ?? []).map((m) => ({               // por cada fila, armamos el objeto que usa la pantalla:
+    id: m.id,                                     // id de la mascota
+    duenoId: m.dueno_id,                          // la base usa snake_case (dueno_id); la app, camelCase
+    nombre: m.nombre,
+    especie: m.especie,
+    raza: m.raza,
+    fechaNacimiento: m.fecha_nacimiento,          // texto "2021-03-15" (o null si no se sabe)
+    sexo: m.sexo,
+    esterilizado: m.esterilizado,
+    fotoUrl: m.foto_url,
+  }));
+};
 
+// Las próximas citas de un dueño (las que todavía no pasan), con mascota y centro.
+export const getProximasCitasDueno = async (duenoId: string, limite = 3): Promise<CitaProximaDueno[]> => {
+  const { data, error } = await supabase
+    .from("citas")                                // tabla citas
+    .select(`
+      id, mascota_id, fecha_hora, motivo, estado, urgencia,
+      mascotas!inner ( nombre, dueno_id ),
+      centros ( nombre )
+    `)                                            // + datos de su mascota y su centro (como un JOIN)
+    .eq("mascotas.dueno_id", duenoId)             // solo citas de mascotas de este dueño (por eso el !inner)
+    .gte("fecha_hora", new Date().toISOString())  // gte = "mayor o igual": desde ahora en adelante
+    .neq("estado", "cancelada")                   // neq = "distinto de": sin las canceladas
+    .order("fecha_hora")                          // la más próxima primero
+    .limit(limite);                               // solo las primeras N
+  if (error) throw error;
+  const filas = data ?? [];
+  return filas.map((c) => ({
+    id: c.id,
+    mascotaId: c.mascota_id,
+    mascota: c.mascotas?.nombre ?? "Mascota desconocida",   // "?." por si viniera vacío
+    centro: c.centros?.nombre ?? "Centro desconocido",
+    ...formatFechaCaja(c.fecha_hora),             // agrega { dia: "10", mes: "SEP" }
+    motivo: c.motivo,
+    estado: c.estado,
+    urgencia: c.urgencia ?? "baja",              // la urgencia puede no estar todavía (la pone la IA)
+  }));
+};
+
+// Lo último que pasó en el historial médico de TODAS las mascotas del dueño.
+export const getHistorialRecienteDueno = async (duenoId: string, limite = 5): Promise<HistorialRecienteItem[]> => {
+  const { data, error } = await supabase
+    .from("registros_medicos")                    // tabla del historial
+    .select("id, fecha, descripcion, mascotas!inner ( nombre, dueno_id )") // + nombre de la mascota
+    .eq("mascotas.dueno_id", duenoId)             // solo mascotas de este dueño
+    .order("fecha", { ascending: false })         // del más reciente al más antiguo
+    .limit(limite);
+  if (error) throw error;
+  const filas = data ?? [];
+  return filas.map((h) => ({
+    id: h.id,
+    mascota: h.mascotas?.nombre ?? "Mascota desconocida",
+    descripcion: h.descripcion,
+    fecha: formatFechaLarga(h.fecha),             // "2025-12-20" -> "20 dic 2025"
+  }));
+};
+
+
+// =====================================================================
+// PANEL DEL VETERINARIO
+// =====================================================================
+
+// Una cita tal como la muestra la agenda del veterinario.
 export interface CitaAgendaItem {
   id: number;
-  hora: string;
+  hora: string;           // "10:30 AM"
   mascota: string;
   especie: string;
   raza: string;
@@ -102,145 +116,169 @@ export interface CitaAgendaItem {
   urgencia: UrgenciaCita;
 }
 
+// Lo que necesita la barra superior del panel del veterinario.
 export interface InfoVeterinario {
-  nombre: string;
-  centros: string[];
+  id: number | null;      // id en la tabla veterinarios (null si la cuenta aún no tiene ficha profesional)
+  centros: string[];      // nombres de los centros donde atiende
 }
 
-// Nombre y centros del veterinario — hasta que exista login real,
-// VeterinarioScreen decide a mano qué veterinarioId está "logueado" y usa
-// esto para mostrar su nombre y centro(s) en la barra superior.
-export const getInfoVeterinario = (veterinarioId: number): InfoVeterinario => {
-  const veterinario = veterinariosMock.find((v) => v.id === veterinarioId);
-  const usuario = veterinario ? usuariosMock.find((u) => u.id === veterinario.usuarioId) : undefined;
-  const centros = veterinario
-    ? veterinario.centroIds
-        .map((centroId) => centrosMock.find((c) => c.id === centroId)?.nombre)
-        .filter((nombre): nombre is string => Boolean(nombre))
-    : [];
-
+// Busca la ficha de veterinario de la persona conectada y sus centros.
+// Recibe el id de la CUENTA (uuid) y devuelve el id de VETERINARIO (número),
+// que es el que usan la agenda y los pacientes.
+export const getInfoVeterinario = async (perfilId: string): Promise<InfoVeterinario> => {
+  const { data, error } = await supabase
+    .from("veterinarios")
+    .select("id, veterinario_centros ( centros ( nombre ) )")  // sus centros, a través de la tabla intermedia
+    .eq("perfil_id", perfilId)                    // la ficha de esta cuenta
+    .maybeSingle();                               // una fila o ninguna (si no existe, data = null, sin error)
+  if (error) throw error;
+  const fila = data;
   return {
-    nombre: usuario?.nombre ?? "Veterinario",
-    centros,
+    id: fila?.id ?? null,                         // null si la cuenta no tiene ficha de veterinario
+    centros: (fila?.veterinario_centros ?? [])    // [{ centros: { nombre } }, ...]
+      .map((vc) => vc.centros?.nombre)            // -> ["Clínica VetSur", ...]
+      .filter((nombre): nombre is string => Boolean(nombre)), // sin vacíos
   };
 };
 
-// Agenda de citas de un veterinario, resuelta desde Data/Cita.ts (el
-// único modelo real) uniendo mascota y dueño. Ordenada por hora.
-// Nota: por ahora trae TODAS sus citas, sin filtrar por "hoy" — el
-// mock no tiene suficientes citas con fecha de hoy para verse bien;
-// cuando esto se conecte a Supabase, el filtro por fecha lo hace la
-// query (WHERE fecha_hora::date = CURRENT_DATE).
-export const getAgendaVeterinario = (veterinarioId: number): CitaAgendaItem[] =>
-  citasMock
-    .filter((c) => c.veterinarioId === veterinarioId)
-    .sort((a, b) => a.fechaHora - b.fechaHora)
-    .map((c) => {
-      const mascota = mascotasMock.find((m) => m.id === c.mascotaId);
-      const dueno = usuariosMock.find((u) => u.id === c.duenoId);
-
-      return {
-        id: c.id,
-        hora: formatHora12h(c.fechaHora),
-        mascota: mascota?.nombre ?? "Mascota desconocida",
-        especie: mascota ? capitalize(mascota.especie) : "—",
-        raza: mascota?.raza ?? "—",
-        dueno: dueno?.nombre ?? "Dueño desconocido",
-        motivo: c.motivo,
-        estado: c.estado,
-        urgencia: c.urgencia,
-      };
-    });
-
-  export const getPacienteByVeterinarioId = (veterinarioId: number) => {
-    const citasVet = citasMock.filter((c) => c.veterinarioId === veterinarioId);
-    const citasPorMascota = new Map<number, Cita[]>();
-    citasVet.forEach((c) => {
-    const citas = citasPorMascota.get(c.mascotaId) ?? [];
-    citas.push(c);
-    citasPorMascota.set(c.mascotaId, citas);
-    }); 
-      return Array.from(citasPorMascota.entries())
-    .map(([mascotaId, citas]) => {
-      const mascota = mascotasMock.find((m) => m.id === mascotaId);
-      const dueno = mascota ? usuariosMock.find((u) => u.id === mascota.duenoId) : undefined;
-      const ultimaCita = [...citas].sort((a, b) => b.fechaHora - a.fechaHora)[0];
-    return {
-        id: mascotaId,
-        nombre: mascota?.nombre ?? "Mascota desconocida",
-        especie: mascota ? capitalize(mascota.especie) : "—",
-        raza: mascota?.raza ?? "—",
-        dueno: dueno?.nombre ?? "Dueño desconocido",
-        ultimaVisita: formatFechaHora(ultimaCita.fechaHora),
-        totalVisitas: citas.length,
-      };
-    })
-    .sort((a, b) => a.nombre.localeCompare(b.nombre));
+// Todas las citas asignadas a un veterinario, ordenadas por hora.
+export const getAgendaVeterinario = async (veterinarioId: number): Promise<CitaAgendaItem[]> => {
+  const { data, error } = await supabase
+    .from("citas")
+    .select(`
+      id, fecha_hora, motivo, estado, urgencia,
+      mascotas ( nombre, especie, raza, perfiles ( nombre ) )
+    `)                                            // mascota y, a través de ella, el nombre del dueño
+    .eq("veterinario_id", veterinarioId)          // solo las de este veterinario
+    .order("fecha_hora");                         // de la más temprana a la más tarde
+  if (error) throw error;
+  const filas = data ?? [];
+  return filas.map((c) => ({
+    id: c.id,
+    hora: formatHora12h(c.fecha_hora),            // "2026-09-10T13:30:00Z" -> "10:30 AM"
+    mascota: c.mascotas?.nombre ?? "Mascota desconocida",
+    especie: c.mascotas ? capitalize(c.mascotas.especie) : "—",
+    raza: c.mascotas?.raza ?? "—",
+    dueno: c.mascotas?.perfiles?.nombre ?? "Dueño desconocido",
+    motivo: c.motivo,
+    estado: c.estado,
+    urgencia: c.urgencia ?? "baja",              // sin urgencia aún -> se muestra como baja
+  }));
 };
 
-// ---------- Vista "Inicio" del dueño ----------
+// Los pacientes de un veterinario: cada mascota UNA vez, con cuántas visitas
+// tuvo y la fecha de la última.
+export const getPacienteByVeterinarioId = async (veterinarioId: number) => {
+  const { data, error } = await supabase
+    .from("citas")
+    .select("mascota_id, fecha_hora, mascotas ( nombre, especie, raza, perfiles ( nombre ) )")
+    .eq("veterinario_id", veterinarioId)
+    .order("fecha_hora", { ascending: false });   // la más reciente primero
+  if (error) throw error;
 
-export const getProximasCitasDueno = (duenoId: number): CitaProximaDueno[] =>
-  citasMock
-    .filter((c) => c.duenoId === duenoId)
-    .sort((a, b) => a.fechaHora - b.fechaHora)
-    .map((c) => {
-      const mascota = mascotasMock.find((m) => m.id === c.mascotaId);
-      const centro = centrosMock.find((ce) => ce.id === c.centroId);
-      const { dia, mes } = formatFechaCaja(c.fechaHora);
-
-      return {
-        id: c.id,
-        mascotaId: c.mascotaId,
-        mascota: mascota?.nombre ?? "Mascota desconocida",
-        centro: centro?.nombre ?? "Centro desconocido",
-        dia,
-        mes,
-        motivo: c.motivo,
-        estado: c.estado,
-        urgencia: c.urgencia,
-      };
+  // Agrupamos las citas por mascota: Map<idMascota, datos del paciente>.
+  const pacientes = new Map<number, {
+    id: number; nombre: string; especie: string; raza: string; dueno: string;
+    ultimaVisita: string; totalVisitas: number;
+  }>();
+  const filas = data ?? [];
+  for (const c of filas) {                        // recorremos cada cita
+    const existente = pacientes.get(c.mascota_id);
+    if (existente) {                              // si la mascota ya estaba, solo sumamos una visita
+      existente.totalVisitas += 1;
+      continue;
+    }
+    pacientes.set(c.mascota_id, {                 // si es la primera vez que aparece, la agregamos
+      id: c.mascota_id,
+      nombre: c.mascotas?.nombre ?? "Mascota desconocida",
+      especie: c.mascotas ? capitalize(c.mascotas.especie) : "—",
+      raza: c.mascotas?.raza ?? "—",
+      dueno: c.mascotas?.perfiles?.nombre ?? "Dueño desconocido",
+      ultimaVisita: formatFechaHora(c.fecha_hora), // como vienen de la más reciente, la primera es la última visita
+      totalVisitas: 1,
     });
-
-// Junta el historial de TODAS las mascotas de este dueño (no de una sola),
-// ordenado del más reciente al más antiguo — para el panel "Historial
-// reciente" de Inicio. `limite` corta cuántos mostrar ahí.
-export const getHistorialRecienteDueno = (duenoId: number, limite = 5): HistorialRecienteItem[] => {
-  const mascotaIds = getMascotasPorDueno(duenoId).map((m) => m.id);
-
-  return historialMedicoMock
-    .filter((h) => mascotaIds.includes(h.mascotaId))
-    .sort((a, b) => b.fecha - a.fecha)
-    .slice(0, limite)
-    .map((h) => {
-      const mascota = mascotasMock.find((m) => m.id === h.mascotaId);
-      return {
-        id: h.id,
-        mascota: mascota?.nombre ?? "Mascota desconocida",
-        descripcion: h.descripcion,
-        fecha: formatFechaLarga(h.fecha),
-      };
-    });
-};
-
-
-// Cuenta cuántos mensajes hay por categoria y devuelve las `limite` más
-// repetidas (la moda), con su pregunta/respuesta ya redactadas.
-export const getPreguntasFrecuentes = (limite = 6): PreguntaFrecuente[] => {
-  const conteoPorCategoria = new Map<string, number>();
-  for (const mensaje of contactoMock) {
-    conteoPorCategoria.set(
-      mensaje.categoria,
-      (conteoPorCategoria.get(mensaje.categoria) ?? 0) + 1
-    );
   }
+  // Pasamos el Map a lista y ordenamos alfabéticamente.
+  return Array.from(pacientes.values()).sort((a, b) => a.nombre.localeCompare(b.nombre));
+};
 
-  return Array.from(conteoPorCategoria.entries())
-    .sort((a, b) => b[1] - a[1]) // de la categoria con más mensajes a la que tiene menos
-    .slice(0, limite)
-    .filter(([categoria]) => respuestasPorCategoria[categoria]) // por si se agrega una categoria sin redactar aún
-    .map(([categoria, cantidad]) => ({
-      ...respuestasPorCategoria[categoria],
-      cantidad,
-    }));
+
+// =====================================================================
+// PANEL DEL SUPERADMIN
+// =====================================================================
+
+// Todas las citas de la plataforma, con mascota, dueño, veterinario y centro.
+export const getCitasResumen = async (): Promise<CitaResumen[]> => {
+  const { data, error } = await supabase
+    .from("citas")
+    .select(`
+      id, fecha_hora, estado, urgencia,
+      mascotas ( nombre, perfiles ( nombre ) ),
+      veterinarios ( perfiles!veterinarios_perfil_id_fkey ( nombre ) ),
+      centros ( nombre )
+    `)                                            // veterinarios tiene 2 relaciones con perfiles (perfil_id y
+                                                  // revisado_por); "!veterinarios_perfil_id_fkey" le dice cuál usar
+    .order("fecha_hora", { ascending: false });   // las más nuevas primero
+  if (error) throw error;
+  const filas = data ?? [];
+  return filas.map((c) => ({
+    id: c.id,
+    mascota: c.mascotas?.nombre ?? "Mascota desconocida",
+    dueno: c.mascotas?.perfiles?.nombre ?? "Dueño desconocido",
+    veterinario: c.veterinarios?.perfiles?.nombre ?? "Sin asignar",
+    centro: c.centros?.nombre ?? "Centro desconocido",
+    fechaHora: formatFechaHora(c.fecha_hora),     // "10/09 · 10:30"
+    estado: c.estado,
+    urgencia: c.urgencia ?? "baja",              // sin urgencia aún -> se muestra como baja
+  }));
+};
+
+// Centros y veterinarios que esperan aprobación (reemplaza SolicitudPendiente.ts).
+export const getSolicitudesPendientes = async (): Promise<SolicitudPendiente[]> => {
+  // Pedimos las dos listas al mismo tiempo (Promise.all = en paralelo, más rápido).
+  const [centros, veterinarios] = await Promise.all([
+    supabase
+      .from("centros")
+      .select("id, nombre, creado_en")
+      .eq("estado_verificacion", "pendiente"),
+    supabase
+      .from("veterinarios")
+      .select("id, creado_en, perfiles!veterinarios_perfil_id_fkey ( nombre )")
+      .eq("estado_verificacion", "pendiente"),
+  ]);
+  if (centros.error) throw centros.error;
+  if (veterinarios.error) throw veterinarios.error;
+
+  // Juntamos ambas en una sola lista con el mismo formato.
+  const lista = [
+    ...(centros.data ?? []).map((c) => ({
+      id: `centro-${c.id}`,                       // prefijo para que no choquen los ids de centros y veterinarios
+      nombre: c.nombre,
+      tipo: "centro" as const,
+      creadoEn: c.creado_en,
+    })),
+    ...(veterinarios.data ?? []).map((v) => ({
+      id: `veterinario-${v.id}`,
+      nombre: v.perfiles?.nombre ?? "Veterinario sin nombre",
+      tipo: "veterinario" as const,
+      creadoEn: v.creado_en,
+    })),
+  ];
+  return lista
+    .sort((a, b) => b.creadoEn.localeCompare(a.creadoEn))     // las más recientes primero
+    .map(({ creadoEn, ...s }) => ({ ...s, fechaRegistro: formatFechaCorta(creadoEn) })); // "23/07/2026"
+};
+
+
+// =====================================================================
+// PÚBLICO (Home y Contacto)
+// =====================================================================
+
+// Las preguntas frecuentes. La "moda" (categorías con más mensajes de contacto)
+// la calcula la base con la función preguntas_frecuentes(limite) — ver
+// auraPet-Backend/supabase/migrations/03_preguntas_frecuentes_sin_mensajes.sql.
+export const getPreguntasFrecuentes = async (limite = 6): Promise<PreguntaFrecuente[]> => {
+  const { data, error } = await supabase.rpc("preguntas_frecuentes", { limite }); // rpc = llamar una función de la base
+  if (error) throw error;
+  return data ?? [];
 };

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { Colors } from "../../constants";
 import "../../css/Contacto.css";
-import { getPreguntasFrecuentes } from "../../Api/getInfo";
+import { usePreguntasFrecuentes } from "../../hooks/usePreguntasFrecuentes";
 
 const colors = Colors;
 
@@ -54,7 +54,7 @@ export const ContactoScreen = () => {
     mensaje: "",
   });
   const [faqAbierta, setFaqAbierta] = useState<number | null>(null);
-  const preguntasFrecuentes = getPreguntasFrecuentes();
+  const { preguntas: preguntasFrecuentes } = usePreguntasFrecuentes();
 
   const handleEnviar = (e: React.FormEvent) => {
     e.preventDefault();

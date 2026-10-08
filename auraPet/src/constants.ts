@@ -151,43 +151,8 @@ export const Iconos = {
   esterilizado: Scissors,
 };
 
-// Fechas en formato YYYYMMDD (8 dígitos) — se usan en Mascota.fechaNacimiento
-// y RegistroHistorialMedico.fecha. A diferencia de Cita.fechaHora (12 dígitos,
-// con hora y minutos), acá basta con convertir a string sin rellenar, porque
-// el año siempre ocupa los 4 dígitos.
-const parseFechaCorta = (fecha: number) => {
-  const s = String(fecha);
-  return { anio: Number(s.slice(0, 4)), mes: Number(s.slice(4, 6)), dia: Number(s.slice(6, 8)) };
-};
-
-const MESES_ABREV = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-
-// Edad en años a partir de la fecha de nacimiento (le resta 1 si todavía
-// no ha cumplido años este año calendario).
-export const calcularEdad = (fechaNacimiento: number): number => {
-  const { anio, mes, dia } = parseFechaCorta(fechaNacimiento);
-  const hoy = new Date();
-  let edad = hoy.getFullYear() - anio;
-  const noHaCumplidoAun = hoy.getMonth() + 1 < mes || (hoy.getMonth() + 1 === mes && hoy.getDate() < dia);
-  if (noHaCumplidoAun) edad -= 1;
-  return edad;
-};
-
-// "20 dic 2025" — para ítems de historial médico.
-export const formatFechaLarga = (fecha: number): string => {
-  const { anio, mes, dia } = parseFechaCorta(fecha);
-  return `${dia} ${MESES_ABREV[mes - 1]} ${anio}`;
-};
-
-// dia: "05", mes: "SEP" — para el cuadradito de fecha de una cita.
-// Cita.fechaHora trae 12 dígitos (YYYYMMDDHHmm), por eso acá sí usamos
-// padStart igual que formatFechaHora en Api/getInfo.tsx.
-export const formatFechaCaja = (fechaHora: number): { dia: string; mes: string } => {
-  const s = String(fechaHora).padStart(12, "0");
-  const dia = s.slice(6, 8);
-  const mesNum = Number(s.slice(4, 6));
-  return { dia, mes: MESES_ABREV[mesNum - 1].toUpperCase() };
-};
+// Los formatos de fecha (calcularEdad, formatFechaLarga, formatFechaCaja, etc.)
+// ahora están en src/lib/fechas.ts y trabajan con las fechas de Supabase.
 
 export const EMOJI_ESPECIE: Record<EspecieMascota, string> = {
   perro: "🐕",

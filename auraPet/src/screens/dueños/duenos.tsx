@@ -1,5 +1,7 @@
 import { useState, type CSSProperties } from 'react';
-import { Colors, Iconos, Badge, badgeStyles, ESTADO_LABEL, URGENCIA_LABEL, EMOJI_ESPECIE,calcularEdad } from '../../constants';
+import { Colors, Iconos, Badge, badgeStyles, ESTADO_LABEL, URGENCIA_LABEL, EMOJI_ESPECIE } from '../../constants';
+import { calcularEdad } from '../../lib/fechas';
+import { useConsulta } from '../../hooks/useConsulta';
 import { getMascotasPorDueno, getProximasCitasDueno, getHistorialRecienteDueno } from '../../Api/getInfo';
 import { getIniciales } from '../../utils';
 import { useAuth } from '../../Auth/AuthContext';
@@ -25,9 +27,10 @@ export const DuenoScreen = () => {
   const duenoIdActual = usuarioActual!.id; // App.tsx ya garantiza que hay sesión antes de montar esta pantalla
   const nombreDueno = usuarioActual!.nombre;
 
-  const mascotas = getMascotasPorDueno(duenoIdActual);
-  const proximasCitas = getProximasCitasDueno(duenoIdActual).slice(0, 3);
-  const historialReciente = getHistorialRecienteDueno(duenoIdActual, 3);
+  // Datos desde Supabase. Mientras cargan, cada lista empieza vacía (= []).
+  const { datos: mascotas = [] } = useConsulta(() => getMascotasPorDueno(duenoIdActual), [duenoIdActual]);
+  const { datos: proximasCitas = [] } = useConsulta(() => getProximasCitasDueno(duenoIdActual, 3), [duenoIdActual]);
+  const { datos: historialReciente = [] } = useConsulta(() => getHistorialRecienteDueno(duenoIdActual, 3), [duenoIdActual]);
 
   const [modalAbierto, setModalAbierto] = useState<"configuracion" | null>(null);
   return (
@@ -115,7 +118,7 @@ export const DuenoScreen = () => {
                     <div>
                       <p className="dueno-mascota-nombre">{m.nombre}</p>
                       <p className="dueno-mascota-detalle">
-                        {m.raza} · {calcularEdad(m.fechaNacimiento)} años
+                        {m.raza ?? 'Sin raza'}{calcularEdad(m.fechaNacimiento) !== null && ` · ${calcularEdad(m.fechaNacimiento)} años`}
                       </p>
                     </div>
                   </div>

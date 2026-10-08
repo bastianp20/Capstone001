@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { MedicamentoReceta, RecetaModalProps } from "../interfaces";
 import { getPacienteByVeterinarioId } from "../Api/getInfo";
+import { useConsulta } from "../hooks/useConsulta";
 import styles from "../css/Modal.module.css";
 import {getFechaHoy} from '../constants'; 
 
@@ -16,7 +17,7 @@ const medicamentoVacio = (): MedicamentoReceta => ({
 // le está recetando (getPacientesPorVeterinario ya trae la lista de
 // mascotas únicas que atiende), agrega uno o más medicamentos e indicaciones.
 export const RecetaModal = ({ veterinarioId, onCerrar, onGuardar }: RecetaModalProps) => {
-  const pacientes = getPacienteByVeterinarioId(veterinarioId);
+  const { datos: pacientes = [] } = useConsulta(() => getPacienteByVeterinarioId(veterinarioId), [veterinarioId]);
 
   const [mascotaId, setMascotaId] = useState<number | "">("");
   const [medicamentos, setMedicamentos] = useState<MedicamentoReceta[]>([medicamentoVacio()]);

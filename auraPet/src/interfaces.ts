@@ -12,7 +12,7 @@ export type ModoLogin = 'ingresar' | 'crear';
 
 
 export interface SolicitudPendiente {
-  id: number;
+  id: string; // "centro-3" o "veterinario-5": vienen de dos tablas distintas
   nombre: string;
   tipo: TipoSolicitud;
   fechaRegistro: string;
@@ -53,16 +53,17 @@ export interface Usuario {
   password: string; // esto es solo momentaneo 
 }
 
+// Mascota tal como la usa la app (viene de la tabla mascotas de Supabase).
 export interface Mascota {
   id: number;
-  duenoId: number; // FK -> Usuario (rol dueno)
+  duenoId: string | null;          // uuid del dueño (null si el dueño borró su cuenta)
   nombre: string;
   especie: EspecieMascota;
-  raza: string;
-  fechaNacimiento: number; // lo mismo, si nos da un valor tipo float o date podemos truncarlo y dejarlo prolijo 
+  raza: string | null;
+  fechaNacimiento: string | null;  // "2021-03-15" (columna date); null si no se conoce
   sexo: "macho" | "hembra";
-  esterilizado: boolean; // pa saber si es verdadero o falso 
-  fotoUrl?: string;
+  esterilizado: boolean;
+  fotoUrl: string | null;
 }
 
 export interface Centro {
@@ -178,10 +179,35 @@ export interface HistorialRecienteItem {
   fecha: string;
 }
 
+// ---------- Sesión real (Supabase Auth + tabla perfiles) ----------
+// Rol de la cuenta en la base de datos. "Admin de centro" no es un rol:
+// es un cargo en la tabla admins_centro.
+export type RolCuenta = "dueno" | "veterinario" | "superadmin";
+
+// La persona conectada. El id es el uuid de Supabase Auth (= perfiles.id).
+export interface UsuarioActual {
+  id: string;
+  email: string;
+  nombre: string;
+  rol: RolCuenta;
+  telefono: number | null;
+  avatarUrl: string | null;
+}
+
+export interface DatosRegistro {
+  nombre: string;
+  email: string;
+  password: string;
+  telefono?: string;
+  rol: "dueno" | "veterinario"; // nadie puede registrarse como superadmin
+}
+
 export interface AuthContextValue {
-  usuarioActual: Usuario | null;
-  login: (email: string, password: string) => boolean;
-  logout: () => void;
+  usuarioActual: UsuarioActual | null;
+  cargando: boolean; // true mientras se recupera la sesión al abrir la app
+  login: (email: string, password: string) => Promise<string | null>; // null = ok; si no, el mensaje de error
+  registrar: (datos: DatosRegistro) => Promise<{ error?: string; requiereConfirmacion?: boolean }>;
+  logout: () => Promise<void>;
 }
 
 export interface ModalPacientesProps {
@@ -252,5 +278,9 @@ export interface LoginScreenProps {
 export interface ParaDuenosScreenProps {
   onNavegar?: (vista: VistaHome) => void;
   onIngresar?: () => void;
+}
+
+export interface CrearProfesionalModalProps {
+  onClose: () => void;
 }
 

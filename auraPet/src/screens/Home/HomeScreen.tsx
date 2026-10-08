@@ -12,7 +12,7 @@ import { Colors} from "../../constants";
 import { LoginScreen } from "../Login/LoginScreen";
 import "../../css/HomePage.css";
 import { Servicios } from "../../components/Servicios";
-import { getPreguntasFrecuentes } from "../../Api/getInfo";
+import { usePreguntasFrecuentes } from "../../hooks/usePreguntasFrecuentes";
 import fondo from '../../assets/Home/fondo.png';
 import Historial from '../../assets/Home/Historial.png'; 
 import siguientePaso from '../../assets/Home/siguientePaso.png'; 
@@ -51,6 +51,7 @@ export const HomeScreen = () => {
 //   const [mostrarConocer, setMostrarConocer] = useState(false); 
   const [testimonioActual, setTestimonioActual] = useState(0);
   const [faqAbierta, setFaqAbierta] = useState<number | null>(null);
+  const { preguntas: preguntasFrecuentes } = usePreguntasFrecuentes();
   const [formulario, setFormulario] = useState({ nombre: "", correo: "", mensaje: "" });
 
   const testimoniosVisibles = 3;
@@ -187,7 +188,7 @@ export const HomeScreen = () => {
       <section className="landing-seccion landing-faq-contacto" id="contacto">
         <div className="landing-faq">
           <h2>¿Tienes dudas?</h2>
-          {getPreguntasFrecuentes().map((item, i) => (
+          {preguntasFrecuentes.map((item, i) => (
             <div className="landing-faq-item" key={item.pregunta}>
               <button
                 className="landing-faq-pregunta"

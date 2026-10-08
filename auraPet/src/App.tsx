@@ -10,7 +10,11 @@ import { Nosotros } from './screens/Home/NosotrosScreen';
 import { ContactoScreen } from './screens/Home/ContactoScreen';
 
 export const App = () => {
-  const { usuarioActual } = useAuth();
+  const { usuarioActual, cargando } = useAuth();
+
+  // Mientras se recupera la sesión guardada no se muestra nada, para que no
+  // aparezca la landing un instante antes de entrar al panel.
+  if (cargando) return null;
 
   // TODO: rutas protegidas. Por ahora, con sesión iniciada se sigue mostrando LoginRol como antes.
   if (usuarioActual) return <LoginRol />;

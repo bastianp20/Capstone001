@@ -18,9 +18,6 @@ export const LoginRol = () => {
       return <VeterinarioScreen />;
     case 'superadmin':
       return <SuperAdminScreen />;
-    case 'centro':
-      // TODO: todavía no existe pantalla para el rol "centro".
-      return <HomeScreen />;
     default:
       return <HomeScreen />;
   }
