@@ -282,3 +282,25 @@ export const getPreguntasFrecuentes = async (limite = 6): Promise<PreguntaFrecue
   if (error) throw error;
   return data ?? [];
 };
+
+// Especialidades para los chips del modal de crear profesional.
+export const getEspecialidades = async () => {
+  const { data, error } = await supabase
+    .from("especialidades")
+    .select("id, nombre")
+    .order("nombre");
+  if (error) throw error;
+  return data;
+};
+
+// Centros aprobados para el selector del modal.
+// El superadmin también ve los de prueba (es_prueba = true), los demás no.
+export const getCentrosSelector = async () => {
+  const { data, error } = await supabase
+    .from("centros")
+    .select("id, nombre, es_prueba")
+    .eq("estado_verificacion", "aprobado")
+    .order("nombre");
+  if (error) throw error;
+  return data;
+};

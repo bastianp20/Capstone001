@@ -9,8 +9,6 @@ export type VistaHome = "landing" | "como-funciona" | "veterinarias" | "duenos" 
 export type ModoLogin = 'ingresar' | 'crear';
 
 
-
-
 export interface SolicitudPendiente {
   id: string; // "centro-3" o "veterinario-5": vienen de dos tablas distintas
   nombre: string;
@@ -208,6 +206,7 @@ export interface AuthContextValue {
   login: (email: string, password: string) => Promise<string | null>; // null = ok; si no, el mensaje de error
   registrar: (datos: DatosRegistro) => Promise<{ error?: string; requiereConfirmacion?: boolean }>;
   logout: () => Promise<void>;
+  recargarPerfil: () => void; // vuelve a leer el perfil (después de editarlo)
 }
 
 export interface ModalPacientesProps {
@@ -284,3 +283,40 @@ export interface CrearProfesionalModalProps {
   onClose: () => void;
 }
 
+// EDGE FUNCTIONS 
+// ésto es lo que debe de ir en la carpeta de api con su metodo de post para crear un nuevo profesional
+export interface DatosNuevoProfesional {
+  nombre: string;
+  correo: string;
+  telefono: string;          // "56912345678" o "" si no hay
+  numeroColegiado: string;
+  especialidadId: number | null;
+  centroId: number;
+  esAdminCentro: boolean;
+}
+
+export interface DatosNuevoDueno {
+  nombre: string;
+  correo: string;
+  telefono: string; // "56912345678" o ""
+}
+export interface CrearDuenoModalProps {
+  onClose: () => void;
+}
+
+// Crear Mascota, el dueño puede hacerlo 
+export interface DatosNuevaMascota {
+  nombre: string;
+  especie: EspecieMascota;
+  sexo: "macho" | "hembra";
+  raza: string;            // "" si no se sabe
+  fechaNacimiento: string; // "2021-03-15" o "" si no se sabe
+  pesoKg: string;          // "12.5" o ""
+  esterilizado: boolean;
+}
+
+export interface CrearMascotaModalProps {
+  duenoId: string;
+  onClose: () => void;
+  onCreada: () => void;
+}

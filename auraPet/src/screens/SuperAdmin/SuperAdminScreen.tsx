@@ -10,12 +10,13 @@ import { ConfiguracionModal } from "../../Modal/ConfiguracionModal";
 import { Iconos } from "../../constants";
 
 import { ModalCrearProfesional } from "../../Modal/CrearProfesionalModal";
+import { ModalCrearDueno } from "../../Modal/CrearDuenoModal";
 
 const colors = Colors;
 const badge = Badge;
 const iconos = Iconos;
 
-type ModalCrear = "profesional" | "superadmin" | "centro" | null;
+type ModalCrear = "profesional" | "superadmin" | "centro" | "dueno" | null;
 
 export const SuperAdminScreen = () => {
   const { usuarioActual } = useAuth();
@@ -28,6 +29,7 @@ export const SuperAdminScreen = () => {
 
   const opcionesCrear = [
     { tipo: "profesional", label: "Cuenta profesional", Icono: iconos.diagnostico },
+    { tipo: "dueno", label: "Cuenta dueño", Icono: iconos.huella },
     { tipo: "superadmin", label: "Cuenta superadmin", Icono: iconos.permisos },
     { tipo: "centro", label: "Agregar centro", Icono: iconos.centro },
   ] as const;
@@ -265,7 +267,9 @@ const aprobar = (id: string) => {
       {modalCrear === "profesional" && (
         <ModalCrearProfesional onClose={() => setModalCrear(null)} />
       )}
-      {/* Pendientes: modalCrear === "superadmin" y modalCrear === "centro" */}
+      {modalCrear === "dueno" && (
+        <ModalCrearDueno onClose={() => setModalCrear(null)} />
+      )}
     </div>
   );
 };

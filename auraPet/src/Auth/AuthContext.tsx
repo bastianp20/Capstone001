@@ -28,6 +28,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Perfil cargado y a qué usuario corresponde (para no mostrar el perfil de
   // una sesión anterior mientras llega el de la nueva).
   const [perfil, setPerfil] = useState<{ userId: string; usuario: UsuarioActual | null } | null>(null);
+  // Sube en 1 cada vez que alguien edita su perfil → el efecto 2 lo vuelve a leer.
+  const [versionPerfil, setVersionPerfil] = useState(0);
 
   // 1) Escuchar la sesión: al abrir la app, al ingresar, al salir y al refrescar el token.
   useEffect(() => {
@@ -45,7 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // 2) Cada vez que cambia la persona conectada, cargar su perfil.
+  // 2) Cada vez que cambia la persona conectada (o se edita su perfil), cargar su perfil.
   useEffect(() => {
     if (!userId) return;
     let activo = true;
@@ -76,7 +78,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
       });
     return () => { activo = false; };
-  }, [userId, email]);
+  }, [userId, email, versionPerfil]);
 
   // Valores derivados (no se guardan en estado):
   const perfilVigente = perfil && perfil.userId === userId ? perfil : null;
@@ -113,8 +115,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await supabase.auth.signOut();
   };
 
+  // Vuelve a leer el perfil (por ejemplo, después de cambiar el nombre en Configuración).
+  const recargarPerfil = () => setVersionPerfil((v) => v + 1);
+
   return (
-    <AuthContext.Provider value={{ usuarioActual, cargando, login, registrar, logout }}>
+    <AuthContext.Provider value={{ usuarioActual, cargando, login, registrar, logout, recargarPerfil }}>
       {children}
     </AuthContext.Provider>
   );

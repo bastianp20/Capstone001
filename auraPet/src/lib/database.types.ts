@@ -742,7 +742,7 @@ export type Database = {
           estado_verificacion: Database["public"]["Enums"]["estado_verificacion"]
           id: number
           motivo_rechazo: string | null
-          numero_colegiado: string
+          numero_colegiado: string | null
           perfil_id: string | null
           revisado_en: string | null
           revisado_por: string | null
@@ -753,7 +753,7 @@ export type Database = {
           estado_verificacion?: Database["public"]["Enums"]["estado_verificacion"]
           id?: never
           motivo_rechazo?: string | null
-          numero_colegiado: string
+          numero_colegiado?: string | null
           perfil_id?: string | null
           revisado_en?: string | null
           revisado_por?: string | null
@@ -764,7 +764,7 @@ export type Database = {
           estado_verificacion?: Database["public"]["Enums"]["estado_verificacion"]
           id?: never
           motivo_rechazo?: string | null
-          numero_colegiado?: string
+          numero_colegiado?: string | null
           perfil_id?: string | null
           revisado_en?: string | null
           revisado_por?: string | null
