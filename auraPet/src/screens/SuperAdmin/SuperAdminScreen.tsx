@@ -1,24 +1,52 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type {SolicitudPendiente} from '../../interfaces';
 import {Colors, Badge, badgeStyles, ESTADO_LABEL, URGENCIA_LABEL} from '../../constants';
 import {RechazarModal} from '../../Modal/ReachazarModal';
 import { KpiCard } from "../../Card/kpi";
-import { solicitudesPendientesMock } from "../../Data/SolicitudPendiente";
-import { getCitasResumen } from "../../Api/getInfo";
+import { getCitasResumen, getSolicitudesPendientes } from "../../Api/getInfo";
+import { useConsulta } from "../../hooks/useConsulta";
 import { useAuth } from "../../Auth/AuthContext";
 import { ConfiguracionModal } from "../../Modal/ConfiguracionModal";
 import { Iconos } from "../../constants";
+
+import { ModalCrearProfesional } from "../../Modal/CrearProfesionalModal";
+import { ModalCrearDueno } from "../../Modal/CrearDuenoModal";
 
 const colors = Colors;
 const badge = Badge;
 const iconos = Iconos;
 
+type ModalCrear = "profesional" | "superadmin" | "centro" | "dueno" | null;
+
 export const SuperAdminScreen = () => {
   const { usuarioActual } = useAuth();
   const [solicitudARechazar, setSolicitudARechazar] = useState<SolicitudPendiente | null>(null);
   const [mostrarConfiguracion, setMostrarConfiguracion] = useState(false);
-  const [solicitudes, setSolicitudes] = useState(solicitudesPendientesMock);
-  const citasMock = getCitasResumen();
+
+  // Menú "+ Crear" y cuál modal de creación está abierto
+  const [menuCrearAbierto, setMenuCrearAbierto] = useState(false);
+  const [modalCrear, setModalCrear] = useState<ModalCrear>(null);
+
+  const opcionesCrear = [
+    { tipo: "profesional", label: "Cuenta profesional", Icono: iconos.diagnostico },
+    { tipo: "dueno", label: "Cuenta dueño", Icono: iconos.huella },
+    { tipo: "superadmin", label: "Cuenta superadmin", Icono: iconos.permisos },
+    { tipo: "centro", label: "Agregar centro", Icono: iconos.centro },
+  ] as const;
+
+  const abrirModalCrear = (tipo: ModalCrear) => {
+    setModalCrear(tipo);
+    setMenuCrearAbierto(false);
+  };
+  // Solicitudes: se guardan en estado propio porque aprobar/rechazar las saca de la lista.
+  const [solicitudes, setSolicitudes] = useState<SolicitudPendiente[]>([]);
+  useEffect(() => {
+    getSolicitudesPendientes()
+      .then(setSolicitudes)
+      .catch((e) => console.error("No se pudieron cargar las solicitudes:", e));
+  }, []);
+  // Citas de toda la plataforma (solo lectura).
+  const { datos: citas = [] } = useConsulta(() => getCitasResumen(), []);
 
   const navItems = [
     { label: "Resumen", active: true },
@@ -34,7 +62,7 @@ const confirmarRechazo = (_razon: string) => {
     setSolicitudARechazar(null);
   };
   // TODO: llamar a la API/Supabase para marcar la solicitud como aprobada
-const aprobar = (id: number) => {
+const aprobar = (id: string) => {
     setSolicitudes((prev) => prev.filter((s) => s.id !== id));
   };
 
@@ -96,6 +124,39 @@ const aprobar = (id: number) => {
             }}
           />
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            {/* Botón + Crear con su menú */}
+            <div style={{ position: "relative" }}>
+              <button
+                onClick={() => setMenuCrearAbierto((abierto) => !abierto)}
+                style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 14px", borderRadius: 9, border: "none", background: colors.accent, color: "white", fontSize: 13.5, fontWeight: 600, cursor: "pointer" }}
+              >
+                <iconos.agregar size={16} />
+                Crear
+                <iconos.flechaAbajo size={15} />
+              </button>
+
+              {menuCrearAbierto && (
+                <>
+                  {/* Capa invisible: un clic fuera del menú lo cierra */}
+                  <div onClick={() => setMenuCrearAbierto(false)} style={{ position: "fixed", inset: 0, zIndex: 20 }} />
+
+                  <div style={{ position: "absolute", right: 0, top: "calc(100% + 8px)", zIndex: 21, minWidth: 220, background: "white", border: `1px solid ${colors.border}`, borderRadius: 12, boxShadow: "0 12px 30px rgba(0,0,0,0.12)", padding: 6 }}>
+                    {opcionesCrear.map(({ tipo, label, Icono }) => (
+                      <button
+                        key={tipo}
+                        onClick={() => abrirModalCrear(tipo)}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = colors.accentSoft)}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
+                        style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "10px 12px", border: "none", background: "none", borderRadius: 8, fontSize: 13.5, color: colors.text, cursor: "pointer", textAlign: "left" }}
+                      >
+                        <Icono size={17} color={colors.accent} />
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
             <span style={{ fontSize: 18 }}>🔔</span>
             <iconos.configuracion
               size={18}
@@ -176,7 +237,7 @@ const aprobar = (id: number) => {
               <span>Estado</span>
               <span>Urgencia</span>
             </div>
-            {citasMock.map((c) => (
+            {citas.map((c) => (
               <div key={c.id} style={{ display: "grid", gridTemplateColumns: "1.6fr 1.4fr 1.4fr 1.2fr 1fr 1fr", alignItems: "center", padding: "13px 18px", borderTop: `1px solid ${colors.border}` }}>
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <span style={{ fontSize: 13.5, fontWeight: 600 }}>{c.mascota}</span>
@@ -202,6 +263,12 @@ const aprobar = (id: number) => {
       )}
       {mostrarConfiguracion && (
         <ConfiguracionModal onCerrar={() => setMostrarConfiguracion(false)} />
+      )}
+      {modalCrear === "profesional" && (
+        <ModalCrearProfesional onClose={() => setModalCrear(null)} />
+      )}
+      {modalCrear === "dueno" && (
+        <ModalCrearDueno onClose={() => setModalCrear(null)} />
       )}
     </div>
   );

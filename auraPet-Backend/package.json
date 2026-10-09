@@ -1,0 +1,17 @@
+{
+  "name": "aurapet-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "gen:types": "supabase gen types typescript --linked > ../auraPet/src/lib/database.types.ts",
+    "db:push": "supabase db push"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "supabase": "^2.120.0"
+  }
+}

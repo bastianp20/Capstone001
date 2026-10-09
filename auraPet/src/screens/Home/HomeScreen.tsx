@@ -1,8 +1,6 @@
 import { useState } from "react";
 import {
   Calendar,
-  FileText,
-  MapPin,
   UserPlus,
   Search,
   Quote,
@@ -10,16 +8,14 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { Colors } from "../../constants";
-// import { LoginScreen } from "../Login/LoginScreen";
-import { NavBar } from "../../components/NavBar";
-import type { VistaHome } from "../../interfaces";
+import { Colors} from "../../constants";
+import { LoginScreen } from "../Login/LoginScreen";
 import "../../css/HomePage.css";
-import {Nosotros} from '../Home/NosotrosScreen'; 
-import { ParaDuenos } from "./ParaDuenosScreen";
-import {ParaVeterinarias} from '../Home/ParaVeterinariasScreen'; 
-import { ComoFunciona } from "./ComoFuncionaScreen";
-import { ContactoScreen } from "./ContactoScreen";
+import { Servicios } from "../../components/Servicios";
+import { usePreguntasFrecuentes } from "../../hooks/usePreguntasFrecuentes";
+import fondo from '../../assets/Home/fondo.png';
+import Historial from '../../assets/Home/Historial.png'; 
+import siguientePaso from '../../assets/Home/siguientePaso.png'; 
 const colors = Colors;
 
 // variables de tema que le pasamos al contenedor raíz, mismo patrón que
@@ -36,26 +32,6 @@ const temaVars = {
   "--landing-borde": colors.borde,
 } as React.CSSProperties;
 
-// TODO: esto es contenido mock, más adelante puede venir de Api/getInfo.tsx
-// o directo de un CMS si se arma uno.
-const servicios = [
-  {
-    icono: Calendar,
-    titulo: "Agendar citas",
-    descripcion: "Reserva hora con la veterinaria que prefieras en pocos clics.",
-  },
-  {
-    icono: FileText,
-    titulo: "Historial médico digital",
-    descripcion: "Toda la ficha clínica de tu mascota disponible cuando la necesites.",
-  },
-  {
-    icono: MapPin,
-    titulo: "Encontrar veterinarios cercanos",
-    descripcion: "Busca centros y especialistas cerca de ti, con reseñas reales.",
-  },
-];
-
 const testimonios = [
   { texto: "Agendar hora para mi perro nunca había sido tan fácil.", nombre: "Camila Rojas", rol: "Dueña de mascota" },
   { texto: "Tener el historial digital me ahorra tiempo en cada consulta.", nombre: "Ana Duarte", rol: "Veterinaria" },
@@ -69,22 +45,14 @@ const pasos = [
   { numero: 3, titulo: "Agenda tu cita", descripcion: "Elige el horario que más te acomode y listo." },
 ];
 
-const preguntasFrecuentes = [
-  { pregunta: "¿Cómo registro a mi mascota?", respuesta: "Desde tu cuenta de dueño puedes agregar una mascota nueva con sus datos básicos y ficha médica." },
-  { pregunta: "¿Cómo encuentro veterinarias cercanas?", respuesta: "Usa el buscador por ubicación en la sección 'Para dueños' para ver centros y veterinarios disponibles." },
-  { pregunta: "¿Puedo cambiar una cita ya agendada?", respuesta: "Sí, puedes reprogramar o cancelar desde tu panel de citas con anticipación." },
-  { pregunta: "¿Cómo accedo al historial médico?", respuesta: "El historial está disponible en tu perfil de dueño, actualizado por cada veterinaria que atendió a tu mascota." },
-  { pregunta: "¿Cómo elimino mi cuenta de AuraPet?", respuesta: "Puedes solicitarlo desde Configuración o escribiéndonos por el formulario de contacto." },
-];
 
 export const HomeScreen = () => { 
   const [mostrarLogin, setMostrarLogin] = useState(false);
 //   const [mostrarConocer, setMostrarConocer] = useState(false); 
   const [testimonioActual, setTestimonioActual] = useState(0);
   const [faqAbierta, setFaqAbierta] = useState<number | null>(null);
+  const { preguntas: preguntasFrecuentes } = usePreguntasFrecuentes();
   const [formulario, setFormulario] = useState({ nombre: "", correo: "", mensaje: "" });
-
-  const [vista, setVista] = useState<VistaHome>("landing");
 
   const testimoniosVisibles = 3;
   const maxIndice = Math.max(0, testimonios.length - testimoniosVisibles);
@@ -99,33 +67,11 @@ export const HomeScreen = () => {
     setFormulario({ nombre: "", correo: "", mensaje: "" });
   };
 
-    if (vista === "nosotros") {
-    return <Nosotros onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
-  }
-
-  if (vista === "duenos") {
-    return <ParaDuenos onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
-  }
-
-  if (vista === "veterinarias") {
-    return <ParaVeterinarias onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
-  }
-
-  if (vista === "como-funciona") {
-    return <ComoFunciona onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />;
-  }
-
-  if (vista === "contacto") {
-    return <ContactoScreen onNavegar={setVista} onIngresar={ () => setMostrarLogin(true)}/>
-  }
 
   return (
     <div className="landing-page" style={temaVars}>
-      {/* Navbar */}
-      <NavBar vistaActiva="landing" onNavegar={setVista} onIngresar={() => setMostrarLogin(true)} />
-
       {/* Hero */}
-      <header className="landing-hero">
+      <header className="landing-hero" style={{ backgroundImage: `url(${fondo})` }}>
         <div className="landing-hero-overlay" />
         <div className="landing-hero-contenido">
           <h1>
@@ -148,33 +94,14 @@ export const HomeScreen = () => {
       </header>
 
       {/* Servicios */}
-      <section className="landing-seccion">
-        <h2>¿Qué puedes hacer en AuraPet?</h2>
-        <div className="landing-servicios-grid">
-          {servicios.map((servicio) => {
-            const Icono = servicio.icono;
-            return (
-              <div className="landing-servicio-card" key={servicio.titulo}>
-                <div className="landing-servicio-icono">
-                  <Icono size={22} color={colors.primario} />
-                </div>
-                <h3>{servicio.titulo}</h3>
-                <p>{servicio.descripcion}</p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      <Servicios />
 
       {/* Bloque oscuro con "imagen" (mockup de historial) + texto */}
-      <section className="landing-seccion-oscura">
-        <div className="landing-mockup-historial">
-          <div className="landing-mockup-header" />
-          {[1, 2, 3, 4].map((n) => (
-            <div className="landing-mockup-linea" key={n} />
-          ))}
+      <section className="landing-seccion-oscura" >
+        <div className="landing-mockup-historial" >
+          <img src={Historial} alt="Mockup de historial médico" className = "landing-mockup-imagen"/>
         </div>
-        <div className="landing-seccion-oscura-texto">
+        <div className="landing-seccion-oscura-texto" >
           <h2>Todo el historial de tu mascota en un solo lugar</h2>
           <p>
             Consulta diagnósticos, tratamientos y recetas anteriores desde
@@ -254,10 +181,10 @@ export const HomeScreen = () => {
             Agenda una cita
           </button>
         </div>
-        <div className="landing-cta-final-imagen" />
+        <img src={siguientePaso} alt="Mockup de siguiente paso" className = "landing-mockup-siguientepaso"/>
       </section>
 
-      {/* FAQ + contacto */}
+      {/* Preguntas Frecuentes + contacto */}
       <section className="landing-seccion landing-faq-contacto" id="contacto">
         <div className="landing-faq">
           <h2>¿Tienes dudas?</h2>
@@ -305,37 +232,8 @@ export const HomeScreen = () => {
         </form>
       </section>
 
-      {/* Footer */}
-      <footer className="landing-footer">
-        <div className="landing-footer-col">
-          <div className="landing-navbar-logo">
-            <span className="landing-logo-icono">🐾</span>
-            <span>AuraPet</span>
-          </div>
-          <p>Conectando dueños y veterinarias en un solo lugar.</p>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Explora</h4>
-          <a href="#como-funciona">Cómo funciona</a>
-          <a href="#veterinarias">Para veterinarias</a>
-          <a href="#duenos">Para dueños</a>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Contacto</h4>
-          <a href="mailto:contacto@aurapet.com">Correo</a>
-          <a href="#">WhatsApp</a>
-        </div>
-        <div className="landing-footer-col">
-          <h4>Newsletter</h4>
-          <p>Únete y accede a contenido exclusivo.</p>
-        </div>
-        <div className="landing-footer-bottom">
-          © {new Date().getFullYear()} AuraPet. Todos los derechos reservados.
-        </div>
-      </footer>
-
-      {/* {mostrarLogin && <LoginScreen onCerrar={() => setMostrarLogin(false)} />} */}
-      {/* {mostrarConocer && <Nosotros onCerrar= {() => setMostrarConocer(false)}/> } */}
+      {/* Modal de login que abren los botones "Agenda una cita" */}
+      {mostrarLogin && <LoginScreen onCerrar={() => setMostrarLogin(false)} />}
     </div>
   );
 };

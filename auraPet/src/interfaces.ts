@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react";
 
 export type TipoSolicitud = "veterinario" | "centro";
 export type UrgenciaCita = "baja" | "media" | "alta" | "critica";
@@ -5,12 +6,11 @@ export type EstadoCita = "pendiente" | "confirmada" | "en_curso" | "completada" 
 export type Rol = "dueno" | "veterinario" | "centro" | "superadmin";
 export type EspecieMascota = "perro" | "gato" | "ave" | "conejo" | "otro";
 export type VistaHome = "landing" | "como-funciona" | "veterinarias" | "duenos" | "nosotros" | "contacto";
-
-
+export type ModoLogin = 'ingresar' | 'crear';
 
 
 export interface SolicitudPendiente {
-  id: number;
+  id: string; // "centro-3" o "veterinario-5": vienen de dos tablas distintas
   nombre: string;
   tipo: TipoSolicitud;
   fechaRegistro: string;
@@ -51,16 +51,17 @@ export interface Usuario {
   password: string; // esto es solo momentaneo 
 }
 
+// Mascota tal como la usa la app (viene de la tabla mascotas de Supabase).
 export interface Mascota {
   id: number;
-  duenoId: number; // FK -> Usuario (rol dueno)
+  duenoId: string | null;          // uuid del dueño (null si el dueño borró su cuenta)
   nombre: string;
   especie: EspecieMascota;
-  raza: string;
-  fechaNacimiento: number; // lo mismo, si nos da un valor tipo float o date podemos truncarlo y dejarlo prolijo 
+  raza: string | null;
+  fechaNacimiento: string | null;  // "2021-03-15" (columna date); null si no se conoce
   sexo: "macho" | "hembra";
-  esterilizado: boolean; // pa saber si es verdadero o falso 
-  fotoUrl?: string;
+  esterilizado: boolean;
+  fotoUrl: string | null;
 }
 
 export interface Centro {
@@ -176,10 +177,36 @@ export interface HistorialRecienteItem {
   fecha: string;
 }
 
+// ---------- Sesión real (Supabase Auth + tabla perfiles) ----------
+// Rol de la cuenta en la base de datos. "Admin de centro" no es un rol:
+// es un cargo en la tabla admins_centro.
+export type RolCuenta = "dueno" | "veterinario" | "superadmin";
+
+// La persona conectada. El id es el uuid de Supabase Auth (= perfiles.id).
+export interface UsuarioActual {
+  id: string;
+  email: string;
+  nombre: string;
+  rol: RolCuenta;
+  telefono: number | null;
+  avatarUrl: string | null;
+}
+
+export interface DatosRegistro {
+  nombre: string;
+  email: string;
+  password: string;
+  telefono?: string;
+  rol: "dueno" | "veterinario"; // nadie puede registrarse como superadmin
+}
+
 export interface AuthContextValue {
-  usuarioActual: Usuario | null;
-  login: (email: string, password: string) => boolean;
-  logout: () => void;
+  usuarioActual: UsuarioActual | null;
+  cargando: boolean; // true mientras se recupera la sesión al abrir la app
+  login: (email: string, password: string) => Promise<string | null>; // null = ok; si no, el mensaje de error
+  registrar: (datos: DatosRegistro) => Promise<{ error?: string; requiereConfirmacion?: boolean }>;
+  logout: () => Promise<void>;
+  recargarPerfil: () => void; // vuelve a leer el perfil (después de editarlo)
 }
 
 export interface ModalPacientesProps {
@@ -198,5 +225,98 @@ export interface NavbarProps {
   onIngresar?: () => void;
 }
 
+export interface ContactoScreenProps {
+  onNavegar?: (vista: VistaHome) => void;
+  onIngresar?: () => void;
+}
 
+export interface FooterProps {
+  vistaActiva?: VistaHome;
+  onNavegar?: (vista: VistaHome) => void;
+}
 
+export interface Contacto {
+  id: number;
+  nombre: string;
+  correo: string;
+  telefono?: number;        // opcional, no todos van a dejar número
+  asunto: string;           // esto es tu "razon" — el motivo de la consulta, en palabras propias de cada persona
+  mensaje: string;
+  categoria: string;        // a qué tema real pertenece el mensaje (login, precios, notificaciones, etc).
+                             // Dos personas casi nunca escriben el mismo "asunto", pero sí preguntan
+                             // por el mismo tema de fondo — por eso agrupamos/contamos por categoria
+                             // y no por el texto exacto del asunto.
+  creadoEn: number;         // mismo formato que usas en Usuario/Cita (ej: 20251001)
+  estado: "pendiente" | "respondido" | "cerrado"; // para que el superadmin sepa qué falta ver
+}
+
+export interface PreguntaFrecuente {
+  pregunta: string;
+  respuesta: string;
+  cantidad: number; // cuántos mensajes de contactoMock caen en esta categoria (para mostrar la "moda")
+}
+
+// Servicios que se mostrarán en el home 
+export interface Servicio {
+  icono: LucideIcon;
+  titulo: string;
+  descripcion: string;
+}
+
+export interface ServiciosProps {
+  titulo?: string;               // por defecto "¿Qué puedes hacer en AuraPet?"
+  servicios?: Servicio[];        // si no se pasa, usa los mock del componente
+  onIngresar?: () => void;       // por si agregas un botón "Agenda una cita"
+}
+
+export interface LoginScreenProps {
+  onCerrar: () => void;
+  onSolicitarCentro?: () => void; // abre el formulario de solicitud para centros
+}
+
+export interface ParaDuenosScreenProps {
+  onNavegar?: (vista: VistaHome) => void;
+  onIngresar?: () => void;
+}
+
+export interface CrearProfesionalModalProps {
+  onClose: () => void;
+}
+
+// EDGE FUNCTIONS 
+// ésto es lo que debe de ir en la carpeta de api con su metodo de post para crear un nuevo profesional
+export interface DatosNuevoProfesional {
+  nombre: string;
+  correo: string;
+  telefono: string;          // "56912345678" o "" si no hay
+  numeroColegiado: string;
+  especialidadId: number | null;
+  centroId: number;
+  esAdminCentro: boolean;
+}
+
+export interface DatosNuevoDueno {
+  nombre: string;
+  correo: string;
+  telefono: string; // "56912345678" o ""
+}
+export interface CrearDuenoModalProps {
+  onClose: () => void;
+}
+
+// Crear Mascota, el dueño puede hacerlo 
+export interface DatosNuevaMascota {
+  nombre: string;
+  especie: EspecieMascota;
+  sexo: "macho" | "hembra";
+  raza: string;            // "" si no se sabe
+  fechaNacimiento: string; // "2021-03-15" o "" si no se sabe
+  pesoKg: string;          // "12.5" o ""
+  esterilizado: boolean;
+}
+
+export interface CrearMascotaModalProps {
+  duenoId: string;
+  onClose: () => void;
+  onCreada: () => void;
+}

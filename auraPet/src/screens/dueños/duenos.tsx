@@ -1,10 +1,14 @@
 import { useState, type CSSProperties } from 'react';
-import { Colors, Iconos, Badge, badgeStyles, ESTADO_LABEL, URGENCIA_LABEL, EMOJI_ESPECIE,calcularEdad } from '../../constants';
+import { Colors, Iconos, Badge, badgeStyles, ESTADO_LABEL, URGENCIA_LABEL, EMOJI_ESPECIE } from '../../constants';
+import { calcularEdad } from '../../lib/fechas';
+import { useConsulta } from '../../hooks/useConsulta';
 import { getMascotasPorDueno, getProximasCitasDueno, getHistorialRecienteDueno } from '../../Api/getInfo';
 import { getIniciales } from '../../utils';
 import { useAuth } from '../../Auth/AuthContext';
 import { ConfiguracionModal } from '../../Modal/ConfiguracionModal';
 import '../../css/duenoPage.css';
+import LogoAuraPetSinFondo from '../../assets/logo/LogoAuraPetSinFondo.png'; 
+import { ModalCrearMascota } from '../../Modal/AgregarMascotaModal';
 
 const colors = Colors;
 const iconos = Iconos;
@@ -25,16 +29,18 @@ export const DuenoScreen = () => {
   const duenoIdActual = usuarioActual!.id; // App.tsx ya garantiza que hay sesión antes de montar esta pantalla
   const nombreDueno = usuarioActual!.nombre;
 
-  const mascotas = getMascotasPorDueno(duenoIdActual);
-  const proximasCitas = getProximasCitasDueno(duenoIdActual).slice(0, 3);
-  const historialReciente = getHistorialRecienteDueno(duenoIdActual, 3);
-
-  const [modalAbierto, setModalAbierto] = useState<"configuracion" | null>(null);
+  // "recarga" sube en 1 cada vez que se crea una mascota → useConsulta vuelve a pedir la lista
+  const [recarga, setRecarga] = useState(0);
+  // Datos desde Supabase. Mientras cargan, cada lista empieza vacía (= []).
+  const { datos: mascotas = [] } = useConsulta(() => getMascotasPorDueno(duenoIdActual), [duenoIdActual, recarga]);
+  const { datos: proximasCitas = [] } = useConsulta(() => getProximasCitasDueno(duenoIdActual, 3), [duenoIdActual]);
+  const { datos: historialReciente = [] } = useConsulta(() => getHistorialRecienteDueno(duenoIdActual, 3), [duenoIdActual]);
+  const [modalAbierto, setModalAbierto] = useState<"configuracion" | "mascota" | null>(null);
   return (
     <div className="dueno-page" style={temaVars}>
       <div className="dueno-sidebar">
         <div className="dueno-sidebar-brand">
-          <iconos.huella size={22} color={colors.accent} />
+          <img src={LogoAuraPetSinFondo} alt="AuraPet" className="landing-logo-icono" />
           <span className="dueno-sidebar-brand-name">AuraPet</span>
         </div>
 
@@ -90,7 +96,7 @@ export const DuenoScreen = () => {
             </div>
             <div className="dueno-acciones-rapidas">
               {/* TODO: abre RegistrarMascotaModal (próxima capa) */}
-              <button className="dueno-btn dueno-btn--secundario">
+              <button className="dueno-btn dueno-btn--secundario" onClick = {() => setModalAbierto('mascota')}>
                 <iconos.agregar size={15} />
                 Registrar mascota
               </button>
@@ -115,7 +121,7 @@ export const DuenoScreen = () => {
                     <div>
                       <p className="dueno-mascota-nombre">{m.nombre}</p>
                       <p className="dueno-mascota-detalle">
-                        {m.raza} · {calcularEdad(m.fechaNacimiento)} años
+                        {m.raza ?? 'Sin raza'}{calcularEdad(m.fechaNacimiento) !== null && ` · ${calcularEdad(m.fechaNacimiento)} años`}
                       </p>
                     </div>
                   </div>
@@ -128,7 +134,7 @@ export const DuenoScreen = () => {
                 </div>
               ))}
 
-              <div className="dueno-mascota-card-add">
+              <div className="dueno-mascota-card-add" onClick={() => setModalAbierto('mascota')}>
                 <iconos.agregar size={22} />
                 <span>Agregar mascota</span>
               </div>
@@ -189,6 +195,16 @@ export const DuenoScreen = () => {
 
       {modalAbierto === "configuracion" && (
         <ConfiguracionModal onCerrar={() => setModalAbierto(null)} />
+      )}
+      {modalAbierto === "mascota" && (
+        <ModalCrearMascota
+          duenoId={duenoIdActual}
+          onClose={() => setModalAbierto(null)}
+          onCreada={() => {
+            setRecarga((r) => r + 1);   // vuelve a cargar "Mis mascotas"
+            setModalAbierto(null);      // cierra el modal
+          }}
+        />
       )}
     </div>
   );

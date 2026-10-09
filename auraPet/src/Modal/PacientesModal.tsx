@@ -1,4 +1,5 @@
 import { getPacienteByVeterinarioId } from "../Api/getInfo";
+import { useConsulta } from "../hooks/useConsulta";
 import styles from "../css/Modal.module.css";
 import type { ModalPacientesProps } from "../interfaces";
 
@@ -6,7 +7,7 @@ import type { ModalPacientesProps } from "../interfaces";
 // muestra los pacientes (mascotas únicas) de éste veterinario, resueltos
 // por id desde Api/getInfo.tsx — no las citas, sino la mascota agrupada.
 export const PacientesModal = ({ veterinarioId, onCerrar }: ModalPacientesProps) => {
-  const pacientes = getPacienteByVeterinarioId(veterinarioId);
+  const { datos: pacientes = [], cargando } = useConsulta(() => getPacienteByVeterinarioId(veterinarioId), [veterinarioId]);
 
   return (
     <div className={styles.overlay} onClick={onCerrar}>
@@ -19,7 +20,8 @@ export const PacientesModal = ({ veterinarioId, onCerrar }: ModalPacientesProps)
         </div>
 
         <div className={styles.content}>
-          {pacientes.length === 0 && <p>Aún no tienes pacientes asignados.</p>}
+          {cargando && <p>Cargando…</p>}
+          {!cargando && pacientes.length === 0 && <p>Aún no tienes pacientes asignados.</p>}
 
           {pacientes.map((p) => (
             <div key={p.id} className={styles.agendaItem}>

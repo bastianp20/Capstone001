@@ -1,0 +1,434 @@
+/* ---------- Fondo y ventana ---------- */
+.fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 24, 31, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.modal {
+  background: #fff;
+  color: #1a1f27;
+  width: 100%;
+  max-width: 420px;          /* antes 520 */
+  max-height: 92vh;
+  overflow-y: auto;
+  border-radius: 14px;
+  padding: 18px 18px 16px;   /* antes 24 */
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  font-family: system-ui, sans-serif;
+  font-size: 13px;           /* tamaño base más chico para todo el modal */
+  scrollbar-width: thin;
+}
+
+/* ---------- Encabezado ---------- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.cerrar {
+  border: none;
+  background: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  display: flex;
+}
+
+.cerrar:hover {
+  background: #f3f4f6;
+}
+
+/* ---------- Tarjeta de perfil ---------- */
+.perfil {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.avatar {
+  width: 46px;               /* antes 64 */
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #e3f5f2;
+  color: #0f8f80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.perfilNombre {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 700;
+}
+
+.perfilCorreo {
+  margin: 1px 0 4px;
+  color: #6b7280;
+  font-size: 12.5px;
+}
+
+.rol {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ---------- Acordeón ---------- */
+.lista {
+  border: 1px solid #e4e6ea;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.fila + .fila {
+  border-top: 1px solid #e4e6ea;
+}
+
+.filaBoton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;         /* antes 12px 14px */
+  border: none;
+  background: #fff;
+  color: #1a1f27;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.filaBoton:hover:not(:disabled) {
+  background: #f8fafa;
+}
+
+.filaBoton:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.filaBoton svg {
+  flex-shrink: 0;
+}
+
+.filaIcono {
+  width: 28px;               /* antes 34 */
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #e3f5f2;
+  color: #0f8f80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filaIcono svg {
+  width: 15px;
+  height: 15px;
+}
+
+.filaTexto {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.filaTitulo {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.filaDescripcion {
+  font-size: 11.5px;
+  color: #6b7280;
+}
+
+.pildora {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+.filaContenido {
+  padding: 2px 12px 12px 50px; /* alineado con el texto, no con el ícono */
+}
+
+/* ---------- Formularios dentro del acordeón ---------- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.subtitulo {
+  margin: 0;
+  font-weight: 600;
+  font-size: 12.5px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.campo input,
+.telefono input,
+.campoClave input {
+  width: 100%;
+  padding: 7px 10px;         /* antes 9px 11px */
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-family: inherit;
+  color: #1a1f27;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.campo input:focus,
+.telefono input:focus,
+.campoClave input:focus {
+  outline: none;
+  border-color: #0f8f80;
+  box-shadow: 0 0 0 3px rgba(15, 143, 128, 0.15);
+}
+
+.telefono {
+  display: flex;
+}
+
+.telefono span {
+  padding: 7px 9px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-right: none;
+  border-radius: 7px 0 0 7px;
+  font-weight: 400;
+  font-size: 12.5px;
+}
+
+.telefono input {
+  border-radius: 0 7px 7px 0;
+}
+
+.campoClave {
+  position: relative;
+}
+
+.campoClave input {
+  padding-right: 34px; /* espacio para el ojito */
+}
+
+.campoClave button {
+  position: absolute;
+  right: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: none;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+}
+
+.campoClave button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.ayudaTexto {
+  margin-top: -4px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.error {
+  margin: 0;
+  padding: 6px 9px;
+  border-radius: 7px;
+  background: #fdecec;
+  color: #a4272a;
+  font-size: 12px;
+}
+
+.exito {
+  margin: 0;
+  color: #0f8f80;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* ---------- Botones ---------- */
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.btnPrimario,
+.btnSecundario {
+  padding: 6px 12px;
+  border-radius: 7px;
+  border: none;
+  font-weight: 600;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.btnPrimario {
+  background: #0f8f80;
+  color: #fff;
+}
+
+.btnPrimario:hover {
+  background: #0c7569;
+}
+
+.btnPrimario:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnSecundario {
+  background: #e5e7eb;
+  color: #1a1f27;
+}
+
+.link {
+  align-self: flex-start;
+  border: none;
+  background: none;
+  padding: 0;
+  color: #6b7280;
+  font-size: 11.5px;
+  font-family: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link:hover {
+  color: #a4272a;
+}
+
+/* ---------- Apariencia ---------- */
+.temas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.tema,
+.temaActivo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 6px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #1a1f27;
+  font-size: 11.5px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.tema svg,
+.temaActivo svg {
+  width: 16px;
+  height: 16px;
+}
+
+.temaActivo {
+  border-color: #0f8f80;
+  background: #e3f5f2;
+  color: #0f8f80;
+  font-weight: 600;
+}
+
+/* ---------- Ayuda ---------- */
+.ayuda {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ayuda a {
+  color: #0f8f80;
+  font-size: 12.5px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.ayuda a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Cerrar sesión ---------- */
+.btnCerrarSesion {
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #dc2626;
+  border-radius: 9px;
+  background: #fff;
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 12.5px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.btnCerrarSesion svg {
+  width: 14px;
+  height: 14px;
+}
+
+.btnCerrarSesion:hover {
+  background: #fef2f2;
+}
+
+/* ---------- Celular ---------- */
+@media (max-width: 480px) {
+  .filaContenido {
+    padding-left: 12px;
+  }
+}

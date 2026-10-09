@@ -1,5 +1,6 @@
 import { badgeStyles, Badge, ESTADO_LABEL, URGENCIA_LABEL } from "../constants";
 import { getAgendaVeterinario } from "../Api/getInfo";
+import { useConsulta } from "../hooks/useConsulta";
 import styles from "../css/Modal.module.css";
 
 interface ModalAgendaProps {
@@ -10,7 +11,7 @@ interface ModalAgendaProps {
 // muestra las citas de éste veterinario, resueltas
 // por id (mascota, dueño, especie/raza) desde Api/getInfo.tsx
 export const ModalAgenda = ({ veterinarioId, onCerrar }: ModalAgendaProps) => {
-  const agenda = getAgendaVeterinario(veterinarioId);
+  const { datos: agenda = [], cargando } = useConsulta(() => getAgendaVeterinario(veterinarioId), [veterinarioId]);
 
   return (
     <div className={styles.overlay} onClick={onCerrar}>
@@ -23,7 +24,8 @@ export const ModalAgenda = ({ veterinarioId, onCerrar }: ModalAgendaProps) => {
         </div>
 
         <div className={styles.content}>
-          {agenda.length === 0 && <p>No hay citas asignadas.</p>}
+          {cargando && <p>Cargando…</p>}
+          {!cargando && agenda.length === 0 && <p>No hay citas asignadas.</p>}
 
           {agenda.map((c) => (
             <div key={c.id} className={styles.agendaItem}>

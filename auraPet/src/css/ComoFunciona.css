@@ -74,8 +74,15 @@
   flex: 1;
   height: 160px;
   border-radius: 12px;
-  background: linear-gradient(135deg, var(--landing-secundario), #d7ece7);
+  overflow: hidden; /* la imagen respeta las esquinas redondeadas */
+  background: linear-gradient(135deg, var(--landing-secundario), #d7ece7); /* respaldo mientras no hay imagen */
   border: 1px solid var(--landing-borde);
+}
+.comofunciona-paso-mockup img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* cambiar a "contain" si son capturas y no se quieren recortar */
+  display: block;
 }
 
 /* Timeline oscuro */

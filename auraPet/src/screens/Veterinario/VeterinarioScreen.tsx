@@ -1,6 +1,7 @@
 import { useState, type CSSProperties } from 'react';
 import { Colors, Iconos } from '../../constants';
 import { getInfoVeterinario } from '../../Api/getInfo';
+import { useConsulta } from '../../hooks/useConsulta';
 import { ModalAgenda } from '../../Modal/AgendaModal';
 import {PacientesModal} from '../../Modal/PacientesModal'; 
 import type { NuevaReceta } from '../../interfaces';
@@ -8,7 +9,6 @@ import '../../css/VeterinariosPage.css';
 import { RecetaModal } from '../../Modal/RecetasModal';
 import { ConfiguracionModal } from '../../Modal/ConfiguracionModal';
 import { useAuth } from '../../Auth/AuthContext';
-import { veterinariosMock } from '../../Data/Veterinarios';
 
 const colors = Colors;
 const iconos = Iconos;
@@ -30,14 +30,12 @@ const temaVars = {
 export const VeterinarioScreen = () => {
   const { usuarioActual } = useAuth();
 
-  // OJO: usuarioActual.id es el id de Usuario. Las funciones de
-  // Api/getInfo.tsx (getInfoVeterinario, getAgendaVeterinario,
-  // getPacientesPorVeterinario) esperan el id de Veterinario (otra
-  // tabla), enlazado vía Veterinario.usuarioId.
-  const veterinario = veterinariosMock.find((v) => v.usuarioId === usuarioActual!.id);
-  const veterinarioIdActual = veterinario!.id;
-
-  const infoVeterinario = getInfoVeterinario(veterinarioIdActual);
+  // Ficha de veterinario de esta cuenta (id de la tabla veterinarios + centros).
+  // La agenda y los pacientes usan ese id, no el de la cuenta.
+  const { datos: infoVeterinario = { id: null, centros: [] } } =
+    useConsulta(() => getInfoVeterinario(usuarioActual!.id), [usuarioActual!.id]);
+  // -1 mientras carga o si la cuenta todavía no tiene ficha profesional: las consultas devuelven [].
+  const veterinarioIdActual = infoVeterinario.id ?? -1;
 
   // Un veterinario puede no estar vinculado a ningún centro (atención
   // independiente): en ese caso centros llega vacío y lo indicamos así,
@@ -94,9 +92,9 @@ export const VeterinarioScreen = () => {
       <div className="vet-main">
         {/* circulito con el nombre de la persona en cuestión */}
         <div className="vet-topbar">
-          <div className="vet-avatar">{getIniciales(infoVeterinario.nombre)}</div>
+          <div className="vet-avatar">{getIniciales(usuarioActual!.nombre)}</div>
           <div className="vet-user-info">
-            <span className="vet-user-name">{infoVeterinario.nombre}</span>
+            <span className="vet-user-name">{usuarioActual!.nombre}</span>
             <span className="vet-user-centro">{centroLabel}</span>
           </div>
         </div>
