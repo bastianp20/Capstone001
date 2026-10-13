@@ -3,7 +3,8 @@ import type {SolicitudPendiente} from '../../interfaces';
 import {Colors, Badge, badgeStyles, ESTADO_LABEL, URGENCIA_LABEL} from '../../constants';
 import {RechazarModal} from '../../Modal/ReachazarModal';
 import { KpiCard } from "../../Card/kpi";
-import { getCitasResumen, getSolicitudesPendientes } from "../../Api/getInfo";
+import { getCitasResumen, getResumenSuperadmin, getSolicitudesPendientes } from "../../Api/getInfo";
+import { resolverSolicitud } from "../../Api/postInfo";
 import { useConsulta } from "../../hooks/useConsulta";
 import { useAuth } from "../../Auth/AuthContext";
 import { ConfiguracionModal } from "../../Modal/ConfiguracionModal";
@@ -11,10 +12,14 @@ import { Iconos } from "../../constants";
 
 import { ModalCrearProfesional } from "../../Modal/CrearProfesionalModal";
 import { ModalCrearDueno } from "../../Modal/CrearDuenoModal";
+import { ModalCrearSuperadmin } from "../../Modal/CrearSuperadminModal";
+import { ModalCrearCentro } from "../../Modal/CrearCentroModal";
 
 const colors = Colors;
 const badge = Badge;
 const iconos = Iconos;
+const FONDO = "#f6f8f8"; // gris casi blanco para el área de contenido
+const ROJO = "#a4272a";
 
 type ModalCrear = "profesional" | "superadmin" | "centro" | "dueno" | null;
 
@@ -38,15 +43,27 @@ export const SuperAdminScreen = () => {
     setModalCrear(tipo);
     setMenuCrearAbierto(false);
   };
+
+  // Al cerrar un modal de crear, volvemos a pedir los datos para que los números se actualicen.
+  const [recarga, setRecarga] = useState(0);
+  const recargar = () => setRecarga((n) => n + 1);
+  const cerrarModalCrear = () => {
+    setModalCrear(null);
+    recargar();
+  };
+
+  // Números reales de las tarjetas
+  const { datos: resumen, cargando: cargandoResumen } = useConsulta(() => getResumenSuperadmin(), [recarga]);
+  const [errorAccion, setErrorAccion] = useState<string | null>(null);
   // Solicitudes: se guardan en estado propio porque aprobar/rechazar las saca de la lista.
   const [solicitudes, setSolicitudes] = useState<SolicitudPendiente[]>([]);
   useEffect(() => {
     getSolicitudesPendientes()
       .then(setSolicitudes)
       .catch((e) => console.error("No se pudieron cargar las solicitudes:", e));
-  }, []);
+  }, [recarga]);
   // Citas de toda la plataforma (solo lectura).
-  const { datos: citas = [] } = useConsulta(() => getCitasResumen(), []);
+  const { datos: citas = [] } = useConsulta(() => getCitasResumen(), [recarga]);
 
   const navItems = [
     { label: "Resumen", active: true },
@@ -55,19 +72,42 @@ export const SuperAdminScreen = () => {
     { label: "Aprobaciones", active: false },
     { label: "Citas", active: false },
   ];
-// TODO: llamar a la API/Supabase enviando { id: solicitudARechazar.id, razon }
-const confirmarRechazo = (_razon: string) => {
-    if (!solicitudARechazar) return;
-    setSolicitudes((prev) => prev.filter((s) => s.id !== solicitudARechazar.id));
-    setSolicitudARechazar(null);
-  };
-  // TODO: llamar a la API/Supabase para marcar la solicitud como aprobada
-const aprobar = (id: string) => {
-    setSolicitudes((prev) => prev.filter((s) => s.id !== id));
+  // Rechazar: guarda el motivo en la base y saca la solicitud de la lista.
+  const confirmarRechazo = async (razon: string) => {
+    if (!solicitudARechazar || !usuarioActual) return;
+    try {
+      await resolverSolicitud(solicitudARechazar.id, "rechazado", usuarioActual.id, razon);
+      setSolicitudARechazar(null);
+      setErrorAccion(null);
+      recargar();
+    } catch (e) {
+      setErrorAccion(e instanceof Error ? e.message : "No se pudo rechazar la solicitud.");
+      setSolicitudARechazar(null);
+    }
   };
 
+  // Aprobar: el centro o veterinario queda verificado y visible.
+  const aprobar = async (id: string) => {
+    if (!usuarioActual) return;
+    try {
+      await resolverSolicitud(id, "aprobado", usuarioActual.id);
+      setErrorAccion(null);
+      recargar();
+    } catch (e) {
+      setErrorAccion(e instanceof Error ? e.message : "No se pudo aprobar la solicitud.");
+    }
+  };
+
+  // Iniciales para el avatar: "Alan Penroz" -> "AP"
+  const iniciales = (usuarioActual?.nombre ?? "Superadmin")
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0].toUpperCase())
+    .join("");
+
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: colors.accentSoft, fontFamily: "system-ui, sans-serif" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: FONDO, fontFamily: "system-ui, sans-serif" }}>
       {/* SIDEBAR */}
       <div style={{ width: 236, flexShrink: 0, background: colors.sidebarBg, display: "flex", flexDirection: "column", padding: "20px 14px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 8px 22px" }}>
@@ -118,9 +158,10 @@ const aprobar = (id: string) => {
               maxWidth: 420,
               padding: "9px 14px",
               borderRadius: 9,
-              border: `1px solid ${colors.oscuro}`,
+              border: `1px solid ${colors.border}`,
               fontSize: 13.5,
-              background: colors.accentSoft,
+              background: FONDO,
+              outline: "none",
             }}
           />
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
@@ -157,7 +198,7 @@ const aprobar = (id: string) => {
                 </>
               )}
             </div>
-            <span style={{ fontSize: 18 }}>🔔</span>
+            <iconos.notificaciones size={18} color={colors.textMuted} style={{ cursor: "pointer" }} />
             <iconos.configuracion
               size={18}
               color={colors.textMuted}
@@ -166,7 +207,7 @@ const aprobar = (id: string) => {
             />
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <div style={{ width: 30, height: 30, borderRadius: 999, background: colors.accentSoft, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: colors.accent }}>
-                SA
+                {iniciales}
               </div>
               <span style={{ fontSize: 13.5, fontWeight: 600, color: colors.text }}>{usuarioActual?.nombre ?? "SuperAdmin"}</span>
             </div>
@@ -175,22 +216,59 @@ const aprobar = (id: string) => {
 
         {/* CONTENT */}
         <div style={{ flex: 1, padding: "26px 28px", overflowY: "auto" }}>
-          <h1 style={{ margin: "0 0 18px", fontSize: 21, fontWeight: 700, color: colors.text }}>Resumen General</h1>
+          <h1 style={{ margin: "0 0 18px", fontSize: 21, fontWeight: 700, color: colors.text }}>Resumen</h1>
 
-          {/* KPIs */}
-          <div style={{ display: "flex", gap: 14, marginBottom: 22 }}>
-            <KpiCard icon="👥" label="Usuarios activos" value="1,248" hint="+5.2% vs. mes pasado" />
-            <KpiCard icon="🏥" label="Centros activos" value="45" hint="Nuevos: 2" />
-            <KpiCard icon="🩺" label="Veterinarios verificados" value="112" hint="96.5% verif." />
-            <KpiCard icon="📅" label="Citas hoy" value="89" hint="21 urgentes, 6 críticas" />
+          {/* KPIs: números reales desde Supabase */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14, marginBottom: 22 }}>
+            <KpiCard
+              icon={<iconos.usuarios size={17} />}
+              label="Usuarios activos"
+              value={resumen?.usuarios.total ?? 0}
+              cargando={cargandoResumen}
+              hint={resumen && `${resumen.usuarios.duenos} dueños · ${resumen.usuarios.veterinarios} veterinarios · ${resumen.usuarios.superadmins} superadmin`}
+            />
+            <KpiCard
+              icon={<iconos.centro size={17} />}
+              label="Centros activos"
+              value={resumen?.centros.activos ?? 0}
+              cargando={cargandoResumen}
+              hint={resumen && (resumen.centros.dePrueba > 0 ? `${resumen.centros.dePrueba} de pruebas` : "Ninguno de pruebas")}
+            />
+            <KpiCard
+              icon={<iconos.diagnostico size={17} />}
+              label="Veterinarios"
+              value={resumen?.veterinarios.total ?? 0}
+              cargando={cargandoResumen}
+              hint={resumen && `${resumen.veterinarios.verificados} verificados · ${resumen.veterinarios.pendientes} pendientes`}
+            />
+            <KpiCard
+              icon={<iconos.calendario size={17} />}
+              label="Citas hoy"
+              value={resumen?.citasHoy.total ?? 0}
+              cargando={cargandoResumen}
+              hint={
+                resumen &&
+                (resumen.citasHoy.urgentes > 0 ? (
+                  <span style={{ color: ROJO }}>{resumen.citasHoy.urgentes} urgentes</span>
+                ) : (
+                  "Sin urgencias"
+                ))
+              }
+            />
           </div>
+
+          {errorAccion && (
+            <div style={{ marginBottom: 16, padding: "10px 14px", borderRadius: 10, background: "#fdecec", color: ROJO, fontSize: 13 }}>
+              {errorAccion}
+            </div>
+          )}
 
           {/* Solicitudes pendientes */}
           <div style={{ background: "white", border: `1px solid ${colors.border}`, borderRadius: 12, marginBottom: 22, overflow: "hidden" }}>
             <div style={{ padding: "14px 18px", borderBottom: `1px solid ${colors.border}`, fontSize: 14.5, fontWeight: 700 }}>
-              Solicitudes pendientes (aprobaciones)
+              Solicitudes pendientes
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "2.4fr 1.2fr 1.4fr 1.6fr", padding: "10px 18px", background: colors.border, fontSize: 11.5, fontWeight: 700, color: colors.textMuted, textTransform: "uppercase" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "2.4fr 1.2fr 1.4fr 1.6fr", padding: "10px 18px", background: FONDO, fontSize: 11.5, fontWeight: 700, color: colors.textMuted, textTransform: "uppercase" }}>
               <span>Solicitud</span>
               <span>Tipo</span>
               <span>Fecha de registro</span>
@@ -206,16 +284,16 @@ const aprobar = (id: string) => {
                 <span style={{ fontSize: 13.5, fontWeight: 600 }}>{s.nombre}</span>
                 <span style={{ fontSize: 13, color: colors.textMuted, textTransform: "capitalize" }}>{s.tipo}</span>
                 <span style={{ fontSize: 13, color: colors.textMuted }}>{s.fechaRegistro}</span>
-                <div style={{ display: "flex", gap: 14 }}>
+                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                   <button
                     onClick={() => aprobar(s.id)}
-                    style={{ border: "none", background: "none", color: colors.accent, fontWeight: 600, fontSize: 13, cursor: "pointer", padding: 0 }}
+                    style={{ border: "none", background: colors.accentSoft, color: colors.accent, fontWeight: 600, fontSize: 12.5, cursor: "pointer", padding: "6px 12px", borderRadius: 999 }}
                   >
                     Aprobar
                   </button>
                   <button
                     onClick={() => setSolicitudARechazar(s)}
-                    style={{ border: "none", background: "none", color: "#a4272a", fontWeight: 600, fontSize: 13, cursor: "pointer", padding: 0 }}
+                    style={{ border: "none", background: "none", color: ROJO, fontWeight: 600, fontSize: 12.5, cursor: "pointer", padding: "6px 4px" }}
                   >
                     Rechazar
                   </button>
@@ -227,9 +305,9 @@ const aprobar = (id: string) => {
           {/* Citas recientes y próximas */}
           <div style={{ background: "white", border: `1px solid ${colors.border}`, borderRadius: 12, overflow: "hidden" }}>
             <div style={{ padding: "14px 18px", borderBottom: `1px solid ${colors.border}`, fontSize: 14.5, fontWeight: 700 }}>
-              Citas recientes y próximas
+              Citas
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1.4fr 1.4fr 1.2fr 1fr 1fr", padding: "10px 18px", background: colors.border  , fontSize: 11.5, fontWeight: 700, color: colors.textMuted, textTransform: "uppercase" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1.4fr 1.4fr 1.2fr 1fr 1fr", padding: "10px 18px", background: FONDO, fontSize: 11.5, fontWeight: 700, color: colors.textMuted, textTransform: "uppercase" }}>
               <span>Mascota / Dueño</span>
               <span>Veterinario</span>
               <span>Centro</span>
@@ -237,6 +315,11 @@ const aprobar = (id: string) => {
               <span>Estado</span>
               <span>Urgencia</span>
             </div>
+            {citas.length === 0 && (
+              <div style={{ padding: "24px 18px", textAlign: "center", color: colors.textMuted, fontSize: 13 }}>
+                Todavía no hay citas registradas.
+              </div>
+            )}
             {citas.map((c) => (
               <div key={c.id} style={{ display: "grid", gridTemplateColumns: "1.6fr 1.4fr 1.4fr 1.2fr 1fr 1fr", alignItems: "center", padding: "13px 18px", borderTop: `1px solid ${colors.border}` }}>
                 <div style={{ display: "flex", flexDirection: "column" }}>
@@ -265,10 +348,16 @@ const aprobar = (id: string) => {
         <ConfiguracionModal onCerrar={() => setMostrarConfiguracion(false)} />
       )}
       {modalCrear === "profesional" && (
-        <ModalCrearProfesional onClose={() => setModalCrear(null)} />
+        <ModalCrearProfesional onClose={cerrarModalCrear} />
       )}
       {modalCrear === "dueno" && (
-        <ModalCrearDueno onClose={() => setModalCrear(null)} />
+        <ModalCrearDueno onClose={cerrarModalCrear} />
+      )}
+      {modalCrear === "superadmin" && (
+        <ModalCrearSuperadmin onClose={cerrarModalCrear} />
+      )}
+      {modalCrear === "centro" && (
+        <ModalCrearCentro onClose={cerrarModalCrear} />
       )}
     </div>
   );

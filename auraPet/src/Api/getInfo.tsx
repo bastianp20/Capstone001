@@ -16,7 +16,8 @@ import type {
   Mascota,                 // mascota con los campos que muestra la app
   PreguntaFrecuente,       // pregunta + respuesta + cantidad de consultas
   SolicitudPendiente,      // centro o veterinario esperando aprobación
-  UrgenciaCita,            // "baja" | "media" | "alta" | "critica"
+  UrgenciaCita,            // "baja" | "media" | "alta" | "critica",
+  ResumenSuperadmin,
 } from "../interfaces";
 // auí importamos supabase para poder hacer las consutas a la base de datos. 
 import { supabase } from "../lib/supabase";
@@ -206,6 +207,58 @@ export const getPacienteByVeterinarioId = async (veterinarioId: number) => {
 // =====================================================================
 // PANEL DEL SUPERADMIN
 // =====================================================================
+
+// Los números de las tarjetas del Resumen. Solo cuenta filas (head: true),
+// no descarga datos, así que es liviano aunque la base crezca.
+export const getResumenSuperadmin = async (): Promise<ResumenSuperadmin> => {
+  const contar = async (consulta: PromiseLike<{ count: number | null; error: unknown }>) => {
+    const { count, error } = await consulta;
+    if (error) throw error;
+    return count ?? 0;
+  };
+  const perfilesActivos = () =>
+    supabase.from("perfiles").select("*", { count: "exact", head: true }).is("desactivado_en", null);
+  const vets = () => supabase.from("veterinarios").select("*", { count: "exact", head: true });
+
+  // "Hoy" según la hora del computador (de 00:00 a 23:59)
+  const inicioHoy = new Date();
+  inicioHoy.setHours(0, 0, 0, 0);
+  const inicioManana = new Date(inicioHoy);
+  inicioManana.setDate(inicioManana.getDate() + 1);
+  const citasHoy = () =>
+    supabase
+      .from("citas")
+      .select("*", { count: "exact", head: true })
+      .gte("fecha_hora", inicioHoy.toISOString())
+      .lt("fecha_hora", inicioManana.toISOString())
+      .neq("estado", "cancelada");
+
+  // Todas las consultas en paralelo
+  const [
+    duenos, veterinariosCuenta, superadmins,
+    centrosActivos, centrosPrueba,
+    vetsTotal, vetsVerificados, vetsPendientes,
+    citasTotal, citasUrgentes,
+  ] = await Promise.all([
+    contar(perfilesActivos().eq("rol", "dueno")),
+    contar(perfilesActivos().eq("rol", "veterinario")),
+    contar(perfilesActivos().eq("rol", "superadmin")),
+    contar(supabase.from("centros").select("*", { count: "exact", head: true }).eq("estado_verificacion", "aprobado")),
+    contar(supabase.from("centros").select("*", { count: "exact", head: true }).eq("estado_verificacion", "aprobado").eq("es_prueba", true)),
+    contar(vets()),
+    contar(vets().eq("estado_verificacion", "aprobado")),
+    contar(vets().eq("estado_verificacion", "pendiente")),
+    contar(citasHoy()),
+    contar(citasHoy().in("urgencia", ["alta", "critica"])),
+  ]);
+
+  return {
+    usuarios: { total: duenos + veterinariosCuenta + superadmins, duenos, veterinarios: veterinariosCuenta, superadmins },
+    centros: { activos: centrosActivos, dePrueba: centrosPrueba },
+    veterinarios: { total: vetsTotal, verificados: vetsVerificados, pendientes: vetsPendientes },
+    citasHoy: { total: citasTotal, urgentes: citasUrgentes },
+  };
+};
 
 // Todas las citas de la plataforma, con mascota, dueño, veterinario y centro.
 export const getCitasResumen = async (): Promise<CitaResumen[]> => {

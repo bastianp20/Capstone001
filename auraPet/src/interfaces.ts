@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 
 export type TipoSolicitud = "veterinario" | "centro";
@@ -34,10 +35,19 @@ export interface RechazarModalProps {
 }
 
 export interface KpiCardProps {
-  icon: string;
+  icon: ReactNode;          // un ícono de lucide, p. ej. <iconos.usuarios size={18} />
   label: string;
-  value: string;
-  hint: string;
+  value: number | string;
+  hint?: ReactNode;         // línea de detalle bajo el número
+  cargando?: boolean;       // mientras llegan los datos se muestra "–"
+}
+
+// Números reales del panel de superadmin (ver getResumenSuperadmin)
+export interface ResumenSuperadmin {
+  usuarios: { total: number; duenos: number; veterinarios: number; superadmins: number };
+  centros: { activos: number; dePrueba: number };
+  veterinarios: { total: number; verificados: number; pendientes: number };
+  citasHoy: { total: number; urgentes: number };
 }
 
 export interface Usuario {
@@ -301,6 +311,33 @@ export interface DatosNuevoDueno {
   telefono: string; // "56912345678" o ""
 }
 export interface CrearDuenoModalProps {
+  onClose: () => void;
+}
+
+// Crear superadmin: mismos datos que un dueño
+export type DatosNuevoSuperadmin = DatosNuevoDueno;
+export interface CrearSuperadminModalProps {
+  onClose: () => void;
+}
+
+// Crear centro (solo superadmin). Un elemento por cada día que atiende.
+export interface HorarioCentroNuevo {
+  dia_semana: number;              // 1 = lunes ... 7 = domingo
+  abre: string;                    // "09:00"
+  cierra: string;                  // "19:00"
+  inicio_colacion: string | null;  // null = atiende de corrido
+  fin_colacion: string | null;
+}
+export interface DatosNuevoCentro {
+  nombre: string;
+  direccion: string;
+  comuna: string;
+  telefono: string;                // "56912345678" o ""
+  esPrueba: boolean;
+  horarios: HorarioCentroNuevo[];
+  especialidadIds: number[];
+}
+export interface CrearCentroModalProps {
   onClose: () => void;
 }
 

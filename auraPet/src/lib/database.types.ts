@@ -798,6 +798,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      crear_centro: {
+        Args: {
+          p_comuna: string
+          p_direccion: string
+          p_es_prueba?: boolean
+          p_especialidad_ids?: number[]
+          p_horarios?: Json
+          p_nombre: string
+          p_telefono?: number
+        }
+        Returns: number
+      }
       es_admin_de_centro: { Args: { p_centro_id: number }; Returns: boolean }
       es_superadmin: { Args: never; Returns: boolean }
       es_veterinario_de_centro: {
