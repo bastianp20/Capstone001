@@ -460,3 +460,18 @@
   .dueno-content { padding: 22px 16px 36px; }
   .dueno-topbar { padding: 14px 16px; flex-wrap: wrap; }
 }
+
+/* Aviso de error arriba del contenido (por ejemplo, si no se pudo cancelar una cita) */
+.dueno-aviso-error {
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #fdecec;
+  color: #a4272a;
+  font-size: 13px;
+}
+
+/* "Ver todas" es un enlace que cambia de sección */
+.dueno-seccion-link {
+  cursor: pointer;
+}

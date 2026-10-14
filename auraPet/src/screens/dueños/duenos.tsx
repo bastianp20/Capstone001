@@ -1,14 +1,21 @@
 import { useState, type CSSProperties } from 'react';
-import { Colors, Iconos, Badge, badgeStyles, ESTADO_LABEL, URGENCIA_LABEL, EMOJI_ESPECIE } from '../../constants';
-import { calcularEdad } from '../../lib/fechas';
+import { Colors, Iconos, MAX_CITAS_INICIO_DUENO, MAX_HISTORIAL_INICIO_DUENO } from '../../constants';
 import { useConsulta } from '../../hooks/useConsulta';
-import { getMascotasPorDueno, getProximasCitasDueno, getHistorialRecienteDueno } from '../../Api/getInfo';
+import { getMascotasPorDueno, getProximasCitasDueno, getHistorialRecienteDueno, getHistorialDueno } from '../../Api/getInfo';
+import { cancelarCita } from '../../Api/postInfo';
 import { getIniciales } from '../../utils';
 import { useAuth } from '../../Auth/AuthContext';
+import type { HistorialDueno, ItemMenuDueno, SeccionDueno } from '../../interfaces';
 import { ConfiguracionModal } from '../../Modal/ConfiguracionModal';
-import '../../css/duenoPage.css';
-import LogoAuraPetSinFondo from '../../assets/logo/LogoAuraPetSinFondo.png'; 
 import { ModalCrearMascota } from '../../Modal/AgregarMascotaModal';
+import { ModalSolicitarCita } from '../../Modal/SolicitarCitaModal';
+import { MenuDueno } from '../../components/dueno/MenuDueno';
+import { GrillaMascotas } from '../../components/dueno/GrillaMascotas';
+import { ProximasCitasDueno } from '../../components/dueno/ProximasCitasDueno';
+import { HistorialReciente } from '../../components/dueno/HistorialReciente';
+import { HistorialMedico } from '../../components/dueno/HistorialMedico';
+import '../../css/duenoPage.css';
+import LogoAuraPetSinFondo from '../../assets/logo/LogoAuraPetSinFondo.png';
 
 const colors = Colors;
 const iconos = Iconos;
@@ -24,186 +31,180 @@ const temaVars = {
   "--color-accent-soft": colors.accentSoft,
 } as CSSProperties;
 
+const HISTORIAL_VACIO: HistorialDueno = { registros: [], recetas: [] };
+
+type Modal = "configuracion" | "mascota" | "cita" | null;
+
+// Panel del dueño. Esta pantalla maneja la navegación, los datos y los modales;
+// cada parte visual vive en components/dueno/.
 export const DuenoScreen = () => {
   const { usuarioActual } = useAuth();
-  const duenoIdActual = usuarioActual!.id; // App.tsx ya garantiza que hay sesión antes de montar esta pantalla
+  const duenoId = usuarioActual!.id; // App.tsx ya garantiza que hay sesión antes de montar esta pantalla
   const nombreDueno = usuarioActual!.nombre;
 
-  // "recarga" sube en 1 cada vez que se crea una mascota → useConsulta vuelve a pedir la lista
+  // ---------- Navegación y modales ----------
+  const [seccion, setSeccion] = useState<SeccionDueno>("inicio");
+  const [modal, setModal] = useState<Modal>(null);
+  const [mascotaParaCita, setMascotaParaCita] = useState<number | undefined>(undefined);
+
+  // ---------- Datos ----------
+  // "recarga" sube en 1 después de crear/cancelar algo → useConsulta vuelve a pedir los datos
   const [recarga, setRecarga] = useState(0);
-  // Datos desde Supabase. Mientras cargan, cada lista empieza vacía (= []).
-  const { datos: mascotas = [] } = useConsulta(() => getMascotasPorDueno(duenoIdActual), [duenoIdActual, recarga]);
-  const { datos: proximasCitas = [] } = useConsulta(() => getProximasCitasDueno(duenoIdActual, 3), [duenoIdActual]);
-  const { datos: historialReciente = [] } = useConsulta(() => getHistorialRecienteDueno(duenoIdActual, 3), [duenoIdActual]);
-  const [modalAbierto, setModalAbierto] = useState<"configuracion" | "mascota" | null>(null);
+  const recargar = () => setRecarga((n) => n + 1);
+
+  const { datos: mascotas = [] } = useConsulta(() => getMascotasPorDueno(duenoId), [duenoId, recarga]);
+  const { datos: proximasCitas = [] } =
+    useConsulta(() => getProximasCitasDueno(duenoId, MAX_CITAS_INICIO_DUENO), [duenoId, recarga]);
+  const { datos: historialReciente = [] } =
+    useConsulta(() => getHistorialRecienteDueno(duenoId, MAX_HISTORIAL_INICIO_DUENO), [duenoId, recarga]);
+  // El historial completo solo se pide al entrar a esa sección
+  const { datos: historial = HISTORIAL_VACIO, cargando: cargandoHistorial } = useConsulta(
+    () => (seccion === "historial" ? getHistorialDueno() : Promise.resolve(HISTORIAL_VACIO)),
+    [seccion, recarga]
+  );
+
+  // ---------- Acciones ----------
+  const elegirMenu = (id: ItemMenuDueno["id"]) => {
+    if (id === "solicitar") abrirSolicitarCita();
+    else if (id === "configuracion") setModal("configuracion");
+    else setSeccion(id);
+  };
+
+  const abrirSolicitarCita = (mascotaId?: number) => {
+    setMascotaParaCita(mascotaId);
+    setModal("cita");
+  };
+
+  const [cancelandoId, setCancelandoId] = useState<number | null>(null);
+  const [aviso, setAviso] = useState<string | null>(null);
+  const cancelar = async (citaId: number) => {
+    if (!window.confirm("¿Seguro que quieres cancelar esta cita?")) return;
+    setCancelandoId(citaId);
+    setAviso(null);
+    try {
+      await cancelarCita(citaId);
+      recargar();
+    } catch (e) {
+      setAviso(e instanceof Error ? e.message : "No se pudo cancelar la cita.");
+    } finally {
+      setCancelandoId(null);
+    }
+  };
+
+  // Botones de la cabecera (se repiten en Inicio y Mis mascotas)
+  const accionesRapidas = (
+    <div className="dueno-acciones-rapidas">
+      <button className="dueno-btn dueno-btn--secundario" onClick={() => setModal("mascota")}>
+        <iconos.agregar size={15} /> Registrar mascota
+      </button>
+      <button className="dueno-btn dueno-btn--primario" onClick={() => abrirSolicitarCita()}>
+        <iconos.solicitarCita size={15} /> Solicitar cita
+      </button>
+    </div>
+  );
+
   return (
     <div className="dueno-page" style={temaVars}>
+      {/* ---------- Menú lateral ---------- */}
       <div className="dueno-sidebar">
         <div className="dueno-sidebar-brand">
           <img src={LogoAuraPetSinFondo} alt="AuraPet" className="landing-logo-icono" />
           <span className="dueno-sidebar-brand-name">AuraPet</span>
         </div>
-
-        <div className="dueno-nav">
-          <div className="dueno-nav-item dueno-nav-item--activo">
-            <iconos.inicio size={18} />
-            <span className="dueno-nav-item-label">Inicio</span>
-          </div>
-          <div className="dueno-nav-item">
-            <iconos.huella size={18} />
-            <span className="dueno-nav-item-label">Mis Mascotas</span>
-          </div>
-          <div className="dueno-nav-item">
-            <iconos.solicitarCita size={18} />
-            <span className="dueno-nav-item-label">Solicitar Cita</span>
-          </div>
-          <div className="dueno-nav-item">
-            <iconos.historial size={18} />
-            <span className="dueno-nav-item-label">Historial Médico</span>
-          </div>
-          <div className="dueno-nav-item" onClick={() => setModalAbierto("configuracion")}>
-            <iconos.configuracion size={18} />
-            <span className="dueno-nav-item-label">Configuración</span>
-          </div>
-        </div>
+        <MenuDueno seccion={seccion} onElegir={elegirMenu} />
       </div>
 
       <div className="dueno-main">
+        {/* ---------- Barra superior ---------- */}
         <div className="dueno-topbar">
-          <div className="dueno-buscador">
-            <iconos.buscar size={15} color={colors.textMuted} />
-            <input type="text" placeholder="Buscar mascota, cita o veterinario…" />
-          </div>
+          <div />
           <div className="dueno-topbar-right">
-            <span>
-              <iconos.notificaciones size={19} color={colors.textMuted} />
-            </span>
             <div className="dueno-usuario">
               <div className="dueno-avatar">{getIniciales(nombreDueno)}</div>
               <div className="dueno-usuario-info">
                 <span className="dueno-usuario-nombre">{nombreDueno}</span>
-                <span className="dueno-usuario-rol">Dueñ@</span>
+                <span className="dueno-usuario-rol">Dueñ@{usuarioActual!.esPrueba && " · Cuenta de prueba"}</span>
               </div>
             </div>
           </div>
         </div>
 
         <div className="dueno-content">
-          <div className="dueno-content-header">
-            <div>
-              <h1 className="dueno-content-titulo">Hola, {nombreDueno.split(" ")[0]} 👋</h1>
-              <p className="dueno-content-subtitulo">Esto es lo que está pasando con tus mascotas</p>
-            </div>
-            <div className="dueno-acciones-rapidas">
-              {/* TODO: abre RegistrarMascotaModal (próxima capa) */}
-              <button className="dueno-btn dueno-btn--secundario" onClick = {() => setModalAbierto('mascota')}>
-                <iconos.agregar size={15} />
-                Registrar mascota
-              </button>
-              {/* TODO: abre SolicitarCitaModal (próxima capa) */}
-              <button className="dueno-btn dueno-btn--primario">
-                <iconos.solicitarCita size={15} />
-                Solicitar cita
-              </button>
-            </div>
-          </div>
+          {aviso && <div className="dueno-aviso-error">{aviso}</div>}
 
-          <section className="dueno-seccion">
-            <div className="dueno-seccion-header">
-              <h2 className="dueno-seccion-titulo">Mis mascotas</h2>
-              <a className="dueno-seccion-link">Ver todas →</a>
-            </div>
-            <div className="dueno-mascotas-grid">
-              {mascotas.map((m) => (
-                <div key={m.id} className="dueno-mascota-card">
-                  <div className="dueno-mascota-top">
-                    <div className="dueno-mascota-avatar">{EMOJI_ESPECIE[m.especie]}</div>
-                    <div>
-                      <p className="dueno-mascota-nombre">{m.nombre}</p>
-                      <p className="dueno-mascota-detalle">
-                        {m.raza ?? 'Sin raza'}{calcularEdad(m.fechaNacimiento) !== null && ` · ${calcularEdad(m.fechaNacimiento)} años`}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="dueno-mascota-tags">
-                    <span className={`dueno-tag ${m.esterilizado ? "dueno-tag--ok" : ""}`}>
-                      {m.esterilizado ? "Esterilizado" : "Sin esterilizar"}
-                    </span>
-                    <span className="dueno-tag">{m.sexo === "macho" ? "Macho" : "Hembra"}</span>
-                  </div>
+          {/* ---------- INICIO ---------- */}
+          {seccion === "inicio" && (
+            <>
+              <div className="dueno-content-header">
+                <div>
+                  <h1 className="dueno-content-titulo">Hola, {nombreDueno.split(" ")[0]} 👋</h1>
+                  <p className="dueno-content-subtitulo">Esto es lo que está pasando con tus mascotas</p>
                 </div>
-              ))}
-
-              <div className="dueno-mascota-card-add" onClick={() => setModalAbierto('mascota')}>
-                <iconos.agregar size={22} />
-                <span>Agregar mascota</span>
+                {accionesRapidas}
               </div>
-            </div>
-          </section>
 
-          <div className="dueno-dos-columnas">
-            <section className="dueno-panel">
-              <div className="dueno-panel-header">Próximas citas</div>
-
-              {proximasCitas.length === 0 && (
-                <div className="dueno-panel-vacio">No tienes citas agendadas.</div>
-              )}
-
-              {proximasCitas.map((c) => (
-                <div key={c.id} className="dueno-cita-fila">
-                  <div className="dueno-cita-fecha">
-                    <span className="dueno-cita-fecha-dia">{c.dia}</span>
-                    <span className="dueno-cita-fecha-mes">{c.mes}</span>
-                  </div>
-                  <div className="dueno-cita-info">
-                    <div className="dueno-cita-mascota">{c.mascota}</div>
-                    <div className="dueno-cita-motivo">
-                      {c.centro} — <span>{c.motivo}</span>
-                    </div>
-                  </div>
-                  <div className="dueno-cita-badges">
-                    <span style={Badge(badgeStyles[c.estado])}>{ESTADO_LABEL[c.estado]}</span>
-                    <span style={Badge(badgeStyles[c.urgencia])}>{URGENCIA_LABEL[c.urgencia]}</span>
-                  </div>
+              <section className="dueno-seccion">
+                <div className="dueno-seccion-header">
+                  <h2 className="dueno-seccion-titulo">Mis mascotas</h2>
+                  <a className="dueno-seccion-link" onClick={() => setSeccion("mascotas")}>Ver todas →</a>
                 </div>
-              ))}
-            </section>
+                <GrillaMascotas mascotas={mascotas} onAgregar={() => setModal("mascota")} />
+              </section>
 
-            <section className="dueno-panel">
-              <div className="dueno-panel-header">Historial reciente</div>
-              <div className="dueno-historial-lista">
-                {historialReciente.length === 0 && (
-                  <div className="dueno-panel-vacio">Aún no hay historial médico.</div>
-                )}
-                {historialReciente.map((h) => (
-                  <div key={h.id} className="dueno-historial-item">
-                    <div className="dueno-historial-linea">
-                      <div className="dueno-historial-punto" />
-                      <div className="dueno-historial-hilo" />
-                    </div>
-                    <div className="dueno-historial-texto">
-                      <div className="dueno-historial-desc">{h.descripcion}</div>
-                      <div className="dueno-historial-meta">{h.mascota} · {h.fecha}</div>
-                    </div>
-                  </div>
-                ))}
+              <div className="dueno-dos-columnas">
+                <ProximasCitasDueno citas={proximasCitas} onCancelar={cancelar} cancelandoId={cancelandoId} />
+                <HistorialReciente items={historialReciente} />
               </div>
-            </section>
-          </div>
+            </>
+          )}
+
+          {/* ---------- MIS MASCOTAS ---------- */}
+          {seccion === "mascotas" && (
+            <>
+              <div className="dueno-content-header">
+                <div>
+                  <h1 className="dueno-content-titulo">Mis mascotas</h1>
+                  <p className="dueno-content-subtitulo">Pide hora para cualquiera de ellas desde su tarjeta</p>
+                </div>
+                {accionesRapidas}
+              </div>
+              <GrillaMascotas mascotas={mascotas} onAgregar={() => setModal("mascota")} onSolicitarCita={abrirSolicitarCita} />
+            </>
+          )}
+
+          {/* ---------- HISTORIAL MÉDICO ---------- */}
+          {seccion === "historial" && (
+            <>
+              <div className="dueno-content-header">
+                <div>
+                  <h1 className="dueno-content-titulo">Historial médico</h1>
+                  <p className="dueno-content-subtitulo">Atenciones, vacunas y recetas de tus mascotas</p>
+                </div>
+              </div>
+              <HistorialMedico mascotas={mascotas} historial={historial} cargando={cargandoHistorial} />
+            </>
+          )}
         </div>
       </div>
 
-      {modalAbierto === "configuracion" && (
-        <ConfiguracionModal onCerrar={() => setModalAbierto(null)} />
-      )}
-      {modalAbierto === "mascota" && (
+      {/* ---------- Modales ---------- */}
+      {modal === "configuracion" && <ConfiguracionModal onCerrar={() => setModal(null)} />}
+      {modal === "mascota" && (
         <ModalCrearMascota
-          duenoId={duenoIdActual}
-          onClose={() => setModalAbierto(null)}
+          duenoId={duenoId}
+          onClose={() => setModal(null)}
           onCreada={() => {
-            setRecarga((r) => r + 1);   // vuelve a cargar "Mis mascotas"
-            setModalAbierto(null);      // cierra el modal
+            recargar();      // vuelve a cargar "Mis mascotas"
+            setModal(null);  // cierra el modal
           }}
+        />
+      )}
+      {modal === "cita" && (
+        <ModalSolicitarCita
+          mascotas={mascotas}
+          mascotaInicialId={mascotaParaCita}
+          onClose={() => setModal(null)}
+          onCreada={recargar} // el modal muestra su pantalla de éxito; la lista se actualiza detrás
         />
       )}
     </div>

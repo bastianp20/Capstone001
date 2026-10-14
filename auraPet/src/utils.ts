@@ -13,3 +13,8 @@ export const getIniciales = (nombreCompleto: string): string => {
 
   return (primera + ultima).toUpperCase();
 };
+
+// Código al azar para confirmar acciones delicadas: generarCodigo(6, "ABC23") -> "B3CA2C".
+// Los caracteres permitidos se pasan como parámetro (ver CARACTERES_CODIGO_CONFIRMACION en constants.ts).
+export const generarCodigo = (largo: number, caracteres: string): string =>
+  Array.from({ length: largo }, () => caracteres[Math.floor(Math.random() * caracteres.length)]).join("");

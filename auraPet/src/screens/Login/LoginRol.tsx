@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useAuth } from '../../Auth/AuthContext';
 import { DuenoScreen } from '../dueños/duenos';
 import { VeterinarioScreen } from '../Veterinario/VeterinarioScreen';
 import { SuperAdminScreen } from '../SuperAdmin/SuperAdminScreen';
+import { CentroAdminScreen } from '../CentroAdmin/CentroAdminScreen';
 import { HomeScreen } from '../Home/HomeScreen';
 
 // Se muestra una vez que ya hay usuarioActual (post-login). Decide qué
@@ -11,11 +13,22 @@ import { HomeScreen } from '../Home/HomeScreen';
 export const LoginRol = () => {
   const { usuarioActual } = useAuth();
 
+  // Un veterinario que además es admin de un centro puede cambiar entre
+  // "Mi agenda" y el panel del centro. null = su panel de veterinario.
+  const [centroAdministrando, setCentroAdministrando] = useState<number | null>(null);
+
   switch (usuarioActual!.rol) {
     case 'dueno':
       return <DuenoScreen />;
     case 'veterinario':
-      return <VeterinarioScreen />;
+      return centroAdministrando === null ? (
+        <VeterinarioScreen onAdministrarCentro={setCentroAdministrando} />
+      ) : (
+        <CentroAdminScreen centroInicialId={centroAdministrando} onVolver={() => setCentroAdministrando(null)} />
+      );
+    case 'administrativo':
+      // No tiene panel personal: entra directo al panel de su(s) centro(s)
+      return <CentroAdminScreen />;
     case 'superadmin':
       return <SuperAdminScreen />;
     default:

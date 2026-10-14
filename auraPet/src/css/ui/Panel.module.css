@@ -1,0 +1,160 @@
+/* =====================================================================
+   Componentes genéricos de los paneles (components/ui/*)
+   Se pueden usar en cualquier pantalla: veterinario, centro, superadmin.
+   ===================================================================== */
+
+/* ---------- TarjetaPanel ---------- */
+.tarjeta {
+  background: #fff;
+  border: 1px solid #e4e6ea;
+  border-radius: 12px;
+  padding: 18px 20px;
+  color: #1a1f27;
+  min-width: 0;
+}
+
+.tarjetaEncabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.tarjetaTitulo {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+/* ---------- Indicador ---------- */
+.indicador {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #e4e6ea;
+  border-radius: 12px;
+  min-width: 0;
+}
+
+.indicadorEtiqueta {
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+.indicadorValor {
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #1a1f27;
+}
+
+.indicadorAlerta {
+  color: #a4272a;
+}
+
+.progreso {
+  height: 5px;
+  border-radius: 999px;
+  background: #e4e6ea;
+  overflow: hidden;
+}
+
+.progresoRelleno {
+  height: 100%;
+  border-radius: 999px;
+  background: #0f8f80;
+  transition: width 0.3s ease;
+}
+
+/* ---------- EstadoVacio ---------- */
+.vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 12px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* ---------- GraficoBarras ---------- */
+.grafico {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  /* líneas guía horizontales muy suaves */
+  background-image: linear-gradient(#eef0f2 1px, transparent 1px);
+  background-size: 100% 25%;
+  background-position: 0 0;
+  border-bottom: 1px solid #e4e6ea;
+  margin-top: 30px; /* espacio para el tooltip de las barras más altas */
+}
+
+.columna {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  cursor: default;
+}
+
+.barra {
+  width: 100%;
+  max-width: 22px;
+  min-height: 3px;
+  border-radius: 5px 5px 2px 2px;
+  background: #9fd6cf;
+  transition: background 0.15s ease;
+}
+
+.columna:hover .barra {
+  background: #5fb8ad;
+}
+
+.barraDestacada,
+.columna:hover .barraDestacada {
+  background: #0f8f80;
+}
+
+/* Días que aún no llegan: solo una marquita a ras del eje */
+.barraFutura,
+.columna:hover .barraFutura {
+  height: 3px !important;
+  background: #e4e6ea;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #1a1f27;
+  color: #fff;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.eje {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.ejeMarca {
+  flex: 1;
+  text-align: center;
+  font-size: 0.72rem;
+  color: #6b7280;
+  min-height: 14px;
+}

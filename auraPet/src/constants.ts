@@ -1,12 +1,12 @@
 import type { CSSProperties } from "react";
 import type {EstadoCita, UrgenciaCita, EspecieMascota, 
   // VistaHome, 
-  Servicio} from '../src/interfaces'; 
+  Servicio, MedicamentoReceta, ColumnaMedicamento, AtajoProximoControl, PasoCita, ItemMenuDueno, TipoRegistro} from '../src/interfaces'; 
 import {
   Menu, Search, Bell, User, UserCircle, LogOut, Settings, Calendar, Filter, ChevronDown, ChevronRight, X, Plus, MoreVertical, Home,
   PawPrint, Heart, CalendarPlus, History, FileText,Stethoscope, Syringe, ClipboardList, ClipboardPlus, Share2, Microscope, Activity,
   Building2, Clock, MapPin, Phone, Users, ShieldCheck, Building, Settings2, AlertTriangle, AlertCircle, Info, Brain, ListOrdered,
-  CheckCircle2, XCircle, Clock3, Loader2, Dog, Cat, ShieldPlus, Scissors,
+  CheckCircle2, XCircle, Clock3, Loader2, Dog, Cat, ShieldPlus, Scissors, Trash2,
 } from 'lucide-react';
 
 export const Colors = {
@@ -141,6 +141,7 @@ export const Iconos = {
   // esto es para los estados 
   completado: CheckCircle2,
   cancelado: XCircle,
+  eliminar: Trash2,
   pendiente: Clock3,
   cargando: Loader2,
 
@@ -253,3 +254,117 @@ export const servicios: Servicio[] = [
       descripcion: "Conecta con refugios y adopta mascotas de manera segura y responsable."
     }
 ];
+
+// =====================================================================
+// RECETAS (modal de nueva receta del veterinario)
+// =====================================================================
+
+// Una fila vacía de la tabla de medicamentos. Es una función (y no un objeto
+// fijo) para que cada fila nueva sea un objeto distinto.
+export const medicamentoVacio = (): MedicamentoReceta => ({
+  nombre: "",
+  dosis: "",
+  frecuencia: "",
+  duracion: "",
+});
+
+// Columnas de la tabla de medicamentos: el orden de aquí es el orden en pantalla.
+export const COLUMNAS_MEDICAMENTO: ColumnaMedicamento[] = [
+  { campo: "nombre", titulo: "Medicamento", placeholder: "Ej: Meloxicam 1,5 mg/ml" },
+  { campo: "dosis", titulo: "Dosis", placeholder: "Ej: 0,1 ml por kg" },
+  { campo: "frecuencia", titulo: "Frecuencia", placeholder: "Ej: Cada 24 horas" },
+  { campo: "duracion", titulo: "Duración", placeholder: "Ej: 5 días" },
+];
+
+// Atajos para fijar el próximo control sin abrir el calendario.
+export const ATAJOS_PROXIMO_CONTROL: AtajoProximoControl[] = [
+  { texto: "En 7 días", dias: 7 },
+  { texto: "En 15 días", dias: 15 },
+  { texto: "En 1 mes", dias: 30 },
+];
+
+// =====================================================================
+// INICIO DEL VETERINARIO
+// =====================================================================
+
+// Botón principal de la "Próxima cita" según el estado en que está.
+// Debe calzar con los pasos que acepta la función actualizar_mi_cita (migración 12).
+export const SIGUIENTE_PASO_CITA: Partial<Record<EstadoCita, PasoCita>> = {
+  pendiente: { estado: "confirmada", texto: "Confirmar cita" },
+  confirmada: { estado: "en_curso", texto: "Iniciar atención" },
+  en_curso: { estado: "completada", texto: "Finalizar atención" },
+};
+
+// Urgencias de menor a mayor (para el selector "Cambiar")
+export const ORDEN_URGENCIAS: UrgenciaCita[] = ["baja", "media", "alta", "critica"];
+
+// Urgencias que cuentan como "urgentes" en los indicadores y pendientes
+export const URGENCIAS_ALTAS: UrgenciaCita[] = ["alta", "critica"];
+
+// Días del mes que se rotulan bajo el gráfico de atenciones
+export const MARCAS_EJE_MES = [1, 8, 15, 22, 29];
+
+// Cuántos ítems mostrar en cada bloque de "Pendientes"
+export const MAX_ITEMS_PENDIENTES = 3;
+
+// Días hacia adelante que cuentan como "controles próximos"
+export const DIAS_CONTROLES_PROXIMOS = 7;
+
+// =====================================================================
+// PANEL DEL DUEÑO
+// =====================================================================
+
+// Menú lateral del dueño. El orden aquí es el orden en pantalla.
+export const MENU_DUENO: ItemMenuDueno[] = [
+  { id: "inicio", texto: "Inicio", icono: Home },
+  { id: "mascotas", texto: "Mis mascotas", icono: PawPrint },
+  { id: "solicitar", texto: "Solicitar cita", icono: CalendarPlus },
+  { id: "historial", texto: "Historial médico", icono: History },
+  { id: "configuracion", texto: "Configuración", icono: Settings },
+];
+
+// Especies para registrar una mascota (deben calzar con el enum especie_mascota)
+export const ESPECIES_MASCOTA: { valor: EspecieMascota; texto: string }[] = [
+  { valor: "perro", texto: "Perro" },
+  { valor: "gato", texto: "Gato" },
+  { valor: "ave", texto: "Ave" },
+  { valor: "conejo", texto: "Conejo" },
+  { valor: "otro", texto: "Otro" },
+];
+
+// Tipos de registro del historial médico (enum tipo_registro)
+export const TIPO_REGISTRO_LABEL: Record<TipoRegistro, string> = {
+  diagnostico: "Diagnóstico",
+  vacuna: "Vacuna",
+  cirugia: "Cirugía",
+  control: "Control",
+  otro: "Otro",
+};
+
+// Síntomas frecuentes: chips que el dueño puede marcar al pedir hora
+export const SINTOMAS_FRECUENTES = [
+  "Vómitos", "Diarrea", "No come", "Decaimiento", "Tos", "Cojera", "Picazón", "Fiebre",
+];
+
+// Cuántas citas e ítems de historial se muestran en el inicio
+export const MAX_CITAS_INICIO_DUENO = 3;
+export const MAX_HISTORIAL_INICIO_DUENO = 3;
+
+// Las horas de cita van de 15 en 15 minutos (input type="time" usa segundos)
+export const PASO_HORA_CITA_SEGUNDOS = 15 * 60;
+
+// =====================================================================
+// CUENTAS DE PRUEBA
+// =====================================================================
+// Ayuda que se muestra bajo la casilla "Cuenta de prueba" al crear cuentas
+export const TEXTO_CUENTA_PRUEBA =
+  "Solo para el equipo de desarrollo: verá y usará únicamente los centros de prueba de AuraPet.";
+
+// =====================================================================
+// EDITAR CUENTAS (superadmin)
+// =====================================================================
+// Las cuentas REALES se editan solo después de escribir un código, y por un tiempo limitado.
+export const SEGUNDOS_DESBLOQUEO_CUENTA_REAL = 60;
+export const LARGO_CODIGO_CONFIRMACION = 6;
+// Sin 0/O ni 1/I/L, que se confunden al leer
+export const CARACTERES_CODIGO_CONFIRMACION = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";

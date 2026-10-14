@@ -1,0 +1,49 @@
+/* Pantalla de carga: el gato del logo moviendo la cola */
+.pantalla {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: #f6f8f8;
+  color: #12181f;
+  /* Aparece con un pequeño retraso: si la carga es rápida, no se alcanza a ver un parpadeo */
+  opacity: 0;
+  animation: aparecer 0.3s ease-out 0.2s forwards;
+}
+
+.gato {
+  width: 140px;
+  height: auto;
+  overflow: visible;
+}
+
+.cola {
+  transform-box: view-box;
+  animation: mover-cola 1.6s ease-in-out infinite;
+}
+
+.texto {
+  font-family: system-ui, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6b7280;
+  letter-spacing: 0.3px;
+}
+
+@keyframes mover-cola {
+  0%, 100% { transform: rotate(-6deg); }
+  50%      { transform: rotate(10deg); }
+}
+
+@keyframes aparecer {
+  to { opacity: 1; }
+}
+
+/* Si la persona pidió menos movimiento en su sistema, la cola queda quieta */
+@media (prefers-reduced-motion: reduce) {
+  .cola { animation: none; }
+}
