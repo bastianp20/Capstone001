@@ -1,4 +1,5 @@
-// Silueta del logo de AuraPet en SVG (vectorizada desde LogoAuraPet.png).
+// Silueta del logo de AuraPet en SVG
+// (vectorizada desde LogoAuraPet.png).
 // Está separada en dos trazos para poder animar la cola por separado:
 //   · CUERPO: todo el gato menos la cola
 //   · COLA:   la cola, que gira desde su base (ver PantallaCarga)

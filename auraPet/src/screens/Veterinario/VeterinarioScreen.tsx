@@ -1,14 +1,16 @@
 import { useState, type CSSProperties } from 'react';
 import { Colors, Iconos } from '../../constants';
-import { getInfoVeterinario } from '../../Api/getInfo';
+import { getInfoVeterinario, getMisCentrosAdmin } from '../../Api/getInfo';
 import { useConsulta } from '../../hooks/useConsulta';
 import { ModalAgenda } from '../../Modal/AgendaModal';
 import {PacientesModal} from '../../Modal/PacientesModal'; 
-import type { NuevaReceta } from '../../interfaces';
+import type { NuevaReceta, VeterinarioScreenProps } from '../../interfaces';
 import '../../css/VeterinariosPage.css';
 import { RecetaModal } from '../../Modal/RecetasModal';
 import { ConfiguracionModal } from '../../Modal/ConfiguracionModal';
 import { useAuth } from '../../Auth/AuthContext';
+import { InicioVeterinario } from '../../components/veterinario/InicioVeterinario';
+import LogoAuraPetSinFondo from '../../assets/logo/LogoAuraPetSinFondo.png'; 
 
 const colors = Colors;
 const iconos = Iconos;
@@ -27,8 +29,12 @@ const temaVars = {
   "--color-accent-soft": colors.accentSoft,
 } as CSSProperties;
 
-export const VeterinarioScreen = () => {
+export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProps) => {
   const { usuarioActual } = useAuth();
+
+  // Centros que esta persona administra (cargo en admins_centro)
+  const { datos: centrosAdmin = [] } =
+    useConsulta(() => getMisCentrosAdmin(usuarioActual!.id), [usuarioActual!.id]);
 
   // Ficha de veterinario de esta cuenta (id de la tabla veterinarios + centros).
   // La agenda y los pacientes usan ese id, no el de la cuenta.
@@ -49,6 +55,8 @@ export const VeterinarioScreen = () => {
   // cuando armemos Historial/Recetas se suman como más valores posibles
   // ("historial" | "recetas" | ...) en vez de un booleano por modal.
   const [modalAbierto, setModalAbierto] = useState<"agenda" | "pacientes" | "receta" | "configuracion" | null>(null);
+  // Si la receta se abre desde "Recetar" en una cita, guarda qué mascota viene elegida
+  const [pacienteParaReceta, setPacienteParaReceta] = useState<number | null>(null);
 
   // esto es para el avatar, que ocupe las iniciales de la persona cuando no hay foto de perfil cargada. 
   const getIniciales = (nombreCompleto: string): string => {
@@ -63,12 +71,16 @@ export const VeterinarioScreen = () => {
       {/* logo y nombre de la página */}
       <div className="vet-sidebar">
         <div className="vet-sidebar-brand">
-          <iconos.huella size={22} color={colors.accent} />
+          <img src={LogoAuraPetSinFondo} alt="AuraPet" className="landing-logo-icono" />
           <span className="vet-sidebar-brand-name">AuraPet</span>
         </div>
 
         <div className="vet-nav">
-          {/* Menú lateral */}
+          {/* Menú lateral. "Inicio" es la pantalla principal; el resto abre modales */}
+          <div className="vet-nav-item vet-nav-item--activo">
+            <iconos.inicio size={18} />
+            <span className="vet-nav-item-label">Inicio</span>
+          </div>
           <div className="vet-nav-item" onClick={() => setModalAbierto("agenda")}>
             <iconos.calendario size={18} />
             <span className="vet-nav-item-label">Mi Agenda</span>
@@ -85,6 +97,14 @@ export const VeterinarioScreen = () => {
             <iconos.configuracion size={18} />
             <span className="vet-nav-item-label">Configuración</span>
           </div>
+
+          {/* Solo si administra algún centro */}
+          {onAdministrarCentro && centrosAdmin.map((c) => (
+            <div key={c.id} className="vet-nav-item" onClick={() => onAdministrarCentro(c.id)}>
+              <iconos.centro size={18} />
+              <span className="vet-nav-item-label">Administrar {c.nombre}</span>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -95,9 +115,18 @@ export const VeterinarioScreen = () => {
           <div className="vet-avatar">{getIniciales(usuarioActual!.nombre)}</div>
           <div className="vet-user-info">
             <span className="vet-user-name">{usuarioActual!.nombre}</span>
-            <span className="vet-user-centro">{centroLabel}</span>
+            <span className="vet-user-centro">{centroLabel}{usuarioActual!.esPrueba && " · Cuenta de prueba"}</span>
           </div>
         </div>
+
+        <InicioVeterinario
+          veterinarioId={veterinarioIdActual}
+          nombre={usuarioActual!.nombre}
+          onRecetar={(mascotaId) => {
+            setPacienteParaReceta(mascotaId);
+            setModalAbierto("receta");
+          }}
+        />
       </div>
 
       {modalAbierto === "agenda" && (
@@ -109,7 +138,10 @@ export const VeterinarioScreen = () => {
       {modalAbierto === "receta" && (
       <RecetaModal 
         veterinarioId = {veterinarioIdActual}
-        onCerrar={() => setModalAbierto(null)}
+        pacienteInicialId={pacienteParaReceta ?? undefined}
+        nombreVeterinario={usuarioActual!.nombre}
+        centro={infoVeterinario.centros[0]}
+        onCerrar={() => { setModalAbierto(null); setPacienteParaReceta(null); }}
         onGuardar={(receta: NuevaReceta) => {
           console.log('receta guardada Master :p ', receta)
         }

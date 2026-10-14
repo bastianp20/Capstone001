@@ -54,12 +54,27 @@
   font-size: 14px;
 }
 
-/* Columna principal */
+.vet-nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Ítem de la pantalla en la que estás */
+.vet-nav-item--activo {
+  background: var(--color-sidebar-active);
+  color: white;
+}
+
+.vet-nav-item--activo:hover {
+  background: var(--color-sidebar-active);
+}
+
+/* Columna principal: fondo gris casi blanco, el verde queda solo para acentos */
 .vet-main {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  background: var(--color-accent);
+  background: #f6f8f8;
 }
 
 /* Barra superior con el avatar y el nombre/centro del veterinario logueado */
@@ -93,12 +108,12 @@
 .vet-user-name {
   font-size: 13.5px;
   font-weight: 600;
-  color: aliceblue; 
+  color: var(--color-text);
 }
 
 .vet-user-centro {
   font-size: 12px;
-  color: aliceblue;
+  color: var(--color-text-muted);
 }
 
 /* ---------- Contenido (título, stats, agenda) ---------- */

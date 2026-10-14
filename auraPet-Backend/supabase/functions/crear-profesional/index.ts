@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
   if (!esSuper) return responder({ error: "Solo un superadmin puede crear profesionales." }, 403);
 
   // 2) Datos que mandó el modal
-  const { nombre, correo, telefono, numeroColegiado, especialidadId, centroId, esAdminCentro } =
+  const { nombre, correo, telefono, numeroColegiado, especialidadId, centroId, esAdminCentro, esPrueba } =
     await req.json();
   if (!nombre?.trim() || !correo?.trim() || !centroId) {
     return responder({ error: "Faltan nombre, correo o centro." }, 400);
@@ -57,6 +57,13 @@ Deno.serve(async (req) => {
 
   // 4) Ficha de veterinario, centro y (opcional) admin del centro
   try {
+    // Cuenta de prueba (equipo de desarrollo): se marca ANTES de asignar el centro,
+    // porque la base solo deja asignar cuentas de prueba a centros de prueba.
+    if (esPrueba) {
+      const { error: e0 } = await admin.from("perfiles").update({ es_prueba: true }).eq("id", perfilId);
+      if (e0) throw e0;
+    }
+
     const { data: vet, error: e1 } = await admin
       .from("veterinarios")
       .insert({

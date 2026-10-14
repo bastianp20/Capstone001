@@ -16,7 +16,7 @@ interface ConfiguracionModalProps {
 type Seccion = "perfil" | "seguridad" | "apariencia" | "notificaciones" | "privacidad" | "ayuda";
 type Tema = "claro" | "oscuro" | "auto";
 
-const ROL_LABEL = { dueno: "Dueño", veterinario: "Veterinario", superadmin: "Superadmin" } as const;
+const ROL_LABEL = { dueno: "Dueño", veterinario: "Veterinario", superadmin: "Superadmin", administrativo: "Administrativo" } as const;
 
 // =====================================================================
 // MODAL PRINCIPAL

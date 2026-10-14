@@ -72,6 +72,8 @@ export interface Mascota {
   sexo: "macho" | "hembra";
   esterilizado: boolean;
   fotoUrl: string | null;
+  pesoKg: number | null;
+  alergias: string | null;         // se muestra como advertencia en la tarjeta
 }
 
 export interface Centro {
@@ -144,6 +146,9 @@ export interface PacienteVeterinario {
   dueno: string;
   ultimaVisita: string;
   totalVisitas: number;
+  fechaNacimiento: string | null; // "2022-05-14" (para calcular la edad)
+  pesoKg: number | null;
+  alergias: string | null;        // se muestra como advertencia al recetar
 }
 
 export interface MedicamentoReceta {
@@ -163,6 +168,9 @@ export interface NuevaReceta {
 }
 export interface RecetaModalProps {
   veterinarioId: number;
+  pacienteInicialId?: number;     // si se abre desde "Recetar" en una cita, el paciente ya viene elegido
+  nombreVeterinario?: string;     // para el subtítulo: "Dr. Camilo Rojas · Clínica VetSur · 13/10/2026"
+  centro?: string;
   onCerrar: () => void;
   // El guardado real (Supabase) se define después; por ahora el padre
   // decide qué hacer con la receta ya armada (loguearla, mostrarla, etc.).
@@ -175,6 +183,8 @@ export interface CitaProximaDueno {
   centro: string;
   dia: string;
   mes: string;
+  hora: string;            // "10:30"
+  puedeCancelar: boolean;  // solo pendiente o confirmada
   motivo: string;
   estado: EstadoCita;
   urgencia: UrgenciaCita;
@@ -190,7 +200,7 @@ export interface HistorialRecienteItem {
 // ---------- Sesión real (Supabase Auth + tabla perfiles) ----------
 // Rol de la cuenta en la base de datos. "Admin de centro" no es un rol:
 // es un cargo en la tabla admins_centro.
-export type RolCuenta = "dueno" | "veterinario" | "superadmin";
+export type RolCuenta = "dueno" | "veterinario" | "superadmin" | "administrativo";
 
 // La persona conectada. El id es el uuid de Supabase Auth (= perfiles.id).
 export interface UsuarioActual {
@@ -200,6 +210,7 @@ export interface UsuarioActual {
   rol: RolCuenta;
   telefono: number | null;
   avatarUrl: string | null;
+  esPrueba: boolean;          // cuenta del equipo de desarrollo: usa solo centros de prueba
 }
 
 export interface DatosRegistro {
@@ -303,12 +314,14 @@ export interface DatosNuevoProfesional {
   especialidadId: number | null;
   centroId: number;
   esAdminCentro: boolean;
+  esPrueba: boolean;
 }
 
 export interface DatosNuevoDueno {
   nombre: string;
   correo: string;
   telefono: string; // "56912345678" o ""
+  esPrueba?: boolean; // cuenta de prueba (no aplica a superadmins)
 }
 export interface CrearDuenoModalProps {
   onClose: () => void;
@@ -356,4 +369,425 @@ export interface CrearMascotaModalProps {
   duenoId: string;
   onClose: () => void;
   onCreada: () => void;
+}
+
+// Panel superadmin → "Centros y veterinarios": cada veterinario con sus centros
+export interface CentroAsignado {
+  id: number;
+  nombre: string;
+  esPrueba: boolean;
+}
+export interface VeterinarioAsignaciones {
+  id: number;                 // id en la tabla veterinarios
+  nombre: string;
+  especialidad: string | null;
+  numeroColegiado: string | null;
+  estado: "pendiente" | "aprobado" | "rechazado";
+  esPrueba: boolean;          // cuenta de prueba: solo se asigna a centros de prueba
+  centros: CentroAsignado[];
+}
+
+// =====================================================================
+// ADMIN DE CENTRO
+// "Admin de centro" es un cargo (tabla admins_centro), no un rol: lo puede
+// tener un veterinario o una cuenta "administrativo".
+// =====================================================================
+export interface CentroAdministrado {
+  id: number;
+  nombre: string;
+}
+
+export interface HorarioCentro {
+  diaSemana: number;               // 1 = lunes ... 7 = domingo
+  abre: string;                    // "09:00"
+  cierra: string;
+  inicioColacion: string | null;
+  finColacion: string | null;
+}
+
+export interface CentroDetalle {
+  id: number;
+  nombre: string;
+  direccion: string;
+  comuna: string;
+  telefono: number | null;
+  esPrueba: boolean;
+  especialidades: string[];
+  horarios: HorarioCentro[];
+}
+
+export interface MiembroEquipo {
+  perfilId: string | null;
+  nombre: string;
+  tipo: "veterinario" | "admin";
+  detalle: string;                 // especialidad del vet, o "Administrador"
+}
+
+export interface CitaCentro {
+  id: number;
+  fechaHora: string;               // ya formateada: "10/09 · 10:30"
+  mascota: string;
+  dueno: string;
+  veterinario: string;
+  motivo: string;
+  estado: EstadoCita;
+  urgencia: UrgenciaCita;
+}
+
+export interface DatosEdicionCentro {
+  nombre: string;
+  direccion: string;
+  comuna: string;
+  telefono: string;                // "56912345678" o ""
+}
+
+export interface DatosNuevoAdministrativo {
+  nombre: string;
+  correo: string;
+  telefono: string;                // "56912345678" o ""
+  centroId: number;
+  esPrueba: boolean;
+}
+export interface CrearAdministrativoModalProps {
+  onClose: () => void;
+}
+
+export interface VeterinarioScreenProps {
+  onAdministrarCentro?: (centroId: number) => void; // abre el panel de un centro que administra
+}
+
+export interface CentroAdminScreenProps {
+  centroInicialId?: number;        // si viene, abre ese centro
+  onVolver?: () => void;           // solo para veterinarios: volver a "Mi agenda"
+}
+
+// =====================================================================
+// MODAL DE RECETA (componentes en components/receta/)
+// =====================================================================
+
+// Una columna de la tabla de medicamentos (ver COLUMNAS_MEDICAMENTO en constants.ts)
+export interface ColumnaMedicamento {
+  campo: keyof MedicamentoReceta;
+  titulo: string;
+  placeholder: string;
+}
+
+// Un botón de atajo para el próximo control: "En 7 días", etc.
+export interface AtajoProximoControl {
+  texto: string;
+  dias: number;
+}
+
+export interface SelectorPacienteProps {
+  pacientes: PacienteVeterinario[];
+  pacienteId: number | null;
+  onSeleccionar: (id: number | null) => void; // null = volver a elegir
+  cargando?: boolean;
+}
+
+export interface TarjetaPacienteProps {
+  paciente: PacienteVeterinario;
+  onCambiar?: () => void;
+}
+
+export interface TablaMedicamentosProps {
+  medicamentos: MedicamentoReceta[];
+  onCambiar: (index: number, campo: keyof MedicamentoReceta, valor: string) => void;
+  onAgregar: () => void;
+  onEliminar: (index: number) => void;
+}
+
+export interface FilaMedicamentoProps {
+  medicamento: MedicamentoReceta;
+  numero: number;                 // para los aria-label: "Medicamento 2"
+  puedeEliminar: boolean;         // la última fila que queda no se puede borrar
+  onCambiar: (campo: keyof MedicamentoReceta, valor: string) => void;
+  onEliminar: () => void;
+}
+
+export interface ProximoControlProps {
+  valor: string;                  // "2026-10-20" o "" si no hay
+  onCambiar: (fecha: string) => void;
+}
+
+// =====================================================================
+// INICIO DEL VETERINARIO (components/veterinario/)
+// =====================================================================
+
+// Una cita de hoy, con lo que se muestra en "Próxima cita" y en la agenda
+export interface CitaInicioVet {
+  id: number;
+  hora: string;                       // "10:30"
+  motivo: string;
+  sintomas: string[];
+  estado: EstadoCita;
+  urgenciaSugerida: UrgenciaCita | null;  // la que propone la IA
+  urgencia: UrgenciaCita | null;          // la que confirmó el veterinario
+  mascotaId: number;
+  mascota: string;
+  especie: string;
+  raza: string | null;
+  fechaNacimiento: string | null;
+  alergias: string | null;
+  condicionesCronicas: string | null;
+  dueno: string;
+  telefonoDueno: number | null;
+}
+
+// Pendientes de la columna derecha
+export interface UrgenciaPorConfirmar {
+  citaId: number;
+  mascota: string;
+  fechaHora: string;                  // "13/10 · 10:30"
+  urgenciaSugerida: UrgenciaCita;
+}
+export interface ControlProximo {
+  recetaId: number;
+  mascota: string;
+  fecha: string;                      // "2026-10-16"
+}
+export interface RecetaReciente {
+  id: number;
+  mascota: string;
+  creadaEn: string;                   // timestamptz
+}
+
+// Todo lo que muestra la pantalla de inicio, en una sola consulta
+export interface InicioVeterinarioDatos {
+  citasHoy: CitaInicioVet[];
+  porConfirmar: number;               // citas pendientes de hoy en adelante
+  urgenciasPorConfirmar: UrgenciaPorConfirmar[];
+  controlesProximos: ControlProximo[];
+  recetasRecientes: RecetaReciente[];
+  atencionesPorDia: number[];         // índice 0 = día 1 del mes
+}
+
+// Cambio que puede hacer el veterinario sobre su cita (función actualizar_mi_cita)
+export interface CambioCita {
+  estado?: EstadoCita;
+  urgencia?: UrgenciaCita;
+}
+
+// Botón de "siguiente paso" según el estado actual (ver SIGUIENTE_PASO_CITA)
+export interface PasoCita {
+  estado: EstadoCita;
+  texto: string;
+}
+
+export interface InicioVeterinarioProps {
+  veterinarioId: number;              // -1 mientras carga
+  nombre: string;
+  onRecetar: (mascotaId: number) => void;
+}
+
+export interface ProximaCitaProps {
+  cita: CitaInicioVet | undefined;
+  ocupado: boolean;                   // mientras se guarda un cambio
+  onCambiar: (citaId: number, cambio: CambioCita) => void;
+  onRecetar: (mascotaId: number) => void;
+}
+
+export interface AgendaHoyProps {
+  citas: CitaInicioVet[];
+  destacadaId?: number;               // la "próxima cita" se resalta
+}
+
+export interface PendientesVeterinarioProps {
+  urgencias: UrgenciaPorConfirmar[];
+  controles: ControlProximo[];
+  recetas: RecetaReciente[];
+}
+
+export interface AtencionesMesProps {
+  atencionesPorDia: number[];
+}
+
+// ---------- Componentes genéricos (components/ui/) ----------
+export interface TarjetaPanelProps {
+  titulo?: string;
+  accion?: ReactNode;                 // algo a la derecha del título (botón, selector)
+  className?: string;
+  children: ReactNode;
+}
+
+export interface IndicadorProps {
+  etiqueta: string;
+  valor: ReactNode;
+  tono?: "normal" | "alerta";         // alerta = número en rojo
+  progreso?: number;                  // 0 a 1: muestra una barrita debajo
+}
+
+export interface EstadoVacioProps {
+  texto: string;
+  icono?: ReactNode;
+}
+
+export interface BarraGrafico {
+  etiqueta: string;                   // para el tooltip: "13 oct"
+  valor: number;
+  futuro?: boolean;                   // día que aún no llega: barra tenue sin altura
+  destacado?: boolean;                // hoy
+}
+
+export interface GraficoBarrasProps {
+  barras: BarraGrafico[];
+  marcasEje: number[];                // índices (desde 1) que muestran su número abajo
+  unidad: string;                     // "atenciones"
+  unidadSingular: string;             // "atención" (cuando el valor es 1)
+  altura?: number;                    // px
+}
+
+// =====================================================================
+// PANEL DEL DUEÑO (components/dueno/)
+// =====================================================================
+
+export type TipoRegistro = "diagnostico" | "vacuna" | "cirugia" | "control" | "otro";
+
+// Secciones que se ven en el panel; "Solicitar cita" y "Configuración" abren modales
+export type SeccionDueno = "inicio" | "mascotas" | "historial";
+export interface ItemMenuDueno {
+  id: SeccionDueno | "solicitar" | "configuracion";
+  texto: string;
+  icono: LucideIcon;
+}
+
+// Historial médico completo
+export interface RegistroMedicoDueno {
+  id: number;
+  mascotaId: number;
+  mascota: string;
+  fecha: string;                   // "20 dic 2025"
+  tipo: TipoRegistro;
+  descripcion: string;
+  tratamiento: string | null;
+  proximaDosis: string | null;     // "20 dic 2026"
+}
+export interface RecetaDueno {
+  id: number;
+  mascotaId: number;
+  mascota: string;
+  fecha: string;                   // "13/10/2026"
+  indicaciones: string | null;
+  proximoControl: string | null;   // "20 oct 2026"
+  medicamentos: MedicamentoReceta[];
+}
+export interface HistorialDueno {
+  registros: RegistroMedicoDueno[];
+  recetas: RecetaDueno[];
+}
+
+// Para solicitar una cita
+export interface CentroParaCita {
+  id: number;
+  nombre: string;
+  comuna: string;
+  esPrueba: boolean;
+  horarios: HorarioCentro[];       // vacío = el centro no registró horarios
+}
+export interface VeterinarioParaCita {
+  id: number;
+  nombre: string;
+  especialidad: string | null;
+}
+export interface DatosSolicitudCita {
+  mascotaId: number;
+  centroId: number;
+  veterinarioId: number | null;    // null = sin preferencia
+  fechaHora: string;               // ISO (timestamptz)
+  motivo: string;
+  sintomas: string[];
+}
+
+// ---------- Props ----------
+export interface MenuDuenoProps {
+  seccion: SeccionDueno;
+  onElegir: (id: ItemMenuDueno["id"]) => void;
+}
+
+export interface MascotaCardProps {
+  mascota: Mascota;
+  onSolicitarCita?: (mascotaId: number) => void;
+}
+
+export interface GrillaMascotasProps {
+  mascotas: Mascota[];
+  onAgregar: () => void;
+  onSolicitarCita?: (mascotaId: number) => void;
+}
+
+export interface ProximasCitasDuenoProps {
+  citas: CitaProximaDueno[];
+  onCancelar: (citaId: number) => void;
+  cancelandoId: number | null;     // cita que se está cancelando (deshabilita su botón)
+}
+
+export interface HistorialRecienteProps {
+  items: HistorialRecienteItem[];
+}
+
+export interface HistorialMedicoProps {
+  mascotas: Mascota[];
+  historial: HistorialDueno;
+  cargando: boolean;
+}
+
+export interface TarjetaRecetaProps {
+  receta: RecetaDueno;
+}
+
+export interface SolicitarCitaModalProps {
+  mascotas: Mascota[];
+  mascotaInicialId?: number;       // si se abre desde la tarjeta de una mascota
+  onClose: () => void;
+  onCreada: () => void;            // para recargar "Próximas citas"
+}
+
+// =====================================================================
+// CUENTAS DE PRUEBA
+// =====================================================================
+export interface CasillaCuentaPruebaProps {
+  marcada: boolean;
+  onCambiar: (marcada: boolean) => void;
+}
+
+// =====================================================================
+// EDITAR CUENTAS (superadmin → Usuarios)
+// =====================================================================
+
+// Una cuenta tal como la devuelve listar_usuarios()
+export interface CuentaUsuario {
+  id: string;
+  nombre: string;
+  email: string;
+  rol: RolCuenta;
+  telefono: number | null;
+  es_prueba: boolean;
+  desactivado_en: string | null;    // null = activa
+  creado_en: string;
+}
+
+// Lo que se puede cambiar de una cuenta. Solo se manda lo que cambió.
+export interface CambiosCuenta {
+  nombre?: string;
+  telefono?: number | null;
+  activa?: boolean;
+  esPrueba?: boolean;
+}
+
+// Una línea del resumen "Vas a cambiar..." antes de guardar una cuenta real
+export interface CambioResumen {
+  campo: string;
+  antes: string;
+  despues: string;
+}
+
+export interface EditarCuentaModalProps {
+  cuenta: CuentaUsuario;
+  esMiCuenta: boolean;              // no se permite desactivar la propia cuenta
+  onClose: () => void;
+  onGuardada: () => void;           // para recargar la lista
+}
+
+export interface DesbloqueoCuentaRealProps {
+  onDesbloquear: () => void;        // se llama cuando el código escrito coincide
 }

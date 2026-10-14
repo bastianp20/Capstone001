@@ -4,6 +4,7 @@ import type { CrearProfesionalModalProps } from "../interfaces";
 import { useConsulta } from "../hooks/useConsulta";
 import { getCentrosSelector, getEspecialidades } from "../Api/getInfo";
 import { crearProfesional } from "../Api/postInfo";
+import { CasillaCuentaPrueba } from "../components/superadmin/CasillaCuentaPrueba";
 
 export const ModalCrearProfesional = ({ onClose }: CrearProfesionalModalProps) => {
   // Listas desde la base
@@ -18,6 +19,14 @@ export const ModalCrearProfesional = ({ onClose }: CrearProfesionalModalProps) =
   const [especialidadId, setEspecialidadId] = useState<number | null>(null); // una sola, como guarda la tabla veterinarios
   const [centroId, setCentroId] = useState("");
   const [esAdminCentro, setEsAdminCentro] = useState(false);
+  const [esPrueba, setEsPrueba] = useState(false);
+
+  // Una cuenta de prueba solo puede ir a centros de prueba, y una real solo a centros reales
+  const centrosDelMundo = centros.filter((c) => c.es_prueba === esPrueba);
+  const cambiarEsPrueba = (valor: boolean) => {
+    setEsPrueba(valor);
+    setCentroId(""); // el centro elegido podría no calzar con el nuevo tipo de cuenta
+  };
 
   // Estado del envío
   const [enviando, setEnviando] = useState(false);
@@ -42,6 +51,7 @@ export const ModalCrearProfesional = ({ onClose }: CrearProfesionalModalProps) =
         especialidadId,
         centroId: Number(centroId),
         esAdminCentro,
+        esPrueba,
       });
       setContrasenaTemporal(respuesta.contrasenaTemporal);
     } catch (err) {
@@ -126,7 +136,7 @@ export const ModalCrearProfesional = ({ onClose }: CrearProfesionalModalProps) =
               Centro asignado
               <select value={centroId} onChange={(e) => setCentroId(e.target.value)}>
                 <option value="" disabled>Selecciona un centro</option>
-                {centros.map((c) => (
+                {centrosDelMundo.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.nombre}{c.es_prueba ? " (pruebas)" : ""}
                   </option>
@@ -142,6 +152,8 @@ export const ModalCrearProfesional = ({ onClose }: CrearProfesionalModalProps) =
               />
               Hacer administrador del centro
             </label>
+
+            <CasillaCuentaPrueba marcada={esPrueba} onCambiar={cambiarEsPrueba} />
 
             {error && <p className={`${styles.error} ${styles.completo}`}>{error}</p>}
 

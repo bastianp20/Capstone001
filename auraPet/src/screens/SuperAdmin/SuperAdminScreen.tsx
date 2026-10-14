@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type {SolicitudPendiente} from '../../interfaces';
 import {Colors, Badge, badgeStyles, ESTADO_LABEL, URGENCIA_LABEL} from '../../constants';
 import {RechazarModal} from '../../Modal/ReachazarModal';
-import { KpiCard } from "../../Card/kpi";
+import { KpiCard } from "../../components/ui/KpiCard";
 import { getCitasResumen, getResumenSuperadmin, getSolicitudesPendientes } from "../../Api/getInfo";
 import { resolverSolicitud } from "../../Api/postInfo";
 import { useConsulta } from "../../hooks/useConsulta";
@@ -14,14 +14,18 @@ import { ModalCrearProfesional } from "../../Modal/CrearProfesionalModal";
 import { ModalCrearDueno } from "../../Modal/CrearDuenoModal";
 import { ModalCrearSuperadmin } from "../../Modal/CrearSuperadminModal";
 import { ModalCrearCentro } from "../../Modal/CrearCentroModal";
+import { ModalCrearAdministrativo } from "../../Modal/CrearAdministrativoModal";
+import { CentrosVeterinarios } from "./CentrosVeterinarios";
+import LogoAuraPetSinFondo from '../../assets/logo/LogoAuraPetSinFondo.png'; 
+import { ResumenUsuarios } from "./ResumenUsuarios";
 
 const colors = Colors;
 const badge = Badge;
 const iconos = Iconos;
-const FONDO = "#f6f8f8"; // gris casi blanco para el área de contenido
+const FONDO = "#f6f8f8"; // gris tirado para blanco 
 const ROJO = "#a4272a";
 
-type ModalCrear = "profesional" | "superadmin" | "centro" | "dueno" | null;
+type ModalCrear = "profesional" | "superadmin" | "centro" | "dueno" | "administrativo" | null;
 
 export const SuperAdminScreen = () => {
   const { usuarioActual } = useAuth();
@@ -35,6 +39,7 @@ export const SuperAdminScreen = () => {
   const opcionesCrear = [
     { tipo: "profesional", label: "Cuenta profesional", Icono: iconos.diagnostico },
     { tipo: "dueno", label: "Cuenta dueño", Icono: iconos.huella },
+    { tipo: "administrativo", label: "Cuenta administrativa", Icono: iconos.centro },
     { tipo: "superadmin", label: "Cuenta superadmin", Icono: iconos.permisos },
     { tipo: "centro", label: "Agregar centro", Icono: iconos.centro },
   ] as const;
@@ -65,12 +70,15 @@ export const SuperAdminScreen = () => {
   // Citas de toda la plataforma (solo lectura).
   const { datos: citas = [] } = useConsulta(() => getCitasResumen(), [recarga]);
 
-  const navItems = [
-    { label: "Resumen", active: true },
-    { label: "Usuarios", active: false },
-    { label: "Centros y veterinarios", active: false },
-    { label: "Aprobaciones", active: false },
-    { label: "Citas", active: false },
+  // Secciones del menú lateral. Las que aún no existen quedan deshabilitadas.
+  type Seccion = "resumen" | "centros" | "usuarios";
+  const [seccion, setSeccion] = useState<Seccion>("resumen");
+  const navItems: { label: string; seccion: Seccion | null }[] = [
+    { label: "Resumen", seccion: "resumen" },
+    { label: "Usuarios", seccion: "usuarios" },
+    { label: "Centros y veterinarios", seccion: "centros" },
+    { label: "Aprobaciones", seccion: null },
+    { label: "Citas", seccion: null },
   ];
   // Rechazar: guarda el motivo en la base y saca la solicitud de la lista.
   const confirmarRechazo = async (razon: string) => {
@@ -111,29 +119,33 @@ export const SuperAdminScreen = () => {
       {/* SIDEBAR */}
       <div style={{ width: 236, flexShrink: 0, background: colors.sidebarBg, display: "flex", flexDirection: "column", padding: "20px 14px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 8px 22px" }}>
-          <div style={{ width: 30, height: 30, borderRadius: 8, background: colors.accent, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15 }}>
-            🐾
-          </div>
+          <img src={LogoAuraPetSinFondo} alt="Logo AuraPet" style={{ width: 30, height: 30 }} />
           <span style={{ color: "white", fontWeight: 700, fontSize: 16 }}>AuraPet</span>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {navItems.map((item) => (
-            <div
-              key={item.label}
-              style={{
-                padding: "10px 12px",
-                borderRadius: 9,
-                fontSize: 13.5,
-                fontWeight: 500,
-                cursor: "pointer",
-                color: item.active ? "white" : colors.sidebarText,
-                background: item.active ? colors.sidebarActive : "transparent",
-              }}
-            >
-              {item.label}
-            </div>
-          ))}
+          {navItems.map((item) => {
+            const activo = item.seccion === seccion;
+            return (
+              <div
+                key={item.label}
+                onClick={() => item.seccion && setSeccion(item.seccion)}
+                title={item.seccion ? undefined : "Próximamente"}
+                style={{
+                  padding: "10px 12px",
+                  borderRadius: 9,
+                  fontSize: 13.5,
+                  fontWeight: 500,
+                  cursor: item.seccion ? "pointer" : "default",
+                  color: activo ? "white" : colors.sidebarText,
+                  background: activo ? colors.sidebarActive : "transparent",
+                  opacity: item.seccion ? 1 : 0.5,
+                }}
+              >
+                {item.label}
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -216,6 +228,12 @@ export const SuperAdminScreen = () => {
 
         {/* CONTENT */}
         <div style={{ flex: 1, padding: "26px 28px", overflowY: "auto" }}>
+          {seccion === "centros" ? (
+            <CentrosVeterinarios />
+          ) : seccion === "usuarios" ? (
+            <ResumenUsuarios />
+          ) : (
+          <>
           <h1 style={{ margin: "0 0 18px", fontSize: 21, fontWeight: 700, color: colors.text }}>Resumen</h1>
 
           {/* KPIs: números reales desde Supabase */}
@@ -334,6 +352,8 @@ export const SuperAdminScreen = () => {
               </div>
             ))}
           </div>
+          </>
+          )}
         </div>
       </div>
             {/* Éste es el modal de rechazo */}
@@ -358,6 +378,9 @@ export const SuperAdminScreen = () => {
       )}
       {modalCrear === "centro" && (
         <ModalCrearCentro onClose={cerrarModalCrear} />
+      )}
+      {modalCrear === "administrativo" && (
+        <ModalCrearAdministrativo onClose={cerrarModalCrear} />
       )}
     </div>
   );

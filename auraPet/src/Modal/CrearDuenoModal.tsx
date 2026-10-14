@@ -2,12 +2,14 @@ import { useState, type FormEvent } from "react";
 import styles from "../css/modal/CrearProfesionalModal.module.css"; // mismo diseño que el de profesional
 import type { CrearDuenoModalProps } from "../interfaces";
 import { crearDueno } from "../Api/postInfo";
+import { CasillaCuentaPrueba } from "../components/superadmin/CasillaCuentaPrueba";
 
 export const ModalCrearDueno = ({ onClose }: CrearDuenoModalProps) => {
   // Campos del formulario
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [telefono, setTelefono] = useState("");
+  const [esPrueba, setEsPrueba] = useState(false);
 
   // Estado del envío
   const [enviando, setEnviando] = useState(false);
@@ -28,6 +30,7 @@ export const ModalCrearDueno = ({ onClose }: CrearDuenoModalProps) => {
         nombre,
         correo,
         telefono: soloNumeros ? `56${soloNumeros}` : "",
+        esPrueba,
       });
       setContrasenaTemporal(respuesta.contrasenaTemporal);
     } catch (err) {
@@ -81,6 +84,8 @@ export const ModalCrearDueno = ({ onClose }: CrearDuenoModalProps) => {
                 />
               </div>
             </label>
+
+            <CasillaCuentaPrueba marcada={esPrueba} onCambiar={setEsPrueba} />
 
             {error && <p className={`${styles.error} ${styles.completo}`}>{error}</p>}
 

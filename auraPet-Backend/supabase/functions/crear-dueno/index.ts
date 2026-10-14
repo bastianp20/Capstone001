@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
   if (!esSuper) return responder({ error: "Solo un superadmin puede crear dueños." }, 403);
 
   // y esto es pal Modal que crea al dueño
-  const { nombre, correo, telefono } = await req.json();
+  const { nombre, correo, telefono, esPrueba } = await req.json();
   if (!nombre?.trim() || !correo?.trim()) {
     return responder({ error: "Faltan nombre o correo." }, 400);
   }
@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
   const admin = createClient(url, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const contrasenaTemporal = crypto.randomUUID().slice(0, 12);
 
-  const { error } = await admin.auth.admin.createUser({
+  const { data: creado, error } = await admin.auth.admin.createUser({
     email: correo.trim(),
     password: contrasenaTemporal,
     email_confirm: true,
@@ -50,6 +50,15 @@ Deno.serve(async (req) => {
   if (error) {
     const yaExiste = error.message.toLowerCase().includes("already");
     return responder({ error: yaExiste ? "Ya existe una cuenta con ese correo." : error.message }, 400);
+  }
+
+  // Cuenta de prueba (equipo de desarrollo): ve y usa solo los centros de prueba
+  if (esPrueba) {
+    const { error: errorPrueba } = await admin.from("perfiles").update({ es_prueba: true }).eq("id", creado.user.id);
+    if (errorPrueba) {
+      await admin.auth.admin.deleteUser(creado.user.id); // no dejar la cuenta a medias
+      return responder({ error: "No se pudo marcar la cuenta como de prueba." }, 500);
+    }
   }
 
   return responder({ ok: true, contrasenaTemporal });

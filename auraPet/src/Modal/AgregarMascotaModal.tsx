@@ -1,16 +1,10 @@
 import { useState, type FormEvent } from "react";
 import styles from "../css/modal/CrearProfesionalModal.module.css";
 import type { CrearMascotaModalProps, EspecieMascota } from "../interfaces";
-import { EMOJI_ESPECIE } from "../constants";
+import { EMOJI_ESPECIE, ESPECIES_MASCOTA } from "../constants";
 import { crearMascota } from "../Api/postInfo";
 
-const ESPECIES: { valor: EspecieMascota; label: string }[] = [
-  { valor: "perro", label: "Perro" },
-  { valor: "gato", label: "Gato" },
-  { valor: "ave", label: "Ave" },
-  { valor: "conejo", label: "Conejo" },
-  { valor: "otro", label: "Otro" },
-];
+
 
 const hoy = new Date().toLocaleDateString("en-CA"); // "2026-10-08" (para no elegir fechas futuras)
 
@@ -61,14 +55,14 @@ export const ModalCrearMascota = ({ duenoId, onClose, onCreada }: CrearMascotaMo
           <div className={`${styles.campo} ${styles.completo}`}>
             Especie
             <div className={styles.chips}>
-              {ESPECIES.map((esp) => (
+              {ESPECIES_MASCOTA.map((esp) => (
                 <button
                   key={esp.valor}
                   type="button"
                   className={especie === esp.valor ? styles.chipActivo : styles.chip}
                   onClick={() => setEspecie(esp.valor)}
                 >
-                  {EMOJI_ESPECIE[esp.valor]} {esp.label}
+                  {EMOJI_ESPECIE[esp.valor]} {esp.texto}
                 </button>
               ))}
             </div>

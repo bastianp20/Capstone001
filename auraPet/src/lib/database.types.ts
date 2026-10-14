@@ -522,6 +522,7 @@ export type Database = {
           avatar_url: string | null
           creado_en: string
           desactivado_en: string | null
+          es_prueba: boolean
           id: string
           nombre: string
           rol: Database["public"]["Enums"]["rol_usuario"]
@@ -531,6 +532,7 @@ export type Database = {
           avatar_url?: string | null
           creado_en?: string
           desactivado_en?: string | null
+          es_prueba?: boolean
           id: string
           nombre: string
           rol?: Database["public"]["Enums"]["rol_usuario"]
@@ -540,6 +542,7 @@ export type Database = {
           avatar_url?: string | null
           creado_en?: string
           desactivado_en?: string | null
+          es_prueba?: boolean
           id?: string
           nombre?: string
           rol?: Database["public"]["Enums"]["rol_usuario"]
@@ -798,6 +801,46 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      listar_usuarios: {
+        Args: never
+        Returns: {
+          id: string
+          nombre: string
+          email: string
+          rol: Database["public"]["Enums"]["rol_usuario"]
+          telefono: number | null
+          es_prueba: boolean
+          desactivado_en: string | null
+          creado_en: string
+        }[]
+      }
+      actualizar_mi_cita: {
+        Args: {
+          p_cita_id: number
+          p_estado?: Database["public"]["Enums"]["estado_cita"]
+          p_urgencia?: Database["public"]["Enums"]["urgencia_cita"]
+        }
+        Returns: undefined
+      }
+      cancelar_mi_cita: {
+        Args: { p_cita_id: number; p_motivo?: string }
+        Returns: undefined
+      }
+      solicitar_cita: {
+        Args: {
+          p_centro_id: number
+          p_fecha_hora: string
+          p_mascota_id: number
+          p_motivo: string
+          p_sintomas?: string[]
+          p_veterinario_id?: number
+        }
+        Returns: number
+      }
+      veterinarios_de_centro: {
+        Args: { p_centro_id: number }
+        Returns: { especialidad: string | null; id: number; nombre: string }[]
+      }
       crear_centro: {
         Args: {
           p_comuna: string
@@ -837,7 +880,7 @@ export type Database = {
       estado_contacto: "pendiente" | "respondido" | "cerrado"
       estado_derivacion: "pendiente" | "realizada" | "cancelada"
       estado_verificacion: "pendiente" | "aprobado" | "rechazado"
-      rol_usuario: "dueno" | "veterinario" | "superadmin"
+      rol_usuario: "dueno" | "veterinario" | "superadmin" | "administrativo"
       sexo_mascota: "macho" | "hembra"
       tipo_registro: "diagnostico" | "vacuna" | "cirugia" | "control" | "otro"
       urgencia_cita: "baja" | "media" | "alta" | "critica"
@@ -982,7 +1025,7 @@ export const Constants = {
       estado_contacto: ["pendiente", "respondido", "cerrado"],
       estado_derivacion: ["pendiente", "realizada", "cancelada"],
       estado_verificacion: ["pendiente", "aprobado", "rechazado"],
-      rol_usuario: ["dueno", "veterinario", "superadmin"],
+      rol_usuario: ["dueno", "veterinario", "superadmin", "administrativo"],
       sexo_mascota: ["macho", "hembra"],
       tipo_registro: ["diagnostico", "vacuna", "cirugia", "control", "otro"],
       urgencia_cita: ["baja", "media", "alta", "critica"],

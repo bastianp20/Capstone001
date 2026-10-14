@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let activo = true;
     supabase
       .from('perfiles')
-      .select('id, nombre, rol, telefono, avatar_url, desactivado_en')
+      .select('id, nombre, rol, telefono, avatar_url, desactivado_en, es_prueba')
       .eq('id', userId)
       .single()
       .then(async ({ data, error }) => {
@@ -74,6 +74,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             rol: data.rol,
             telefono: data.telefono,
             avatarUrl: data.avatar_url,
+            esPrueba: data.es_prueba,
           },
         });
       });
