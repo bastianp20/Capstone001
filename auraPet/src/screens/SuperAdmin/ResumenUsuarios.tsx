@@ -1,26 +1,31 @@
-import { useMemo, useState } from "react";
-import { Colors, Iconos } from "../../constants";
+import { useState } from "react";
+import { Colors, ESTILO_ROL, FILTROS_USUARIOS } from "../../constants";
 import { useConsulta } from "../../hooks/useConsulta";
+import { useFiltro } from "../../hooks/useFiltro";
 import { getAllUsers } from "../../Api/getInfo";
 import { formatFechaCorta } from "../../lib/fechas";
 import { useAuth } from "../../Auth/AuthContext";
 import { ModalEditarCuenta } from "../../Modal/EditarCuentaModal";
-import type { CuentaUsuario } from "../../interfaces";
+import { BarraFiltros } from "../../components/ui/BarraFiltros";
+import type { CuentaUsuario, FiltroUsuarios } from "../../interfaces";
 
 const colors = Colors;
-const iconos = Iconos;
 const FONDO = "#f6f8f8";
 
-type Rol = "dueno" | "veterinario" | "superadmin" | "administrativo";
-type FiltroRol = Rol | "todos" | "prueba"; // "prueba" = solo cuentas de prueba
+// los chips de filtro son como los cositos que están en excel, los menú desplegables que se le asigna un estado
+// y un color y cambian de estado y color dependiendo de la circuntancia. 
 
-// Cómo se muestra cada rol (texto y colores del chip)
-const ROLES: Record<Rol, { texto: string; fondo: string; color: string }> = {
-  dueno: { texto: "Dueño", fondo: "#eef2ff", color: "#3b4cb8" },
-  veterinario: { texto: "Veterinario", fondo: "#e3f5f2", color: "#0f8f80" },
-  superadmin: { texto: "Superadmin", fondo: "#fdf3e1", color: "#8a5a00" },
-  administrativo: { texto: "Administrativo", fondo: "#f3eefe", color: "#6b3fb8" },
+// Qué deja pasar cada chip de filtro (los textos de los chips están en FILTROS_USUARIOS)
+const FILTRO_USUARIOS: Record<FiltroUsuarios, (u: CuentaUsuario) => boolean> = {
+  todos: () => true,
+  dueno: (u) => u.rol === "dueno",
+  veterinario: (u) => u.rol === "veterinario",
+  administrativo: (u) => u.rol === "administrativo",
+  superadmin: (u) => u.rol === "superadmin",
+  prueba: (u) => u.es_prueba,
 };
+// El buscador busca por nombre o correo
+const camposUsuario = (u: CuentaUsuario) => [u.nombre, u.email];
 
 // Sección "Usuarios" del panel superadmin: todas las cuentas con su correo.
 export const ResumenUsuarios = () => {
@@ -32,44 +37,13 @@ export const ResumenUsuarios = () => {
   const { datos: usuarios = [], cargando, error } = useConsulta(() => getAllUsers(), [recarga]);
 
 
-  const [busqueda, setBusqueda] = useState("");
-  const [filtro, setFiltro] = useState<FiltroRol>("todos");
-
-  // Cuántos hay de cada rol (para los chips de filtro)
-  const cantidad = (rol: Rol) => usuarios.filter((u) => u.rol === rol).length;
-
-  // La lista que se muestra: filtrada por rol y por texto (nombre o correo).
-  // useMemo evita recalcularla en cada render si nada cambió.
-  const visibles = useMemo(() => {
-    const texto = busqueda.trim().toLowerCase();
-    return usuarios.filter((u) => {
-      if (filtro === "prueba" && !u.es_prueba) return false;
-      if (filtro !== "todos" && filtro !== "prueba" && u.rol !== filtro) return false;
-      return !texto || u.nombre.toLowerCase().includes(texto) || u.email.toLowerCase().includes(texto);
-    });
-  }, [usuarios, busqueda, filtro]);
-
-  const chipFiltro = (valor: FiltroRol, texto: string, total: number) => {
-    const activo = filtro === valor;
-    return (
-      <button
-        onClick={() => setFiltro(valor)}
-        style={{
-          padding: "6px 12px",
-          borderRadius: 999,
-          border: `1px solid ${activo ? colors.accent : colors.border}`,
-          background: activo ? colors.accentSoft : "white",
-          color: activo ? colors.accent : colors.text,
-          fontSize: 12.5,
-          fontWeight: 600,
-          cursor: "pointer",
-        }}
-      >
-        {texto}
-        <span style={{ marginLeft: 6, opacity: 0.7 }}>{total}</span>
-      </button>
-    );
-  };
+  // Buscador + chips (hook reutilizable)
+  const { busqueda, setBusqueda, filtro, setFiltro, visibles, cantidad } = useFiltro({
+    items: usuarios,
+    camposBusqueda: camposUsuario,
+    filtros: FILTRO_USUARIOS,
+    filtroInicial: "todos" as FiltroUsuarios,
+  });
 
   const columnas = "1.5fr 1.8fr 1fr 1.1fr 0.8fr 0.9fr 1fr 0.7fr";
 
@@ -80,26 +54,15 @@ export const ResumenUsuarios = () => {
         Todas las cuentas registradas en AuraPet.
       </p>
 
-      {/* Buscador y filtros por rol */}
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10, marginBottom: 14 }}>
-        <div style={{ position: "relative", flex: "1 1 240px", maxWidth: 320 }}>
-          <iconos.buscar size={15} color={colors.textMuted} style={{ position: "absolute", left: 11, top: 10 }} />
-          <input
-            type="text"
-            placeholder="Buscar por nombre o correo…"
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            style={{ width: "100%", boxSizing: "border-box", padding: "8px 12px 8px 32px", borderRadius: 9, border: `1px solid ${colors.border}`, fontSize: 13.5, background: "white", outline: "none" }}
-          />
-        </div>
-        {chipFiltro("todos", "Todos", usuarios.length)}
-        {chipFiltro("dueno", "Dueños", cantidad("dueno"))}
-        {chipFiltro("veterinario", "Veterinarios", cantidad("veterinario"))}
-        {chipFiltro("administrativo", "Administrativos", cantidad("administrativo"))}
-        {chipFiltro("superadmin", "Superadmins", cantidad("superadmin"))}
-        {chipFiltro("prueba", "De prueba", usuarios.filter((u) => u.es_prueba).length)}
-      </div>
-
+      <BarraFiltros
+        busqueda={busqueda}
+        onBuscar={setBusqueda}
+        placeholder="Buscar por nombre o correo…"
+        opciones={FILTROS_USUARIOS}
+        filtro={filtro}
+        onFiltro={setFiltro}
+        cantidad={cantidad}
+      />
 
       {/* Tabla */}
       <div style={{ background: "white", border: `1px solid ${colors.border}`, borderRadius: 12, overflow: "hidden" }}>
@@ -110,7 +73,7 @@ export const ResumenUsuarios = () => {
           <span>Teléfono</span>
           <span>Estado</span>
           <span>Registro</span>
-          <span>Cuenta de prueba</span>
+          <span>Tipo</span>
           <span />
         </div>
 
@@ -125,7 +88,7 @@ export const ResumenUsuarios = () => {
 
         {/* Una fila por usuario: .map() convierte cada objeto en JSX */}
         {visibles.map((u) => {
-          const rol = ROLES[u.rol];
+          const rol = ESTILO_ROL[u.rol];
           const activo = u.desactivado_en === null; // null = cuenta activa
           return (
             <div

@@ -1,7 +1,6 @@
-import { useCallback, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import styles from "../css/modal/CrearProfesionalModal.module.css"; // mismo diseño que los modales de crear
-import { SEGUNDOS_DESBLOQUEO_CUENTA_REAL } from "../constants";
-import { useCuentaRegresiva } from "../hooks/useCuentaRegresiva";
+import { useDesbloqueoTemporal } from "../hooks/useDesbloqueoTemporal";
 import { editarCuenta } from "../Api/postInfo";
 import { DesbloqueoCuentaReal } from "../components/superadmin/DesbloqueoCuentaReal";
 import { CasillaCuentaPrueba } from "../components/superadmin/CasillaCuentaPrueba";
@@ -29,18 +28,8 @@ export const ModalEditarCuenta = ({ cuenta, esMiCuenta, onClose, onGuardada }: E
   const [esPrueba, setEsPrueba] = useState(cuenta.es_prueba);
   const puedeSerPrueba = cuenta.rol !== "superadmin";
 
-  // ---------- Candado de cuentas reales ----------
-  // Cada vez que se vuelve a bloquear, cambia la "key" del candado → código nuevo
-  const [intento, setIntento] = useState(0);
-  const [confirmando, setConfirmando] = useState(false);
-
-  // Cuando se acaba el tiempo: se bloquea de nuevo (también si estaba confirmando)
-  const alTerminarTiempo = useCallback(() => {
-    setConfirmando(false);
-    setIntento((n) => n + 1);
-  }, []);
-  const { restante, iniciar } = useCuentaRegresiva(alTerminarTiempo);
-  const desbloqueada = !esReal || restante > 0;
+  // ---------- Candado de cuentas reales (60 s después de escribir el código) ----------
+  const { desbloqueado, desbloquear, tiempo, intento, confirmando, setConfirmando } = useDesbloqueoTemporal(esReal);
 
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -96,14 +85,12 @@ export const ModalEditarCuenta = ({ cuenta, esMiCuenta, onClose, onGuardada }: E
       setError("El nombre no puede quedar vacío.");
       return;
     }
-    if (!hayCambios || !desbloqueada) return;
+    if (!hayCambios || !desbloqueado) return;
     // Cuenta real: primero se muestra el resumen; la de prueba se guarda directo
     if (esReal) setConfirmando(true);
     else guardar();
   };
 
-  // "0:42"
-  const tiempo = `${Math.floor(restante / 60)}:${String(restante % 60).padStart(2, "0")}`;
 
   return (
     <div className={styles.fondo} onClick={onClose}>
@@ -142,18 +129,18 @@ export const ModalEditarCuenta = ({ cuenta, esMiCuenta, onClose, onGuardada }: E
             {/* Candado o contador, solo para cuentas reales */}
             {esReal && (
               <div className={styles.completo}>
-                {desbloqueada ? (
+                {desbloqueado ? (
                   <p style={{ margin: 0, padding: "8px 12px", borderRadius: 8, background: "#e3f5f2", color: "#0f8f80", fontSize: 13, fontWeight: 600 }}>
-                    Edición desbloqueada · se vuelve a bloquear en {tiempo}
+                    Edición desbloqueado · se vuelve a bloquear en {tiempo}
                   </p>
                 ) : (
-                  <DesbloqueoCuentaReal key={intento} onDesbloquear={() => iniciar(SEGUNDOS_DESBLOQUEO_CUENTA_REAL)} />
+                  <DesbloqueoCuentaReal key={intento} onDesbloquear={desbloquear} />
                 )}
               </div>
             )}
 
             {/* fieldset deshabilita todos los campos de una vez mientras está bloqueado */}
-            <fieldset disabled={!desbloqueada} style={{ display: "contents" }}>
+            <fieldset disabled={!desbloqueado} style={{ display: "contents" }}>
               <label className={`${styles.campo} ${styles.completo}`}>
                 Nombre completo
                 <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
@@ -185,7 +172,7 @@ export const ModalEditarCuenta = ({ cuenta, esMiCuenta, onClose, onGuardada }: E
 
             <div className={`${styles.acciones} ${styles.completo}`}>
               <button type="button" className={styles.cancelar} onClick={onClose}>Cancelar</button>
-              <button type="submit" className={styles.enviar} disabled={!desbloqueada || !hayCambios || guardando}>
+              <button type="submit" className={styles.enviar} disabled={!desbloqueado || !hayCambios || guardando}>
                 {guardando ? "Guardando…" : "Guardar cambios"}
               </button>
             </div>

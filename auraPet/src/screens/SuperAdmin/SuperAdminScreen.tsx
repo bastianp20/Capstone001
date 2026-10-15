@@ -16,6 +16,7 @@ import { ModalCrearSuperadmin } from "../../Modal/CrearSuperadminModal";
 import { ModalCrearCentro } from "../../Modal/CrearCentroModal";
 import { ModalCrearAdministrativo } from "../../Modal/CrearAdministrativoModal";
 import { CentrosVeterinarios } from "./CentrosVeterinarios";
+import { ListaCentros } from "./ListaCentros";
 import LogoAuraPetSinFondo from '../../assets/logo/LogoAuraPetSinFondo.png'; 
 import { ResumenUsuarios } from "./ResumenUsuarios";
 
@@ -71,12 +72,13 @@ export const SuperAdminScreen = () => {
   const { datos: citas = [] } = useConsulta(() => getCitasResumen(), [recarga]);
 
   // Secciones del menú lateral. Las que aún no existen quedan deshabilitadas.
-  type Seccion = "resumen" | "centros" | "usuarios";
+  type Seccion = "resumen" | "usuarios" | "centros" | "asignaciones";
   const [seccion, setSeccion] = useState<Seccion>("resumen");
   const navItems: { label: string; seccion: Seccion | null }[] = [
     { label: "Resumen", seccion: "resumen" },
     { label: "Usuarios", seccion: "usuarios" },
-    { label: "Centros y veterinarios", seccion: "centros" },
+    { label: "Centros", seccion: "centros" },
+    { label: "Centros y veterinarios", seccion: "asignaciones" },
     { label: "Aprobaciones", seccion: null },
     { label: "Citas", seccion: null },
   ];
@@ -229,6 +231,8 @@ export const SuperAdminScreen = () => {
         {/* CONTENT */}
         <div style={{ flex: 1, padding: "26px 28px", overflowY: "auto" }}>
           {seccion === "centros" ? (
+            <ListaCentros />
+          ) : seccion === "asignaciones" ? (
             <CentrosVeterinarios />
           ) : seccion === "usuarios" ? (
             <ResumenUsuarios />

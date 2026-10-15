@@ -9,7 +9,7 @@ const iconos = Iconos;
 // Candado para editar una cuenta REAL: muestra un código al azar que hay que
 // escribir a mano (no se puede pegar). Al acertar, avisa al modal para que
 // abra la ventana de edición. Cada vez que se monta, el código es distinto.
-export const DesbloqueoCuentaReal = ({ onDesbloquear }: DesbloqueoCuentaRealProps) => {
+export const DesbloqueoCuentaReal = ({ onDesbloquear, titulo = "Esta es una cuenta real" }: DesbloqueoCuentaRealProps) => {
   // El código se genera una sola vez por montaje (función en useState)
   const [codigo] = useState(() => generarCodigo(LARGO_CODIGO_CONFIRMACION, CARACTERES_CODIGO_CONFIRMACION));
   const [escrito, setEscrito] = useState("");
@@ -25,10 +25,10 @@ export const DesbloqueoCuentaReal = ({ onDesbloquear }: DesbloqueoCuentaRealProp
   return (
     <div style={{ padding: 14, borderRadius: 10, background: "#fdf3e1", border: "1px solid #f4c98a", color: "#5a3600" }}>
       <p style={{ margin: "0 0 8px", display: "flex", alignItems: "center", gap: 6, fontWeight: 600 }}>
-        <iconos.permisos size={16} /> Esta es una cuenta real
+        <iconos.permisos size={16} /> {titulo}
       </p>
       <p style={{ margin: "0 0 10px", fontSize: 13 }}>
-        Para editarla, escribe este código. Tendrás {SEGUNDOS_DESBLOQUEO_CUENTA_REAL} segundos para hacer los cambios.
+        Para editar, escribe este código. Tendrás {SEGUNDOS_DESBLOQUEO_CUENTA_REAL} segundos para hacer los cambios.
       </p>
       <code className={styles.clave} style={{ marginBottom: 10, textAlign: "center", userSelect: "none" }}>
         {codigoVisible}

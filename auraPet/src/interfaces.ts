@@ -439,6 +439,7 @@ export interface DatosEdicionCentro {
   direccion: string;
   comuna: string;
   telefono: string;                // "56912345678" o ""
+  esPrueba?: boolean;              // solo el superadmin lo cambia (el admin de centro no)
 }
 
 export interface DatosNuevoAdministrativo {
@@ -748,6 +749,8 @@ export interface SolicitarCitaModalProps {
 export interface CasillaCuentaPruebaProps {
   marcada: boolean;
   onCambiar: (marcada: boolean) => void;
+  titulo?: string;                 // por defecto "Cuenta de prueba"
+  ayuda?: string;                  // por defecto TEXTO_CUENTA_PRUEBA
 }
 
 // =====================================================================
@@ -790,4 +793,59 @@ export interface EditarCuentaModalProps {
 
 export interface DesbloqueoCuentaRealProps {
   onDesbloquear: () => void;        // se llama cuando el código escrito coincide
+  titulo?: string;                  // por defecto "Esta es una cuenta real"
+}
+
+// =====================================================================
+// FILTROS REUTILIZABLES (hooks/useFiltro.ts + components/ui/BarraFiltros.tsx)
+// =====================================================================
+
+// Un chip de filtro: su valor y el texto que se ve
+export interface OpcionFiltro<F extends string> {
+  valor: F;
+  texto: string;
+}
+
+export interface OpcionesFiltro<T, F extends string> {
+  items: T[];
+  camposBusqueda: (item: T) => (string | null | undefined)[]; // textos donde busca el buscador
+  filtros: Record<F, (item: T) => boolean>;                  // qué deja pasar cada chip
+  filtroInicial: F;
+}
+
+export interface BarraFiltrosProps<F extends string> {
+  busqueda: string;
+  onBuscar: (texto: string) => void;
+  placeholder: string;
+  opciones: OpcionFiltro<F>[];
+  filtro: F;
+  onFiltro: (filtro: F) => void;
+  cantidad?: (filtro: F) => number;   // si se pasa, muestra el número en cada chip
+}
+
+// =====================================================================
+// SUPERADMIN → CENTROS
+// =====================================================================
+export type FiltroUsuarios = "todos" | RolCuenta | "prueba";
+export type FiltroAsignaciones = "todos" | "sinCentro" | "pendientes" | "prueba";
+export type FiltroCentros = "todos" | "aprobado" | "pendiente" | "rechazado" | "prueba" | "real";
+export type EstadoVerificacion = "pendiente" | "aprobado" | "rechazado";
+
+// Un centro en la lista del superadmin
+export interface CentroListado {
+  id: number;
+  nombre: string;
+  direccion: string;
+  comuna: string;
+  telefono: number | null;
+  estado: EstadoVerificacion;
+  esPrueba: boolean;
+  veterinarios: number;              // cuántos veterinarios atienden ahí
+  creadoEn: string;
+}
+
+export interface EditarCentroModalProps {
+  centro: CentroListado;
+  onClose: () => void;
+  onGuardado: () => void;
 }

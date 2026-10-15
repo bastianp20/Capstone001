@@ -28,6 +28,7 @@ import type {
   HistorialDueno,
   CentroParaCita,
   VeterinarioParaCita,
+  CentroListado,
 } from "../interfaces";
 // auí importamos supabase para poder hacer las consutas a la base de datos. 
 import { supabase } from "../lib/supabase";
@@ -714,4 +715,25 @@ export const getVeterinariosDeCentro = async (centroId: number): Promise<Veterin
   const { data, error } = await supabase.rpc("veterinarios_de_centro", { p_centro_id: centroId });
   if (error) throw error;
   return data ?? [];
+};
+
+// Todos los centros (aprobados, pendientes, rechazados, reales y de prueba)
+// para la sección "Centros" del superadmin, con cuántos veterinarios tiene cada uno.
+export const getCentrosSuperadmin = async (): Promise<CentroListado[]> => {
+  const { data, error } = await supabase
+    .from("centros")
+    .select("id, nombre, direccion, comuna, telefono, estado_verificacion, es_prueba, creado_en, veterinario_centros ( count )")
+    .order("nombre");
+  if (error) throw error;
+  return (data ?? []).map((c) => ({
+    id: c.id,
+    nombre: c.nombre,
+    direccion: c.direccion,
+    comuna: c.comuna,
+    telefono: c.telefono,
+    estado: c.estado_verificacion,
+    esPrueba: c.es_prueba,
+    veterinarios: c.veterinario_centros?.[0]?.count ?? 0, // "( count )" llega como [{ count: 3 }]
+    creadoEn: c.creado_en,
+  }));
 };

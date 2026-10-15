@@ -1,22 +1,25 @@
-import { useMemo, useState } from "react";
-import { Colors, Iconos } from "../../constants";
+import { useState } from "react";
+import { Colors, ESTADO_VERIFICACION, FILTROS_ASIGNACIONES, Iconos } from "../../constants";
 import { useConsulta } from "../../hooks/useConsulta";
+import { useFiltro } from "../../hooks/useFiltro";
 import { getAsignacionesVeterinarios, getCentrosSelector } from "../../Api/getInfo";
 import { asignarCentroAVeterinario, quitarCentroAVeterinario } from "../../Api/postInfo";
-import type { VeterinarioAsignaciones } from "../../interfaces";
+import { BarraFiltros } from "../../components/ui/BarraFiltros";
+import type { FiltroAsignaciones, VeterinarioAsignaciones } from "../../interfaces";
 
 const colors = Colors;
 const iconos = Iconos;
 const FONDO = "#f6f8f8";
 const ROJO = "#a4272a";
 
-type Filtro = "todos" | "sinCentro" | "pendientes";
-
-const ESTADO: Record<VeterinarioAsignaciones["estado"], { texto: string; fondo: string; color: string }> = {
-  aprobado: { texto: "Verificado", fondo: "#e3f5f2", color: "#0f8f80" },
-  pendiente: { texto: "Pendiente", fondo: "#fdf3e1", color: "#8a5a00" },
-  rechazado: { texto: "Rechazado", fondo: "#fdecec", color: ROJO },
+// Qué deja pasar cada chip de filtro (los textos están en FILTROS_ASIGNACIONES)
+const FILTRO_ASIGNACIONES: Record<FiltroAsignaciones, (v: VeterinarioAsignaciones) => boolean> = {
+  todos: () => true,
+  sinCentro: (v) => v.centros.length === 0,
+  pendientes: (v) => v.estado === "pendiente",
+  prueba: (v) => v.esPrueba,
 };
+const camposVeterinario = (v: VeterinarioAsignaciones) => [v.nombre, v.especialidad, ...v.centros.map((c) => c.nombre)];
 
 // Sección "Centros y veterinarios" del panel superadmin:
 // revisar en qué centros atiende cada veterinario y corregir las asignaciones.
@@ -25,23 +28,16 @@ export const CentrosVeterinarios = () => {
   const { datos: veterinarios = [], cargando, error } = useConsulta(() => getAsignacionesVeterinarios(), [recarga]);
   const { datos: centros = [] } = useConsulta(() => getCentrosSelector(), []);
 
-  const [busqueda, setBusqueda] = useState("");
-  const [filtro, setFiltro] = useState<Filtro>("todos");
+  // Buscador + chips (hook reutilizable)
+  const { busqueda, setBusqueda, filtro, setFiltro, visibles, cantidad } = useFiltro({
+    items: veterinarios,
+    camposBusqueda: camposVeterinario,
+    filtros: FILTRO_ASIGNACIONES,
+    filtroInicial: "todos" as FiltroAsignaciones,
+  });
   const [centroElegido, setCentroElegido] = useState<Record<number, string>>({}); // vetId -> centroId del select
   const [ocupado, setOcupado] = useState<number | null>(null);                   // vetId que se está guardando
   const [aviso, setAviso] = useState<{ tipo: "ok" | "error"; texto: string } | null>(null);
-
-  const sinCentro = veterinarios.filter((v) => v.centros.length === 0).length;
-  const pendientes = veterinarios.filter((v) => v.estado === "pendiente").length;
-
-  const visibles = useMemo(() => {
-    const texto = busqueda.trim().toLowerCase();
-    return veterinarios.filter((v) => {
-      if (filtro === "sinCentro" && v.centros.length > 0) return false;
-      if (filtro === "pendientes" && v.estado !== "pendiente") return false;
-      return !texto || v.nombre.toLowerCase().includes(texto);
-    });
-  }, [veterinarios, busqueda, filtro]);
 
   const ejecutar = async (vetId: number, accion: () => Promise<void>, mensajeOk: string) => {
     setOcupado(vetId);
@@ -72,28 +68,6 @@ export const CentrosVeterinarios = () => {
     ejecutar(v.id, () => quitarCentroAVeterinario(v.id, centroId), `${v.nombre} ya no atiende en ${nombreCentro}.`);
   };
 
-  const chipFiltro = (valor: Filtro, texto: string, cantidad?: number) => {
-    const activo = filtro === valor;
-    return (
-      <button
-        onClick={() => setFiltro(valor)}
-        style={{
-          padding: "6px 12px",
-          borderRadius: 999,
-          border: `1px solid ${activo ? colors.accent : colors.border}`,
-          background: activo ? colors.accentSoft : "white",
-          color: activo ? colors.accent : colors.text,
-          fontSize: 12.5,
-          fontWeight: 600,
-          cursor: "pointer",
-        }}
-      >
-        {texto}
-        {cantidad !== undefined && <span style={{ marginLeft: 6, opacity: 0.7 }}>{cantidad}</span>}
-      </button>
-    );
-  };
-
   const columnas = "1.6fr 0.8fr 2fr 1.5fr";
 
   return (
@@ -103,22 +77,15 @@ export const CentrosVeterinarios = () => {
         Revisa en qué centros atiende cada profesional y corrige las asignaciones.
       </p>
 
-      {/* Buscador y filtros */}
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10, marginBottom: 14 }}>
-        <div style={{ position: "relative", flex: "1 1 240px", maxWidth: 320 }}>
-          <iconos.buscar size={15} color={colors.textMuted} style={{ position: "absolute", left: 11, top: 10 }} />
-          <input
-            type="text"
-            placeholder="Buscar veterinario…"
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            style={{ width: "100%", boxSizing: "border-box", padding: "8px 12px 8px 32px", borderRadius: 9, border: `1px solid ${colors.border}`, fontSize: 13.5, background: "white", outline: "none" }}
-          />
-        </div>
-        {chipFiltro("todos", "Todos", veterinarios.length)}
-        {chipFiltro("sinCentro", "Sin centro", sinCentro)}
-        {chipFiltro("pendientes", "Pendientes", pendientes)}
-      </div>
+      <BarraFiltros
+        busqueda={busqueda}
+        onBuscar={setBusqueda}
+        placeholder="Buscar veterinario, especialidad o centro…"
+        opciones={FILTROS_ASIGNACIONES}
+        filtro={filtro}
+        onFiltro={setFiltro}
+        cantidad={cantidad}
+      />
 
       {aviso && (
         <div
@@ -160,7 +127,7 @@ export const CentrosVeterinarios = () => {
           const disponibles = centros.filter(
             (c) => c.es_prueba === v.esPrueba && !v.centros.some((asignado) => asignado.id === c.id)
           );
-          const estado = ESTADO[v.estado];
+          const estado = ESTADO_VERIFICACION[v.estado];
           const guardando = ocupado === v.id;
           return (
             <div

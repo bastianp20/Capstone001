@@ -147,11 +147,15 @@ export const actualizarCentro = async (centroId: number, datos: DatosEdicionCent
       direccion: datos.direccion.trim(),
       comuna: datos.comuna.trim(),
       telefono: datos.telefono ? Number(datos.telefono) : null,
+      // es_prueba solo se manda si viene (lo cambia el superadmin; la migración 16
+      // no deja cambiarlo si el equipo del centro es del otro "mundo")
+      ...(datos.esPrueba !== undefined && { es_prueba: datos.esPrueba }),
     })
     .eq("id", centroId)
     .select("id");
+  if (error) throw new Error(error.message || "No se pudieron guardar los cambios.");
   // Sin filas devueltas = la base no dejó editar (no es admin de ese centro)
-  if (error || !data?.length) throw new Error("No se pudieron guardar los cambios.");
+  if (!data?.length) throw new Error("No tienes permiso para editar este centro.");
 };
 
 // CREAR CUENTA ADMINISTRATIVA (SOLO SUPERADMIN)

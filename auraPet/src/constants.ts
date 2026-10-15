@@ -1,7 +1,8 @@
 import type { CSSProperties } from "react";
 import type {EstadoCita, UrgenciaCita, EspecieMascota, 
   // VistaHome, 
-  Servicio, MedicamentoReceta, ColumnaMedicamento, AtajoProximoControl, PasoCita, ItemMenuDueno, TipoRegistro} from '../src/interfaces'; 
+  Servicio, MedicamentoReceta, ColumnaMedicamento, AtajoProximoControl, PasoCita, ItemMenuDueno, TipoRegistro,
+  OpcionFiltro, FiltroUsuarios, FiltroAsignaciones, FiltroCentros, EstadoVerificacion, RolCuenta} from '../src/interfaces'; 
 import {
   Menu, Search, Bell, User, UserCircle, LogOut, Settings, Calendar, Filter, ChevronDown, ChevronRight, X, Plus, MoreVertical, Home,
   PawPrint, Heart, CalendarPlus, History, FileText,Stethoscope, Syringe, ClipboardList, ClipboardPlus, Share2, Microscope, Activity,
@@ -368,3 +369,50 @@ export const SEGUNDOS_DESBLOQUEO_CUENTA_REAL = 60;
 export const LARGO_CODIGO_CONFIRMACION = 6;
 // Sin 0/O ni 1/I/L, que se confunden al leer
 export const CARACTERES_CODIGO_CONFIRMACION = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+
+// Ayuda bajo la casilla "Centro de prueba" al editar un centro
+export const TEXTO_CENTRO_PRUEBA =
+  "Solo lo verán y usarán las cuentas de prueba. Su equipo también debe ser de prueba.";
+
+// Estado de verificación de centros y veterinarios: texto y colores del chip
+export const ESTADO_VERIFICACION: Record<EstadoVerificacion, { texto: string; fondo: string; color: string }> = {
+  aprobado: { texto: "Verificado", fondo: "#e3f5f2", color: "#0f8f80" },
+  pendiente: { texto: "Pendiente", fondo: "#fdf3e1", color: "#8a5a00" },
+  rechazado: { texto: "Rechazado", fondo: "#fdecec", color: "#a4272a" },
+};
+
+// =====================================================================
+// FILTROS (chips) de las listas del superadmin
+// =====================================================================
+export const FILTROS_USUARIOS: OpcionFiltro<FiltroUsuarios>[] = [
+  { valor: "todos", texto: "Todos" },
+  { valor: "dueno", texto: "Dueños" },
+  { valor: "veterinario", texto: "Veterinarios" },
+  { valor: "administrativo", texto: "Administrativos" },
+  { valor: "superadmin", texto: "Superadmins" },
+  { valor: "prueba", texto: "De prueba" },
+];
+
+export const FILTROS_ASIGNACIONES: OpcionFiltro<FiltroAsignaciones>[] = [
+  { valor: "todos", texto: "Todos" },
+  { valor: "sinCentro", texto: "Sin centro" },
+  { valor: "pendientes", texto: "Pendientes" },
+  { valor: "prueba", texto: "De prueba" },
+];
+
+export const FILTROS_CENTROS: OpcionFiltro<FiltroCentros>[] = [
+  { valor: "todos", texto: "Todos" },
+  { valor: "aprobado", texto: "Verificados" },
+  { valor: "pendiente", texto: "Pendientes" },
+  { valor: "rechazado", texto: "Rechazados" },
+  { valor: "real", texto: "Reales" },
+  { valor: "prueba", texto: "De prueba" },
+];
+
+// Cómo se muestra cada rol en la lista de usuarios (texto y colores del chip)
+export const ESTILO_ROL: Record<RolCuenta, { texto: string; fondo: string; color: string }> = {
+  dueno: { texto: "Dueño", fondo: "#eef2ff", color: "#3b4cb8" },
+  veterinario: { texto: "Veterinario", fondo: "#e3f5f2", color: "#0f8f80" },
+  superadmin: { texto: "Superadmin", fondo: "#fdf3e1", color: "#8a5a00" },
+  administrativo: { texto: "Administrativo", fondo: "#f3eefe", color: "#6b3fb8" },
+};
