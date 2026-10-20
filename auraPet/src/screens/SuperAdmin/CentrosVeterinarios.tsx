@@ -1,24 +1,18 @@
 import { useState } from "react";
-import { Colors, ESTADO_VERIFICACION, FILTROS_ASIGNACIONES, Iconos } from "../../constants";
+import { COLUMNAS_SUPERADMIN, ESTADO_VERIFICACION, FILTROS_ASIGNACIONES, Iconos, PREDICADOS_FILTRO_ASIGNACIONES, TEXTOS_CENTRO_VETERINARIO } from "../../constants";
 import { useConsulta } from "../../hooks/useConsulta";
 import { useFiltro } from "../../hooks/useFiltro";
 import { getAsignacionesVeterinarios, getCentrosSelector } from "../../Api/getInfo";
 import { asignarCentroAVeterinario, quitarCentroAVeterinario } from "../../Api/postInfo";
 import { BarraFiltros } from "../../components/ui/BarraFiltros";
-import type { FiltroAsignaciones, VeterinarioAsignaciones } from "../../interfaces";
+import { TablaPanel } from "../../components/ui/TablaPanel";
+import { FilaTabla } from "../../components/ui/FilaTabla";
+import { Etiqueta } from "../../components/ui/Etiqueta";
+import { Aviso } from "../../components/ui/Aviso";
+import type { AvisoEstado, FiltroAsignaciones, VeterinarioAsignaciones } from "../../interfaces";
+import styles from "../../css/superadmin/SeccionesSuperAdmin.module.css";
 
-const colors = Colors;
-const iconos = Iconos;
-const FONDO = "#f6f8f8";
-const ROJO = "#a4272a";
-
-// Qué deja pasar cada chip de filtro (los textos están en FILTROS_ASIGNACIONES)
-const FILTRO_ASIGNACIONES: Record<FiltroAsignaciones, (v: VeterinarioAsignaciones) => boolean> = {
-  todos: () => true,
-  sinCentro: (v) => v.centros.length === 0,
-  pendientes: (v) => v.estado === "pendiente",
-  prueba: (v) => v.esPrueba,
-};
+const COLUMNAS = COLUMNAS_SUPERADMIN.asignaciones;
 const camposVeterinario = (v: VeterinarioAsignaciones) => [v.nombre, v.especialidad, ...v.centros.map((c) => c.nombre)];
 
 // Sección "Centros y veterinarios" del panel superadmin:
@@ -32,12 +26,12 @@ export const CentrosVeterinarios = () => {
   const { busqueda, setBusqueda, filtro, setFiltro, visibles, cantidad } = useFiltro({
     items: veterinarios,
     camposBusqueda: camposVeterinario,
-    filtros: FILTRO_ASIGNACIONES,
+    filtros: PREDICADOS_FILTRO_ASIGNACIONES,
     filtroInicial: "todos" as FiltroAsignaciones,
   });
   const [centroElegido, setCentroElegido] = useState<Record<number, string>>({}); // vetId -> centroId del select
   const [ocupado, setOcupado] = useState<number | null>(null);                   // vetId que se está guardando
-  const [aviso, setAviso] = useState<{ tipo: "ok" | "error"; texto: string } | null>(null);
+  const [aviso, setAviso] = useState<AvisoEstado | null>(null);
 
   const ejecutar = async (vetId: number, accion: () => Promise<void>, mensajeOk: string) => {
     setOcupado(vetId);
@@ -68,14 +62,10 @@ export const CentrosVeterinarios = () => {
     ejecutar(v.id, () => quitarCentroAVeterinario(v.id, centroId), `${v.nombre} ya no atiende en ${nombreCentro}.`);
   };
 
-  const columnas = "1.6fr 0.8fr 2fr 1.5fr";
-
   return (
     <>
-      <h1 style={{ margin: "0 0 4px", fontSize: 21, fontWeight: 700, color: colors.text }}>Centros y veterinarios</h1>
-      <p style={{ margin: "0 0 18px", fontSize: 13.5, color: colors.textMuted }}>
-        Revisa en qué centros atiende cada profesional y corrige las asignaciones.
-      </p>
+      <h1 className={styles.titulo}>Centros y veterinarios</h1>
+      <p className={styles.subtitulo}>Revisa en qué centros atiende cada profesional y corrige las asignaciones.</p>
 
       <BarraFiltros
         busqueda={busqueda}
@@ -87,101 +77,75 @@ export const CentrosVeterinarios = () => {
         cantidad={cantidad}
       />
 
-      {aviso && (
-        <div
-          style={{
-            marginBottom: 14,
-            padding: "10px 14px",
-            borderRadius: 10,
-            fontSize: 13,
-            background: aviso.tipo === "ok" ? colors.accentSoft : "#fdecec",
-            color: aviso.tipo === "ok" ? colors.accent : ROJO,
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          {aviso.texto}
-          <button onClick={() => setAviso(null)} style={{ border: "none", background: "none", color: "inherit", cursor: "pointer" }} aria-label="Cerrar aviso">✕</button>
-        </div>
-      )}
+      {aviso && <Aviso {...aviso} onCerrar={() => setAviso(null)} />}
 
-      {/* Tabla */}
-      <div style={{ background: "white", border: `1px solid ${colors.border}`, borderRadius: 12, overflow: "hidden" }}>
-        <div style={{ display: "grid", gridTemplateColumns: columnas, gap: 12, padding: "10px 18px", background: FONDO, fontSize: 11.5, fontWeight: 700, color: colors.textMuted, textTransform: "uppercase" }}>
-          <span>Veterinario</span>
-          <span>Estado</span>
-          <span>Centros donde atiende</span>
-          <span>Asignar a otro centro</span>
-        </div>
-
-        {cargando && <div style={{ padding: "24px 18px", textAlign: "center", color: colors.textMuted, fontSize: 13 }}>Cargando…</div>}
-        {error && <div style={{ padding: "24px 18px", textAlign: "center", color: ROJO, fontSize: 13 }}>{error}</div>}
-        {!cargando && !error && visibles.length === 0 && (
-          <div style={{ padding: "24px 18px", textAlign: "center", color: colors.textMuted, fontSize: 13 }}>
-            {veterinarios.length === 0 ? "Todavía no hay veterinarios registrados." : "Ningún veterinario coincide con el filtro."}
-          </div>
-        )}
-
+      <TablaPanel
+        columnas={COLUMNAS}
+        encabezados={["Veterinario", "Estado", "Centros donde atiende", "Asignar a otro centro"]}
+        cargando={cargando}
+        error={error}
+        vacio={veterinarios.length === 0 ? "Todavía no hay veterinarios registrados." : "Ningún veterinario coincide con el filtro."}
+        cantidad={visibles.length}
+      >
         {visibles.map((v) => {
           // Solo centros del mismo "mundo": vet de prueba -> centros de prueba; vet real -> centros reales
           const disponibles = centros.filter(
             (c) => c.es_prueba === v.esPrueba && !v.centros.some((asignado) => asignado.id === c.id)
           );
-          const estado = ESTADO_VERIFICACION[v.estado];
           const guardando = ocupado === v.id;
           return (
-            <div
-              key={v.id}
-              style={{ display: "grid", gridTemplateColumns: columnas, gap: 12, alignItems: "center", padding: "13px 18px", borderTop: `1px solid ${colors.border}`, opacity: guardando ? 0.6 : 1 }}
-            >
+            <FilaTabla key={v.id} columnas={COLUMNAS} atenuada={guardando}>
               {/* Veterinario */}
-              <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-                <span style={{ fontSize: 13.5, fontWeight: 600 }}>
+              <div className={styles.celdaDoble}>
+                <span className={styles.fuerte}>
                   {v.nombre}
-                  {v.esPrueba && <span style={{ marginLeft: 6, fontSize: 11, color: "#8a5a00" }}>(prueba)</span>}
+                  {v.esPrueba && <span className={styles.notaPrueba}>(prueba)</span>}
                 </span>
-                <span style={{ fontSize: 12, color: colors.textMuted }}>
+                <span className={styles.detalle}>
                   {[v.especialidad ?? "Medicina general", v.numeroColegiado && `N° ${v.numeroColegiado}`].filter(Boolean).join(" · ")}
                 </span>
               </div>
 
-              {/* Estado */}
-              <span style={{ justifySelf: "start", padding: "3px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, background: estado.fondo, color: estado.color }}>
-                {estado.texto}
-              </span>
+              <Etiqueta {...ESTADO_VERIFICACION[v.estado]} />
 
               {/* Centros asignados */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              <div className={styles.chips}>
+                {/* Sin centro asignado: lo que pidió al registrarse (si pidió algo) o "independiente" */}
                 {v.centros.length === 0 && (
-                  <span style={{ fontSize: 12.5, color: colors.textMuted, fontStyle: "italic" }}>Independiente (sin centro)</span>
+                  <span className={styles.italica}>
+                    {v.centroSolicitado
+                      ? TEXTOS_CENTRO_VETERINARIO.seAsignaAlAprobar(v.centroSolicitado)
+                      : v.centroMencionado
+                        ? TEXTOS_CENTRO_VETERINARIO.noEstaEnAuraPet(v.centroMencionado)
+                        : TEXTOS_CENTRO_VETERINARIO.independienteCorto}
+                  </span>
                 )}
                 {v.centros.map((c) => (
-                  <span
-                    key={c.id}
-                    style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 6px 4px 10px", borderRadius: 999, background: FONDO, border: `1px solid ${colors.border}`, fontSize: 12.5 }}
-                  >
+                  <span key={c.id} className={styles.chipCentro}>
                     {c.nombre}
-                    {c.esPrueba && <span style={{ fontSize: 11, color: "#8a5a00" }}>(pruebas)</span>}
+                    {c.esPrueba && <span className={styles.notaPrueba}>(pruebas)</span>}
                     <button
+                      type="button"
+                      className={styles.quitarChip}
                       onClick={() => quitar(v, c.id, c.nombre)}
                       disabled={guardando}
                       title={`Quitar de ${c.nombre}`}
                       aria-label={`Quitar de ${c.nombre}`}
-                      style={{ display: "flex", border: "none", background: "none", padding: 2, borderRadius: 999, cursor: "pointer", color: colors.textMuted }}
                     >
-                      <iconos.cerrar size={13} />
+                      <Iconos.cerrar size={13} />
                     </button>
                   </span>
                 ))}
               </div>
 
               {/* Asignar */}
-              <div style={{ display: "flex", gap: 6 }}>
+              <div className={styles.asignar}>
                 <select
+                  className={styles.select}
                   value={centroElegido[v.id] ?? ""}
                   onChange={(e) => setCentroElegido((prev) => ({ ...prev, [v.id]: e.target.value }))}
                   disabled={guardando || disponibles.length === 0}
-                  style={{ flex: 1, minWidth: 0, padding: "7px 8px", borderRadius: 8, border: `1px solid ${colors.border}`, fontSize: 12.5, background: "white" }}
+                  aria-label={`Centro para asignar a ${v.nombre}`}
                 >
                   <option value="">{disponibles.length === 0 ? "Ya está en todos" : "Elegir centro…"}</option>
                   {disponibles.map((c) => (
@@ -190,18 +154,14 @@ export const CentrosVeterinarios = () => {
                     </option>
                   ))}
                 </select>
-                <button
-                  onClick={() => asignar(v)}
-                  disabled={guardando || !centroElegido[v.id]}
-                  style={{ padding: "7px 12px", borderRadius: 8, border: "none", background: colors.accent, color: "white", fontSize: 12.5, fontWeight: 600, cursor: "pointer", opacity: !centroElegido[v.id] ? 0.5 : 1 }}
-                >
+                <button type="button" className={styles.botonAsignar} onClick={() => asignar(v)} disabled={guardando || !centroElegido[v.id]}>
                   Asignar
                 </button>
               </div>
-            </div>
+            </FilaTabla>
           );
         })}
-      </div>
+      </TablaPanel>
     </>
   );
 };

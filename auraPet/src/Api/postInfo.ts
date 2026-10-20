@@ -1,5 +1,5 @@
 // aquí van las acciones que CREAN o CAMBIAN datos en la base (los "POST").
-import type { DatosNuevaMascota, DatosNuevoCentro, DatosNuevoDueno, DatosNuevoProfesional, DatosNuevoSuperadmin, DatosEdicionCentro, DatosNuevoAdministrativo, CambioCita, DatosSolicitudCita, CambiosCuenta } from "../interfaces";
+import type { DatosNuevaMascota, DatosNuevoCentro, DatosNuevoDueno, DatosNuevoProfesional, DatosNuevoSuperadmin, DatosEdicionCentro, DatosNuevoAdministrativo, CambioCita, DatosSolicitudCita, CambiosCuenta, NuevoRegistroMedico, CambiosDatosClinicos, DatosSolicitudCentro, NuevaReceta, NuevaDerivacion, DatosContacto, EstadoContacto } from "../interfaces";
 import { supabase } from "../lib/supabase";
 import type { Json } from "../lib/database.types";
 
@@ -11,7 +11,7 @@ import type { Json } from "../lib/database.types";
 // luegos los mismos veterinarios pueden crear sus propias cuentas, pero no pueden crear otras cuentas de veterinarios ni de centro
 // ese trabajo es exclusivo del superAdmin.
 export const crearProfesional = async (datos: DatosNuevoProfesional) => {
-  const { data, error } = await supabase.functions.invoke<{ ok: boolean; contrasenaTemporal: string }>(
+  const { data, error } = await supabase.functions.invoke<{ ok: boolean }>(
     "crear-profesional",
     { body: datos }
   );
@@ -96,6 +96,19 @@ export const resolverSolicitud = async (
   motivo?: string
 ) => {
   const [tipo, id] = idSolicitud.split("-");
+
+  // Solicitud desde /solicitar-centro: la resuelve la base (migración 21),
+  // que además crea el centro si se aprueba.
+  if (tipo === "solicitud_centro") {
+    const { error } = await supabase.rpc("resolver_solicitud_centro", {
+      p_solicitud_id: Number(id),
+      p_decision: decision,
+      p_motivo: decision === "rechazado" ? motivo?.trim() : undefined,
+    });
+    if (error) throw new Error(error.message || "No se pudo resolver la solicitud.");
+    return;
+  }
+
   const tabla = tipo === "centro" ? "centros" : "veterinarios";
   const { data, error } = await supabase
     .from(tabla)
@@ -186,6 +199,43 @@ export const actualizarMiCita = async (citaId: number, cambio: CambioCita) => {
   if (error) throw new Error("No se pudo actualizar la cita.");
 };
 
+// RECHAZAR UNA SOLICITUD DE CITA (VETERINARIO)
+// La función rechazar_cita de la base (migración 18) revisa que la
+// cita sea de este veterinario y que siga pendiente. La deja "cancelada",
+// con cancelada_por = el veterinario y la razón en motivo_cancelacion.
+export const rechazarCita = async (citaId: number, motivo: string) => {
+  const { error } = await supabase.rpc("rechazar_cita", { p_cita_id: citaId, p_motivo: motivo.trim() });
+  if (error) throw new Error(error.message || "No se pudo rechazar la cita.");
+};
+
+// AGREGAR UN REGISTRO AL HISTORIAL (VETERINARIO TRATANTE)
+// agregar_registro_medico (migración 19) pone el veterinario y el centro,
+// y revisa que la mascota sea su paciente. Los registros no se editan.
+export const agregarRegistroMedico = async (registro: NuevoRegistroMedico) => {
+  const { error } = await supabase.rpc("agregar_registro_medico", {
+    p_mascota_id: registro.mascotaId,
+    p_tipo: registro.tipo,
+    p_fecha: registro.fecha,
+    p_descripcion: registro.descripcion.trim(),
+    p_tratamiento: registro.tratamiento.trim() || undefined,
+    p_proxima_dosis: registro.proximaDosis || undefined,
+  });
+  if (error) throw new Error(error.message || "No se pudo guardar el registro.");
+};
+
+// ACTUALIZAR DATOS CLÍNICOS DE UN PACIENTE (VETERINARIO TRATANTE)
+// actualizar_datos_clinicos (migración 19): un texto vacío borra el dato.
+export const actualizarDatosClinicos = async (mascotaId: number, cambios: CambiosDatosClinicos) => {
+  const { error } = await supabase.rpc("actualizar_datos_clinicos", {
+    p_mascota_id: mascotaId,
+    p_peso_kg: cambios.pesoKg ?? undefined,
+    p_alergias: cambios.alergias,
+    p_condiciones_cronicas: cambios.condicionesCronicas,
+    p_esterilizado: cambios.esterilizado,
+    p_microchip: cambios.microchip,
+  });
+  if (error) throw new Error(error.message || "No se pudieron guardar los datos clínicos.");
+};
 
 // SOLICITAR UNA CITA (DUEÑO)
 // La función solicitar_cita de la base (migración 13) revisa todo: que la
@@ -225,4 +275,103 @@ export const editarCuenta = async (perfilId: string, cambios: CambiosCuenta) => 
   const { data, error } = await supabase.from("perfiles").update(fila).eq("id", perfilId).select("id");
   if (error) throw new Error(error.message || "No se pudo guardar la cuenta.");
   if (!data?.length) throw new Error("No tienes permiso para editar esta cuenta.");
+};
+
+// SOLICITAR UNIRSE COMO CENTRO (página pública, sin cuenta)
+// solicitar_centro (migración 20) valida todo y no deja dos solicitudes
+// pendientes con el mismo correo. Su mensaje de error llega tal cual.
+export const solicitarCentro = async (datos: DatosSolicitudCentro) => {
+  const { error } = await supabase.rpc("solicitar_centro", {
+    p_nombre_centro: datos.nombreCentro.trim(),
+    p_direccion: datos.direccion.trim(),
+    p_comuna: datos.comuna.trim(),
+    p_telefono_centro: Number(datos.telefonoCentro.replace(/\D/g, "")),
+    p_especialidad_ids: datos.especialidadIds,
+    p_sitio_web: datos.sitioWeb.trim() || undefined,
+    p_nombre_responsable: datos.nombreResponsable.trim(),
+    p_cargo: datos.cargo,
+    p_correo: datos.correo.trim(),
+    p_telefono_responsable: Number(datos.telefonoResponsable.replace(/\D/g, "")),
+    p_mensaje: datos.mensaje.trim() || undefined,
+  });
+  if (error) throw new Error(error.message || "No se pudo enviar la solicitud.");
+};
+
+// SOLICITAR UN CAMBIO DE PLAN (ADMIN DEL CENTRO)
+// solicitar_cambio_plan (migración 24): deja la solicitud para el superadmin
+// y la anota en el historial. No cobra nada.
+export const solicitarCambioPlan = async (centroId: number, planId: string, mensaje: string) => {
+  const { error } = await supabase.rpc("solicitar_cambio_plan", {
+    p_centro_id: centroId,
+    p_plan_id: planId,
+    p_mensaje: mensaje.trim() || undefined,
+  });
+  if (error) throw new Error(error.message || "No se pudo enviar la solicitud.");
+};
+
+// GUARDAR UNA RECETA (VETERINARIO TRATANTE)
+// crear_receta (migración 27) guarda la receta y sus medicamentos juntos.
+export const crearReceta = async (receta: NuevaReceta) => {
+  const { error } = await supabase.rpc("crear_receta", {
+    p_mascota_id: receta.mascotaId,
+    p_medicamentos: receta.medicamentos as unknown as Json,
+    p_indicaciones: receta.indicaciones || undefined,
+    p_proximo_control: receta.proximoControl || undefined,
+  });
+  if (error) throw new Error(error.message || "No se pudo guardar la receta.");
+};
+
+// SUPERADMIN: activar o rechazar una solicitud de cambio de plan (migración 28).
+// Al activar, el plan queda "activa" y la renovación a N meses.
+export const resolverSolicitudPlan = async (solicitudId: number, aprobar: boolean, meses?: number) => {
+  const { error } = await supabase.rpc("resolver_solicitud_plan", { p_solicitud_id: solicitudId, p_aprobar: aprobar, p_meses: meses });
+  if (error) throw new Error(error.message || "No se pudo resolver la solicitud de plan.");
+};
+
+// SUPERADMIN: sumar días a la prueba o a la renovación de un centro.
+export const extenderSuscripcion = async (centroId: number, dias: number) => {
+  const { error } = await supabase.rpc("extender_suscripcion", { p_centro_id: centroId, p_dias: dias });
+  if (error) throw new Error(error.message || "No se pudo extender la suscripción.");
+};
+
+// DERIVAR UN PACIENTE (migración 29): a un veterinario o a un centro.
+// La base agrega el registro al historial y valida que sea tu paciente.
+export const crearDerivacion = async ({ mascotaId, destino, motivo }: NuevaDerivacion) => {
+  const { error } = await supabase.rpc("crear_derivacion", {
+    p_mascota_id: mascotaId,
+    p_motivo: motivo.trim(),
+    p_a_veterinario_id: destino.tipo === "veterinario" ? destino.id : undefined,
+    p_a_centro_id: destino.tipo === "centro" ? destino.id : undefined,
+  });
+  if (error) throw new Error(error.message || "No se pudo derivar al paciente.");
+};
+
+// realizada = true: el destino la cierra con el resultado.
+// realizada = false: el destino la rechaza o quien derivó la cancela.
+export const responderDerivacion = async (derivacionId: number, realizada: boolean, resultado?: string) => {
+  const { error } = await supabase.rpc("responder_derivacion", {
+    p_derivacion_id: derivacionId,
+    p_realizada: realizada,
+    p_resultado: resultado?.trim() || undefined,
+  });
+  if (error) throw new Error(error.message || "No se pudo actualizar la derivación.");
+};
+
+// FORMULARIO DE CONTACTO (público). Entra como 'pendiente' (política de la
+// migración 02) y le llega al superadmin en "Mensajes". Sin .select():
+// quien escribe (anon) no puede leer la tabla.
+export const enviarMensajeContacto = async (datos: DatosContacto) => {
+  const { error } = await supabase.from("mensajes_contacto").insert({
+    nombre: datos.nombre.trim(),
+    correo: datos.correo.trim().toLowerCase(),
+    asunto: datos.asunto,
+    mensaje: datos.mensaje.trim(),
+  });
+  if (error) throw new Error("No pudimos enviar tu mensaje. Inténtalo de nuevo en unos minutos.");
+};
+
+// SUPERADMIN: cambia el estado de un mensaje (pendiente / respondido / cerrado)
+export const cambiarEstadoMensaje = async (mensajeId: number, estado: EstadoContacto) => {
+  const { error } = await supabase.from("mensajes_contacto").update({ estado }).eq("id", mensajeId);
+  if (error) throw new Error(error.message || "No se pudo actualizar el mensaje.");
 };

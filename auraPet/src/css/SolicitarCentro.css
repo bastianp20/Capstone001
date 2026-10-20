@@ -1,0 +1,906 @@
+/* =====================================================================
+   Página "Solicitar unirse como centro" (/solicitar-centro)
+   Todas las clases llevan el prefijo "solicitud-" para no chocar con otras
+   páginas. Colores desde theme.css (--color-primario, etc.).
+   ===================================================================== */
+@import './theme.css';
+
+.solicitud-pagina {
+  --solicitud-fondo: #f7f8fa;
+  --solicitud-error: #c9302c;
+  --solicitud-halo: 0 0 0 3px rgba(15, 143, 128, 0.15);
+
+  display: flex;
+  min-height: 100vh;
+  background: var(--solicitud-fondo);
+  font-family: "Inter", system-ui, sans-serif;
+  color: var(--color-terciario-texto);
+}
+
+/* ---------------------------------------------------------------------
+   Panel izquierdo de marca
+   --------------------------------------------------------------------- */
+.solicitud-marca {
+  position: sticky;
+  top: 0;
+  flex: 0 0 42%;
+  height: 100vh;
+  background-size: cover;
+  background-position: 30% center;
+  color: #ffffff;
+  overflow: hidden;
+}
+
+.solicitud-marca-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(18, 24, 31, 0.55) 0%, rgba(18, 24, 31, 0.35) 35%, rgba(15, 143, 128, 0.92) 100%);
+}
+
+.solicitud-marca-contenido {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  height: 100%;
+  padding: 32px 48px 40px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.solicitud-volver {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(18, 24, 31, 0.25);
+  backdrop-filter: blur(6px);
+  color: #ffffff;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.solicitud-volver:hover {
+  background: rgba(18, 24, 31, 0.45);
+}
+
+.solicitud-marca-hero {
+  margin-top: auto;
+}
+
+.solicitud-eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.solicitud-titular {
+  margin: 0 0 12px;
+  font-size: clamp(30px, 3.2vw, 42px);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.solicitud-bajada {
+  margin: 0;
+  max-width: 440px;
+  font-size: 15.5px;
+  line-height: 1.55;
+  opacity: 0.92;
+}
+
+.solicitud-beneficios {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.solicitud-beneficio {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 14.5px;
+}
+
+.solicitud-beneficio strong,
+.solicitud-proceso-paso strong {
+  display: block;
+  font-weight: 600;
+}
+
+.solicitud-beneficio small,
+.solicitud-proceso-paso small {
+  display: block;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.solicitud-beneficio-icono {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(6px);
+}
+
+.solicitud-proceso {
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  background: rgba(18, 24, 31, 0.22);
+  backdrop-filter: blur(8px);
+}
+
+.solicitud-proceso-titulo {
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.solicitud-proceso-lista {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* línea vertical que une los pasos */
+.solicitud-proceso-lista::before {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 16px;
+  bottom: 16px;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.solicitud-proceso-paso {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.solicitud-proceso-icono {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--color-primario);
+}
+
+/* ---------------------------------------------------------------------
+   Columna del formulario
+   --------------------------------------------------------------------- */
+.solicitud-principal {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  padding: 48px 32px 64px;
+}
+
+.solicitud-columna {
+  width: 100%;
+  max-width: 580px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.solicitud-encabezado {
+  text-align: left;
+  scroll-margin-top: 24px;          /* aire arriba al volver aquí al cambiar de paso */
+}
+
+.solicitud-titulo {
+  margin: 0 0 6px;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.solicitud-subtitulo {
+  margin: 0;
+  font-size: 15px;
+  color: var(--color-terciario-texto-muted);
+}
+
+/* ---- Indicador de pasos ---- */
+.solicitud-pasos {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.solicitud-paso {
+  position: relative;
+  flex: 1;
+}
+
+/* línea entre pasos */
+.solicitud-paso:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: calc(50% + 22px);
+  right: calc(-50% + 22px);
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-terciario-borde);
+}
+
+.solicitud-paso--completado:not(:last-child)::after {
+  background: var(--color-primario);
+}
+
+.solicitud-paso-boton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: var(--color-terciario-texto-muted);
+  cursor: default;
+}
+
+.solicitud-paso--completado .solicitud-paso-boton {
+  cursor: pointer;
+}
+
+.solicitud-paso-numero {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--color-terciario-borde);
+  border-radius: 50%;
+  background: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.solicitud-paso-titulo {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.solicitud-paso--actual .solicitud-paso-numero {
+  border-color: var(--color-primario);
+  background: var(--color-primario);
+  color: #ffffff;
+  box-shadow: var(--solicitud-halo);
+}
+
+.solicitud-paso--actual .solicitud-paso-titulo {
+  color: var(--color-terciario-texto);
+}
+
+.solicitud-paso--completado .solicitud-paso-numero {
+  border-color: var(--color-primario);
+  background: var(--color-secundario);
+  color: var(--color-primario);
+}
+
+.solicitud-paso--completado .solicitud-paso-boton:hover .solicitud-paso-titulo {
+  color: var(--color-primario);
+}
+
+/* ---- Tarjeta del formulario ---- */
+.solicitud-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 28px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(18, 24, 31, 0.04), 0 8px 24px rgba(18, 24, 31, 0.05);
+  animation: solicitud-aparecer 0.25s ease-out;
+}
+
+.solicitud-tarjeta-titulo {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.solicitud-grilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 16px;
+}
+
+.solicitud-col-completa {
+  grid-column: 1 / -1;
+}
+
+/* ---- Campos ---- */
+.solicitud-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.solicitud-etiqueta {
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-terciario-texto);
+}
+
+.solicitud-requerido {
+  margin-left: 3px;
+  color: var(--solicitud-error);
+}
+
+.solicitud-opcional {
+  margin-left: 6px;
+  font-weight: 400;
+  color: var(--color-terciario-texto-muted);
+}
+
+.solicitud-input {
+  display: flex;
+  align-items: stretch;
+  min-height: 44px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 10px;
+  background: #ffffff;
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.solicitud-input:focus-within {
+  border-color: var(--color-primario);
+  box-shadow: var(--solicitud-halo);
+}
+
+.solicitud-prefijo {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-right: 1px solid var(--color-terciario-borde);
+  background: var(--solicitud-fondo);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-terciario-texto-muted);
+}
+
+.solicitud-control {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 14.5px;
+  color: var(--color-terciario-texto);
+  box-sizing: border-box;
+}
+
+.solicitud-control::placeholder {
+  color: #9aa1ab;
+}
+
+.solicitud-control:focus {
+  outline: none;
+}
+
+textarea.solicitud-control {
+  min-height: 104px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 10px;
+  line-height: 1.5;
+  resize: vertical;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+textarea.solicitud-control:focus {
+  border-color: var(--color-primario);
+  box-shadow: var(--solicitud-halo);
+}
+
+/* Error: solo después de tocar el campo o intentar avanzar */
+.solicitud-campo--error .solicitud-input,
+.solicitud-campo--error textarea.solicitud-control {
+  border-color: var(--solicitud-error);
+}
+
+.solicitud-campo--error .solicitud-input:focus-within {
+  box-shadow: 0 0 0 3px rgba(201, 48, 44, 0.15);
+}
+
+.solicitud-error {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--solicitud-error);
+}
+
+/* el contador de caracteres sobre fondo blanco */
+.solicitud-campo span[aria-live] {
+  color: var(--color-terciario-texto-muted);
+}
+
+/* ---- Chips ---- */
+.solicitud-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.solicitud-chip {
+  padding: 8px 14px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 999px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-terciario-texto);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.solicitud-chip:hover {
+  border-color: var(--color-primario);
+}
+
+.solicitud-chip--activo {
+  border-color: var(--color-primario);
+  background: var(--color-secundario);
+  color: var(--color-primario);
+  font-weight: 600;
+}
+
+.solicitud-campo--error .solicitud-chip:not(.solicitud-chip--activo) {
+  border-color: rgba(201, 48, 44, 0.5);
+}
+
+/* ---- Paso "Revisar" ---- */
+.solicitud-revisar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.solicitud-resumen {
+  padding: 16px 18px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 12px;
+  background: var(--solicitud-fondo);
+}
+
+.solicitud-resumen-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.solicitud-resumen-cabecera h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.solicitud-resumen-filas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+.solicitud-resumen-fila {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.solicitud-resumen-fila dt {
+  color: var(--color-terciario-texto-muted);
+}
+
+.solicitud-resumen-fila dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.solicitud-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-primario);
+  cursor: pointer;
+}
+
+.solicitud-link:hover {
+  background: var(--color-secundario);
+}
+
+.solicitud-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.45;
+  cursor: pointer;
+}
+
+.solicitud-check input {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  accent-color: var(--color-primario);
+}
+
+.solicitud-alerta {
+  padding: 12px 14px;
+  border: 1px solid rgba(201, 48, 44, 0.3);
+  border-radius: 10px;
+  background: #fdf1f0;
+  font-size: 14px;
+  color: #9b2420;
+}
+
+/* ---- Botones ---- */
+.solicitud-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 6px;
+}
+
+.solicitud-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.solicitud-btn:focus-visible,
+.solicitud-chip:focus-visible,
+.solicitud-link:focus-visible,
+.solicitud-volver:focus-visible,
+.solicitud-paso-boton:focus-visible {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 2px;
+}
+
+.solicitud-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.solicitud-btn--primario {
+  border: 1px solid var(--color-primario);
+  background: var(--color-primario);
+  color: #ffffff;
+  min-width: 170px;
+}
+
+.solicitud-btn--primario:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.solicitud-btn--secundario {
+  border: 1px solid var(--color-terciario-borde);
+  background: #ffffff;
+  color: var(--color-terciario-texto);
+}
+
+.solicitud-btn--secundario:hover:not(:disabled) {
+  border-color: var(--color-terciario-texto-muted);
+}
+
+.solicitud-acciones .solicitud-btn--secundario {
+  margin-right: auto;
+}
+
+/* ---- Preguntas frecuentes ---- */
+.solicitud-faq-titulo {
+  margin: 8px 0 6px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.solicitud-faq-item {
+  border-bottom: 1px solid var(--color-terciario-borde);
+}
+
+.solicitud-faq-item summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 2px;
+  font-size: 15px;
+  font-weight: 500;
+  list-style: none;
+  cursor: pointer;
+}
+
+.solicitud-faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.solicitud-faq-item summary:hover {
+  color: var(--color-primario);
+}
+
+.solicitud-faq-flecha {
+  flex-shrink: 0;
+  color: var(--color-terciario-texto-muted);
+  transition: transform 0.2s;
+}
+
+.solicitud-faq-item[open] .solicitud-faq-flecha {
+  transform: rotate(180deg);
+}
+
+.solicitud-faq-item p {
+  margin: 0 2px 16px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--color-terciario-texto-muted);
+}
+
+/* ---- Estado de éxito ---- */
+.solicitud-exito {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 6vh;
+  padding: 40px 32px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 16px;
+  background: #ffffff;
+  text-align: center;
+  animation: solicitud-aparecer 0.3s ease-out;
+}
+
+.solicitud-exito-icono {
+  display: grid;
+  place-items: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--color-secundario);
+  color: var(--color-primario);
+}
+
+.solicitud-exito-titulo {
+  margin: 4px 0 0;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.solicitud-exito-texto {
+  margin: 0;
+  font-size: 15.5px;
+  color: var(--color-terciario-texto-muted);
+}
+
+.solicitud-exito-texto strong {
+  color: var(--color-terciario-texto);
+}
+
+.solicitud-exito-pasos {
+  width: 100%;
+  max-width: 360px;
+  margin: 10px 0 8px;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: var(--solicitud-fondo);
+  text-align: left;
+}
+
+.solicitud-exito-pasos h3 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-terciario-texto-muted);
+}
+
+.solicitud-exito-pasos ol {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.solicitud-exito-pasos li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.solicitud-exito-pasos small {
+  display: block;
+  color: var(--color-terciario-texto-muted);
+}
+
+.solicitud-exito-marca {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 50%;
+  background: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-terciario-texto-muted);
+}
+
+.solicitud-exito-paso--hecho .solicitud-exito-marca {
+  border-color: var(--color-primario);
+  background: var(--color-primario);
+  color: #ffffff;
+}
+
+@keyframes solicitud-aparecer {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .solicitud-tarjeta,
+  .solicitud-exito {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Tablet y celular: el panel de marca pasa a ser un encabezado compacto
+   --------------------------------------------------------------------- */
+@media (max-width: 960px) {
+  .solicitud-pagina {
+    flex-direction: column;
+  }
+
+  .solicitud-marca {
+    position: relative;
+    flex: none;
+    height: auto;
+  }
+
+  .solicitud-marca-contenido {
+    gap: 20px;
+    padding: 20px 20px 28px;
+    overflow: visible;
+  }
+
+  .solicitud-marca-hero {
+    margin-top: 24px;
+  }
+
+  .solicitud-proceso {
+    display: none;
+  }
+
+  .solicitud-beneficios {
+    flex-direction: row;
+    gap: 12px;
+    margin: 0 -20px;
+    padding: 0 20px 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .solicitud-beneficio {
+    flex: 0 0 auto;
+    max-width: 230px;
+    padding: 10px 14px 10px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    background: rgba(18, 24, 31, 0.25);
+    font-size: 13.5px;
+  }
+
+  .solicitud-beneficio small {
+    display: none;
+  }
+
+  .solicitud-beneficio-icono {
+    width: 34px;
+    height: 34px;
+  }
+
+  .solicitud-principal {
+    padding: 28px 16px 48px;
+  }
+}
+
+@media (max-width: 560px) {
+  .solicitud-tarjeta {
+    padding: 20px 16px;
+  }
+
+  .solicitud-grilla {
+    grid-template-columns: 1fr;
+  }
+
+  .solicitud-paso-titulo {
+    font-size: 12px;
+  }
+
+  .solicitud-resumen-fila {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .solicitud-acciones {
+    flex-direction: column-reverse;
+  }
+
+  .solicitud-btn,
+  .solicitud-acciones .solicitud-btn--secundario {
+    width: 100%;
+    margin-right: 0;
+  }
+}

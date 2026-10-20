@@ -1,14 +1,10 @@
-import { useState } from "react";
-import {
-  Mail,
-  MessageCircle,
-  MapPin,
-  User,
-  PawPrint,
-  Megaphone,
-  ChevronDown,
-} from "lucide-react";
-import { Colors } from "../../constants";
+import { useState, type FormEvent } from "react";
+import { Mail, MessageCircle, MapPin, ChevronDown } from "lucide-react";
+import { ASUNTOS_CONTACTO, Colors, CONTACTO_VACIO, LIMITES_CONTACTO, OTRAS_FORMAS_CONTACTO, TEXTOS_CONTACTO } from "../../constants";
+import { enviarMensajeContacto } from "../../Api/postInfo";
+import { useAccion } from "../../hooks/useAccion";
+import { validarContacto } from "../../lib/validacionContacto";
+import type { DatosContacto } from "../../interfaces";
 import "../../css/Contacto.css";
 import { usePreguntasFrecuentes } from "../../hooks/usePreguntasFrecuentes";
 
@@ -25,43 +21,34 @@ const temaVars = {
   "--landing-borde": colors.borde,
 } as React.CSSProperties;
 
-const otrasFormas = [
-  {
-    titulo: "Soporte para dueños",
-    descripcion: "¿Tienes dudas sobre tu mascota o tu cuenta?",
-    icono: User,
-    link: "soporte@aurapet.com",
-  },
-  {
-    titulo: "Soporte para veterinarias",
-    descripcion: "Ayuda para centros y profesionales afiliados",
-    icono: PawPrint,
-    link: "veterinarias@aurapet.com",
-  },
-  {
-    titulo: "Prensa y alianzas",
-    descripcion: "Para medios y posibles socios",
-    icono: Megaphone,
-    link: "prensa@aurapet.com",
-  },
-];
-
 export const ContactoScreen = () => {
-  const [formulario, setFormulario] = useState({
-    nombre: "",
-    correo: "",
-    asunto: "Soporte técnico",
-    mensaje: "",
-  });
+  const [formulario, setFormulario] = useState<DatosContacto>(CONTACTO_VACIO);
+  const [errorValidacion, setErrorValidacion] = useState<string | null>(null);
+  const [enviado, setEnviado] = useState(false);
+  const { ejecutar, ocupado, error } = useAccion();
   const [faqAbierta, setFaqAbierta] = useState<number | null>(null);
   const { preguntas: preguntasFrecuentes } = usePreguntasFrecuentes();
 
-  const handleEnviar = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: conectar con backend real cuando exista. Por ahora solo mock.
-    console.log("formulario de contacto:", formulario);
-    setFormulario({ nombre: "", correo: "", asunto: "Soporte técnico", mensaje: "" });
+  const cambiar = (cambios: Partial<DatosContacto>) => {
+    setFormulario((f) => ({ ...f, ...cambios }));
+    setEnviado(false);
+    setErrorValidacion(null);
   };
+
+  // Se guarda en mensajes_contacto y le llega al superadmin (sección "Mensajes")
+  const handleEnviar = async (e: FormEvent) => {
+    e.preventDefault();
+    const problema = validarContacto(formulario);
+    setErrorValidacion(problema);
+    if (problema || ocupado) return;
+    const ok = await ejecutar(() => enviarMensajeContacto(formulario), "No pudimos enviar tu mensaje.");
+    if (ok) {
+      setFormulario(CONTACTO_VACIO);
+      setEnviado(true);
+    }
+  };
+
+  const mensajeError = errorValidacion ?? error;
 
   return (
     <div className="contacto-page" style={temaVars}>
@@ -81,7 +68,10 @@ export const ContactoScreen = () => {
             type="text"
             placeholder="Nombre"
             value={formulario.nombre}
-            onChange={(e) => setFormulario({ ...formulario, nombre: e.target.value })}
+            onChange={(e) => cambiar({ nombre: e.target.value })}
+            maxLength={LIMITES_CONTACTO.nombreMax}
+            autoComplete="name"
+            required
           />
 
           <label className="contacto-label" htmlFor="contacto-correo">Correo electrónico</label>
@@ -90,19 +80,19 @@ export const ContactoScreen = () => {
             type="email"
             placeholder="Correo electrónico"
             value={formulario.correo}
-            onChange={(e) => setFormulario({ ...formulario, correo: e.target.value })}
+            onChange={(e) => cambiar({ correo: e.target.value })}
+            maxLength={LIMITES_CONTACTO.correoMax}
+            autoComplete="email"
+            required
           />
 
           <label className="contacto-label" htmlFor="contacto-asunto">Asunto</label>
           <select
             id="contacto-asunto"
             value={formulario.asunto}
-            onChange={(e) => setFormulario({ ...formulario, asunto: e.target.value })}
+            onChange={(e) => cambiar({ asunto: e.target.value })}
           >
-            <option>Soporte técnico</option>
-            <option>Para dueños</option>
-            <option>Para veterinarias</option>
-            <option>Otro</option>
+            {ASUNTOS_CONTACTO.map((a) => <option key={a}>{a}</option>)}
           </select>
 
           <label className="contacto-label" htmlFor="contacto-mensaje">Mensaje</label>
@@ -110,10 +100,17 @@ export const ContactoScreen = () => {
             id="contacto-mensaje"
             placeholder="Mensaje"
             value={formulario.mensaje}
-            onChange={(e) => setFormulario({ ...formulario, mensaje: e.target.value })}
+            onChange={(e) => cambiar({ mensaje: e.target.value })}
+            maxLength={LIMITES_CONTACTO.mensajeMax}
+            required
           />
 
-          <button type="submit" className="landing-btn-primario">Enviar mensaje</button>
+          {mensajeError && <p className="contacto-estado contacto-estado--error" role="alert">{mensajeError}</p>}
+          {enviado && <p className="contacto-estado contacto-estado--ok" role="status">{TEXTOS_CONTACTO.enviado}</p>}
+
+          <button type="submit" className="landing-btn-primario" disabled={ocupado}>
+            {ocupado ? TEXTOS_CONTACTO.enviando : TEXTOS_CONTACTO.enviar}
+          </button>
         </form>
 
         <div className="contacto-info">
@@ -154,7 +151,7 @@ export const ContactoScreen = () => {
       <section className="contacto-otras">
         <h2>otras formas de contacto</h2>
         <div className="contacto-otras-grid">
-          {otrasFormas.map((item) => {
+          {OTRAS_FORMAS_CONTACTO.map((item) => {
             const Icono = item.icono;
             return (
               <div className="contacto-otras-card" key={item.titulo}>
@@ -163,7 +160,7 @@ export const ContactoScreen = () => {
                 </div>
                 <h3>{item.titulo}</h3>
                 <p>{item.descripcion}</p>
-                <a href="#">{item.link}</a>
+                <a href={`mailto:${item.correo}`}>{item.correo}</a>
               </div>
             );
           })}
@@ -179,13 +176,7 @@ export const ContactoScreen = () => {
               onClick={() => setFaqAbierta(faqAbierta === i ? null : i)}
             >
               {item.pregunta}
-              <ChevronDown
-                size={16}
-                style={{
-                  transform: faqAbierta === i ? "rotate(180deg)" : "rotate(0deg)",
-                  transition: "transform 0.2s",
-                }}
-              />
+              <ChevronDown size={16} className={`contacto-faq-flecha ${faqAbierta === i ? "contacto-faq-flecha--abierta" : ""}`} />
             </button>
             {faqAbierta === i && <p className="contacto-faq-respuesta">{item.respuesta}</p>}
           </div>

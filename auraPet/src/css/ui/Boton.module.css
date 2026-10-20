@@ -1,0 +1,55 @@
+/* Botón genérico (components/ui/Boton.tsx), pensado para modales oscuros */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px 16px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+}
+
+.boton:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.boton:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.primario {
+  background: #0f8f80;
+  color: #ffffff;
+}
+
+.primario:hover:not(:disabled) {
+  background: #0c7569;
+}
+
+.secundario {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #f1f3f6;
+}
+
+.secundario:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.peligro {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.peligro:hover:not(:disabled) {
+  background: #b91c1c;
+}

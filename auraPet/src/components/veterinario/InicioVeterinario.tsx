@@ -24,12 +24,12 @@ const SIN_DATOS: InicioVeterinarioDatos = {
 
 // Pantalla de inicio del veterinario: pide los datos y arma las piezas.
 // Cada pieza (ProximaCita, AgendaHoy, ...) solo recibe props y dibuja.
-export const InicioVeterinario = ({ veterinarioId, nombre, onRecetar }: InicioVeterinarioProps) => {
+export const InicioVeterinario = ({ veterinarioId, nombre, onRecetar, onVerPorConfirmar, recargaExterna = 0 }: InicioVeterinarioProps) => {
   const [recarga, setRecarga] = useState(0);
   const { datos = SIN_DATOS, error } = useConsulta(
     // -1 = todavía no se sabe el id de veterinario: no se consulta nada
     () => (veterinarioId > 0 ? getInicioVeterinario(veterinarioId) : Promise.resolve(SIN_DATOS)),
-    [veterinarioId, recarga]
+    [veterinarioId, recarga, recargaExterna]
   );
   const [ocupado, setOcupado] = useState(false);
   const [errorAccion, setErrorAccion] = useState<string | null>(null);
@@ -79,7 +79,7 @@ export const InicioVeterinario = ({ veterinarioId, nombre, onRecetar }: InicioVe
           progreso={citasHoy.length ? atendidas / citasHoy.length : 0}
         />
         <Indicador etiqueta="Urgentes" valor={urgentes} tono={urgentes > 0 ? "alerta" : "normal"} />
-        <Indicador etiqueta="Por confirmar" valor={datos.porConfirmar} />
+        <Indicador etiqueta="Por confirmar" valor={datos.porConfirmar} onClick={onVerPorConfirmar} />
       </div>
 
       <div className={styles.columnas}>

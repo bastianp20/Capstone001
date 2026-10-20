@@ -1,13 +1,13 @@
-import type { ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 
-export type TipoSolicitud = "veterinario" | "centro";
+export type TipoSolicitud = "veterinario" | "centro" | "solicitud_centro";  // solicitud_centro = pidió unirse desde /solicitar-centro
 export type UrgenciaCita = "baja" | "media" | "alta" | "critica";
 export type EstadoCita = "pendiente" | "confirmada" | "en_curso" | "completada" | "cancelada";
 export type Rol = "dueno" | "veterinario" | "centro" | "superadmin";
 export type EspecieMascota = "perro" | "gato" | "ave" | "conejo" | "otro";
 export type VistaHome = "landing" | "como-funciona" | "veterinarias" | "duenos" | "nosotros" | "contacto";
-export type ModoLogin = 'ingresar' | 'crear';
+export type ModoLogin = 'ingresar' | 'crear' | 'recuperar';
 
 
 export interface SolicitudPendiente {
@@ -15,6 +15,7 @@ export interface SolicitudPendiente {
   nombre: string;
   tipo: TipoSolicitud;
   fechaRegistro: string;
+  detalle?: string;  // línea extra bajo el nombre (p. ej. especialidad y centro del veterinario)
 }
 
 export interface CitaResumen {
@@ -26,12 +27,26 @@ export interface CitaResumen {
   fechaHora: string; // ya viene formateada para mostrar ("dd/mm · HH:mm"), a diferencia de Cita.fechaHora que es la fecha cruda en number
   estado: EstadoCita;
   urgencia: UrgenciaCita;
+  motivo?: string;
+  esPrueba?: boolean;                 // la cita es de un centro de pruebas
 }
 
 export interface RechazarModalProps {
-  nombreSolicitud: string;
+  nombreSolicitud: string;            // detalle bajo el título, p. ej. "Karlota · 20/10 · 09:00"
   onCancelar: () => void;
   onConfirmar: (razon: string) => void;
+  titulo?: string;                    // por defecto TEXTOS_RECHAZO.titulo
+  descripcion?: string;               // por defecto TEXTOS_RECHAZO.descripcion
+  ocupado?: boolean;                  // true mientras se guarda: bloquea el modal y muestra "Rechazando…"
+}
+
+export interface SpinnerProps {
+  tamano?: number;                    // px, por defecto 16
+}
+
+export interface ContadorCaracteresProps {
+  actual: number;
+  maximo: number;
 }
 
 export interface KpiCardProps {
@@ -40,6 +55,7 @@ export interface KpiCardProps {
   value: number | string;
   hint?: ReactNode;         // línea de detalle bajo el número
   cargando?: boolean;       // mientras llegan los datos se muestra "–"
+  onClick?: () => void;     // si viene, la tarjeta se puede apretar
 }
 
 // Números reales del panel de superadmin (ver getResumenSuperadmin)
@@ -160,11 +176,9 @@ export interface MedicamentoReceta {
 
 export interface NuevaReceta {
   mascotaId: number;
-  veterinarioId: number;
-  fecha: number; // YYYYMMDD, se genera al guardar — mismo formato que el resto del mock
   medicamentos: MedicamentoReceta[];
   indicaciones: string;
-  proximoControl?: string;
+  proximoControl?: string;            // "2026-10-26"
 }
 export interface RecetaModalProps {
   veterinarioId: number;
@@ -172,9 +186,7 @@ export interface RecetaModalProps {
   nombreVeterinario?: string;     // para el subtítulo: "Dr. Camilo Rojas · Clínica VetSur · 13/10/2026"
   centro?: string;
   onCerrar: () => void;
-  // El guardado real (Supabase) se define después; por ahora el padre
-  // decide qué hacer con la receta ya armada (loguearla, mostrarla, etc.).
-  onGuardar: (receta: NuevaReceta) => void;
+  onGuardada?: () => void;        // avisa que se guardó (para recargar lo que corresponda)
 }
 export interface CitaProximaDueno {
   id: number;
@@ -188,6 +200,7 @@ export interface CitaProximaDueno {
   motivo: string;
   estado: EstadoCita;
   urgencia: UrgenciaCita;
+  rechazo?: { motivo: string };   // solo si el veterinario la rechazó
 }
 
 export interface HistorialRecienteItem {
@@ -219,6 +232,7 @@ export interface DatosRegistro {
   password: string;
   telefono?: string;
   rol: "dueno" | "veterinario"; // nadie puede registrarse como superadmin
+  veterinario?: DatosLaboralesVeterinario; // solo si rol = "veterinario"
 }
 
 export interface AuthContextValue {
@@ -228,11 +242,28 @@ export interface AuthContextValue {
   registrar: (datos: DatosRegistro) => Promise<{ error?: string; requiereConfirmacion?: boolean }>;
   logout: () => Promise<void>;
   recargarPerfil: () => void; // vuelve a leer el perfil (después de editarlo)
+  // Recuperar contraseña: manda el correo con el enlace (null = ok; si no, el error)
+  recuperarPassword: (email: string) => Promise<string | null>;
+  // Guarda la nueva contraseña de la sesión actual (la del enlace del correo)
+  cambiarPassword: (nueva: string) => Promise<string | null>;
+  enRecuperacion: boolean;     // se entró desde el enlace "restablecer contraseña"
+  terminarRecuperacion: () => void;
 }
 
 export interface ModalPacientesProps {
   veterinarioId: number;
   onCerrar: () => void;
+  onRecetar?: (mascotaId: number) => void;   // "Recetar" desde la ficha del paciente
+}
+
+// Pestañas del modal de agenda del veterinario
+export type PestanaAgenda = "por_confirmar" | "agenda";
+
+export interface ModalAgendaProps {
+  veterinarioId: number;
+  pestanaInicial?: PestanaAgenda;     // desde "Por confirmar" se abre directo en las solicitudes
+  onCerrar: () => void;
+  onCambio?: () => void;              // avisa que se confirmó/rechazó algo (para recargar el inicio)
 }
 
 export interface ConocenosModalProps {
@@ -310,9 +341,13 @@ export interface DatosNuevoProfesional {
   nombre: string;
   correo: string;
   telefono: string;          // "56912345678" o "" si no hay
+  password: string;           // la elige el superadmin (mín. 6 caracteres)
   numeroColegiado: string;
   especialidadId: number | null;
-  centroId: number;
+  especialidadOtra: string;   // "" si no tiene o está en el catálogo
+  centroId: number | null;    // null = independiente o centro que aún no está en AuraPet
+  centroMencionado: string;   // centro que aún no está en AuraPet ("" si no aplica)
+  centroMencionadoComuna: string;
   esAdminCentro: boolean;
   esPrueba: boolean;
 }
@@ -385,6 +420,8 @@ export interface VeterinarioAsignaciones {
   estado: "pendiente" | "aprobado" | "rechazado";
   esPrueba: boolean;          // cuenta de prueba: solo se asigna a centros de prueba
   centros: CentroAsignado[];
+  centroSolicitado: string | null;   // centro de AuraPet que pidió al registrarse (se asigna al aprobar)
+  centroMencionado: string | null;   // centro que aún no está en AuraPet ("Nombre, comuna")
 }
 
 // =====================================================================
@@ -425,6 +462,7 @@ export interface MiembroEquipo {
 
 export interface CitaCentro {
   id: number;
+  fechaIso: string;                // timestamptz tal cual (para filtrar por día/mes)
   fechaHora: string;               // ya formateada: "10/09 · 10:30"
   mascota: string;
   dueno: string;
@@ -579,6 +617,8 @@ export interface InicioVeterinarioProps {
   veterinarioId: number;              // -1 mientras carga
   nombre: string;
   onRecetar: (mascotaId: number) => void;
+  onVerPorConfirmar?: () => void;     // abre la agenda en las solicitudes por confirmar
+  recargaExterna?: number;            // cambia cuando otra pantalla (la agenda) modificó citas
 }
 
 export interface ProximaCitaProps {
@@ -616,6 +656,7 @@ export interface IndicadorProps {
   valor: ReactNode;
   tono?: "normal" | "alerta";         // alerta = número en rojo
   progreso?: number;                  // 0 a 1: muestra una barrita debajo
+  onClick?: () => void;               // si viene, el indicador se puede apretar
 }
 
 export interface EstadoVacioProps {
@@ -848,4 +889,976 @@ export interface EditarCentroModalProps {
   centro: CentroListado;
   onClose: () => void;
   onGuardado: () => void;
+}
+
+// =====================================================================
+// FICHA DEL PACIENTE (veterinario) — ver migración 19
+// =====================================================================
+export type SexoMascota = "macho" | "hembra";
+
+// Datos clínicos que el veterinario tratante puede actualizar
+export interface DatosClinicosPaciente {
+  pesoKg: number | null;
+  alergias: string | null;
+  condicionesCronicas: string | null;
+  esterilizado: boolean;
+  microchip: string | null;
+}
+
+// Un registro del historial tal como lo muestra la ficha
+export interface RegistroFicha {
+  id: number;
+  fecha: string;                      // "20 dic 2025"
+  tipo: TipoRegistro;
+  descripcion: string;
+  tratamiento: string | null;
+  proximaDosis: string | null;        // "2026-12-20" (columna date, para calcular si venció)
+  veterinario: string | null;         // quién lo registró
+  centro: string | null;
+  esMio: boolean;                     // lo registró el veterinario conectado
+}
+
+export interface FichaPaciente {
+  id: number;                         // mascotaId
+  nombre: string;
+  especie: string;
+  raza: string;
+  sexo: SexoMascota;
+  edad: number | null;                // años (null = sin fecha de nacimiento)
+  fechaNacimiento: string | null;
+  dueno: string;
+  telefonoDueno: number | null;
+  datosClinicos: DatosClinicosPaciente;
+  historial: RegistroFicha[];         // del más reciente al más antiguo
+}
+
+// Estado de una vacuna según su próxima dosis
+export type EstadoVacuna = "al_dia" | "por_vencer" | "vencida";
+
+export interface VacunaFicha {
+  registroId: number;
+  nombre: string;                     // descripción de la vacuna
+  aplicada: string;                   // "20 dic 2025"
+  proximaDosis: string;               // "20 dic 2026"
+  estado: EstadoVacuna;
+}
+
+export interface NuevoRegistroMedico {
+  mascotaId: number;
+  tipo: TipoRegistro;
+  fecha: string;                      // "2026-10-18"
+  descripcion: string;
+  tratamiento: string;                // "" = sin tratamiento
+  proximaDosis: string;               // "" = sin próxima dosis
+}
+
+// Lo que manda el formulario de datos clínicos. Los textos vacíos borran el dato.
+export interface CambiosDatosClinicos {
+  pesoKg: number | null;              // null = no cambiar
+  alergias: string;
+  condicionesCronicas: string;
+  esterilizado: boolean;
+  microchip: string;
+}
+
+// Qué muestra el modal de la ficha
+export type VistaFicha = "resumen" | "registro" | "datos" | "derivar";
+
+export interface FichaPacienteModalProps {
+  mascotaId: number;
+  onCerrar: () => void;
+  onRecetar?: (mascotaId: number) => void;
+}
+
+export interface DatoFichaProps {
+  etiqueta: string;
+  valor: ReactNode;                   // null/"" se muestra como "Sin registrar"
+}
+
+export interface AlertasClinicasProps {
+  alergias: string | null;
+  condicionesCronicas: string | null;
+}
+
+export interface ResumenPacienteProps {
+  ficha: FichaPaciente;
+}
+
+export interface EstadoVacunasProps {
+  vacunas: VacunaFicha[];
+}
+
+export interface HistorialPacienteProps {
+  registros: RegistroFicha[];
+}
+
+export interface AvisoFichaIncompletaProps {
+  faltanDatos: boolean;
+  faltaHistorial: boolean;
+  onCompletarDatos: () => void;
+  onAgregarRegistro: () => void;
+}
+
+export interface FormRegistroMedicoProps {
+  mascotaId: number;
+  onGuardado: () => void;
+  onCancelar: () => void;
+}
+
+export interface FormDatosClinicosProps {
+  mascotaId: number;
+  datos: DatosClinicosPaciente;
+  onGuardado: () => void;
+  onCancelar: () => void;
+}
+
+export type VarianteBoton = "primario" | "secundario" | "peligro";
+
+export interface BotonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variante?: VarianteBoton;           // por defecto "primario"
+  cargando?: boolean;                 // muestra Spinner y deshabilita
+  icono?: ReactNode;                  // ícono a la izquierda del texto
+}
+
+// =====================================================================
+// SOLICITAR UNIRSE COMO CENTRO (página pública) — ver migración 20
+// =====================================================================
+export type CargoResponsable = "dueno" | "director_medico" | "administrador" | "otro";
+
+export interface DatosSolicitudCentro {
+  // Paso 1: el centro
+  nombreCentro: string;
+  direccion: string;
+  comuna: string;
+  telefonoCentro: string;             // 9 dígitos, sin el +56
+  especialidadIds: number[];
+  sitioWeb: string;
+  // Paso 2: el responsable
+  nombreResponsable: string;
+  cargo: CargoResponsable | "";       // "" = todavía no elige
+  correo: string;
+  telefonoResponsable: string;        // 9 dígitos, sin el +56
+  mensaje: string;
+  // Paso 3: revisar
+  aceptaContacto: boolean;
+}
+
+export type CampoSolicitud = keyof DatosSolicitudCentro;
+export type ErroresSolicitud = Partial<Record<CampoSolicitud, string>>;
+export type PasoSolicitud = 0 | 1 | 2;  // Tu centro · Responsable · Revisar
+
+export interface PasoWizard {
+  titulo: string;
+  campos: CampoSolicitud[];           // lo que se valida al apretar "Continuar"
+}
+
+export interface EspecialidadOpcion {
+  id: number;
+  nombre: string;
+}
+
+export interface OpcionChip<T extends string | number> {
+  valor: T;
+  texto: string;
+}
+
+export interface ItemConIcono {
+  icono: LucideIcon;
+  titulo: string;
+  detalle?: string;
+}
+
+export interface PreguntaRespuesta {
+  pregunta: string;
+  respuesta: string;
+}
+
+// Lo que expone useWizardSolicitud a la vista
+export interface WizardSolicitud {
+  datos: DatosSolicitudCentro;
+  paso: PasoSolicitud;
+  errores: ErroresSolicitud;          // solo los visibles (campos tocados o paso intentado)
+  actualizar: <C extends CampoSolicitud>(campo: C, valor: DatosSolicitudCentro[C]) => void;
+  marcarTocado: (campo: CampoSolicitud) => void;
+  avanzar: () => CampoSolicitud | null;   // devuelve el primer campo con error (para darle foco) o null
+  retroceder: () => void;
+  irAPaso: (paso: PasoSolicitud) => void;
+}
+
+export interface SolicitarCentroVistaProps {
+  especialidades: EspecialidadOpcion[];
+  enviando: boolean;
+  error: string | null;               // error del servidor
+  enviadoA: string | null;            // correo; si viene, se muestra el estado de éxito
+  onEnviar: (datos: DatosSolicitudCentro) => void;
+  onVolverInicio: () => void;
+}
+
+export interface PanelMarcaSolicitudProps {
+  imagen: string;
+  onVolverInicio: () => void;
+}
+
+export interface IndicadorPasosProps {
+  pasos: PasoWizard[];
+  actual: number;
+  onIrAPaso: (indice: number) => void;   // solo deja volver a pasos ya completados
+}
+
+export interface CampoFormularioProps {
+  campo: CampoSolicitud;
+  etiqueta: string;
+  valor: string;
+  error?: string;
+  opcional?: boolean;
+  placeholder?: string;
+  prefijo?: string;                   // p. ej. "+56", fijo a la izquierda del input
+  tipo?: "text" | "email" | "tel" | "url";
+  multilinea?: boolean;
+  maxLength?: number;
+  sugerencias?: string[];             // datalist (p. ej. comunas)
+  inputMode?: "text" | "numeric" | "email" | "url" | "tel";
+  onCambiar: (valor: string) => void;
+  onSalir: () => void;
+}
+
+export interface SelectorChipsProps<T extends string | number> {
+  etiqueta: string;
+  opciones: OpcionChip<T>[];
+  seleccion: T[];                     // en selección única lleva 0 o 1 elemento
+  multiple?: boolean;
+  opcional?: boolean;
+  error?: string;
+  id: string;
+  onCambiar: (seleccion: T[]) => void;
+}
+
+export interface PasoFormularioProps {
+  wizard: WizardSolicitud;
+}
+
+export interface PasoCentroProps extends PasoFormularioProps {
+  especialidades: EspecialidadOpcion[];
+}
+
+export interface PasoRevisarProps extends PasoFormularioProps {
+  especialidades: EspecialidadOpcion[];
+  error: string | null;
+}
+
+export interface TarjetaResumenProps {
+  titulo: string;
+  filas: { etiqueta: string; valor: string }[];
+  onEditar: () => void;
+}
+
+export interface PreguntasFrecuentesSolicitudProps {
+  preguntas: PreguntaRespuesta[];
+}
+
+export interface EstadoExitoSolicitudProps {
+  correo: string;
+  onVolverInicio: () => void;
+}
+
+// Detalle de una solicitud de centro, para que el superadmin la revise
+export interface SolicitudCentroDetalle {
+  id: number;
+  nombreCentro: string;
+  direccion: string;
+  comuna: string;
+  telefonoCentro: number;
+  especialidades: string[];
+  sitioWeb: string | null;
+  nombreResponsable: string;
+  cargo: string;                      // ya traducido ("Director/a médico/a")
+  correo: string;
+  telefonoResponsable: number;
+  mensaje: string | null;
+  fecha: string;                      // "18/10/2026"
+}
+
+export interface DetalleSolicitudCentroModalProps {
+  solicitudId: number;
+  ocupado: boolean;                   // mientras se aprueba
+  error: string | null;
+  onAprobar: () => void;
+  onRechazar: () => void;
+  onCerrar: () => void;
+}
+
+// =====================================================================
+// PANEL DEL SUPERADMIN
+// =====================================================================
+export type SeccionSuperAdmin = "resumen" | "usuarios" | "centros" | "asignaciones" | "aprobaciones" | "suscripciones" | "mensajes" | "citas";
+
+export interface ItemMenuSuperAdmin {
+  seccion: SeccionSuperAdmin;
+  texto: string;
+  icono: LucideIcon;
+}
+
+export type TipoCrearSuperAdmin = "profesional" | "dueno" | "administrativo" | "superadmin" | "centro";
+
+export interface OpcionCrearSuperAdmin {
+  tipo: TipoCrearSuperAdmin;
+  texto: string;
+  icono: LucideIcon;
+}
+
+export interface AvisoEstado {
+  tipo: "ok" | "error" | "info";
+  texto: string;
+}
+
+// ---- Componentes de UI reutilizables ----
+export interface AvisoProps extends AvisoEstado {
+  onCerrar?: () => void;
+}
+
+export interface EtiquetaProps {
+  texto: string;
+  fondo: string;
+  color: string;
+}
+
+export interface TablaPanelProps {
+  titulo?: ReactNode;
+  accion?: ReactNode;                 // a la derecha del título (p. ej. "Ver todas")
+  columnas: string;                   // grid-template-columns, p. ej. "2fr 1fr 1fr"
+  encabezados: string[];
+  cargando?: boolean;
+  error?: string | null;
+  vacio: string;                      // texto cuando no hay filas
+  cantidad: number;                   // cuántas filas hay (para saber si mostrar "vacío")
+  children: ReactNode;
+}
+
+export interface FilaTablaProps {
+  columnas: string;
+  atenuada?: boolean;                 // p. ej. mientras se guarda
+  children: ReactNode;
+}
+
+export interface PaginacionProps {
+  pagina: number;                     // empieza en 1
+  porPagina: number;
+  total: number;
+  onCambiar: (pagina: number) => void;
+}
+
+// ---- Piezas del panel ----
+export interface MenuLateralSuperAdminProps {
+  seccion: SeccionSuperAdmin;
+  pendientes: number;                 // contador junto a "Aprobaciones"
+  onCambiar: (seccion: SeccionSuperAdmin) => void;
+}
+
+export interface BarraSuperiorSuperAdminProps {
+  nombre: string;
+  pendientes: number;
+  onCrear: (tipo: TipoCrearSuperAdmin) => void;
+  onNotificaciones: () => void;
+  onConfiguracion: () => void;
+}
+
+export interface MenuCrearProps {
+  onElegir: (tipo: TipoCrearSuperAdmin) => void;
+}
+
+export interface TablaSolicitudesProps {
+  solicitudes: SolicitudPendiente[];
+  cargando?: boolean;
+  titulo?: ReactNode;
+  accion?: ReactNode;
+  onAprobar: (s: SolicitudPendiente) => void;
+  onRechazar: (s: SolicitudPendiente) => void;
+  onVerDetalle: (s: SolicitudPendiente) => void;
+}
+
+export interface TablaCitasProps {
+  citas: CitaResumen[];
+  cargando?: boolean;
+  error?: string | null;
+  vacio: string;
+  titulo?: ReactNode;
+  accion?: ReactNode;
+}
+
+// Lo que expone useSolicitudesSuperAdmin (aprobar/rechazar desde cualquier sección)
+export interface SolicitudesSuperAdmin {
+  pendientes: SolicitudPendiente[];
+  cargando: boolean;
+  version: number;                    // sube cada vez que se resuelve una solicitud
+  aviso: AvisoEstado | null;
+  cerrarAviso: () => void;
+  aprobar: (s: SolicitudPendiente) => void;
+  aRechazar: SolicitudPendiente | null;
+  pedirRechazo: (s: SolicitudPendiente) => void;
+  cancelarRechazo: () => void;
+  confirmarRechazo: (razon: string) => void;
+  enDetalle: SolicitudPendiente | null;
+  abrirDetalle: (s: SolicitudPendiente) => void;
+  cerrarDetalle: () => void;
+  ocupado: boolean;
+  errorDetalle: string | null;
+}
+
+export interface ResumenSuperAdminProps {
+  solicitudes: SolicitudesSuperAdmin;
+  recarga: number;
+  onIrA: (seccion: SeccionSuperAdmin) => void;
+}
+
+export interface AprobacionesSuperAdminProps {
+  solicitudes: SolicitudesSuperAdmin;
+}
+
+// ---- Historial de aprobaciones ----
+export type DecisionSolicitud = "aprobado" | "rechazado";
+export type FiltroHistorial = "todas" | DecisionSolicitud;
+export type PestanaAprobaciones = "pendientes" | "historial";
+
+export interface SolicitudHistorial {
+  id: string;                         // "veterinario-4", "centro-2", "solicitud_centro-7"
+  tipo: TipoSolicitud;
+  nombre: string;
+  decision: DecisionSolicitud;
+  revisadoPor: string;
+  fecha: string;                      // "18/10/2026"
+  fechaISO: string;                   // para ordenar
+  motivo: string | null;
+}
+
+// ---- Citas (getAllCitas) ----
+export type RangoCitas = "proximas" | "hoy" | "pasadas" | "todas";
+
+export interface FiltrosCitas {
+  busqueda: string;
+  estado: EstadoCita | null;
+  urgencia: UrgenciaCita | null;
+  rango: RangoCitas;
+  pagina: number;                     // empieza en 1
+  porPagina: number;
+}
+
+export interface PaginaCitas {
+  citas: CitaResumen[];
+  total: number;
+}
+
+// =====================================================================
+// REGISTRO DE VETERINARIOS: dónde trabaja y especialidad (migración 23)
+// =====================================================================
+export type ModoCentroVeterinario = "independiente" | "centro_aurapet" | "centro_externo";
+
+export interface DatosLaboralesVeterinario {
+  modoCentro: ModoCentroVeterinario;
+  centroId: number | null;            // si modoCentro = "centro_aurapet"
+  centroNombre: string;               // si modoCentro = "centro_externo"
+  centroComuna: string;
+  especialidadId: number | null;      // del catálogo (además de medicina general)
+  especialidadOtra: string;           // escrita a mano si no está en el catálogo
+}
+
+export interface CentroOpcion {
+  id: number;
+  nombre: string;
+  comuna?: string;
+}
+
+export interface OpcionModoCentro {
+  valor: ModoCentroVeterinario;
+  titulo: string;
+  detalle: string;
+}
+
+export interface SelectorCentroVeterinarioProps {
+  datos: DatosLaboralesVeterinario;
+  centros: CentroOpcion[];
+  onCambiar: (cambios: Partial<DatosLaboralesVeterinario>) => void;
+  ayudaCentroAuraPet?: string;        // p. ej. "Quedará asignado cuando aprobemos tu cuenta"
+}
+
+export interface SelectorEspecialidadProps {
+  especialidades: EspecialidadOpcion[];
+  especialidadId: number | null;
+  especialidadOtra: string;
+  onCambiar: (cambios: Partial<DatosLaboralesVeterinario>) => void;
+}
+
+// Lo que necesita la barra superior del panel del veterinario
+export interface InfoVeterinario {
+  id: number | null;                  // id en la tabla veterinarios (null si la cuenta aún no tiene ficha)
+  centros: string[];                  // nombres de los centros donde atiende
+  estado: EstadoVerificacion | null;  // "pendiente" mientras el superadmin no aprueba su cuenta
+  centroSolicitado: string | null;    // centro de AuraPet que pidió (se asigna al aprobar)
+  centroMencionado: string | null;    // centro que aún no está en AuraPet
+}
+
+// =====================================================================
+// SUSCRIPCIÓN DE LOS CENTROS (migración 24)
+// =====================================================================
+export type PlanId = "inicial" | "profesional" | "gestion";
+export type EstadoSuscripcion = "prueba" | "activa" | "vencida" | "cancelada";
+export type EstadoHistorialSuscripcion = "completado" | "pendiente" | "rechazado";
+
+export interface Plan {
+  id: PlanId;
+  nombre: string;
+  precioMensual: number;              // CLP (0 = gratis)
+  limiteVeterinarios: number | null;  // null = ilimitado
+}
+
+// Una fila del comparador: qué incluye cada plan (true / false / texto como "Ilimitados")
+export interface FuncionPlan {
+  texto: string;
+  valores: Record<PlanId, boolean | string>;
+}
+
+export interface SuscripcionCentro {
+  plan: Plan;
+  estado: EstadoSuscripcion;
+  inicio: string;                     // "2026-10-18"
+  finPrueba: string | null;
+  renovacion: string | null;
+  veterinarios: number;               // uso real
+  citasMes: number;
+  planSolicitado: PlanId | null;      // solicitud de cambio en revisión
+}
+
+export interface HistorialSuscripcionItem {
+  id: number;
+  fecha: string;                      // "18/10/2026"
+  accion: string;
+  detalle: string | null;
+  estado: EstadoHistorialSuscripcion;
+}
+
+export interface SeccionSuscripcionProps {
+  centroId: number;
+}
+
+export interface HeroPlanProps {
+  suscripcion: SuscripcionCentro;
+  planMejora: Plan | null;            // a qué plan sugiere mejorar (null = ya está en el mejor)
+  onMejorar: (plan: Plan) => void;
+}
+
+export interface UsoPlanProps {
+  suscripcion: SuscripcionCentro;
+  planMejora: Plan | null;
+  onMejorar: (plan: Plan) => void;
+}
+
+export interface BarraUsoProps {
+  etiqueta: string;
+  usado: number;
+  limite: number;
+}
+
+export interface ComparadorPlanesProps {
+  planes: Plan[];
+  planActual: PlanId;
+  estadoActual: EstadoSuscripcion;
+  planSolicitado: PlanId | null;
+  onElegir: (plan: Plan) => void;
+}
+
+export interface TarjetaPlanProps {
+  plan: Plan;
+  esActual: boolean;
+  esRecomendado: boolean;
+  solicitado: boolean;                // hay una solicitud en revisión para este plan
+  onElegir: () => void;
+}
+
+export interface CambioPlanModalProps {
+  centroId: number;
+  plan: Plan;
+  onCerrar: () => void;
+  onEnviado: () => void;              // para recargar la suscripción y el historial
+}
+
+export interface AcordeonProps {
+  titulo?: string;
+  items: PreguntaRespuesta[];
+}
+
+// =====================================================================
+// DETALLE COMPLETO DE UN USUARIO (Superadmin → Usuarios → Ver detalles)
+// =====================================================================
+export interface CentroDeUsuario {
+  id: number;
+  nombre: string;
+  comuna: string;
+  esPrueba: boolean;
+}
+
+export interface MascotaDeUsuario {
+  id: number;
+  nombre: string;
+  especie: string;                    // "Perro"
+  raza: string | null;
+  sexo: SexoMascota;
+  edad: string | null;                // "3 años"
+}
+
+// Cita resumida para listas cortas (detalle de usuario y de centro)
+export interface CitaDeUsuario {
+  id: number;
+  fecha: string;                      // "10/09 · 10:30"
+  estado: EstadoCita;
+  mascota: string;
+  detalle: string;                    // línea secundaria: "Centro · Veterinario" o "Dueño · Veterinario"
+}
+
+export interface FichaProfesionalDeUsuario {
+  estado: EstadoVerificacion;
+  especialidad: string | null;
+  numeroColegiado: string | null;
+  revisadoPor: string | null;
+  revisadoEn: string | null;          // "18/10/2026"
+  motivoRechazo: string | null;
+  centroSolicitado: string | null;
+  centroMencionado: string | null;    // "Clínica X, Ñuñoa"
+}
+
+export interface DetalleUsuario {
+  cuenta: {
+    id: string;
+    nombre: string;
+    email: string;
+    rol: RolCuenta;
+    telefono: number | null;
+    esPrueba: boolean;
+    activa: boolean;
+    registro: string;                 // "18/10/2026"
+    ultimoAcceso: string | null;      // "18/10 · 19:20" (null = nunca ha entrado)
+    correoConfirmado: boolean;
+  };
+  veterinario: FichaProfesionalDeUsuario | null;
+  centrosAtiende: CentroDeUsuario[];
+  centrosAdministra: CentroDeUsuario[];
+  mascotas: MascotaDeUsuario[];
+  citas: { total: number; proximas: number; completadas: number; canceladas: number };
+  ultimasCitas: CitaDeUsuario[];
+  recetasEmitidas: number;
+}
+
+export interface DetalleUsuarioModalProps {
+  perfilId: string;
+  onCerrar: () => void;
+  onEditar: () => void;               // abre el modal de edición de la cuenta
+}
+
+export interface SeccionDetalleProps {
+  titulo: string;
+  icono?: ReactNode;
+  children: ReactNode;
+  ancha?: boolean;                    // ocupa las dos columnas
+}
+
+export interface ListaCentrosUsuarioProps {
+  centros: CentroDeUsuario[];
+  vacio: string;
+}
+
+export interface NumeroResumen {
+  texto: string;
+  valor: number;
+}
+
+export interface ResumenActividadProps {
+  numeros: NumeroResumen[];
+}
+
+export interface ListaMascotasUsuarioProps {
+  mascotas: MascotaDeUsuario[];
+}
+
+export interface ListaCitasUsuarioProps {
+  citas: CitaDeUsuario[];
+}
+
+// Lo que devuelve tal cual la función detalle_usuario (jsonb, nombres de columnas)
+export interface DetalleUsuarioCrudo {
+  cuenta: {
+    id: string; nombre: string; email: string; rol: RolCuenta; telefono: number | null;
+    es_prueba: boolean; desactivado_en: string | null; creado_en: string;
+    ultimo_acceso: string | null; correo_confirmado: boolean;
+  };
+  veterinario: {
+    estado: EstadoVerificacion; especialidad: string | null; numero_colegiado: string | null;
+    revisado_por: string | null; revisado_en: string | null; motivo_rechazo: string | null;
+    centro_solicitado: string | null; centro_mencionado: string | null; centro_mencionado_comuna: string | null;
+  } | null;
+  centros_atiende: { id: number; nombre: string; comuna: string; es_prueba: boolean }[];
+  centros_administra: { id: number; nombre: string; comuna: string; es_prueba: boolean }[];
+  mascotas: { id: number; nombre: string; especie: string; raza: string | null; sexo: SexoMascota; fecha_nacimiento: string | null }[];
+  citas: { total: number; proximas: number; completadas: number; canceladas: number };
+  ultimas_citas: { id: number; fecha_hora: string; estado: EstadoCita; mascota: string; centro: string; veterinario: string | null }[];
+  recetas_emitidas: number;
+}
+
+// =====================================================================
+// DETALLE COMPLETO DE UN CENTRO (Superadmin → Centros → Ver detalles)
+// =====================================================================
+export interface HorarioDeCentro {
+  dia: number;                        // 1 = lunes ... 7 = domingo
+  texto: string;                      // "09:00–19:00 · colación 14:00–15:00"
+}
+
+// Una persona en una lista corta (administradores, veterinarios)
+export interface PersonaDeCentro {
+  id: string;
+  nombre: string;
+  detalle: string;                    // línea secundaria (correo, especialidad...)
+  etiqueta?: EtiquetaProps;
+}
+
+export interface DetalleCentro {
+  centro: {
+    id: number;
+    nombre: string;
+    direccion: string;
+    comuna: string;
+    telefono: number | null;
+    estado: EstadoVerificacion;
+    esPrueba: boolean;
+    creado: string;                   // "18/10/2026"
+    revisadoPor: string | null;
+    revisadoEn: string | null;
+    motivoRechazo: string | null;
+  };
+  horarios: HorarioDeCentro[];
+  especialidades: string[];
+  suscripcion: {
+    plan: string;
+    precio: number;
+    estado: EstadoSuscripcion;
+    finPrueba: string | null;         // "23 oct 2026"
+    renovacion: string | null;
+    planSolicitado: string | null;
+  } | null;
+  administradores: PersonaDeCentro[];
+  veterinarios: PersonaDeCentro[];
+  citas: { total: number; hoy: number; proximas: number; completadas: number; canceladas: number; pacientes: number };
+  ultimasCitas: CitaDeUsuario[];
+  solicitudOrigen: {
+    responsable: string;
+    cargo: string;
+    correo: string;
+    telefono: number;
+    sitioWeb: string | null;
+    mensaje: string | null;
+    fecha: string;
+  } | null;
+}
+
+// Lo que devuelve tal cual la función detalle_centro (jsonb)
+export interface DetalleCentroCrudo {
+  centro: {
+    id: number; nombre: string; direccion: string; comuna: string; telefono: number | null;
+    estado: EstadoVerificacion; es_prueba: boolean; creado_en: string;
+    revisado_por: string | null; revisado_en: string | null; motivo_rechazo: string | null;
+  };
+  horarios: { dia: number; abre: string; cierra: string; inicio_colacion: string | null; fin_colacion: string | null }[];
+  especialidades: string[];
+  suscripcion: {
+    plan: string; precio: number; estado: EstadoSuscripcion;
+    fin_prueba: string | null; renovacion: string | null; plan_solicitado: string | null;
+  } | null;
+  administradores: { id: string; nombre: string; email: string; rol: RolCuenta; desde: string }[];
+  veterinarios: { id: number; nombre: string; especialidad: string | null; numero_colegiado: string | null; estado: EstadoVerificacion }[];
+  citas: DetalleCentro["citas"];
+  ultimas_citas: { id: number; fecha_hora: string; estado: EstadoCita; mascota: string; dueno: string | null; veterinario: string | null }[];
+  solicitud_origen: {
+    nombre_responsable: string; cargo: string; correo: string; telefono: number;
+    sitio_web: string | null; mensaje: string | null; creado_en: string;
+  } | null;
+}
+
+export interface DetalleCentroModalProps {
+  centroId: number;
+  onCerrar: () => void;
+  onEditar: () => void;               // abre el modal de edición del centro
+}
+
+export interface HorarioCentroListaProps {
+  horarios: HorarioDeCentro[];
+}
+
+export interface ListaPersonasCentroProps {
+  personas: PersonaDeCentro[];
+  vacio: string;
+}
+
+// =====================================================================
+// SUSCRIPCIONES (vista del superadmin) — ver migración 28
+// =====================================================================
+export type FiltroSuscripciones = "todas" | "por_atender" | "prueba" | "activa" | "vencida";
+
+export interface SuscripcionListada {
+  centroId: number;
+  centro: string;
+  comuna: string;
+  esPrueba: boolean;                  // centro de prueba (no el estado "prueba")
+  plan: string;                       // nombre del plan
+  estado: EstadoSuscripcion;          // estado efectivo (una prueba pasada ya sale "vencida")
+  vence: string | null;               // fin de prueba o próxima renovación, "23 oct 2026"
+  veterinarios: number;
+  limite: number | null;              // null = ilimitado
+  solicitud: {
+    id: number;
+    plan: string;                     // nombre del plan pedido
+    mensaje: string | null;
+    solicitante: string;
+    fecha: string;                    // "18 oct 2026"
+  } | null;
+}
+
+// =====================================================================
+// DERIVACIONES — ver migración 29
+// =====================================================================
+export type EstadoDerivacion = "pendiente" | "realizada" | "cancelada";
+export type TipoDestinoDerivacion = "veterinario" | "centro";
+export type PestanaDerivaciones = "recibidas" | "enviadas";
+
+export interface DestinoDerivacion {
+  tipo: TipoDestinoDerivacion;
+  id: number;
+  nombre: string;
+  detalle: string;                    // especialidad (veterinario) o comuna (centro)
+}
+
+export interface Derivacion {
+  id: number;
+  mascotaId: number;
+  mascota: string;
+  fecha: string;                      // "18/10/2026"
+  origen: string;                     // quién derivó
+  destino: string;
+  motivo: string;
+  estado: EstadoDerivacion;
+  resultado: string | null;
+  puedoResponder: boolean;            // soy el destino y está pendiente
+  puedoCancelar: boolean;             // la hice yo y está pendiente
+  direccion?: "recibida" | "enviada"; // solo en la vista del veterinario
+  especie?: string;
+  dueno?: string;
+}
+
+export interface NuevaDerivacion {
+  mascotaId: number;
+  destino: Pick<DestinoDerivacion, "tipo" | "id">;
+  motivo: string;
+}
+
+export interface TarjetaDerivacionProps {
+  derivacion: Derivacion;
+  mostrarMascota?: boolean;           // en listas de varias mascotas
+  onCambio?: () => void;              // tras responder/cancelar (para recargar)
+  onVerFicha?: (mascotaId: number) => void;
+}
+
+export interface DerivacionesPacienteProps {
+  mascotaId: number;
+  recarga: number;
+}
+
+export interface FormDerivacionProps {
+  mascotaId: number;
+  onGuardado: () => void;
+  onCancelar: () => void;
+}
+
+export interface DerivacionesModalProps {
+  onCerrar: () => void;
+  onRecetar?: (mascotaId: number) => void;
+}
+
+export interface DerivacionesDuenoProps {
+  derivaciones: Derivacion[];
+}
+
+// =====================================================================
+// CONTACTO (formulario público + bandeja del superadmin) — migración 30
+// =====================================================================
+export type EstadoContacto = "pendiente" | "respondido" | "cerrado";
+export type FiltroMensajes = "todos" | EstadoContacto;
+
+export interface DatosContacto {
+  nombre: string;
+  correo: string;
+  asunto: string;
+  mensaje: string;
+}
+
+export interface MensajeContacto extends DatosContacto {
+  id: number;
+  estado: EstadoContacto;
+  fecha: string;                      // "18/10/2026 14:05"
+}
+
+export interface OtraFormaContacto {
+  titulo: string;
+  descripcion: string;
+  icono: LucideIcon;
+  correo: string;
+}
+
+// =====================================================================
+// PANEL DEL CENTRO (admin del centro)
+// =====================================================================
+export type SeccionCentroAdmin = "resumen" | "agenda" | "equipo" | "centro" | "suscripcion";
+
+export interface ItemMenuCentroAdmin {
+  seccion: SeccionCentroAdmin;
+  texto: string;
+  icono: LucideIcon;
+}
+
+export interface SeccionDeCentroProps {
+  centroId: number;
+}
+
+export interface SeccionResumenCentroProps extends SeccionDeCentroProps {
+  onIrA: (seccion: SeccionCentroAdmin) => void;
+}
+
+export interface TarjetaCentroProps {
+  titulo: string;
+  accion?: ReactNode;
+  children: ReactNode;
+}
+
+export interface FormularioCentroProps {
+  centro: CentroDetalle;
+  onGuardado: () => void;
+}
+
+export interface MenuLateralCentroProps {
+  seccion: SeccionCentroAdmin;
+  onCambiar: (seccion: SeccionCentroAdmin) => void;
+  onVolver?: () => void;
+  onConfiguracion: () => void;
+}
+
+// Números del resumen (lib/centroAdmin.ts los calcula a partir de las citas)
+export interface ResumenCitasCentro {
+  hoy: number;
+  porConfirmar: number;              // pendientes desde ahora en adelante
+  mes: number;                       // del mes en curso, sin canceladas
+  proximas: CitaCentro[];            // las siguientes (no canceladas), más cercana primero
+}
+
+export interface EtiquetaCitaProps {
+  valor: EstadoCita | UrgenciaCita;   // clave de badgeStyles
+  texto: string;
+}
+
+// ---- Configuración → Privacidad y datos (migración 31) ----
+export interface SeccionPrivacidadProps {
+  onCerrarModal: () => void;
 }

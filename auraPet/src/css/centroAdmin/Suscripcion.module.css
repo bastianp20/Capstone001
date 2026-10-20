@@ -1,0 +1,371 @@
+/* Sección "Suscripción" del panel del centro y sus piezas
+   (HeroPlan, UsoPlan, BarraUso, ComparadorPlanes, TarjetaPlan) */
+@import '../theme.css';
+
+.titulo {
+  margin: 0 0 4px;
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--color-terciario-texto);
+}
+
+.subtitulo {
+  margin: 0 0 18px;
+  font-size: 13.5px;
+  color: var(--color-terciario-texto-muted);
+}
+
+.estado {
+  color: var(--color-terciario-texto-muted);
+}
+
+.columna {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 1100px;
+}
+
+.seccionTitulo,
+.tarjetaTitulo {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-terciario-texto);
+}
+
+.suave {
+  color: var(--color-terciario-texto-muted);
+}
+
+.tarjeta {
+  padding: 18px 20px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+/* ---- Hero del plan actual ---- */
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 22px 24px;
+  border: 1px solid #bfe6df;
+  border-radius: 14px;
+  background: linear-gradient(120deg, var(--color-secundario) 0%, #ffffff 70%);
+}
+
+.heroTexto {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.heroTitulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.heroTitulo h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--color-terciario-texto);
+}
+
+.heroPrecio {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-primario);
+}
+
+.heroNota {
+  font-size: 12.5px;
+  color: var(--color-terciario-texto-muted);
+}
+
+.prueba {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 460px;
+  margin-top: 6px;
+}
+
+.pruebaDia {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-terciario-texto);
+}
+
+/* ---- Barras (prueba y uso) ---- */
+.barra {
+  height: 8px;
+  border-radius: 999px;
+  background: #e8ecee;
+  overflow: hidden;
+}
+
+.barraRelleno {
+  width: var(--progreso);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-primario);
+  transition: width 0.4s ease;
+}
+
+.barraLlena .barraRelleno {
+  background: #f4a13a;
+}
+
+/* ---- Uso del plan ---- */
+.usoGrilla {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+}
+
+.uso {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.usoCabecera {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+}
+
+.usoEtiqueta {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-terciario-texto);
+}
+
+.usoValor {
+  font-weight: 600;
+  color: var(--color-terciario-texto-muted);
+}
+
+.alertaLimite {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 0;
+  font-size: 12.5px;
+  color: #8a5a00;
+}
+
+.dato {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.link {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-primario);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---- Comparador ---- */
+.comparador {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  align-items: stretch;
+}
+
+.plan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.planRecomendado {
+  border: 2px solid var(--color-primario);
+  box-shadow: 0 8px 24px rgba(15, 143, 128, 0.12);
+}
+
+.planActual {
+  background: #fafbfb;
+}
+
+.cinta {
+  position: absolute;
+  top: -11px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--color-primario);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.planCabecera h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-terciario-texto);
+}
+
+.planPrecio {
+  margin: 6px 0 2px;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-terciario-texto);
+}
+
+.planDescripcion {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-terciario-texto-muted);
+}
+
+.funciones {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  flex: 1;                          /* empuja el botón al final: tarjetas de igual alto */
+  margin: 0;
+  padding: 14px 0 0;
+  border-top: 1px solid var(--color-terciario-borde);
+  list-style: none;
+}
+
+.funciones li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--color-terciario-texto);
+}
+
+.funcionNo {
+  color: #9aa1ab !important;
+}
+
+.funcionSi {
+  flex-shrink: 0;
+  color: var(--color-primario);
+}
+
+.funcionTexto {
+  font-size: 12.5px;
+  color: var(--color-terciario-texto);
+}
+
+/* ---- Botones ---- */
+.botonPrimario,
+.botonSecundario {
+  min-height: 40px;
+  padding: 0 18px;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: filter 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.botonPrimario {
+  border: 1px solid var(--color-primario);
+  background: var(--color-primario);
+  color: #ffffff;
+}
+
+.botonPrimario:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.botonSecundario {
+  border: 1px solid var(--color-terciario-borde);
+  background: #ffffff;
+  color: var(--color-terciario-texto);
+}
+
+.botonSecundario:hover:not(:disabled) {
+  border-color: var(--color-primario);
+  color: var(--color-primario);
+}
+
+.botonPrimario:disabled,
+.botonSecundario:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.botonPrimario:focus-visible,
+.botonSecundario:focus-visible,
+.link:focus-visible {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 2px;
+}
+
+/* ---- Historial + preguntas ---- */
+.dosColumnas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+.dosColumnas > section {
+  margin-bottom: 0;
+}
+
+@media (min-width: 1400px) {
+  .dosColumnas {
+    grid-template-columns: 1.4fr 1fr;
+    align-items: start;
+  }
+}
+
+@media (max-width: 860px) {
+  .hero {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .usoGrilla,
+  .comparador {
+    grid-template-columns: 1fr;
+  }
+
+  /* En celular el plan recomendado va primero */
+  .planRecomendado {
+    order: -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barraRelleno {
+    transition: none;
+  }
+}

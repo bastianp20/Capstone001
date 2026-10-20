@@ -1,25 +1,19 @@
 import { useState } from "react";
-import { Colors, ESTADO_VERIFICACION, FILTROS_CENTROS } from "../../constants";
+import { COLUMNAS_SUPERADMIN, ESTADO_VERIFICACION, ETIQUETA_PRUEBA, FILTROS_CENTROS, PREDICADOS_FILTRO_CENTROS, TEXTOS_DETALLE_CENTRO } from "../../constants";
 import { useConsulta } from "../../hooks/useConsulta";
 import { useFiltro } from "../../hooks/useFiltro";
 import { getCentrosSuperadmin } from "../../Api/getInfo";
 import { formatFechaCorta } from "../../lib/fechas";
 import { BarraFiltros } from "../../components/ui/BarraFiltros";
+import { TablaPanel } from "../../components/ui/TablaPanel";
+import { FilaTabla } from "../../components/ui/FilaTabla";
+import { Etiqueta } from "../../components/ui/Etiqueta";
 import { ModalEditarCentro } from "../../Modal/EditarCentroModal";
+import { DetalleCentroModal } from "../../Modal/DetalleCentroModal";
 import type { CentroListado, FiltroCentros } from "../../interfaces";
+import styles from "../../css/superadmin/SeccionesSuperAdmin.module.css";
 
-const colors = Colors;
-const FONDO = "#f6f8f8";
-
-// Qué deja pasar cada chip de filtro (los textos están en FILTROS_CENTROS)
-const FILTRO_CENTROS: Record<FiltroCentros, (c: CentroListado) => boolean> = {
-  todos: () => true,
-  aprobado: (c) => c.estado === "aprobado",
-  pendiente: (c) => c.estado === "pendiente",
-  rechazado: (c) => c.estado === "rechazado",
-  real: (c) => !c.esPrueba,
-  prueba: (c) => c.esPrueba,
-};
+const COLUMNAS = COLUMNAS_SUPERADMIN.centros;
 // El buscador busca por nombre, comuna o dirección
 const camposCentro = (c: CentroListado) => [c.nombre, c.comuna, c.direccion];
 
@@ -29,23 +23,21 @@ export const ListaCentros = () => {
   const [recarga, setRecarga] = useState(0);
   const { datos: centros = [], cargando, error } = useConsulta(() => getCentrosSuperadmin(), [recarga]);
   const [centroEditando, setCentroEditando] = useState<CentroListado | null>(null);
+  // Centro abierto en "Ver detalles"
+  const [centroDetalle, setCentroDetalle] = useState<CentroListado | null>(null);
 
   // Buscador + chips (hook reutilizable)
   const { busqueda, setBusqueda, filtro, setFiltro, visibles, cantidad } = useFiltro({
     items: centros,
     camposBusqueda: camposCentro,
-    filtros: FILTRO_CENTROS,
+    filtros: PREDICADOS_FILTRO_CENTROS,
     filtroInicial: "todos" as FiltroCentros,
   });
 
-  const columnas = "1.8fr 1fr 1.1fr 0.9fr 0.8fr 0.7fr 0.9fr 0.7fr";
-
   return (
     <>
-      <h1 style={{ margin: "0 0 4px", fontSize: 21, fontWeight: 700, color: colors.text }}>Centros</h1>
-      <p style={{ margin: "0 0 18px", fontSize: 13.5, color: colors.textMuted }}>
-        Todos los centros de AuraPet. Para crear uno nuevo usa "+ Crear" → "Agregar centro".
-      </p>
+      <h1 className={styles.titulo}>Centros</h1>
+      <p className={styles.subtitulo}>Todos los centros de AuraPet. Para crear uno nuevo usa "+ Crear" → "Agregar centro".</p>
 
       <BarraFiltros
         busqueda={busqueda}
@@ -57,62 +49,45 @@ export const ListaCentros = () => {
         cantidad={cantidad}
       />
 
-      <div style={{ background: "white", border: `1px solid ${colors.border}`, borderRadius: 12, overflow: "hidden" }}>
-        <div style={{ display: "grid", gridTemplateColumns: columnas, gap: 12, padding: "10px 18px", background: FONDO, fontSize: 11.5, fontWeight: 700, color: colors.textMuted, textTransform: "uppercase" }}>
-          <span>Centro</span>
-          <span>Comuna</span>
-          <span>Teléfono</span>
-          <span>Estado</span>
-          <span>Tipo</span>
-          <span>Vets</span>
-          <span>Creado</span>
-          <span />
-        </div>
-
-        {cargando && <div style={{ padding: "24px 18px", textAlign: "center", color: colors.textMuted, fontSize: 13 }}>Cargando…</div>}
-        {error && <div style={{ padding: "24px 18px", textAlign: "center", color: "#a4272a", fontSize: 13 }}>{error}</div>}
-        {!cargando && !error && visibles.length === 0 && (
-          <div style={{ padding: "24px 18px", textAlign: "center", color: colors.textMuted, fontSize: 13 }}>
-            {centros.length === 0 ? "Todavía no hay centros." : "Ningún centro coincide con el filtro."}
-          </div>
-        )}
-
-        {visibles.map((c) => {
-          const estado = ESTADO_VERIFICACION[c.estado];
-          return (
-            <div
-              key={c.id}
-              style={{ display: "grid", gridTemplateColumns: columnas, gap: 12, alignItems: "center", padding: "12px 18px", borderTop: `1px solid ${colors.border}`, fontSize: 13 }}
-            >
-              <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-                <span style={{ fontWeight: 600 }}>{c.nombre}</span>
-                <span style={{ fontSize: 12, color: colors.textMuted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.direccion}</span>
-              </div>
-              <span style={{ color: colors.textMuted }}>{c.comuna}</span>
-              <span style={{ color: colors.textMuted }}>{c.telefono ? `+${c.telefono}` : "—"}</span>
-              <span style={{ justifySelf: "start", padding: "3px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, background: estado.fondo, color: estado.color }}>
-                {estado.texto}
-              </span>
-              {c.esPrueba ? (
-                <span style={{ justifySelf: "start", padding: "3px 10px", borderRadius: 999, background: "#fdf3e1", color: "#8a5a00", fontSize: 12, fontWeight: 600 }}>
-                  Prueba
-                </span>
-              ) : (
-                <span style={{ color: colors.textMuted }}>Real</span>
-              )}
-              <span style={{ color: colors.textMuted }}>{c.veterinarios}</span>
-              <span style={{ color: colors.textMuted }}>{formatFechaCorta(c.creadoEn)}</span>
-              <button
-                onClick={() => setCentroEditando(c)}
-                style={{ justifySelf: "start", padding: "4px 10px", borderRadius: 8, border: `1px solid ${colors.border}`, background: "white", color: colors.accent, fontSize: 12, fontWeight: 600, cursor: "pointer" }}
-              >
+      <TablaPanel
+        columnas={COLUMNAS}
+        encabezados={["Centro", "Comuna", "Teléfono", "Estado", "Tipo", "Vets", "Creado", ""]}
+        cargando={cargando}
+        error={error}
+        vacio={centros.length === 0 ? "Todavía no hay centros." : "Ningún centro coincide con el filtro."}
+        cantidad={visibles.length}
+      >
+        {visibles.map((c) => (
+          <FilaTabla key={c.id} columnas={COLUMNAS}>
+            <div className={styles.celdaDoble}>
+              <span className={styles.fuerte}>{c.nombre}</span>
+              <span className={`${styles.detalle} ${styles.recortado}`} title={c.direccion}>{c.direccion}</span>
+            </div>
+            <span className={styles.suave}>{c.comuna}</span>
+            <span className={styles.suave}>{c.telefono ? `+${c.telefono}` : "—"}</span>
+            <Etiqueta {...ESTADO_VERIFICACION[c.estado]} />
+            {c.esPrueba ? <Etiqueta {...ETIQUETA_PRUEBA} /> : <span className={styles.suave}>Real</span>}
+            <span className={styles.suave}>{c.veterinarios}</span>
+            <span className={styles.suave}>{formatFechaCorta(c.creadoEn)}</span>
+            <div className={styles.acciones}>
+              <button type="button" className={styles.botonSuave} onClick={() => setCentroDetalle(c)}>
+                {TEXTOS_DETALLE_CENTRO.verDetalles}
+              </button>
+              <button type="button" className={styles.botonEditar} onClick={() => setCentroEditando(c)}>
                 Editar
               </button>
             </div>
-          );
-        })}
-      </div>
+          </FilaTabla>
+        ))}
+      </TablaPanel>
 
+      {centroDetalle && (
+        <DetalleCentroModal
+          centroId={centroDetalle.id}
+          onCerrar={() => setCentroDetalle(null)}
+          onEditar={() => { setCentroEditando(centroDetalle); setCentroDetalle(null); }}
+        />
+      )}
       {centroEditando && (
         <ModalEditarCentro
           centro={centroEditando}

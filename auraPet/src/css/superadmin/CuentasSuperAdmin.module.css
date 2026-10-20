@@ -1,0 +1,54 @@
+/* Piezas de los modales de cuentas del superadmin:
+   CasillaCuentaPrueba y DesbloqueoCuentaReal (components/superadmin) */
+@import '../theme.css';
+
+.ayudaBloque {
+  display: block;
+}
+
+.desbloqueo {
+  padding: 14px;
+  border: 1px solid #f4c98a;
+  border-radius: 10px;
+  background: #fdf3e1;
+  color: #5a3600;
+}
+
+.desbloqueoTitulo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.desbloqueoTexto {
+  margin: 0 0 10px;
+  font-size: 13px;
+}
+
+.codigo {
+  margin-bottom: 10px;
+  text-align: center;
+  user-select: none;
+}
+
+.desbloqueoFila {
+  display: flex;
+  gap: 8px;
+}
+
+.desbloqueoInput {
+  flex: 1;
+  padding: 9px 11px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+.desbloqueoInput:focus {
+  outline: none;
+  border-color: var(--color-primario);
+}

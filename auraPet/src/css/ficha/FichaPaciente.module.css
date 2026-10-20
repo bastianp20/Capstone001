@@ -1,0 +1,230 @@
+/* Piezas de la ficha del paciente (components/veterinario/ficha/*) */
+
+.seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.seccionTitulo {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8b93a1;
+}
+
+.vacio {
+  margin: 0;
+  font-size: 13px;
+  color: #8b93a1;
+}
+
+/* ---- DatoFicha ---- */
+.dato {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.datoEtiqueta {
+  font-size: 12px;
+  color: #8b93a1;
+}
+
+.datoValor {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f1f3f6;
+  overflow-wrap: anywhere;
+}
+
+.datoVacio {
+  font-size: 14px;
+  font-style: italic;
+  color: #6b7280;
+}
+
+/* ---- ResumenPaciente ---- */
+.grillaDatos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 18px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.dueno {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 13.5px;
+  color: #c3c9d3;
+}
+
+.telefono {
+  color: #6ee7b7;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.telefono:hover {
+  text-decoration: underline;
+}
+
+/* ---- AlertasClinicas ---- */
+.alertas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.alerta {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+.alerta strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.alertaAlergia {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fecaca;
+}
+
+.alertaCondicion {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fde68a;
+}
+
+.alertaIcono {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ---- AvisoFichaIncompleta ---- */
+.aviso {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  font-size: 13.5px;
+  color: #c3c9d3;
+}
+
+.avisoAcciones {
+  display: flex;
+  gap: 8px;
+}
+
+/* ---- EstadoVacunas ---- */
+.vacuna {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 13.5px;
+}
+
+.vacuna:last-child {
+  border-bottom: none;
+}
+
+.vacunaFechas {
+  display: block;
+  font-size: 12px;
+  color: #8b93a1;
+}
+
+.chip {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ---- HistorialPaciente ---- */
+.historial {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 14px;
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.registro {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 0 16px 12px;
+  font-size: 13.5px;
+  color: #e6e9ee;
+}
+
+.registro::before {
+  content: "";
+  position: absolute;
+  left: -21px;
+  top: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #0f8f80;
+  border: 2px solid #1a1f26;
+}
+
+.registroCabecera {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.tipo {
+  font-weight: 700;
+  color: #6ee7b7;
+}
+
+.fecha {
+  font-size: 12.5px;
+  color: #8b93a1;
+}
+
+.textoSuave {
+  font-size: 12.5px;
+  color: #a3abb8;
+}
+
+.autor {
+  font-size: 12px;
+  color: #7d8593;
+}
+
+@media (max-width: 560px) {
+  .grillaDatos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

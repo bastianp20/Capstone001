@@ -272,3 +272,8 @@
   color: var(--color-text-muted);
   display: flex;
 }
+
+/* Aviso "Tu cuenta está en revisión" sobre el inicio del veterinario */
+.vet-aviso-revision {
+  padding: 16px 32px 0;
+}

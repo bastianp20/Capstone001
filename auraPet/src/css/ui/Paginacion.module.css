@@ -1,0 +1,47 @@
+/* Paginacion (components/ui/Paginacion.tsx) */
+@import '../theme.css';
+
+.paginacion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: -10px 0 22px;
+  font-size: 13px;
+  color: var(--color-terciario-texto-muted);
+}
+
+.botones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagina {
+  min-width: 52px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--color-terciario-texto);
+}
+
+.boton {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--color-terciario-texto);
+  cursor: pointer;
+}
+
+.boton:hover:not(:disabled) {
+  border-color: var(--color-primario);
+  color: var(--color-primario);
+}
+
+.boton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

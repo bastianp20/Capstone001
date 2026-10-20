@@ -3,7 +3,10 @@ import styles from "../css/modal/RecetaModal.module.css";
 import type { MedicamentoReceta, RecetaModalProps } from "../interfaces";
 import { getPacienteByVeterinarioId } from "../Api/getInfo";
 import { useConsulta } from "../hooks/useConsulta";
-import { Iconos, getFechaHoy, medicamentoVacio } from "../constants";
+import { Iconos, medicamentoVacio } from "../constants";
+import { crearReceta } from "../Api/postInfo";
+import { useAccion } from "../hooks/useAccion";
+import { Spinner } from "../components/ui/Spinner";
 import { formatFechaCorta } from "../lib/fechas";
 import { SelectorPaciente } from "../components/receta/SelectorPaciente";
 import { TablaMedicamentos } from "../components/receta/TablaMedicamentos";
@@ -17,7 +20,7 @@ const iconos = Iconos;
 //   · SelectorPaciente  -> buscar y elegir paciente (muestra TarjetaPaciente)
 //   · TablaMedicamentos -> filas editables (FilaMedicamento) + agregar
 //   · ProximoControl    -> calendario + atajos "En 7 días", etc.
-export const RecetaModal = ({ veterinarioId, pacienteInicialId, nombreVeterinario, centro, onCerrar, onGuardar }: RecetaModalProps) => {
+export const RecetaModal = ({ veterinarioId, pacienteInicialId, nombreVeterinario, centro, onCerrar, onGuardada }: RecetaModalProps) => {
   // Pacientes del veterinario (mascotas con las que ha tenido citas)
   const { datos: pacientes = [], cargando } =
     useConsulta(() => getPacienteByVeterinarioId(veterinarioId), [veterinarioId]);
@@ -27,6 +30,8 @@ export const RecetaModal = ({ veterinarioId, pacienteInicialId, nombreVeterinari
   const [medicamentos, setMedicamentos] = useState<MedicamentoReceta[]>([medicamentoVacio()]);
   const [indicaciones, setIndicaciones] = useState("");
   const [proximoControl, setProximoControl] = useState(""); // "YYYY-MM-DD" o ""
+  const [guardada, setGuardada] = useState(false);
+  const { ejecutar, ocupado, error } = useAccion();
 
   // ---------- Acciones sobre la tabla de medicamentos ----------
   const cambiarMedicamento = (index: number, campo: keyof MedicamentoReceta, valor: string) =>
@@ -55,13 +60,11 @@ export const RecetaModal = ({ veterinarioId, pacienteInicialId, nombreVeterinari
 
   const nombrePaciente = pacientes.find((p) => p.id === pacienteId)?.nombre;
 
-  // ---------- Guardar ----------
-  const guardar = () => {
-    if (!esValido || pacienteId === null) return;
-    onGuardar({
+  // ---------- Guardar (en la base: crear_receta, migración 27) ----------
+  const guardar = async () => {
+    if (!esValido || pacienteId === null || ocupado) return;
+    const ok = await ejecutar(() => crearReceta({
       mascotaId: pacienteId,
-      veterinarioId,
-      fecha: getFechaHoy(),
       medicamentos: filasConDatos.map((m) => ({
         nombre: m.nombre.trim(),
         dosis: m.dosis.trim(),
@@ -70,8 +73,11 @@ export const RecetaModal = ({ veterinarioId, pacienteInicialId, nombreVeterinari
       })),
       indicaciones: indicaciones.trim(),
       proximoControl: proximoControl || undefined,
-    });
-    onCerrar();
+    }), "No se pudo guardar la receta.");
+    if (ok) {
+      setGuardada(true);
+      onGuardada?.();
+    }
   };
 
   // Subtítulo: "Dr. Camilo Rojas · Clínica VetSur · 13/10/2026" (solo lo que exista)
@@ -136,14 +142,22 @@ export const RecetaModal = ({ veterinarioId, pacienteInicialId, nombreVeterinari
 
         {/* ---------- Pie ---------- */}
         <div className={styles.pie}>
-          <p className={styles.notaPie}>
-            {ayuda ?? `La receta quedará en el historial de ${nombrePaciente} y visible para su dueño.`}
+          <p className={`${styles.notaPie} ${error ? styles.notaError : ""} ${guardada ? styles.notaExito : ""}`} role={error ? "alert" : "status"}>
+            {guardada
+              ? `Receta guardada. Ya está en el historial de ${nombrePaciente} y su dueño puede verla.`
+              : error ?? ayuda ?? `La receta quedará en el historial de ${nombrePaciente} y visible para su dueño.`}
           </p>
           <div className={styles.acciones}>
-            <button type="button" className={styles.cancelar} onClick={onCerrar}>Cancelar</button>
-            <button type="button" className={styles.guardar} disabled={!esValido} onClick={guardar}>
-              Guardar receta
-            </button>
+            {guardada ? (
+              <button type="button" className={styles.guardar} onClick={onCerrar}>Listo</button>
+            ) : (
+              <>
+                <button type="button" className={styles.cancelar} onClick={onCerrar} disabled={ocupado}>Cancelar</button>
+                <button type="button" className={styles.guardar} disabled={!esValido || ocupado} onClick={guardar} aria-busy={ocupado}>
+                  {ocupado ? <><Spinner /> Guardando…</> : "Guardar receta"}
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

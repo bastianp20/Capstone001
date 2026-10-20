@@ -1,0 +1,66 @@
+/* KpiCard (components/ui/KpiCard.tsx) */
+@import '../theme.css';
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;                     /* un texto largo no estira la grilla */
+  padding: 16px 18px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.clickable {
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.clickable:hover {
+  border-color: var(--color-primario);
+  box-shadow: 0 4px 14px rgba(15, 143, 128, 0.08);
+}
+
+.clickable:focus-visible {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 2px;
+}
+
+.cabecera {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icono {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--color-secundario);
+  color: var(--color-primario);     /* lucide usa currentColor */
+}
+
+.etiqueta {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-terciario-texto-muted);
+}
+
+.valor {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.5px;
+  color: var(--color-terciario-texto);
+}
+
+.detalle {
+  min-height: 16px;
+  font-size: 12px;
+  color: var(--color-terciario-texto-muted);
+}

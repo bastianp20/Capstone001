@@ -1,0 +1,151 @@
+/* Derivaciones: tarjeta reutilizable (ficha, modal del veterinario, dueño) */
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.tarjetaPendiente {
+  border-left: 3px solid #d29b2a;
+}
+
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.titulo {
+  margin: 0;
+  color: var(--color-terciario-texto);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.meta {
+  color: var(--color-terciario-texto-muted);
+  font-size: 0.76rem;
+}
+
+.motivo {
+  margin: 0;
+  color: var(--color-terciario-texto);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.resultado {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--color-secundario);
+  color: var(--color-terciario-texto);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.respuesta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.textarea {
+  min-height: 70px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.84rem;
+  resize: vertical;
+}
+
+.textarea:focus {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 1px;
+}
+
+.error {
+  margin: 0;
+  color: #a4272a;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.vacio {
+  margin: 0;
+  color: var(--color-terciario-texto-muted);
+  font-size: 0.85rem;
+}
+
+/* Pestañas del modal del veterinario */
+.pestanas {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.pestana {
+  padding: 6px 14px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--color-terciario-texto-muted);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pestanaActiva {
+  border-color: var(--color-primario);
+  background: var(--color-secundario);
+  color: var(--color-primario);
+}
+
+.contador {
+  margin-left: 6px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--color-primario);
+  color: #ffffff;
+  font-size: 0.72rem;
+}
+
+/* Panel del dueño */
+.panelDueno {
+  margin-bottom: 20px;
+}
+
+.subtituloDueno {
+  margin: 0 0 12px;
+  color: var(--color-terciario-texto-muted);
+  font-size: 0.85rem;
+}
+
+.cuerpoDueno {
+  padding: 14px 16px;
+}

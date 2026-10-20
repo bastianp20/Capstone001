@@ -1,5 +1,5 @@
 import styles from "../../css/DuenoSecciones.module.css";
-import { Badge, badgeStyles, ESTADO_LABEL } from "../../constants";
+import { Badge, badgeStyles, ESTADO_LABEL, ETIQUETA_RECHAZADA } from "../../constants";
 import type { ProximasCitasDuenoProps } from "../../interfaces";
 
 // Panel "Próximas citas": fecha, mascota, centro, motivo, estado y botón cancelar.
@@ -23,9 +23,14 @@ export const ProximasCitasDueno = ({ citas, onCancelar, cancelandoId }: Proximas
           <div className="dueno-cita-motivo">
             {c.centro} — <span>{c.motivo}</span>
           </div>
+          {c.rechazo && (
+            <p className={styles.motivoRechazo}>
+              <strong>Motivo del rechazo:</strong> {c.rechazo.motivo}
+            </p>
+          )}
         </div>
         <div className="dueno-cita-badges">
-          <span style={Badge(badgeStyles[c.estado])}>{ESTADO_LABEL[c.estado]}</span>
+          <span style={Badge(badgeStyles[c.estado])}>{c.rechazo ? ETIQUETA_RECHAZADA : ESTADO_LABEL[c.estado]}</span>
           {c.puedeCancelar && (
             <button type="button" className={styles.botonCancelar} disabled={cancelandoId === c.id}
               onClick={() => onCancelar(c.id)}>

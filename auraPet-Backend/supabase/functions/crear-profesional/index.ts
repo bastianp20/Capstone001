@@ -30,22 +30,27 @@ Deno.serve(async (req) => {
   if (!esSuper) return responder({ error: "Solo un superadmin puede crear profesionales." }, 403);
 
   // 2) Datos que mandó el modal
-  const { nombre, correo, telefono, numeroColegiado, especialidadId, centroId, esAdminCentro, esPrueba } =
-    await req.json();
-  if (!nombre?.trim() || !correo?.trim() || !centroId) {
-    return responder({ error: "Faltan nombre, correo o centro." }, 400);
+  // centroId: centro de AuraPet (opcional). Si no hay, puede venir centroMencionado
+  // (un centro que aún no está en AuraPet) o nada (independiente).
+  const {
+    nombre, correo, telefono, password, numeroColegiado, especialidadId, especialidadOtra,
+    centroId, centroMencionado, centroMencionadoComuna, esAdminCentro, esPrueba,
+  } = await req.json();
+  if (!nombre?.trim() || !correo?.trim()) {
+    return responder({ error: "Faltan nombre o correo." }, 400);
+  }
+  if (typeof password !== "string" || password.length < 6) {
+    return responder({ error: "La contraseña debe tener al menos 6 caracteres." }, 400);
   }
 
   // 3) Cliente "admin" con la clave secreta (solo existe aquí, nunca en el front)
   const admin = createClient(url, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
-  const contrasenaTemporal = crypto.randomUUID().slice(0, 12);
-
   // Crea la cuenta. El trigger crear_perfil_nuevo_usuario arma el perfil
   // con nombre, rol 'veterinario' y teléfono desde estos metadatos.
   const { data: creado, error: errorCuenta } = await admin.auth.admin.createUser({
     email: correo.trim(),
-    password: contrasenaTemporal,
+    password, // la elige quien crea la cuenta (ya no es temporal)
     email_confirm: true, // sin correo de confirmación
     user_metadata: { nombre: nombre.trim(), rol: "veterinario", telefono },
   });
@@ -69,7 +74,11 @@ Deno.serve(async (req) => {
       .insert({
         perfil_id: perfilId,
         especialidad_id: especialidadId ?? null,
+        especialidad_otra: especialidadOtra?.trim() || null,   // p. ej. "Etología", si no está en el catálogo
         numero_colegiado: numeroColegiado?.trim() || null, // vacío → null (no "")
+        // Centro que aún no está en AuraPet (solo si no se eligió uno de AuraPet)
+        centro_mencionado: centroId ? null : centroMencionado?.trim() || null,
+        centro_mencionado_comuna: centroId ? null : centroMencionadoComuna?.trim() || null,
         estado_verificacion: "aprobado", // lo crea el superadmin: ya viene aprobado
         revisado_por: user.id,
         revisado_en: new Date().toISOString(),
@@ -78,12 +87,15 @@ Deno.serve(async (req) => {
       .single();
     if (e1) throw e1;
 
-    const { error: e2 } = await admin
-      .from("veterinario_centros")
-      .insert({ veterinario_id: vet.id, centro_id: centroId });
-    if (e2) throw e2;
+    // Sin centro de AuraPet = independiente (o centro aún no registrado): no se asigna nada
+    if (centroId) {
+      const { error: e2 } = await admin
+        .from("veterinario_centros")
+        .insert({ veterinario_id: vet.id, centro_id: centroId });
+      if (e2) throw e2;
+    }
 
-    if (esAdminCentro) {
+    if (esAdminCentro && centroId) {
       const { error: e3 } = await admin
         .from("admins_centro")
         .insert({ centro_id: centroId, perfil_id: perfilId, asignado_por: user.id });
@@ -100,5 +112,5 @@ Deno.serve(async (req) => {
     return responder({ error: mensaje }, 400);
   }
 
-  return responder({ ok: true, contrasenaTemporal });
+  return responder({ ok: true });
 });

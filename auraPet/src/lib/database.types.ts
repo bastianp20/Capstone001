@@ -341,6 +341,41 @@ export type Database = {
         }
         Relationships: []
       }
+      historial_suscripcion: {
+        Row: {
+          accion: string
+          centro_id: number
+          creado_en: string
+          detalle: string | null
+          estado: string
+          id: number
+        }
+        Insert: {
+          accion: string
+          centro_id: number
+          creado_en?: string
+          detalle?: string | null
+          estado?: string
+          id?: never
+        }
+        Update: {
+          accion?: string
+          centro_id?: number
+          creado_en?: string
+          detalle?: string | null
+          estado?: string
+          id?: never
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historial_suscripcion_centro_id_fkey"
+            columns: ["centro_id"]
+            isOneToOne: false
+            referencedRelation: "centros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       horarios_centro: {
         Row: {
           abre: string
@@ -550,6 +585,30 @@ export type Database = {
         }
         Relationships: []
       }
+      planes: {
+        Row: {
+          id: string
+          limite_veterinarios: number | null
+          nombre: string
+          orden: number
+          precio_mensual: number
+        }
+        Insert: {
+          id: string
+          limite_veterinarios?: number | null
+          nombre: string
+          orden: number
+          precio_mensual: number
+        }
+        Update: {
+          id?: string
+          limite_veterinarios?: number | null
+          nombre?: string
+          orden?: number
+          precio_mensual?: number
+        }
+        Relationships: []
+      }
       receta_medicamentos: {
         Row: {
           dosis: string
@@ -708,6 +767,181 @@ export type Database = {
           },
         ]
       }
+      solicitudes_centro: {
+        Row: {
+          cargo: string
+          centro_id: number | null
+          comuna: string
+          correo: string
+          creado_en: string
+          direccion: string
+          especialidad_ids: number[]
+          estado: Database["public"]["Enums"]["estado_verificacion"]
+          id: number
+          mensaje: string | null
+          motivo_rechazo: string | null
+          nombre_centro: string
+          nombre_responsable: string
+          revisado_en: string | null
+          revisado_por: string | null
+          sitio_web: string | null
+          telefono_centro: number
+          telefono_responsable: number
+        }
+        Insert: {
+          cargo: string
+          centro_id?: number | null
+          comuna: string
+          correo: string
+          creado_en?: string
+          direccion: string
+          especialidad_ids?: number[]
+          estado?: Database["public"]["Enums"]["estado_verificacion"]
+          id?: never
+          mensaje?: string | null
+          motivo_rechazo?: string | null
+          nombre_centro: string
+          nombre_responsable: string
+          revisado_en?: string | null
+          revisado_por?: string | null
+          sitio_web?: string | null
+          telefono_centro: number
+          telefono_responsable: number
+        }
+        Update: {
+          cargo?: string
+          centro_id?: number | null
+          comuna?: string
+          correo?: string
+          creado_en?: string
+          direccion?: string
+          especialidad_ids?: number[]
+          estado?: Database["public"]["Enums"]["estado_verificacion"]
+          id?: never
+          mensaje?: string | null
+          motivo_rechazo?: string | null
+          nombre_centro?: string
+          nombre_responsable?: string
+          revisado_en?: string | null
+          revisado_por?: string | null
+          sitio_web?: string | null
+          telefono_centro?: number
+          telefono_responsable?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solicitudes_centro_centro_id_fkey"
+            columns: ["centro_id"]
+            isOneToOne: false
+            referencedRelation: "centros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "solicitudes_centro_revisado_por_fkey"
+            columns: ["revisado_por"]
+            isOneToOne: false
+            referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solicitudes_plan: {
+        Row: {
+          centro_id: number
+          creado_en: string
+          estado: string
+          id: number
+          mensaje: string | null
+          plan_id: string
+          solicitado_por: string | null
+        }
+        Insert: {
+          centro_id: number
+          creado_en?: string
+          estado?: string
+          id?: never
+          mensaje?: string | null
+          plan_id: string
+          solicitado_por?: string | null
+        }
+        Update: {
+          centro_id?: number
+          creado_en?: string
+          estado?: string
+          id?: never
+          mensaje?: string | null
+          plan_id?: string
+          solicitado_por?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solicitudes_plan_centro_id_fkey"
+            columns: ["centro_id"]
+            isOneToOne: false
+            referencedRelation: "centros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "solicitudes_plan_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "planes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "solicitudes_plan_solicitado_por_fkey"
+            columns: ["solicitado_por"]
+            isOneToOne: false
+            referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suscripciones_centro: {
+        Row: {
+          actualizado_en: string
+          centro_id: number
+          estado: Database["public"]["Enums"]["estado_suscripcion"]
+          fin_prueba: string | null
+          inicio: string
+          plan_id: string
+          renovacion: string | null
+        }
+        Insert: {
+          actualizado_en?: string
+          centro_id: number
+          estado?: Database["public"]["Enums"]["estado_suscripcion"]
+          fin_prueba?: string | null
+          inicio?: string
+          plan_id: string
+          renovacion?: string | null
+        }
+        Update: {
+          actualizado_en?: string
+          centro_id?: number
+          estado?: Database["public"]["Enums"]["estado_suscripcion"]
+          fin_prueba?: string | null
+          inicio?: string
+          plan_id?: string
+          renovacion?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suscripciones_centro_centro_id_fkey"
+            columns: ["centro_id"]
+            isOneToOne: true
+            referencedRelation: "centros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "suscripciones_centro_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "planes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       veterinario_centros: {
         Row: {
           centro_id: number
@@ -740,8 +974,12 @@ export type Database = {
       }
       veterinarios: {
         Row: {
+          centro_mencionado: string | null
+          centro_mencionado_comuna: string | null
+          centro_solicitado_id: number | null
           creado_en: string
           especialidad_id: number | null
+          especialidad_otra: string | null
           estado_verificacion: Database["public"]["Enums"]["estado_verificacion"]
           id: number
           motivo_rechazo: string | null
@@ -751,8 +989,12 @@ export type Database = {
           revisado_por: string | null
         }
         Insert: {
+          centro_mencionado?: string | null
+          centro_mencionado_comuna?: string | null
+          centro_solicitado_id?: number | null
           creado_en?: string
           especialidad_id?: number | null
+          especialidad_otra?: string | null
           estado_verificacion?: Database["public"]["Enums"]["estado_verificacion"]
           id?: never
           motivo_rechazo?: string | null
@@ -762,8 +1004,12 @@ export type Database = {
           revisado_por?: string | null
         }
         Update: {
+          centro_mencionado?: string | null
+          centro_mencionado_comuna?: string | null
+          centro_solicitado_id?: number | null
           creado_en?: string
           especialidad_id?: number | null
+          especialidad_otra?: string | null
           estado_verificacion?: Database["public"]["Enums"]["estado_verificacion"]
           id?: never
           motivo_rechazo?: string | null
@@ -773,6 +1019,13 @@ export type Database = {
           revisado_por?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "veterinarios_centro_solicitado_id_fkey"
+            columns: ["centro_solicitado_id"]
+            isOneToOne: false
+            referencedRelation: "centros"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "veterinarios_especialidad_id_fkey"
             columns: ["especialidad_id"]
@@ -801,18 +1054,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      listar_usuarios: {
-        Args: never
-        Returns: {
-          id: string
-          nombre: string
-          email: string
-          rol: Database["public"]["Enums"]["rol_usuario"]
-          telefono: number | null
-          es_prueba: boolean
-          desactivado_en: string | null
-          creado_en: string
-        }[]
+      actualizar_datos_clinicos: {
+        Args: {
+          p_alergias?: string
+          p_condiciones_cronicas?: string
+          p_esterilizado?: boolean
+          p_mascota_id: number
+          p_microchip?: string
+          p_peso_kg?: number
+        }
+        Returns: undefined
       }
       actualizar_mi_cita: {
         Args: {
@@ -822,9 +1073,272 @@ export type Database = {
         }
         Returns: undefined
       }
+      agregar_registro_medico: {
+        Args: {
+          p_cita_id?: number
+          p_descripcion: string
+          p_fecha?: string
+          p_mascota_id: number
+          p_proxima_dosis?: string
+          p_tipo: Database["public"]["Enums"]["tipo_registro"]
+          p_tratamiento?: string
+        }
+        Returns: number
+      }
       cancelar_mi_cita: {
         Args: { p_cita_id: number; p_motivo?: string }
         Returns: undefined
+      }
+      crear_centro: {
+        Args: {
+          p_comuna: string
+          p_direccion: string
+          p_es_prueba?: boolean
+          p_especialidad_ids?: number[]
+          p_horarios?: Json
+          p_nombre: string
+          p_telefono?: number
+        }
+        Returns: number
+      }
+      crear_derivacion: {
+        Args: {
+          p_a_centro_id?: number
+          p_a_veterinario_id?: number
+          p_mascota_id: number
+          p_motivo: string
+        }
+        Returns: number
+      }
+      crear_receta: {
+        Args: {
+          p_cita_id?: number
+          p_indicaciones?: string
+          p_mascota_id: number
+          p_medicamentos: Json
+          p_proximo_control?: string
+        }
+        Returns: number
+      }
+      destinos_derivacion: {
+        Args: never
+        Returns: {
+          detalle: string
+          id: number
+          nombre: string
+          tipo: string
+        }[]
+      }
+      detalle_centro: { Args: { p_centro_id: number }; Returns: Json }
+      detalle_usuario: { Args: { p_perfil_id: string }; Returns: Json }
+      es_admin_de_centro: { Args: { p_centro_id: number }; Returns: boolean }
+      es_cuenta_de_prueba: { Args: never; Returns: boolean }
+      es_dueno_de_mis_derivados: {
+        Args: { p_perfil_id: string }
+        Returns: boolean
+      }
+      es_dueno_de_mis_pacientes: {
+        Args: { p_perfil_id: string }
+        Returns: boolean
+      }
+      es_mi_mascota: { Args: { p_mascota_id: number }; Returns: boolean }
+      es_mi_paciente: { Args: { p_mascota_id: number }; Returns: boolean }
+      es_superadmin: { Args: never; Returns: boolean }
+      es_veterinario_de_centro: {
+        Args: { p_centro_id: number }
+        Returns: boolean
+      }
+      estado_efectivo_suscripcion: {
+        Args: {
+          p_estado: Database["public"]["Enums"]["estado_suscripcion"]
+          p_fin_prueba: string
+          p_renovacion: string
+        }
+        Returns: Database["public"]["Enums"]["estado_suscripcion"]
+      }
+      extender_suscripcion: {
+        Args: { p_centro_id: number; p_dias: number }
+        Returns: undefined
+      }
+      historial_de_paciente: {
+        Args: { p_mascota_id: number }
+        Returns: {
+          centro: string
+          descripcion: string
+          es_mio: boolean
+          fecha: string
+          id: number
+          proxima_dosis: string
+          tipo: Database["public"]["Enums"]["tipo_registro"]
+          tratamiento: string
+          veterinario: string
+        }[]
+      }
+      listar_citas: {
+        Args: {
+          p_busqueda?: string
+          p_desde?: string
+          p_estado?: Database["public"]["Enums"]["estado_cita"]
+          p_hasta?: string
+          p_limite?: number
+          p_offset?: number
+          p_orden?: string
+          p_urgencia?: Database["public"]["Enums"]["urgencia_cita"]
+        }
+        Returns: {
+          centro: string
+          dueno: string
+          es_prueba: boolean
+          especie: Database["public"]["Enums"]["especie_mascota"]
+          estado: Database["public"]["Enums"]["estado_cita"]
+          fecha_hora: string
+          id: number
+          mascota: string
+          motivo: string
+          total: number
+          urgencia: Database["public"]["Enums"]["urgencia_cita"]
+          veterinario: string
+        }[]
+      }
+      listar_derivaciones: {
+        Args: { p_mascota_id?: number }
+        Returns: {
+          creada_en: string
+          destino: string
+          destino_tipo: string
+          estado: Database["public"]["Enums"]["estado_derivacion"]
+          id: number
+          mascota: string
+          mascota_id: number
+          motivo: string
+          origen: string
+          puedo_cancelar: boolean
+          puedo_responder: boolean
+          resultado: string
+        }[]
+      }
+      listar_suscripciones: {
+        Args: never
+        Returns: {
+          centro: string
+          centro_id: number
+          comuna: string
+          es_prueba: boolean
+          estado: Database["public"]["Enums"]["estado_suscripcion"]
+          fin_prueba: string
+          inicio: string
+          limite: number
+          mensaje: string
+          plan_id: string
+          plan_solicitado: string
+          renovacion: string
+          solicitado_en: string
+          solicitado_por: string
+          solicitud_id: number
+          veterinarios: number
+        }[]
+      }
+      listar_usuarios: {
+        Args: never
+        Returns: {
+          creado_en: string
+          desactivado_en: string
+          email: string
+          es_prueba: boolean
+          id: string
+          nombre: string
+          rol: Database["public"]["Enums"]["rol_usuario"]
+          telefono: number
+        }[]
+      }
+      me_derivaron: { Args: { p_mascota_id: number }; Returns: boolean }
+      mi_veterinario_id: { Args: never; Returns: number }
+      mis_datos: { Args: never; Returns: Json }
+      mis_derivaciones: {
+        Args: never
+        Returns: {
+          creada_en: string
+          destino: string
+          direccion: string
+          dueno: string
+          especie: Database["public"]["Enums"]["especie_mascota"]
+          estado: Database["public"]["Enums"]["estado_derivacion"]
+          id: number
+          mascota: string
+          mascota_id: number
+          motivo: string
+          origen: string
+          resultado: string
+        }[]
+      }
+      perfil_relacionado_con_mis_centros: {
+        Args: { p_perfil_id: string }
+        Returns: boolean
+      }
+      preguntas_frecuentes: {
+        Args: { limite?: number }
+        Returns: {
+          cantidad: number
+          pregunta: string
+          respuesta: string
+        }[]
+      }
+      rechazar_cita: {
+        Args: { p_cita_id: number; p_motivo: string }
+        Returns: undefined
+      }
+      resolver_solicitud_centro: {
+        Args: {
+          p_decision: Database["public"]["Enums"]["estado_verificacion"]
+          p_motivo?: string
+          p_solicitud_id: number
+        }
+        Returns: number
+      }
+      resolver_solicitud_plan: {
+        Args: { p_aprobar: boolean; p_meses?: number; p_solicitud_id: number }
+        Returns: undefined
+      }
+      responder_derivacion: {
+        Args: {
+          p_derivacion_id: number
+          p_realizada: boolean
+          p_resultado?: string
+        }
+        Returns: undefined
+      }
+      resumen_suscripcion: {
+        Args: { p_centro_id: number }
+        Returns: {
+          citas_mes: number
+          estado: Database["public"]["Enums"]["estado_suscripcion"]
+          fin_prueba: string
+          inicio: string
+          plan_id: string
+          plan_solicitado: string
+          renovacion: string
+          veterinarios: number
+        }[]
+      }
+      solicitar_cambio_plan: {
+        Args: { p_centro_id: number; p_mensaje?: string; p_plan_id: string }
+        Returns: undefined
+      }
+      solicitar_centro: {
+        Args: {
+          p_cargo: string
+          p_comuna: string
+          p_correo: string
+          p_direccion: string
+          p_especialidad_ids?: number[]
+          p_mensaje?: string
+          p_nombre_centro: string
+          p_nombre_responsable: string
+          p_sitio_web?: string
+          p_telefono_centro: number
+          p_telefono_responsable: number
+        }
+        Returns: number
       }
       solicitar_cita: {
         Args: {
@@ -839,33 +1353,10 @@ export type Database = {
       }
       veterinarios_de_centro: {
         Args: { p_centro_id: number }
-        Returns: { especialidad: string | null; id: number; nombre: string }[]
-      }
-      crear_centro: {
-        Args: {
-          p_comuna: string
-          p_direccion: string
-          p_es_prueba?: boolean
-          p_especialidad_ids?: number[]
-          p_horarios?: Json
-          p_nombre: string
-          p_telefono?: number
-        }
-        Returns: number
-      }
-      es_admin_de_centro: { Args: { p_centro_id: number }; Returns: boolean }
-      es_superadmin: { Args: never; Returns: boolean }
-      es_veterinario_de_centro: {
-        Args: { p_centro_id: number }
-        Returns: boolean
-      }
-      mi_veterinario_id: { Args: never; Returns: number }
-      preguntas_frecuentes: {
-        Args: { limite?: number }
         Returns: {
-          cantidad: number
-          pregunta: string
-          respuesta: string
+          especialidad: string
+          id: number
+          nombre: string
         }[]
       }
     }
@@ -879,6 +1370,7 @@ export type Database = {
         | "cancelada"
       estado_contacto: "pendiente" | "respondido" | "cerrado"
       estado_derivacion: "pendiente" | "realizada" | "cancelada"
+      estado_suscripcion: "prueba" | "activa" | "vencida" | "cancelada"
       estado_verificacion: "pendiente" | "aprobado" | "rechazado"
       rol_usuario: "dueno" | "veterinario" | "superadmin" | "administrativo"
       sexo_mascota: "macho" | "hembra"
@@ -1024,6 +1516,7 @@ export const Constants = {
       ],
       estado_contacto: ["pendiente", "respondido", "cerrado"],
       estado_derivacion: ["pendiente", "realizada", "cancelada"],
+      estado_suscripcion: ["prueba", "activa", "vencida", "cancelada"],
       estado_verificacion: ["pendiente", "aprobado", "rechazado"],
       rol_usuario: ["dueno", "veterinario", "superadmin", "administrativo"],
       sexo_mascota: ["macho", "hembra"],

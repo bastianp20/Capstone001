@@ -39,6 +39,15 @@
   min-width: 0;
 }
 
+.indicadorClickable {
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.indicadorClickable:hover {
+  border-color: var(--color-accent, #0f8f7e);
+}
+
 .indicadorEtiqueta {
   font-size: 0.82rem;
   color: #6b7280;

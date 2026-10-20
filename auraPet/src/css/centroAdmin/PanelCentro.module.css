@@ -1,0 +1,268 @@
+/* Panel del centro (admin del centro). La estructura (menú, barra,
+   contenido) viene de superadmin/SuperAdminLayout.module.css. */
+@import '../theme.css';
+
+/* ---- Menú y barra ---- */
+.menuPie {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: auto;
+}
+
+.topbar {
+  justify-content: space-between;
+}
+
+.administrando {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-terciario-texto-muted);
+  font-size: 13.5px;
+}
+
+.selectorCentro {
+  padding: 6px 10px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-terciario-texto);
+}
+
+.nombreCentro {
+  color: var(--color-terciario-texto);
+}
+
+.usuario {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+/* ---- Títulos y estados ---- */
+.titulo {
+  margin: 0 0 4px;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.subtitulo {
+  margin: 0 0 18px;
+  color: var(--color-terciario-texto-muted);
+  font-size: 13.5px;
+}
+
+.marcaPrueba {
+  margin-left: 10px;
+  color: #8a5a00;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.estado {
+  margin: 0;
+  padding: 18px;
+  color: var(--color-terciario-texto-muted);
+  text-align: center;
+}
+
+.vacio {
+  margin: 0;
+  color: var(--color-terciario-texto-muted);
+  font-size: 13px;
+}
+
+.vacioGrande {
+  padding: 24px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--color-terciario-texto-muted);
+  text-align: center;
+}
+
+.error {
+  color: #a4272a;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ok {
+  color: var(--color-primario);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.fuerte {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.suave {
+  color: var(--color-terciario-texto-muted);
+  font-size: 12.5px;
+}
+
+.celdaDoble {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-primario);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ---- KPIs ---- */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+/* ---- Tarjeta ---- */
+.tarjeta {
+  margin-bottom: 18px;
+  overflow: hidden;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.tarjetaCabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--color-terciario-borde);
+}
+
+.tarjetaTitulo {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 700;
+}
+
+.tarjetaCuerpo {
+  padding: 16px 18px;
+}
+
+/* ---- Listas ---- */
+.listaCitas,
+.listaEquipo {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.citaFila,
+.miembro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 0;
+  border-top: 1px solid var(--color-terciario-borde);
+}
+
+.citaFila:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.miembro {
+  padding: 13px 18px;
+}
+
+.miembro:first-child {
+  border-top: none;
+}
+
+/* ---- Mi centro ---- */
+.formulario {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.control {
+  padding: 8px 10px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13.5px;
+}
+
+.control:focus {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 1px;
+}
+
+.formularioPie {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.horarios {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.horarioFila {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  font-size: 13.5px;
+}
+
+.horarioFila dd {
+  margin: 0;
+}
+
+.horarioAbierto {
+  color: var(--color-terciario-texto);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--color-secundario);
+  color: var(--color-primario);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .horarioFila {
+    grid-template-columns: 1fr;
+  }
+}

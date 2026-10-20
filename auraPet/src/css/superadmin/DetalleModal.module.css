@@ -1,0 +1,362 @@
+/* Modales de detalle del superadmin: DetalleUsuarioModal y DetalleCentroModal (y sus piezas en
+   components/superadmin/detalleUsuario). Estilo oscuro como los demás modales del panel. */
+@import '../theme.css';
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(8, 11, 15, 0.6);
+  backdrop-filter: blur(3px);
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 920px;
+  max-height: 90vh;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: #1a1f26;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  color: #e6e9ee;
+  animation: aparecer 0.18s ease-out;
+}
+
+/* ---- Encabezado ---- */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.avatar {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(15, 143, 128, 0.25);
+  font-size: 16px;
+  font-weight: 700;
+  color: #6ee7b7;
+}
+
+.encabezado {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cerrar {
+  flex-shrink: 0;
+  display: flex;
+  padding: 4px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #a3abb8;
+  cursor: pointer;
+}
+
+.cerrar:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+/* ---- Cuerpo ---- */
+.cuerpo {
+  flex: 1;
+  padding: 18px 22px 22px;
+  overflow-y: auto;
+}
+
+.estado {
+  margin: 0;
+  padding: 28px 0;
+  text-align: center;
+  font-size: 13.5px;
+  color: #a3abb8;
+}
+
+.error {
+  color: #fca5a5;
+}
+
+.grilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.ancha {
+  grid-column: 1 / -1;
+}
+
+.seccionTitulo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8b93a1;
+}
+
+.subtitulo {
+  margin-top: 2px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #c3c9d3;
+}
+
+.datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+}
+
+.enlace {
+  color: #6ee7b7;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.enlace:hover {
+  text-decoration: underline;
+}
+
+.vacio {
+  margin: 0;
+  font-size: 13px;
+  color: #8b93a1;
+}
+
+.suave {
+  font-size: 12.5px;
+  color: #a3abb8;
+}
+
+/* ---- Centros ---- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 12.5px;
+}
+
+.chipDetalle {
+  color: #a3abb8;
+}
+
+.chipPrueba {
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(244, 161, 58, 0.18);
+  font-size: 11px;
+  color: #fcd34d;
+}
+
+/* ---- Actividad ---- */
+.numeros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 8px;
+}
+
+.numero {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.numero strong {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.numero span {
+  font-size: 12px;
+  color: #a3abb8;
+}
+
+/* ---- Listas (mascotas y citas) ---- */
+.lista {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.filaLista,
+.filaCita {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 13.5px;
+}
+
+.filaLista:last-child,
+.filaCita:last-child {
+  border-bottom: none;
+}
+
+.filaLista {
+  justify-content: space-between;
+}
+
+.fechaCita {
+  flex-shrink: 0;
+  width: 92px;
+  font-size: 12.5px;
+  color: #a3abb8;
+  font-variant-numeric: tabular-nums;
+}
+
+.textoCita {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+/* ---- Pie ---- */
+.pie {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@keyframes aparecer {
+  from { opacity: 0; transform: scale(0.97) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal {
+    animation: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .grilla,
+  .datos {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Horario (detalle de centro) ---- */
+.horario {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.horario li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 13px;
+}
+
+.horario li:last-child {
+  border-bottom: none;
+}
+
+.diaCerrado {
+  color: #6b7280;
+}
+
+/* ---- Personas (administradores y veterinarios) ---- */
+.persona {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.persona:last-child {
+  border-bottom: none;
+}
+
+.personaTexto {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 13.5px;
+}
+
+.mensaje {
+  margin: 0;
+  padding: 10px 14px;
+  border-left: 3px solid #0f8f80;
+  border-radius: 0 10px 10px 0;
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #d5dae1;
+  white-space: pre-wrap;
+}

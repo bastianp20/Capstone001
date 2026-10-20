@@ -1,0 +1,46 @@
+/* Aviso (components/ui/Aviso.tsx) */
+@import '../theme.css';
+
+.aviso {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13.5px;
+}
+
+.ok {
+  background: var(--color-secundario);
+  color: var(--color-primario);
+}
+
+.error {
+  background: #fdecec;
+  color: var(--color-estado-cancelada);
+}
+
+.info {
+  border: 1px solid #f4c98a;
+  background: #fdf3e1;
+  color: #8a5a00;
+}
+
+.texto {
+  flex: 1;
+}
+
+.cerrar {
+  display: flex;
+  padding: 2px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.cerrar:hover {
+  background: rgba(0, 0, 0, 0.06);
+}

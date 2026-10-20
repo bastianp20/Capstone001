@@ -418,3 +418,20 @@
     justify-content: flex-end;
   }
 }
+
+/* Mensajes del pie al guardar */
+.notaError {
+  color: #a4272a;
+  font-weight: 600;
+}
+
+.notaExito {
+  color: #0f8f80;
+  font-weight: 600;
+}
+
+.guardar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}

@@ -1,0 +1,287 @@
+/* Estilos compartidos por las secciones del superadmin
+   (Resumen, Usuarios, Centros, Centros y veterinarios, Aprobaciones, Citas) */
+@import '../theme.css';
+
+.titulo {
+  margin: 0 0 4px;
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--color-terciario-texto);
+}
+
+.subtitulo {
+  margin: 0 0 18px;
+  font-size: 13.5px;
+  color: var(--color-terciario-texto-muted);
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.alerta {
+  color: var(--color-estado-cancelada);
+}
+
+/* ---- Celdas ---- */
+.fuerte {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.suave {
+  color: var(--color-terciario-texto-muted);
+}
+
+.detalle {
+  font-size: 12px;
+  color: var(--color-terciario-texto-muted);
+}
+
+.recortado {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.celdaDoble {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.motivo {
+  font-size: 12.5px;
+  color: var(--color-terciario-texto-muted);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.italica {
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--color-terciario-texto-muted);
+}
+
+.notaPrueba {
+  margin-left: 6px;
+  font-size: 11px;
+  color: #8a5a00;
+}
+
+/* ---- Botones de las filas ---- */
+.acciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.botonPrimario,
+.botonSuave,
+.botonPeligro,
+.botonEditar,
+.link {
+  border: none;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botonPrimario {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--color-primario);
+  color: #ffffff;
+}
+
+.botonSuave {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--color-secundario);
+  color: var(--color-primario);
+}
+
+.botonPeligro {
+  padding: 6px 4px;
+  background: none;
+  color: var(--color-estado-cancelada);
+}
+
+.botonEditar {
+  justify-self: start;
+  padding: 4px 10px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--color-primario);
+}
+
+.botonEditar:hover,
+.botonSuave:hover {
+  border-color: var(--color-primario);
+  filter: brightness(0.98);
+}
+
+.botonPrimario:hover {
+  filter: brightness(1.08);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: none;
+  color: var(--color-primario);
+}
+
+.link:hover {
+  background: var(--color-secundario);
+}
+
+.botonPrimario:focus-visible,
+.botonSuave:focus-visible,
+.botonPeligro:focus-visible,
+.botonEditar:focus-visible,
+.link:focus-visible {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 2px;
+}
+
+/* ---- Centros y veterinarios ---- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chipCentro {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 10px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 999px;
+  background: #f6f8f8;
+  font-size: 12.5px;
+}
+
+.quitarChip {
+  display: flex;
+  padding: 2px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: var(--color-terciario-texto-muted);
+  cursor: pointer;
+}
+
+.quitarChip:hover {
+  background: #fdecec;
+  color: var(--color-estado-cancelada);
+}
+
+.asignar {
+  display: flex;
+  gap: 6px;
+}
+
+.select {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 8px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--color-terciario-texto);
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--color-primario);
+}
+
+.botonAsignar {
+  padding: 7px 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-primario);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.botonAsignar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---- Pestañas (Aprobaciones) ---- */
+.pestanas {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--color-terciario-borde);
+}
+
+.pestana {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: -1px;
+  padding: 10px 14px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-terciario-texto-muted);
+  cursor: pointer;
+}
+
+.pestana:hover {
+  color: var(--color-terciario-texto);
+}
+
+.pestanaActiva {
+  border-bottom-color: var(--color-primario);
+  color: var(--color-primario);
+}
+
+.contadorPestana {
+  min-width: 20px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--color-secundario);
+  font-size: 11.5px;
+  color: var(--color-primario);
+  text-align: center;
+}
+
+/* ---- Filtros extra (Citas) ---- */
+.filtrosExtra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: -6px 0 16px;
+}
+
+.filtrosExtra .select {
+  flex: 0 1 200px;
+  padding: 8px 10px;
+  font-size: 13px;
+}

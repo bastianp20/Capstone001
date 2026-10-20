@@ -7,6 +7,8 @@ import {
 import { useAuth } from "../Auth/AuthContext";
 import { supabase } from "../lib/supabase";
 import { getIniciales } from "../utils";
+import { aplicarTema, leerTema, type Tema } from "../lib/tema";
+import { SeccionPrivacidad } from "../components/configuracion/SeccionPrivacidad";
 import styles from "../css/modal/ConfiguracionModal.module.css";
 
 interface ConfiguracionModalProps {
@@ -14,7 +16,6 @@ interface ConfiguracionModalProps {
 }
 
 type Seccion = "perfil" | "seguridad" | "apariencia" | "notificaciones" | "privacidad" | "ayuda";
-type Tema = "claro" | "oscuro" | "auto";
 
 const ROL_LABEL = { dueno: "Dueño", veterinario: "Veterinario", superadmin: "Superadmin", administrativo: "Administrativo" } as const;
 
@@ -77,7 +78,9 @@ export const ConfiguracionModal = ({ onCerrar }: ConfiguracionModalProps) => {
                 proximamente />
 
           <Fila icono={<ShieldCheck size={18} />} titulo="Privacidad y datos" descripcion="Descargar o eliminar tus datos"
-                proximamente />
+                abierta={abierta === "privacidad"} onClick={() => alternar("privacidad")}>
+            <SeccionPrivacidad onCerrarModal={onCerrar} />
+          </Fila>
 
           <Fila icono={<CircleHelp size={18} />} titulo="Ayuda" descripcion="Preguntas frecuentes y contacto"
                 abierta={abierta === "ayuda"} onClick={() => alternar("ayuda")}>
@@ -296,21 +299,12 @@ const SeccionSeguridad = ({ onCerrarModal }: { onCerrarModal: () => void }) => {
 // (por ahora guarda la preferencia; el modo oscuro real viene cuando
 //  pasemos los colores de la app a variables CSS)
 // =====================================================================
-const leerTema = (): Tema => {
-  try {
-    return (localStorage.getItem("aurapet-tema") as Tema) ?? "claro";
-  } catch {
-    return "claro";
-  }
-};
-
 const SeccionApariencia = () => {
   const [tema, setTema] = useState<Tema>(leerTema);
 
   const elegir = (nuevo: Tema) => {
     setTema(nuevo);
-    try { localStorage.setItem("aurapet-tema", nuevo); } catch { /* navegador sin almacenamiento */ }
-    document.documentElement.dataset.tema = nuevo; // <html data-tema="oscuro"> para el CSS futuro
+    aplicarTema(nuevo); // <html data-tema="oscuro"> para el CSS futuro (lib/tema.ts)
   };
 
   const opciones: { valor: Tema; label: string; icono: ReactNode }[] = [

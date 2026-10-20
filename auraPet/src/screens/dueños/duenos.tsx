@@ -1,7 +1,8 @@
 import { useState, type CSSProperties } from 'react';
 import { Colors, Iconos, MAX_CITAS_INICIO_DUENO, MAX_HISTORIAL_INICIO_DUENO } from '../../constants';
 import { useConsulta } from '../../hooks/useConsulta';
-import { getMascotasPorDueno, getProximasCitasDueno, getHistorialRecienteDueno, getHistorialDueno } from '../../Api/getInfo';
+import { getMascotasPorDueno, getProximasCitasDueno, getHistorialRecienteDueno, getHistorialDueno, getDerivaciones } from '../../Api/getInfo';
+import { DerivacionesDueno } from '../../components/dueno/DerivacionesDueno';
 import { cancelarCita } from '../../Api/postInfo';
 import { getIniciales } from '../../utils';
 import { useAuth } from '../../Auth/AuthContext';
@@ -60,6 +61,10 @@ export const DuenoScreen = () => {
   // El historial completo solo se pide al entrar a esa sección
   const { datos: historial = HISTORIAL_VACIO, cargando: cargandoHistorial } = useConsulta(
     () => (seccion === "historial" ? getHistorialDueno() : Promise.resolve(HISTORIAL_VACIO)),
+    [seccion, recarga]
+  );
+  const { datos: derivaciones = [] } = useConsulta(
+    () => (seccion === "historial" ? getDerivaciones() : Promise.resolve([])),
     [seccion, recarga]
   );
 
@@ -181,6 +186,7 @@ export const DuenoScreen = () => {
                   <p className="dueno-content-subtitulo">Atenciones, vacunas y recetas de tus mascotas</p>
                 </div>
               </div>
+              <DerivacionesDueno derivaciones={derivaciones} />
               <HistorialMedico mascotas={mascotas} historial={historial} cargando={cargandoHistorial} />
             </>
           )}

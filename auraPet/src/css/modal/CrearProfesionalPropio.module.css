@@ -1,0 +1,38 @@
+/* Agregados del modal "Nueva cuenta profesional" (el resto viene de CrearProfesionalModal.module.css) */
+.password {
+  position: relative;
+  display: block;
+}
+
+.password input {
+  width: 100%;
+  padding-right: 40px;
+  box-sizing: border-box;
+}
+
+.ojo {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: #6b7280;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.ojo:hover {
+  background: #f1f3f4;
+  color: #1a1f27;
+}
+
+.noCoincide {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #a4272a;
+}

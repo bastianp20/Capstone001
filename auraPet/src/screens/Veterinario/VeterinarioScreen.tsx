@@ -1,15 +1,18 @@
 import { useState, type CSSProperties } from 'react';
-import { Colors, Iconos } from '../../constants';
+import { Colors, Iconos, TEXTOS_CENTRO_VETERINARIO } from '../../constants';
 import { getInfoVeterinario, getMisCentrosAdmin } from '../../Api/getInfo';
 import { useConsulta } from '../../hooks/useConsulta';
 import { ModalAgenda } from '../../Modal/AgendaModal';
 import {PacientesModal} from '../../Modal/PacientesModal'; 
-import type { NuevaReceta, VeterinarioScreenProps } from '../../interfaces';
+import type { PestanaAgenda, VeterinarioScreenProps } from '../../interfaces';
 import '../../css/VeterinariosPage.css';
 import { RecetaModal } from '../../Modal/RecetasModal';
+import { DerivacionesModal } from '../../Modal/DerivacionesModal';
 import { ConfiguracionModal } from '../../Modal/ConfiguracionModal';
 import { useAuth } from '../../Auth/AuthContext';
 import { InicioVeterinario } from '../../components/veterinario/InicioVeterinario';
+import { Aviso } from '../../components/ui/Aviso';
+import { textoCentroVeterinario } from '../../lib/centroVeterinario';
 import LogoAuraPetSinFondo from '../../assets/logo/LogoAuraPetSinFondo.png'; 
 
 const colors = Colors;
@@ -38,25 +41,31 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
 
   // Ficha de veterinario de esta cuenta (id de la tabla veterinarios + centros).
   // La agenda y los pacientes usan ese id, no el de la cuenta.
-  const { datos: infoVeterinario = { id: null, centros: [] } } =
+  const { datos: infoVeterinario = { id: null, centros: [], estado: null, centroSolicitado: null, centroMencionado: null } } =
     useConsulta(() => getInfoVeterinario(usuarioActual!.id), [usuarioActual!.id]);
   // -1 mientras carga o si la cuenta todavía no tiene ficha profesional: las consultas devuelven [].
   const veterinarioIdActual = infoVeterinario.id ?? -1;
 
-  // Un veterinario puede no estar vinculado a ningún centro (atención
-  // independiente): en ese caso centros llega vacío y lo indicamos así,
-  // en vez de mostrar un nombre de centro que no corresponde.
-  const centroLabel =
-    infoVeterinario.centros.length > 0
-      ? infoVeterinario.centros.join(" · ")
-      : "Atención independiente (sin centro asignado)";
+  // Sus centros; si no tiene, lo que pidió al registrarse (mientras está en
+  // revisión) o "atención independiente". Ver lib/centroVeterinario.ts
+  const centroLabel = textoCentroVeterinario(infoVeterinario);
+  const enRevision = infoVeterinario.estado === "pendiente";
 
   // Controla qué modal está abierto. Por ahora solo existe el de agenda;
   // cuando armemos Historial/Recetas se suman como más valores posibles
   // ("historial" | "recetas" | ...) en vez de un booleano por modal.
-  const [modalAbierto, setModalAbierto] = useState<"agenda" | "pacientes" | "receta" | "configuracion" | null>(null);
+  const [modalAbierto, setModalAbierto] = useState<"agenda" | "pacientes" | "receta" | "derivaciones" | "configuracion" | null>(null);
   // Si la receta se abre desde "Recetar" en una cita, guarda qué mascota viene elegida
   const [pacienteParaReceta, setPacienteParaReceta] = useState<number | null>(null);
+  // En qué pestaña se abre la agenda ("Mi Agenda" o la tarjeta "Por confirmar")
+  const [pestanaAgenda, setPestanaAgenda] = useState<PestanaAgenda>("agenda");
+  // Sube cada vez que la agenda confirma/rechaza una cita, para que el inicio se recargue
+  const [versionCitas, setVersionCitas] = useState(0);
+
+  const abrirAgenda = (pestana: PestanaAgenda) => {
+    setPestanaAgenda(pestana);
+    setModalAbierto("agenda");
+  };
 
   // esto es para el avatar, que ocupe las iniciales de la persona cuando no hay foto de perfil cargada. 
   const getIniciales = (nombreCompleto: string): string => {
@@ -81,7 +90,7 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
             <iconos.inicio size={18} />
             <span className="vet-nav-item-label">Inicio</span>
           </div>
-          <div className="vet-nav-item" onClick={() => setModalAbierto("agenda")}>
+          <div className="vet-nav-item" onClick={() => abrirAgenda("agenda")}>
             <iconos.calendario size={18} />
             <span className="vet-nav-item-label">Mi Agenda</span>
           </div>
@@ -92,6 +101,10 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
           <div className="vet-nav-item" onClick = {() => setModalAbierto("receta")}>
             <iconos.receta size={18} />
             <span className="vet-nav-item-label">Recetas</span>
+          </div>
+          <div className="vet-nav-item" onClick={() => setModalAbierto("derivaciones")}>
+            <iconos.derivacion size={18} />
+            <span className="vet-nav-item-label">Derivaciones</span>
           </div>
           <div className="vet-nav-item" onClick={() => setModalAbierto("configuracion")}>
             <iconos.configuracion size={18} />
@@ -119,9 +132,18 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
           </div>
         </div>
 
+        {/* Cuenta aún no aprobada por el superadmin */}
+        {enRevision && (
+          <div className="vet-aviso-revision">
+            <Aviso tipo="info" texto={TEXTOS_CENTRO_VETERINARIO.avisoRevision} />
+          </div>
+        )}
+
         <InicioVeterinario
           veterinarioId={veterinarioIdActual}
           nombre={usuarioActual!.nombre}
+          recargaExterna={versionCitas}
+          onVerPorConfirmar={() => abrirAgenda("por_confirmar")}
           onRecetar={(mascotaId) => {
             setPacienteParaReceta(mascotaId);
             setModalAbierto("receta");
@@ -130,10 +152,22 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
       </div>
 
       {modalAbierto === "agenda" && (
-        <ModalAgenda veterinarioId={veterinarioIdActual} onCerrar={() => setModalAbierto(null)} />
+        <ModalAgenda
+          veterinarioId={veterinarioIdActual}
+          pestanaInicial={pestanaAgenda}
+          onCerrar={() => setModalAbierto(null)}
+          onCambio={() => setVersionCitas((n) => n + 1)}
+        />
       )}
       {modalAbierto === "pacientes" && (
-      <PacientesModal veterinarioId={veterinarioIdActual} onCerrar={() => setModalAbierto(null)} />
+      <PacientesModal
+        veterinarioId={veterinarioIdActual}
+        onCerrar={() => setModalAbierto(null)}
+        onRecetar={(mascotaId) => {
+          setPacienteParaReceta(mascotaId);
+          setModalAbierto("receta");
+        }}
+      />
       )}
       {modalAbierto === "receta" && (
       <RecetaModal 
@@ -142,10 +176,16 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
         nombreVeterinario={usuarioActual!.nombre}
         centro={infoVeterinario.centros[0]}
         onCerrar={() => { setModalAbierto(null); setPacienteParaReceta(null); }}
-        onGuardar={(receta: NuevaReceta) => {
-          console.log('receta guardada Master :p ', receta)
-        }
-        }/>
+        />
+      )}
+      {modalAbierto === "derivaciones" && (
+        <DerivacionesModal
+          onCerrar={() => setModalAbierto(null)}
+          onRecetar={(mascotaId) => {
+            setPacienteParaReceta(mascotaId);
+            setModalAbierto("receta");
+          }}
+        />
       )}
       {modalAbierto === "configuracion" && (
         <ConfiguracionModal onCerrar={() => setModalAbierto(null)} />

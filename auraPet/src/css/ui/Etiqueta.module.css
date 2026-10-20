@@ -1,0 +1,13 @@
+/* Etiqueta (components/ui/Etiqueta.tsx) */
+.etiqueta {
+  justify-self: start;
+  align-self: center;
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--etiqueta-fondo);
+  color: var(--etiqueta-color);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}

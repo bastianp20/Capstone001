@@ -1,4 +1,5 @@
 import styles from "../../css/modal/CrearProfesionalModal.module.css"; // mismo diseño que los modales de crear
+import propias from "../../css/superadmin/CuentasSuperAdmin.module.css";
 import { TEXTO_CUENTA_PRUEBA } from "../../constants";
 import type { CasillaCuentaPruebaProps } from "../../interfaces";
 
@@ -12,7 +13,7 @@ export const CasillaCuentaPrueba = ({
     <input type="checkbox" checked={marcada} onChange={(e) => onCambiar(e.target.checked)} />
     <span>
       {titulo}
-      <small className={styles.ayuda} style={{ display: "block" }}>{ayuda}</small>
+      <small className={`${styles.ayuda} ${propias.ayudaBloque}`}>{ayuda}</small>
     </span>
   </label>
 );
