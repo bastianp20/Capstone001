@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { useState } from "react";
 import { TEXTOS_PRIVACIDAD as T } from "../../constants";
 import { getMisDatos } from "../../Api/getInfo";
@@ -6,11 +5,12 @@ import { useAccion } from "../../hooks/useAccion";
 import { descargarJson } from "../../lib/descargas";
 import { fechaDentroDe } from "../../lib/fechas";
 import type { SeccionPrivacidadProps } from "../../interfaces";
+import { SolicitarEliminacion } from "./SolicitarEliminacion";
 import styles from "../../css/modal/ConfiguracionModal.module.css";
 
 // Configuración → Privacidad y datos: descarga lo que AuraPet guarda de la
-// persona (función mis_datos, migración 31) y explica cómo pedir la eliminación.
-export const SeccionPrivacidad = ({ onCerrarModal }: SeccionPrivacidadProps) => {
+// persona (función mis_datos, migración 31) y permite pedir la eliminación (migración 32).
+export const SeccionPrivacidad = ({ perfilId }: SeccionPrivacidadProps) => {
   const { ejecutar, ocupado, error } = useAccion();
   const [listo, setListo] = useState(false);
 
@@ -35,9 +35,7 @@ export const SeccionPrivacidad = ({ onCerrarModal }: SeccionPrivacidadProps) => 
         </button>
       </div>
 
-      <p className={styles.subtitulo}>{T.eliminarTitulo}</p>
-      <small className={styles.ayudaTexto}>{T.eliminarAyuda}</small>
-      <Link to="/contacto" className={styles.link} onClick={onCerrarModal}>{T.eliminar}</Link>
+      <SolicitarEliminacion perfilId={perfilId} />
     </div>
   );
 };

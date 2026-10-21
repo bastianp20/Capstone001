@@ -1,9 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
-import { DATOS_SOLICITUD_VACIOS, PASOS_WIZARD_SOLICITUD } from "../constants";
+import { CAMPOS_WIZARD_SOLICITUD, DATOS_SOLICITUD_VACIOS, PASOS_WIZARD_SOLICITUD } from "../constants";
 import { validarCamposSolicitud } from "../lib/validacionSolicitud";
 import type { CampoSolicitud, DatosSolicitudCentro, ErroresSolicitud, PasoSolicitud, WizardSolicitud } from "../interfaces";
-
-const TODOS_LOS_CAMPOS = PASOS_WIZARD_SOLICITUD.flatMap((p) => p.campos);
 
 // Estado del formulario por pasos: los datos, en qué paso va y qué errores
 // mostrar. Un error solo se ve si el campo ya se "tocó" (salió de él) o si
@@ -15,7 +13,7 @@ export const useWizardSolicitud = (): WizardSolicitud => {
 
   // Errores de todo el formulario, y de ellos solo los de campos tocados
   const errores = useMemo<ErroresSolicitud>(() => {
-    const todos = validarCamposSolicitud(TODOS_LOS_CAMPOS, datos);
+    const todos = validarCamposSolicitud(CAMPOS_WIZARD_SOLICITUD, datos);
     return Object.fromEntries(Object.entries(todos).filter(([campo]) => tocados.has(campo as CampoSolicitud)));
   }, [datos, tocados]);
 

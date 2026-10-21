@@ -1,33 +1,31 @@
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import {
   User, Lock, Palette, Bell, ShieldCheck, CircleHelp,
-  ChevronRight, ChevronDown, Eye, EyeOff, LogOut, Sun, Moon, Monitor, X,
+  ChevronRight, ChevronDown, Eye, EyeOff, LogOut, X,
 } from "lucide-react";
 import { useAuth } from "../Auth/AuthContext";
 import { supabase } from "../lib/supabase";
 import { getIniciales } from "../utils";
-import { aplicarTema, leerTema, type Tema } from "../lib/tema";
+import { aplicarTema, leerTema } from "../lib/tema";
+import { ESTILO_ROL, OPCIONES_TEMA } from "../constants";
+import type {
+  CampoClaveProps, ConfiguracionModalProps, FilaConfiguracionProps, SeccionConfiguracion, SeccionPerfilProps,
+  SeccionSeguridadProps, Tema,
+} from "../interfaces";
 import { SeccionPrivacidad } from "../components/configuracion/SeccionPrivacidad";
 import styles from "../css/modal/ConfiguracionModal.module.css";
 
-interface ConfiguracionModalProps {
-  onCerrar: () => void;
-}
-
-type Seccion = "perfil" | "seguridad" | "apariencia" | "notificaciones" | "privacidad" | "ayuda";
-
-const ROL_LABEL = { dueno: "Dueño", veterinario: "Veterinario", superadmin: "Superadmin", administrativo: "Administrativo" } as const;
 
 // =====================================================================
 // MODAL PRINCIPAL
 // =====================================================================
 export const ConfiguracionModal = ({ onCerrar }: ConfiguracionModalProps) => {
   const { usuarioActual, logout } = useAuth();
-  const [abierta, setAbierta] = useState<Seccion | null>(null);
+  const [abierta, setAbierta] = useState<SeccionConfiguracion | null>(null);
 
   // Abre la sección; si ya estaba abierta, la cierra (acordeón)
-  const alternar = (s: Seccion) => setAbierta(abierta === s ? null : s);
+  const alternar = (s: SeccionConfiguracion) => setAbierta(abierta === s ? null : s);
 
   const cerrarSesion = async () => {
     await logout();
@@ -53,7 +51,7 @@ export const ConfiguracionModal = ({ onCerrar }: ConfiguracionModalProps) => {
           <div>
             <p className={styles.perfilNombre}>{usuarioActual.nombre}</p>
             <p className={styles.perfilCorreo}>{usuarioActual.email}</p>
-            <span className={styles.rol}>{ROL_LABEL[usuarioActual.rol]}</span>
+            <span className={styles.rol}>{ESTILO_ROL[usuarioActual.rol].texto}</span>
           </div>
         </div>
 
@@ -79,7 +77,7 @@ export const ConfiguracionModal = ({ onCerrar }: ConfiguracionModalProps) => {
 
           <Fila icono={<ShieldCheck size={18} />} titulo="Privacidad y datos" descripcion="Descargar o eliminar tus datos"
                 abierta={abierta === "privacidad"} onClick={() => alternar("privacidad")}>
-            <SeccionPrivacidad onCerrarModal={onCerrar} />
+            {usuarioActual && <SeccionPrivacidad perfilId={usuarioActual.id} />}
           </Fila>
 
           <Fila icono={<CircleHelp size={18} />} titulo="Ayuda" descripcion="Preguntas frecuentes y contacto"
@@ -103,17 +101,7 @@ export const ConfiguracionModal = ({ onCerrar }: ConfiguracionModalProps) => {
 // =====================================================================
 // UNA FILA DEL ACORDEÓN
 // =====================================================================
-interface FilaProps {
-  icono: ReactNode;
-  titulo: string;
-  descripcion: string;
-  abierta?: boolean;
-  proximamente?: boolean;
-  onClick?: () => void;
-  children?: ReactNode;
-}
-
-const Fila = ({ icono, titulo, descripcion, abierta = false, proximamente = false, onClick, children }: FilaProps) => (
+const Fila = ({ icono, titulo, descripcion, abierta = false, proximamente = false, onClick, children }: FilaConfiguracionProps) => (
   <div className={styles.fila}>
     <button
       className={styles.filaBoton}
@@ -136,7 +124,7 @@ const Fila = ({ icono, titulo, descripcion, abierta = false, proximamente = fals
 // =====================================================================
 // SECCIÓN: EDITAR PERFIL
 // =====================================================================
-const SeccionPerfil = ({ onGuardado }: { onGuardado: () => void }) => {
+const SeccionPerfil = ({ onGuardado }: SeccionPerfilProps) => {
   const { usuarioActual, recargarPerfil } = useAuth();
   // El teléfono se guarda como 56912345678; en pantalla mostramos solo 912345678
   const telefonoInicial = usuarioActual?.telefono ? String(usuarioActual.telefono).replace(/^56/, "") : "";
@@ -192,9 +180,7 @@ const SeccionPerfil = ({ onGuardado }: { onGuardado: () => void }) => {
 // SECCIÓN: SEGURIDAD
 // =====================================================================
 // Campo de contraseña con el ojito para mostrar/ocultar
-const CampoClave = ({ placeholder, value, onChange, autoComplete }: {
-  placeholder: string; value: string; onChange: (v: string) => void; autoComplete: string;
-}) => {
+const CampoClave = ({ placeholder, value, onChange, autoComplete }: CampoClaveProps) => {
   const [ver, setVer] = useState(false);
   return (
     <div className={styles.campoClave}>
@@ -212,7 +198,7 @@ const CampoClave = ({ placeholder, value, onChange, autoComplete }: {
   );
 };
 
-const SeccionSeguridad = ({ onCerrarModal }: { onCerrarModal: () => void }) => {
+const SeccionSeguridad = ({ onCerrarModal }: SeccionSeguridadProps) => {
   const { usuarioActual } = useAuth();
   const [claveActual, setClaveActual] = useState("");
   const [claveNueva, setClaveNueva] = useState("");
@@ -296,34 +282,28 @@ const SeccionSeguridad = ({ onCerrarModal }: { onCerrarModal: () => void }) => {
 
 // =====================================================================
 // SECCIÓN: APARIENCIA
-// (por ahora guarda la preferencia; el modo oscuro real viene cuando
-//  pasemos los colores de la app a variables CSS)
+// Guarda la preferencia y cambia <html data-tema>; los colores del modo
+// oscuro están en css/theme.css (lib/tema.ts)
 // =====================================================================
 const SeccionApariencia = () => {
   const [tema, setTema] = useState<Tema>(leerTema);
 
   const elegir = (nuevo: Tema) => {
     setTema(nuevo);
-    aplicarTema(nuevo); // <html data-tema="oscuro"> para el CSS futuro (lib/tema.ts)
+    aplicarTema(nuevo); // <html data-tema="..."> (lib/tema.ts)
   };
-
-  const opciones: { valor: Tema; label: string; icono: ReactNode }[] = [
-    { valor: "claro", label: "Claro", icono: <Sun size={18} /> },
-    { valor: "oscuro", label: "Oscuro", icono: <Moon size={18} /> },
-    { valor: "auto", label: "Automático", icono: <Monitor size={18} /> },
-  ];
 
   return (
     <div className={styles.temas}>
-      {opciones.map((o) => (
+      {OPCIONES_TEMA.map(({ valor, texto, icono: Icono }) => (
         <button
-          key={o.valor}
+          key={valor}
           type="button"
-          className={tema === o.valor ? styles.temaActivo : styles.tema}
-          onClick={() => elegir(o.valor)}
+          className={tema === valor ? styles.temaActivo : styles.tema}
+          onClick={() => elegir(valor)}
         >
-          {o.icono}
-          {o.label}
+          <Icono size={18} />
+          {texto}
         </button>
       ))}
     </div>

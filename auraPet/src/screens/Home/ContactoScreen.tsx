@@ -1,10 +1,7 @@
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import { Mail, MessageCircle, MapPin, ChevronDown } from "lucide-react";
 import { ASUNTOS_CONTACTO, Colors, CONTACTO_VACIO, LIMITES_CONTACTO, OTRAS_FORMAS_CONTACTO, TEXTOS_CONTACTO } from "../../constants";
-import { enviarMensajeContacto } from "../../Api/postInfo";
-import { useAccion } from "../../hooks/useAccion";
-import { validarContacto } from "../../lib/validacionContacto";
-import type { DatosContacto } from "../../interfaces";
+import { useFormularioContacto } from "../../hooks/useFormularioContacto";
 import "../../css/Contacto.css";
 import { usePreguntasFrecuentes } from "../../hooks/usePreguntasFrecuentes";
 
@@ -22,33 +19,9 @@ const temaVars = {
 } as React.CSSProperties;
 
 export const ContactoScreen = () => {
-  const [formulario, setFormulario] = useState<DatosContacto>(CONTACTO_VACIO);
-  const [errorValidacion, setErrorValidacion] = useState<string | null>(null);
-  const [enviado, setEnviado] = useState(false);
-  const { ejecutar, ocupado, error } = useAccion();
+  const { formulario, cambiar, enviar, enviado, ocupado, mensajeError } = useFormularioContacto(CONTACTO_VACIO);
   const [faqAbierta, setFaqAbierta] = useState<number | null>(null);
   const { preguntas: preguntasFrecuentes } = usePreguntasFrecuentes();
-
-  const cambiar = (cambios: Partial<DatosContacto>) => {
-    setFormulario((f) => ({ ...f, ...cambios }));
-    setEnviado(false);
-    setErrorValidacion(null);
-  };
-
-  // Se guarda en mensajes_contacto y le llega al superadmin (sección "Mensajes")
-  const handleEnviar = async (e: FormEvent) => {
-    e.preventDefault();
-    const problema = validarContacto(formulario);
-    setErrorValidacion(problema);
-    if (problema || ocupado) return;
-    const ok = await ejecutar(() => enviarMensajeContacto(formulario), "No pudimos enviar tu mensaje.");
-    if (ok) {
-      setFormulario(CONTACTO_VACIO);
-      setEnviado(true);
-    }
-  };
-
-  const mensajeError = errorValidacion ?? error;
 
   return (
     <div className="contacto-page" style={temaVars}>
@@ -61,7 +34,7 @@ export const ContactoScreen = () => {
 
       {/* Formulario + datos de contacto */}
       <section className="contacto-principal">
-        <form className="contacto-form" onSubmit={handleEnviar}>
+        <form className="contacto-form" onSubmit={enviar}>
           <label className="contacto-label" htmlFor="contacto-nombre">Nombre</label>
           <input
             id="contacto-nombre"

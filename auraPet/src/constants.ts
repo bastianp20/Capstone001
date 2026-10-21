@@ -2,9 +2,9 @@ import type { CSSProperties } from "react";
 import type {EstadoCita, UrgenciaCita, EspecieMascota, 
   // VistaHome, 
   Servicio, MedicamentoReceta, ColumnaMedicamento, AtajoProximoControl, PasoCita, ItemMenuDueno, TipoRegistro,
-  OpcionFiltro, FiltroUsuarios, FiltroAsignaciones, FiltroCentros, EstadoVerificacion, RolCuenta, EstadoVacuna, CargoResponsable, DatosSolicitudCentro, ItemConIcono, OpcionChip, PasoWizard, PreguntaRespuesta, TipoSolicitud, ItemMenuSuperAdmin, OpcionCrearSuperAdmin, CuentaUsuario, CentroListado, VeterinarioAsignaciones, FiltroHistorial, RangoCitas, SolicitudHistorial, DatosLaboralesVeterinario, OpcionModoCentro, EstadoSuscripcion, EstadoHistorialSuscripcion, FuncionPlan, PlanId, FiltroSuscripciones, SuscripcionListada, EstadoDerivacion, PestanaDerivaciones, DatosContacto, EstadoContacto, FiltroMensajes, MensajeContacto, OtraFormaContacto, ItemMenuCentroAdmin} from '../src/interfaces'; 
+  OpcionFiltro, FiltroUsuarios, FiltroAsignaciones, FiltroCentros, EstadoVerificacion, RolCuenta, EstadoVacuna, CargoResponsable, DatosSolicitudCentro, ItemConIcono, OpcionChip, PasoWizard, PreguntaRespuesta, TipoSolicitud, ItemMenuSuperAdmin, OpcionCrearSuperAdmin, CuentaUsuario, CentroListado, VeterinarioAsignaciones, FiltroHistorial, RangoCitas, SolicitudHistorial, DatosLaboralesVeterinario, OpcionModoCentro, EstadoSuscripcion, EstadoHistorialSuscripcion, FuncionPlan, PlanId, FiltroSuscripciones, SuscripcionListada, EstadoDerivacion, PestanaDerivaciones, DatosContacto, EstadoContacto, FiltroMensajes, MensajeContacto, OtraFormaContacto, ItemMenuCentroAdmin, EstadoSolicitudEliminacion, ColorNota, DatosNota, OpcionTema, DiaFormulario, TestimonioHome, PasoHome} from '../src/interfaces'; 
 import {
-  Menu, Search, Bell, User, UserCircle, Megaphone, Inbox, LogOut, Settings, Calendar, Filter, ChevronDown, ChevronRight, X, Plus, MoreVertical, Home,
+  Menu, Search, Bell, User, UserCircle, Megaphone, Inbox, UserX, StickyNote, Pin, PinOff, Download, Sun, Moon, Monitor, LogOut, Settings, Calendar, Filter, ChevronDown, ChevronRight, X, Plus, MoreVertical, Home,
   PawPrint, Heart, CalendarPlus, History, FileText,Stethoscope, Syringe, ClipboardList, ClipboardPlus, Share2, Microscope, Activity,
   Building2, Clock, MapPin, Phone, Users, ShieldCheck, Building, Settings2, AlertTriangle, AlertCircle, Info, Brain, ListOrdered,
   CheckCircle2, XCircle, Clock3, Loader2, Dog, Cat, ShieldPlus, Scissors, Trash2, ChevronLeft, Pencil, Scale, CalendarCheck, Send, SearchCheck, BadgeCheck, Check, ArrowRight, ArrowLeft, LayoutDashboard, ClipboardCheck, CalendarDays, Link2, CreditCard, Sparkles, Lock,
@@ -117,6 +117,10 @@ export const Iconos = {
   receta: ClipboardList,
   nuevoDiagnostico: ClipboardPlus,
   derivacion: Share2,
+  nota: StickyNote,
+  descargar: Download,
+  fijar: Pin,
+  desfijar: PinOff,
   muestra: Microscope,
   signosVitales: Activity,
 
@@ -601,6 +605,8 @@ export const MENU_SUPERADMIN: ItemMenuSuperAdmin[] = [
   { seccion: "aprobaciones", texto: "Aprobaciones", icono: ClipboardCheck },
   { seccion: "suscripciones", texto: "Suscripciones", icono: CreditCard },
   { seccion: "mensajes", texto: "Mensajes", icono: Inbox },
+  { seccion: "eliminaciones", texto: "Eliminaciones", icono: UserX },
+  { seccion: "notas", texto: "Notas", icono: StickyNote },
   { seccion: "citas", texto: "Citas", icono: CalendarDays },
 ];
 
@@ -645,6 +651,7 @@ export const COLUMNAS_SUPERADMIN = {
   asignaciones: "1.6fr 0.8fr 2fr 1.5fr",
   suscripciones: "1.6fr 1fr 0.9fr 0.9fr 0.7fr 2fr 1.7fr",
   mensajes: "1.5fr 1fr 2.6fr 1fr 0.9fr 1.6fr",
+  eliminaciones: "1.6fr 0.9fr 2.2fr 0.9fr 1fr 1.6fr",
 };
 
 // Colores de las etiquetas que no salen de otra tabla de estilos
@@ -1060,6 +1067,7 @@ export const OTRAS_FORMAS_CONTACTO: OtraFormaContacto[] = [
 
 export const TEXTOS_CONTACTO = {
   enviar: "Enviar mensaje",
+  enviarCorto: "Enviar",
   enviando: "Enviando…",
   enviado: "¡Gracias! Recibimos tu mensaje y te responderemos al correo que dejaste.",
   errorNombre: `Escribe tu nombre (mínimo ${LIMITES_CONTACTO.nombreMin} letras).`,
@@ -1159,8 +1167,214 @@ export const TEXTOS_PRIVACIDAD = {
   descargar: "Descargar mis datos",
   descargando: "Preparando…",
   descargado: "Listo, revisa tus descargas.",
-  eliminarTitulo: "Eliminar mi cuenta",
-  eliminarAyuda: "Por seguridad la eliminación la hace el equipo de AuraPet (el historial médico puede tener que conservarse). Escríbenos y la gestionamos.",
-  eliminar: "Pedir eliminación",
   nombreArchivo: (fecha: string) => `aurapet-mis-datos-${fecha}.json`,
+};
+
+// Formulario "¿Te podemos ayudar?" del inicio: no tiene campo de asunto, va fijo
+export const ASUNTO_CONTACTO_INICIO = "Consulta desde el inicio";
+export const CONTACTO_INICIO_VACIO: DatosContacto = { ...CONTACTO_VACIO, asunto: ASUNTO_CONTACTO_INICIO };
+
+// ---- Eliminación de cuenta (migración 32) ----
+export const MAX_CARACTERES_MOTIVO_ELIMINACION = 500;
+
+export const ESTADO_SOLICITUD_ELIMINACION: Record<EstadoSolicitudEliminacion, { texto: string; fondo: string; color: string }> = {
+  pendiente: { texto: "Pendiente", fondo: "#fdf3e1", color: "#8a5a00" },
+  aprobada: { texto: "Cuenta desactivada", fondo: "#fdecec", color: "#a4272a" },
+  rechazada: { texto: "Rechazada", fondo: "#eef0f2", color: "#4b5563" },
+};
+
+export const TEXTOS_ELIMINACION = {
+  // Configuración (la persona)
+  titulo: "Eliminar mi cuenta",
+  ayuda: "Tu cuenta se desactiva y ya no podrás ingresar. El historial médico de tus mascotas se conserva, como exige la ley.",
+  placeholderMotivo: "¿Por qué quieres eliminar tu cuenta? (opcional)",
+  pedir: "Pedir eliminación",
+  pidiendo: "Enviando…",
+  confirmar: "¿Seguro que quieres pedir la eliminación de tu cuenta?",
+  enRevision: (fecha: string) => `Pediste la eliminación el ${fecha}. Está en revisión.`,
+  rechazada: "Tu solicitud anterior fue rechazada.",
+  // Superadmin
+  tituloSeccion: "Solicitudes de eliminación",
+  subtituloSeccion: "Cuentas que pidieron ser eliminadas. Desactivar impide que vuelvan a ingresar; el historial médico se conserva.",
+  aprobar: "Desactivar cuenta",
+  rechazar: "Rechazar",
+  confirmarAprobar: (nombre: string) => `¿Desactivar la cuenta de ${nombre}? Ya no podrá ingresar.`,
+  tituloRechazo: "Rechazar solicitud de eliminación",
+  descripcionRechazo: "La persona verá este motivo en Configuración.",
+  desactivada: (nombre: string) => `La cuenta de ${nombre} quedó desactivada.`,
+  rechazadaOk: (nombre: string) => `Se rechazó la solicitud de ${nombre}.`,
+  vacio: "No hay solicitudes de eliminación.",
+  pendientes: (n: number) => (n === 1 ? "Hay 1 solicitud esperando respuesta." : `Hay ${n} solicitudes esperando respuesta.`),
+};
+
+// ---- Notas personales (migración 33) ----
+export const MAX_CARACTERES_TITULO_NOTA = 120;
+export const MAX_CARACTERES_NOTA = 4000;
+
+// Nombre de cada color (los colores en sí están en css/notas/Notas.module.css)
+export const COLORES_NOTA: Record<ColorNota, string> = {
+  menta: "Menta",
+  arena: "Arena",
+  cielo: "Cielo",
+  lavanda: "Lavanda",
+  coral: "Coral",
+};
+
+export const NOTA_VACIA: DatosNota = { titulo: "", contenido: "", color: "menta" };
+
+export const TEXTOS_NOTAS = {
+  titulo: "Notas",
+  descripcionSuperadmin: "Tu libreta: pendientes, ideas o recordatorios. Solo tú ves tus notas.",
+  descripcionVeterinario: "Apuntes personales: pendientes, recordatorios o ideas. Solo tú ves tus notas.",
+  nueva: "Nueva nota",
+  editar: "Editar nota",
+  placeholderTitulo: "Título",
+  placeholderContenido: "Escribe tu nota…",
+  color: "Color",
+  guardar: "Guardar",
+  guardando: "Guardando…",
+  cancelar: "Cancelar",
+  fijar: "Fijar arriba",
+  desfijar: "Quitar de arriba",
+  borrar: "Borrar",
+  confirmarBorrar: (titulo: string) => `¿Borrar la nota "${titulo}"? No se puede deshacer.`,
+  vacio: "Todavía no tienes notas. Crea la primera con \"Nueva nota\".",
+  editada: (fecha: string) => `Editada ${fecha}`,
+  buscar: "Buscar en mis notas…",
+  sinResultados: "Ninguna nota coincide con la búsqueda.",
+};
+
+// ---- Ficha médica en PDF (lib/pdf/) ----
+export const FORMATO_PDF = "letter";      // tamaño carta (en Chile se usa más que A4)
+export const MAX_REGISTROS_RESUMEN_PDF = 3;
+export const MAX_CARACTERES_RESUMEN_PDF = 220;
+
+// Colores del PDF en RGB (jsPDF no lee variables CSS); mismos de theme.css
+export const COLORES_PDF = {
+  primario: [15, 143, 128],
+  secundario: [227, 245, 242],
+  texto: [26, 31, 39],
+  muted: [107, 114, 128],
+  borde: [228, 230, 234],
+  tarjeta: [245, 247, 248],
+  rojo: [164, 39, 42],
+  ambar: [210, 155, 42],
+} as const;
+
+export const TEXTOS_PDF = {
+  marca: "AuraPet",
+  tituloFicha: "FICHA MÉDICA VETERINARIA",
+  tituloResumen: "RESUMEN DE FICHA",
+  tituloReceta: "RECETA MÉDICA VETERINARIA",
+  cortoFicha: "Ficha Médica Veterinaria",
+  cortoResumen: "Resumen de ficha",
+  cortoReceta: "Receta médica veterinaria",
+  emitida: "Emitido automáticamente por AuraPet",
+  pacienteTutor: "PACIENTE Y TUTOR",
+  alertas: "ALERTAS CLÍNICAS",
+  sinAlertas: "Sin alertas registradas.",
+  alergia: "Alergias: ",
+  condicion: "Condiciones crónicas: ",
+  vacunas: "HISTORIAL DE VACUNAS",
+  sinVacunas: "Sin vacunas con próxima dosis registradas.",
+  historial: "HISTORIAL MÉDICO Y CLÍNICO",
+  sinHistorial: "Sin registros médicos.",
+  ultimosRegistros: "ÚLTIMOS REGISTROS MÉDICOS",
+  recetas: "RECETAS",
+  sinRecetas: "Sin recetas emitidas.",
+  derivaciones: "DERIVACIONES",
+  sinDerivaciones: "Sin derivaciones.",
+  prescripcion: "PRESCRIPCIÓN",
+  indicaciones: "Indicaciones: ",
+  proximoControl: "Próximo control: ",
+  tratamiento: "Tratamiento: ",
+  proximaDosis: "Próxima dosis o control: ",
+  firma: "Firma y timbre del médico veterinario",
+  colegiado: (n: string | null) => `N° de colegiado: ${n ?? "________________"}`,
+  emitidaPor: (vet: string, centro: string | null, fecha: string) => `Emitida por ${vet}${centro ? ` · ${centro}` : ""} · ${fecha}`,
+  confidencial: "Documento clínico confidencial. Contiene datos sensibles de salud protegidos por la Ley 19.628 sobre protección de la vida privada. Uso exclusivo del tutor y de los profesionales tratantes.",
+  pagina: (actual: number, total: number) => `Página ${actual} de ${total}`,
+  columnasVacunas: ["Vacuna", "Fecha de aplicación", "Próxima dosis", "Estado"],
+  columnasMedicamentos: ["Medicamento", "Dosis", "Frecuencia", "Duración"],
+  columnasDerivaciones: ["Fecha", "Derivado por", "Destino", "Motivo", "Estado", "Resultado"],
+  campos: {
+    nombre: "Nombre: ", especie: "Especie: ", raza: "Raza: ", sexo: "Sexo: ", nacimiento: "F. nacimiento: ",
+    peso: "Peso: ", esterilizado: "Esterilizado: ", microchip: "Microchip: ", tutor: "Tutor: ", telefono: "Teléfono: ",
+  },
+  // Botones
+  fichaCompleta: "Ficha completa (PDF)",
+  resumen: "Resumen (PDF)",
+  receta: "Receta (PDF)",
+  generando: "Generando…",
+  tituloDescargas: "Ficha médica en PDF",
+  ayudaDescargas: "Descarga la ficha con el formato de AuraPet para guardarla, imprimirla o llevarla a otra clínica.",
+  mascota: "Mascota",
+  archivo: (tipo: string, nombre: string, fecha: string) => `aurapet-${tipo}-${nombre}-${fecha}.pdf`,
+};
+
+// =====================================================================
+// CONSTANTES QUE ESTABAN SUELTAS EN OTROS ARCHIVOS (ordenadas el 20-10-2026)
+// =====================================================================
+
+// ---- Tema (lib/tema.ts) ----
+export const CLAVE_TEMA = "aurapet-tema";          // localStorage
+export const TEMA_POR_DEFECTO = "claro";
+export const OPCIONES_TEMA: OpcionTema[] = [
+  { valor: "claro", texto: "Claro", icono: Sun },
+  { valor: "oscuro", texto: "Oscuro", icono: Moon },
+  { valor: "auto", texto: "Automático", icono: Monitor },
+];
+
+// ---- Formularios ----
+export const REGEX_CORREO = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+// ---- Notas: orden de los colores en el selector ----
+export const LISTA_COLORES_NOTA = Object.keys(COLORES_NOTA) as ColorNota[];
+
+// ---- Panel del centro: días de la semana en orden (1 = lunes) ----
+export const DIAS_SEMANA_ORDEN = [1, 2, 3, 4, 5, 6, 7];
+
+// ---- Citas (superadmin): estados para el filtro ----
+export const ESTADOS_CITA = Object.keys(ESTADO_LABEL) as EstadoCita[];
+
+// ---- Solicitud de centro: todos los campos del wizard ----
+export const CAMPOS_WIZARD_SOLICITUD = PASOS_WIZARD_SOLICITUD.flatMap((p) => p.campos);
+
+// ---- Landing ----
+export const TESTIMONIOS_VISIBLES_HOME = 3;
+export const TESTIMONIOS_HOME: TestimonioHome[] = [
+  { texto: "Agendar hora para mi perro nunca había sido tan fácil.", nombre: "Camila Rojas", rol: "Dueña de mascota" },
+  { texto: "Tener el historial digital me ahorra tiempo en cada consulta.", nombre: "Ana Duarte", rol: "Veterinaria" },
+  { texto: "Encontré una veterinaria cerca en minutos.", nombre: "Joaquín Bahes", rol: "Dueño de mascota" },
+  { texto: "La app me ayuda a organizar mi agenda de pacientes.", nombre: "Frank de Álamos", rol: "Veterinario" },
+];
+
+export const PASOS_HOME: PasoHome[] = [
+  { numero: 1, titulo: "Regístrate", descripcion: "Crea tu cuenta como dueño o veterinaria en minutos." },
+  { numero: 2, titulo: "Encuentra tu veterinaria", descripcion: "Busca por cercanía, especialidad o disponibilidad." },
+  { numero: 3, titulo: "Agenda tu cita", descripcion: "Elige el horario que más te acomode y listo." },
+];
+
+// ---- Crear centro: horarios por defecto ----
+// Valores por defecto: lunes a viernes 9 a 19 con colación, sábado 10 a 14, domingo cerrado
+export const DIAS_INICIALES_CENTRO: DiaFormulario[] = [
+  "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo",
+].map((nombre, i) => ({
+  dia: i + 1,
+  nombre,
+  atiende: i < 6,
+  abre: i === 5 ? "10:00" : "09:00",
+  cierra: i === 5 ? "14:00" : "19:00",
+  conColacion: i < 5,
+  inicioColacion: "14:00",
+  finColacion: "15:00",
+}));
+
+// ---- PDF: medidas en mm (lib/pdf/plantilla.ts) ----
+export const MEDIDAS_PDF = {
+  margen: 18,           // margen lateral y superior del contenido
+  marco: 7,             // borde verde, medido desde el canto de la hoja
+  inicioPaginas: 30,    // donde parte el contenido desde la página 2
+  reservaPie: 26,       // alto reservado para el pie de página
+  ptAMm: 0.3528,        // 1 punto tipográfico en mm
 };

@@ -4,17 +4,15 @@ import {
 } from "../../constants";
 import { responderDerivacion } from "../../Api/postInfo";
 import { useAccion } from "../../hooks/useAccion";
-import type { TarjetaDerivacionProps } from "../../interfaces";
+import type { RespuestaDerivacion, TarjetaDerivacionProps } from "../../interfaces";
 import { Etiqueta } from "../ui/Etiqueta";
 import { Boton } from "../ui/Boton";
 import styles from "../../css/ficha/Derivaciones.module.css";
 
-type Respuesta = "realizada" | "rechazo" | null;
-
 // Una derivación: destino, motivo, estado y resultado. Si corresponde,
 // muestra las acciones (el destino responde; quien derivó puede cancelar).
 export const TarjetaDerivacion = ({ derivacion: d, mostrarMascota, onCambio, onVerFicha }: TarjetaDerivacionProps) => {
-  const [respuesta, setRespuesta] = useState<Respuesta>(null);
+  const [respuesta, setRespuesta] = useState<RespuestaDerivacion>(null);
   const [texto, setTexto] = useState("");
   const { ejecutar, ocupado, error } = useAccion();
 

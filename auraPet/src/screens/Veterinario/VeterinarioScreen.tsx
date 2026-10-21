@@ -1,5 +1,5 @@
-import { useState, type CSSProperties } from 'react';
-import { Colors, Iconos, TEXTOS_CENTRO_VETERINARIO } from '../../constants';
+import { useState } from 'react';
+import { Iconos, TEXTOS_CENTRO_VETERINARIO } from '../../constants';
 import { getInfoVeterinario, getMisCentrosAdmin } from '../../Api/getInfo';
 import { useConsulta } from '../../hooks/useConsulta';
 import { ModalAgenda } from '../../Modal/AgendaModal';
@@ -8,6 +8,7 @@ import type { PestanaAgenda, VeterinarioScreenProps } from '../../interfaces';
 import '../../css/VeterinariosPage.css';
 import { RecetaModal } from '../../Modal/RecetasModal';
 import { DerivacionesModal } from '../../Modal/DerivacionesModal';
+import { NotasModal } from '../../Modal/NotasModal';
 import { ConfiguracionModal } from '../../Modal/ConfiguracionModal';
 import { useAuth } from '../../Auth/AuthContext';
 import { InicioVeterinario } from '../../components/veterinario/InicioVeterinario';
@@ -15,22 +16,8 @@ import { Aviso } from '../../components/ui/Aviso';
 import { textoCentroVeterinario } from '../../lib/centroVeterinario';
 import LogoAuraPetSinFondo from '../../assets/logo/LogoAuraPetSinFondo.png'; 
 
-const colors = Colors;
 const iconos = Iconos;
 
-// Variables CSS con los colores del tema (Colors, en constants.ts es la
-// única fuente de verdad) para que VeterinariosPage.css los use como
-// var(--color-*) en vez de tener los hex duplicados en dos lugares.
-const temaVars = {
-  "--color-bg": colors.bg,
-  "--color-sidebar-bg": colors.sidebarBg,
-  "--color-sidebar-active": colors.sidebarActive,
-  "--color-border": colors.border,
-  "--color-text": colors.text,
-  "--color-text-muted": colors.textMuted,
-  "--color-accent": colors.accent,
-  "--color-accent-soft": colors.accentSoft,
-} as CSSProperties;
 
 export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProps) => {
   const { usuarioActual } = useAuth();
@@ -54,7 +41,7 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
   // Controla qué modal está abierto. Por ahora solo existe el de agenda;
   // cuando armemos Historial/Recetas se suman como más valores posibles
   // ("historial" | "recetas" | ...) en vez de un booleano por modal.
-  const [modalAbierto, setModalAbierto] = useState<"agenda" | "pacientes" | "receta" | "derivaciones" | "configuracion" | null>(null);
+  const [modalAbierto, setModalAbierto] = useState<"agenda" | "pacientes" | "receta" | "derivaciones" | "notas" | "configuracion" | null>(null);
   // Si la receta se abre desde "Recetar" en una cita, guarda qué mascota viene elegida
   const [pacienteParaReceta, setPacienteParaReceta] = useState<number | null>(null);
   // En qué pestaña se abre la agenda ("Mi Agenda" o la tarjeta "Por confirmar")
@@ -76,7 +63,7 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
   };
 
   return (
-    <div className="vet-page" style={temaVars}>
+    <div className="vet-page">
       {/* logo y nombre de la página */}
       <div className="vet-sidebar">
         <div className="vet-sidebar-brand">
@@ -105,6 +92,10 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
           <div className="vet-nav-item" onClick={() => setModalAbierto("derivaciones")}>
             <iconos.derivacion size={18} />
             <span className="vet-nav-item-label">Derivaciones</span>
+          </div>
+          <div className="vet-nav-item" onClick={() => setModalAbierto("notas")}>
+            <iconos.nota size={18} />
+            <span className="vet-nav-item-label">Notas</span>
           </div>
           <div className="vet-nav-item" onClick={() => setModalAbierto("configuracion")}>
             <iconos.configuracion size={18} />
@@ -187,6 +178,7 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
           }}
         />
       )}
+      {modalAbierto === "notas" && <NotasModal onCerrar={() => setModalAbierto(null)} />}
       {modalAbierto === "configuracion" && (
         <ConfiguracionModal onCerrar={() => setModalAbierto(null)} />
       )}

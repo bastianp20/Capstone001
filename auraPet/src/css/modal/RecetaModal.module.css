@@ -22,8 +22,8 @@
   max-height: 92vh;
   display: flex;
   flex-direction: column;
-  background: #fff;
-  color: #1a1f27;
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
   border-radius: 14px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
   font-family: system-ui, sans-serif;
@@ -35,7 +35,7 @@
   justify-content: space-between;
   align-items: flex-start;
   padding: 20px 24px 14px;
-  border-bottom: 1px solid #e4e6ea;
+  border-bottom: 1px solid var(--color-terciario-borde);
 }
 
 .titulo {
@@ -47,7 +47,7 @@
 .subtitulo {
   margin: 4px 0 0;
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
 }
 
 .cerrar {
@@ -56,12 +56,12 @@
   border: none;
   border-radius: 6px;
   background: none;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
   cursor: pointer;
 }
 
 .cerrar:hover {
-  background: #f6f8f8;
+  background: var(--color-fondo-app);
 }
 
 /* El cuerpo es lo único que hace scroll; encabezado y pie quedan fijos */
@@ -91,10 +91,10 @@
   width: 100%;
   box-sizing: border-box;
   padding: 8px 10px;
-  border: 1px solid #e4e6ea;
+  border: 1px solid var(--color-terciario-borde);
   border-radius: 8px;
-  background: #f6f8f8;
-  color: #1a1f27;
+  background: var(--color-fondo-app);
+  color: var(--color-terciario-texto);
   font-size: 0.86rem;
   font-family: inherit;
 }
@@ -103,7 +103,7 @@
 .textarea:focus {
   outline: none;
   border-color: #0f8f80;
-  background: #fff;
+  background: var(--color-superficie);
   box-shadow: 0 0 0 3px rgba(15, 143, 128, 0.15);
 }
 
@@ -122,7 +122,7 @@
   left: 10px;
   top: 50%;
   transform: translateY(-50%);
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
   pointer-events: none;
 }
 
@@ -133,7 +133,7 @@
 .listaPacientes {
   max-height: 180px;
   overflow-y: auto;
-  border: 1px solid #e4e6ea;
+  border: 1px solid var(--color-terciario-borde);
   border-radius: 10px;
 }
 
@@ -144,12 +144,12 @@
   width: 100%;
   padding: 9px 12px;
   border: none;
-  border-top: 1px solid #e4e6ea;
-  background: #fff;
+  border-top: 1px solid var(--color-terciario-borde);
+  background: var(--color-superficie);
   text-align: left;
   cursor: pointer;
   font-size: 0.86rem;
-  color: #1a1f27;
+  color: var(--color-terciario-texto);
 }
 
 .opcionPaciente:first-child {
@@ -157,11 +157,11 @@
 }
 
 .opcionPaciente:hover {
-  background: #e3f5f2;
+  background: var(--color-secundario);
 }
 
 .textoSuave {
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
   font-size: 0.8rem;
 }
 
@@ -169,7 +169,7 @@
   margin: 0;
   padding: 12px;
   text-align: center;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
   font-size: 0.85rem;
 }
 
@@ -178,9 +178,9 @@
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  border: 1px solid #e4e6ea;
+  border: 1px solid var(--color-terciario-borde);
   border-radius: 10px;
-  background: #f6f8f8;
+  background: var(--color-fondo-app);
 }
 
 .avatar {
@@ -191,7 +191,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #e3f5f2;
+  background: var(--color-secundario);
   color: #0f8f80;
 }
 
@@ -248,10 +248,10 @@
 
 .encabezadoTabla {
   padding-bottom: 4px;
-  border-bottom: 1px solid #e4e6ea;
+  border-bottom: 1px solid var(--color-terciario-borde);
   font-size: 0.8rem;
   font-weight: 600;
-  color: #1a1f27;
+  color: var(--color-terciario-texto);
 }
 
 .filasMedicamentos {
@@ -267,7 +267,7 @@
   border: none;
   border-radius: 6px;
   background: none;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
   cursor: pointer;
 }
 
@@ -311,17 +311,17 @@
 .atajo,
 .atajoActivo {
   padding: 6px 12px;
-  border: 1px solid #e4e6ea;
+  border: 1px solid var(--color-terciario-borde);
   border-radius: 999px;
-  background: #f6f8f8;
-  color: #1a1f27;
+  background: var(--color-fondo-app);
+  color: var(--color-terciario-texto);
   font-size: 0.8rem;
   cursor: pointer;
 }
 
 .atajoActivo {
   border-color: #0f8f80;
-  background: #e3f5f2;
+  background: var(--color-secundario);
   color: #0f8f80;
   font-weight: 600;
 }
@@ -333,14 +333,14 @@
   justify-content: space-between;
   gap: 16px;
   padding: 14px 24px;
-  border-top: 1px solid #e4e6ea;
+  border-top: 1px solid var(--color-terciario-borde);
 }
 
 .notaPie {
   margin: 0;
   max-width: 300px;
   font-size: 0.76rem;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
 }
 
 .acciones {
@@ -358,9 +358,9 @@
 }
 
 .cancelar {
-  border: 1px solid #e4e6ea;
-  background: #fff;
-  color: #1a1f27;
+  border: 1px solid var(--color-terciario-borde);
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
 }
 
 .guardar {
@@ -387,7 +387,7 @@
   .filaTabla {
     grid-template-columns: 1fr 1fr;
     padding: 10px;
-    border: 1px solid #e4e6ea;
+    border: 1px solid var(--color-terciario-borde);
     border-radius: 10px;
   }
 

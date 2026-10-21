@@ -1,5 +1,5 @@
 // aquí van las acciones que CREAN o CAMBIAN datos en la base (los "POST").
-import type { DatosNuevaMascota, DatosNuevoCentro, DatosNuevoDueno, DatosNuevoProfesional, DatosNuevoSuperadmin, DatosEdicionCentro, DatosNuevoAdministrativo, CambioCita, DatosSolicitudCita, CambiosCuenta, NuevoRegistroMedico, CambiosDatosClinicos, DatosSolicitudCentro, NuevaReceta, NuevaDerivacion, DatosContacto, EstadoContacto } from "../interfaces";
+import type { DatosNuevaMascota, DatosNuevoCentro, DatosNuevoDueno, DatosNuevoProfesional, DatosNuevoSuperadmin, DatosEdicionCentro, DatosNuevoAdministrativo, CambioCita, DatosSolicitudCita, CambiosCuenta, NuevoRegistroMedico, CambiosDatosClinicos, DatosSolicitudCentro, NuevaReceta, NuevaDerivacion, DatosContacto, EstadoContacto, DatosNota } from "../interfaces";
 import { supabase } from "../lib/supabase";
 import type { Json } from "../lib/database.types";
 
@@ -311,14 +311,15 @@ export const solicitarCambioPlan = async (centroId: number, planId: string, mens
 
 // GUARDAR UNA RECETA (VETERINARIO TRATANTE)
 // crear_receta (migración 27) guarda la receta y sus medicamentos juntos.
-export const crearReceta = async (receta: NuevaReceta) => {
-  const { error } = await supabase.rpc("crear_receta", {
+export const crearReceta = async (receta: NuevaReceta): Promise<number> => {
+  const { data, error } = await supabase.rpc("crear_receta", {
     p_mascota_id: receta.mascotaId,
     p_medicamentos: receta.medicamentos as unknown as Json,
     p_indicaciones: receta.indicaciones || undefined,
     p_proximo_control: receta.proximoControl || undefined,
   });
   if (error) throw new Error(error.message || "No se pudo guardar la receta.");
+  return data;                                       // id de la receta (para descargarla en PDF)
 };
 
 // SUPERADMIN: activar o rechazar una solicitud de cambio de plan (migración 28).
@@ -374,4 +375,47 @@ export const enviarMensajeContacto = async (datos: DatosContacto) => {
 export const cambiarEstadoMensaje = async (mensajeId: number, estado: EstadoContacto) => {
   const { error } = await supabase.from("mensajes_contacto").update({ estado }).eq("id", mensajeId);
   if (error) throw new Error(error.message || "No se pudo actualizar el mensaje.");
+};
+
+// ---------- ELIMINACIÓN DE CUENTA (migración 32) ----------
+// Pedir que se elimine (desactive) la propia cuenta
+export const solicitarEliminacionCuenta = async (motivo: string) => {
+  const { error } = await supabase.rpc("solicitar_eliminacion_cuenta", { p_motivo: motivo.trim() || undefined });
+  if (error) throw new Error(error.message || "No se pudo enviar la solicitud.");
+};
+
+// SUPERADMIN: aprobar (desactiva la cuenta) o rechazar con una respuesta
+export const resolverSolicitudEliminacion = async (solicitudId: number, aprobar: boolean, respuesta?: string) => {
+  const { error } = await supabase.rpc("resolver_solicitud_eliminacion", {
+    p_solicitud_id: solicitudId,
+    p_aprobar: aprobar,
+    p_respuesta: respuesta?.trim() || undefined,
+  });
+  if (error) throw new Error(error.message || "No se pudo resolver la solicitud.");
+};
+
+// ---------- NOTAS PERSONALES (migración 33) ----------
+// perfil_id lo pone la base (default auth.uid()) y RLS deja tocar solo las propias
+export const crearNota = async (datos: DatosNota) => {
+  const { error } = await supabase.from("notas").insert({
+    titulo: datos.titulo.trim(),
+    contenido: datos.contenido.trim(),
+    color: datos.color,
+  });
+  if (error) throw new Error(error.message || "No se pudo guardar la nota.");
+};
+
+export const actualizarNota = async (notaId: number, cambios: Partial<DatosNota> & { fijada?: boolean }) => {
+  const fila = {
+    ...cambios,
+    ...(cambios.titulo !== undefined ? { titulo: cambios.titulo.trim() } : {}),
+    ...(cambios.contenido !== undefined ? { contenido: cambios.contenido.trim() } : {}),
+  };
+  const { error } = await supabase.from("notas").update(fila).eq("id", notaId);
+  if (error) throw new Error(error.message || "No se pudo actualizar la nota.");
+};
+
+export const borrarNota = async (notaId: number) => {
+  const { error } = await supabase.from("notas").delete().eq("id", notaId);
+  if (error) throw new Error(error.message || "No se pudo borrar la nota.");
 };

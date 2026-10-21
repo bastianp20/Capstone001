@@ -10,7 +10,6 @@
 // Tipos que ya usaban las pantallas (formato "listo para mostrar").
 import type {
   CitaProximaDueno,        // cita para el cuadradito del panel del dueño
-  EstadoCita,              // "pendiente" | "confirmada" | ...
   HistorialRecienteItem,   // ítem de "historial reciente" del dueño
   Mascota,                 // mascota con los campos que muestra la app
   PreguntaFrecuente,       // pregunta + respuesta + cantidad de consultas
@@ -29,7 +28,6 @@ import type {
   EstadoHistorialSuscripcion,
   FiltrosCitas,
   PaginaCitas,
-  UrgenciaCita,            // "baja" | "media" | "alta" | "critica",
   ResumenSuperadmin,
   VeterinarioAsignaciones,
   CentroAdministrado,
@@ -48,14 +46,23 @@ import type {
   Derivacion,
   TipoDestinoDerivacion,
   MensajeContacto,
+  SolicitudEliminacion,
+  SolicitudEliminacionListada,
+  EstadoSolicitudEliminacion,
+  RolCuenta,
+  Nota,
+  ColorNota,
+  FichaPdf,
+  FichaPdfCruda,
+  CitaAgendaItem,
 } from "../interfaces";
 // auí importamos supabase para poder hacer las consutas a la base de datos. 
 import { supabase } from "../lib/supabase";
 // Funciones para mostrar las fechas que vienen de la base.
 import { nombreConComuna } from "../lib/centroVeterinario";
-import { formatEdad } from "../lib/fichaPaciente";
-import { calcularEdad, formatHorario, formatFechaCaja, formatFechaCorta, formatFechaHora, formatFechaLarga, formatHora12h, formatHora24, diaDelMesEnChile, fechaDentroDe, rangosDeFecha } from "../lib/fechas";
-import { CARGOS_RESPONSABLE, DIAS_CONTROLES_PROXIMOS, ESTADO_VERIFICACION, ESTILO_ROL, MAX_ITEMS_PENDIENTES, MOTIVO_RECHAZO_SIN_DETALLE, MS_CREADO_YA_APROBADO, URGENCIAS_ALTAS } from "../constants";
+import { formatEdad, resumirVacunas } from "../lib/fichaPaciente";
+import { calcularEdad, formatFechaEmision, formatHorario, formatFechaCaja, formatFechaCorta, formatFechaHora, formatFechaLarga, formatHora12h, formatHora24, diaDelMesEnChile, fechaDentroDe, rangosDeFecha } from "../lib/fechas";
+import { CARGOS_RESPONSABLE, DIAS_CONTROLES_PROXIMOS, ESTADO_VERIFICACION, ESTILO_ROL, MAX_ITEMS_PENDIENTES, MOTIVO_RECHAZO_SIN_DETALLE, MS_CREADO_YA_APROBADO, URGENCIAS_ALTAS, SEXO_LABEL, TEXTO_SIN_REGISTRAR } from "../constants";
 
 // Pone la primera letra en mayúscula: "perro" -> "Perro".
 const capitalize = (s: string): string => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
@@ -147,19 +154,6 @@ export const getHistorialRecienteDueno = async (duenoId: string, limite = 5): Pr
 // PANEL DEL VETERINARIO
 // =====================================================================
 
-// Una cita tal como la muestra la agenda del veterinario.
-export interface CitaAgendaItem {
-  id: number;
-  hora: string;           // "10:30 AM"
-  fecha: string;          // "10/09 · 10:30" (la agenda trae citas de varios días)
-  mascota: string;
-  especie: string;
-  raza: string;
-  dueno: string;
-  motivo: string;
-  estado: EstadoCita;
-  urgencia: UrgenciaCita;
-}
 
 // Busca la ficha de veterinario de la persona conectada y sus centros.
 // Recibe el id de la CUENTA (uuid) y devuelve el id de VETERINARIO (número),
@@ -1265,4 +1259,127 @@ export const getMensajesContacto = async (): Promise<MensajeContacto[]> => {
     estado: m.estado,
     fecha: formatFechaHora(m.creado_en),
   }));
+};
+
+// ---------- ELIMINACIÓN DE CUENTA (migración 32) ----------
+// La última solicitud de la persona conectada (o null si nunca pidió)
+export const getMiSolicitudEliminacion = async (perfilId: string): Promise<SolicitudEliminacion | null> => {
+  const { data, error } = await supabase
+    .from("solicitudes_eliminacion")
+    .select("id, motivo, estado, respuesta, creada_en")
+    .eq("perfil_id", perfilId)
+    .order("creada_en", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  return {
+    id: data.id,
+    motivo: data.motivo,
+    estado: data.estado as EstadoSolicitudEliminacion,
+    respuesta: data.respuesta,
+    fecha: formatFechaHora(data.creada_en),
+  };
+};
+
+// SUPERADMIN: todas las solicitudes (pendientes primero)
+export const getSolicitudesEliminacion = async (): Promise<SolicitudEliminacionListada[]> => {
+  const { data, error } = await supabase.rpc("listar_solicitudes_eliminacion");
+  if (error) throw error;
+  return (data ?? []).map((s) => ({
+    id: s.id,
+    perfilId: s.perfil_id,
+    nombre: s.nombre,
+    correo: s.correo,
+    rol: s.rol as RolCuenta,
+    motivo: s.motivo,
+    estado: s.estado as EstadoSolicitudEliminacion,
+    respuesta: s.respuesta,
+    fecha: formatFechaHora(s.creada_en),
+  }));
+};
+
+// ---------- NOTAS PERSONALES (migración 33) ----------
+// Las notas de la persona conectada: fijadas primero, luego las más recientes
+export const getNotas = async (): Promise<Nota[]> => {
+  const { data, error } = await supabase
+    .from("notas")
+    .select("id, titulo, contenido, color, fijada, actualizada_en")
+    .order("fijada", { ascending: false })
+    .order("actualizada_en", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((n) => ({
+    id: n.id,
+    titulo: n.titulo,
+    contenido: n.contenido,
+    color: n.color as ColorNota,
+    fijada: n.fijada,
+    actualizada: formatFechaHora(n.actualizada_en),
+  }));
+};
+
+// ---------- FICHA MÉDICA EN PDF (migración 34) ----------
+
+// Todo lo que lleva la ficha en PDF, con los textos ya formateados.
+// La base revisa que sea tu mascota, tu paciente o que seas superadmin.
+export const getFichaPdf = async (mascotaId: number): Promise<FichaPdf> => {
+  const { data, error } = await supabase.rpc("ficha_pdf", { p_mascota_id: mascotaId });
+  if (error) throw error;
+  if (!data) throw new Error("No se encontró la ficha.");
+  const f = data as unknown as FichaPdfCruda;
+  const m = f.mascota;
+  const edad = formatEdad(calcularEdad(m.fecha_nacimiento));
+
+  const historial = f.historial.map((r) => ({
+    id: r.id,
+    fecha: formatFechaLarga(r.fecha),
+    tipo: r.tipo,
+    descripcion: r.descripcion,
+    tratamiento: r.tratamiento,
+    proximaDosis: r.proxima_dosis,
+    veterinario: r.veterinario,
+    centro: r.centro,
+    esMio: false,
+  }));
+
+  return {
+    codigo: `#${String(m.id).padStart(6, "0")}`,
+    emitida: formatFechaEmision(),
+    paciente: {
+      nombre: m.nombre,
+      especie: capitalize(m.especie),
+      raza: m.raza ?? TEXTO_SIN_REGISTRAR,
+      sexo: SEXO_LABEL[m.sexo],
+      nacimiento: m.fecha_nacimiento ? `${formatFechaLarga(m.fecha_nacimiento)}${edad ? ` (${edad})` : ""}` : TEXTO_SIN_REGISTRAR,
+      peso: m.peso_kg !== null ? `${m.peso_kg} kg` : TEXTO_SIN_REGISTRAR,
+      esterilizado: m.esterilizado ? "Sí" : "No",
+      microchip: m.microchip ?? TEXTO_SIN_REGISTRAR,
+    },
+    tutor: {
+      nombre: f.tutor.nombre ?? TEXTO_SIN_REGISTRAR,
+      telefono: f.tutor.telefono ? `+${f.tutor.telefono}` : TEXTO_SIN_REGISTRAR,
+    },
+    alergias: m.alergias,
+    condicionesCronicas: m.condiciones_cronicas,
+    vacunas: resumirVacunas(historial),
+    historial,
+    recetas: f.recetas.map((r) => ({
+      id: r.id,
+      fecha: formatFechaLarga(r.fecha.slice(0, 10)),
+      indicaciones: r.indicaciones,
+      proximoControl: r.proximo_control ? formatFechaLarga(r.proximo_control) : null,
+      veterinario: r.veterinario ?? "Veterinario no informado",
+      colegiado: r.colegiado,
+      centro: r.centro,
+      medicamentos: r.medicamentos,
+    })),
+    derivaciones: f.derivaciones.map((d) => ({
+      fecha: formatFechaCorta(d.fecha),
+      origen: d.origen ?? "—",
+      destino: d.destino ?? "—",
+      motivo: d.motivo,
+      estado: d.estado,
+      resultado: d.resultado,
+    })),
+  };
 };

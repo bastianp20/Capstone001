@@ -7,6 +7,7 @@ import { Iconos, medicamentoVacio } from "../constants";
 import { crearReceta } from "../Api/postInfo";
 import { useAccion } from "../hooks/useAccion";
 import { Spinner } from "../components/ui/Spinner";
+import { BotonRecetaPdf } from "../components/pdf/BotonRecetaPdf";
 import { formatFechaCorta } from "../lib/fechas";
 import { SelectorPaciente } from "../components/receta/SelectorPaciente";
 import { TablaMedicamentos } from "../components/receta/TablaMedicamentos";
@@ -31,6 +32,7 @@ export const RecetaModal = ({ veterinarioId, pacienteInicialId, nombreVeterinari
   const [indicaciones, setIndicaciones] = useState("");
   const [proximoControl, setProximoControl] = useState(""); // "YYYY-MM-DD" o ""
   const [guardada, setGuardada] = useState(false);
+  const [recetaId, setRecetaId] = useState<number | null>(null);   // para descargarla en PDF
   const { ejecutar, ocupado, error } = useAccion();
 
   // ---------- Acciones sobre la tabla de medicamentos ----------
@@ -63,7 +65,7 @@ export const RecetaModal = ({ veterinarioId, pacienteInicialId, nombreVeterinari
   // ---------- Guardar (en la base: crear_receta, migración 27) ----------
   const guardar = async () => {
     if (!esValido || pacienteId === null || ocupado) return;
-    const ok = await ejecutar(() => crearReceta({
+    const ok = await ejecutar(async () => setRecetaId(await crearReceta({
       mascotaId: pacienteId,
       medicamentos: filasConDatos.map((m) => ({
         nombre: m.nombre.trim(),
@@ -73,7 +75,7 @@ export const RecetaModal = ({ veterinarioId, pacienteInicialId, nombreVeterinari
       })),
       indicaciones: indicaciones.trim(),
       proximoControl: proximoControl || undefined,
-    }), "No se pudo guardar la receta.");
+    })), "No se pudo guardar la receta.");
     if (ok) {
       setGuardada(true);
       onGuardada?.();
@@ -149,7 +151,10 @@ export const RecetaModal = ({ veterinarioId, pacienteInicialId, nombreVeterinari
           </p>
           <div className={styles.acciones}>
             {guardada ? (
-              <button type="button" className={styles.guardar} onClick={onCerrar}>Listo</button>
+              <>
+                {recetaId !== null && pacienteId !== null && <BotonRecetaPdf mascotaId={pacienteId} recetaId={recetaId} />}
+                <button type="button" className={styles.guardar} onClick={onCerrar}>Listo</button>
+              </>
             ) : (
               <>
                 <button type="button" className={styles.cancelar} onClick={onCerrar} disabled={ocupado}>Cancelar</button>

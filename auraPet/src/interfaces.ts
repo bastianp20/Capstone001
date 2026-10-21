@@ -1190,7 +1190,7 @@ export interface DetalleSolicitudCentroModalProps {
 // =====================================================================
 // PANEL DEL SUPERADMIN
 // =====================================================================
-export type SeccionSuperAdmin = "resumen" | "usuarios" | "centros" | "asignaciones" | "aprobaciones" | "suscripciones" | "mensajes" | "citas";
+export type SeccionSuperAdmin = "resumen" | "usuarios" | "centros" | "asignaciones" | "aprobaciones" | "suscripciones" | "mensajes" | "eliminaciones" | "notas" | "citas";
 
 export interface ItemMenuSuperAdmin {
   seccion: SeccionSuperAdmin;
@@ -1860,5 +1860,267 @@ export interface EtiquetaCitaProps {
 
 // ---- Configuración → Privacidad y datos (migración 31) ----
 export interface SeccionPrivacidadProps {
+  perfilId: string;
+}
+
+// =====================================================================
+// ELIMINACIÓN DE CUENTA — ver migración 32
+// =====================================================================
+export type EstadoSolicitudEliminacion = "pendiente" | "aprobada" | "rechazada";
+
+export interface SolicitudEliminacion {
+  id: number;
+  motivo: string | null;
+  estado: EstadoSolicitudEliminacion;
+  respuesta: string | null;
+  fecha: string;                       // "19/10 · 14:05"
+}
+
+export interface SolicitudEliminacionListada extends SolicitudEliminacion {
+  perfilId: string;
+  nombre: string;
+  correo: string;
+  rol: RolCuenta;
+}
+
+export interface SolicitarEliminacionProps {
+  perfilId: string;
+}
+
+// =====================================================================
+// NOTAS PERSONALES — ver migración 33
+// =====================================================================
+export type ColorNota = "menta" | "arena" | "cielo" | "lavanda" | "coral";
+
+export interface Nota {
+  id: number;
+  titulo: string;
+  contenido: string;
+  color: ColorNota;
+  fijada: boolean;
+  actualizada: string;                 // "19/10 · 14:05"
+}
+
+export interface DatosNota {
+  titulo: string;
+  contenido: string;
+  color: ColorNota;
+}
+
+export interface TarjetaNotaProps {
+  nota: Nota;
+  ocupado: boolean;
+  onEditar: () => void;
+  onFijar: () => void;
+  onBorrar: () => void;
+}
+
+export interface FormNotaProps {
+  inicial?: DatosNota;                 // si viene, se está editando
+  ocupado: boolean;
+  onGuardar: (datos: DatosNota) => void;
+  onCancelar: () => void;
+}
+
+export interface PanelNotasProps {
+  descripcion?: string;
+}
+
+export interface NotasModalProps {
+  onCerrar: () => void;
+}
+
+// =====================================================================
+// FICHA MÉDICA EN PDF — ver migración 34 y lib/pdf/
+// =====================================================================
+export type TipoPdfFicha = "completa" | "resumen";
+
+export interface RecetaFicha {
+  id: number;
+  fecha: string;                       // "20 oct 2026"
+  indicaciones: string | null;
+  proximoControl: string | null;       // "27 oct 2026"
+  veterinario: string;
+  colegiado: string | null;
+  centro: string | null;
+  medicamentos: MedicamentoReceta[];
+}
+
+export interface DerivacionFicha {
+  fecha: string;                       // "20/10/2026"
+  origen: string;
+  destino: string;
+  motivo: string;
+  estado: EstadoDerivacion;
+  resultado: string | null;
+}
+
+// Todo lo que lleva el PDF, ya con textos listos para imprimir
+export interface FichaPdf {
+  codigo: string;                      // "#000342"
+  emitida: string;                     // "20 de octubre de 2026, 14:30 h"
+  paciente: {
+    nombre: string;
+    especie: string;
+    raza: string;
+    sexo: string;
+    nacimiento: string;                // "12 abr 2019 (7 años)" o "Sin registrar"
+    peso: string;
+    esterilizado: string;
+    microchip: string;
+  };
+  tutor: { nombre: string; telefono: string };
+  alergias: string | null;
+  condicionesCronicas: string | null;
+  vacunas: VacunaFicha[];
+  historial: RegistroFicha[];
+  recetas: RecetaFicha[];
+  derivaciones: DerivacionFicha[];
+}
+
+export interface OpcionMascotaPdf {
+  id: number;
+  nombre: string;
+}
+
+export interface DescargaFichaPdfProps {
+  mascotas: OpcionMascotaPdf[];        // si hay una sola, no se muestra el selector
+  mascotaInicialId?: number | null;
+}
+
+export interface BotonRecetaPdfProps {
+  mascotaId: number;
+  recetaId: number;
+  texto?: string;
+}
+
+// =====================================================================
+// TIPOS QUE ESTABAN SUELTOS EN OTROS ARCHIVOS (ordenados el 20-10-2026)
+// =====================================================================
+
+// ---- Tema (lib/tema.ts, Configuración → Apariencia) ----
+export type Tema = "claro" | "oscuro" | "auto";
+
+export interface OpcionTema {
+  valor: Tema;
+  texto: string;
+  icono: LucideIcon;
+}
+
+// ---- Configuración (Modal/ConfiguracionModal.tsx) ----
+export interface ConfiguracionModalProps {
+  onCerrar: () => void;
+}
+
+export type SeccionConfiguracion = "perfil" | "seguridad" | "apariencia" | "notificaciones" | "privacidad" | "ayuda";
+
+export interface FilaConfiguracionProps {
+  icono: ReactNode;
+  titulo: string;
+  descripcion: string;
+  abierta?: boolean;
+  proximamente?: boolean;
+  onClick?: () => void;
+  children?: ReactNode;
+}
+
+export interface SeccionPerfilProps {
+  onGuardado: () => void;
+}
+
+export interface CampoClaveProps {
+  placeholder: string;
+  value: string;
+  onChange: (valor: string) => void;
+  autoComplete: string;
+}
+
+export interface SeccionSeguridadProps {
   onCerrarModal: () => void;
+}
+
+// ---- Agenda del veterinario (Api/getInfo.tsx → getAgendaVeterinario) ----
+export interface CitaAgendaItem {
+  id: number;
+  hora: string;           // "10:30 AM"
+  fecha: string;          // "10/09 · 10:30" (la agenda trae citas de varios días)
+  mascota: string;
+  especie: string;
+  raza: string;
+  dueno: string;
+  motivo: string;
+  estado: EstadoCita;
+  urgencia: UrgenciaCita;
+}
+
+// ---- Crear centro (Modal/CrearCentroModal.tsx): un día del formulario de horarios ----
+export interface DiaFormulario {
+  dia: number;           // 1 = lunes ... 7 = domingo
+  nombre: string;
+  atiende: boolean;
+  abre: string;
+  cierra: string;
+  conColacion: boolean;
+  inicioColacion: string;
+  finColacion: string;
+}
+
+// ---- Login: tipo de cuenta al registrarse ----
+export type RolRegistro = "dueno" | "veterinario";
+
+// ---- Landing ----
+export interface TestimonioHome {
+  texto: string;
+  nombre: string;
+  rol: string;
+}
+
+export interface PasoHome {
+  numero: number;
+  titulo: string;
+  descripcion: string;
+}
+
+// ---- Derivaciones: qué respuesta se está escribiendo en la tarjeta ----
+export type RespuestaDerivacion = "realizada" | "rechazo" | null;
+
+// ---- PDF (lib/pdf/plantilla.ts) ----
+export type RgbPdf = readonly [number, number, number];
+
+// "Lienzo": el documento + la posición vertical (y) por la que vamos dibujando
+export interface LienzoPdf {
+  doc: import("jspdf").jsPDF;
+  y: number;
+  ancho: number;
+  alto: number;
+}
+
+export interface OpcionesTextoPdf {
+  x?: number;
+  ancho?: number;
+  tam?: number;
+  negrita?: boolean;
+  color?: RgbPdf;
+}
+
+// Lo que devuelve ficha_pdf (jsonb, migración 34) antes de pasarlo a textos
+export interface FichaPdfCruda {
+  mascota: {
+    id: number; nombre: string; especie: string; raza: string | null; sexo: "macho" | "hembra";
+    fecha_nacimiento: string | null; peso_kg: number | null; esterilizado: boolean; microchip: string | null;
+    alergias: string | null; condiciones_cronicas: string | null;
+  };
+  tutor: { nombre: string | null; telefono: number | null };
+  historial: {
+    id: number; fecha: string; tipo: TipoRegistro; descripcion: string; tratamiento: string | null;
+    proxima_dosis: string | null; veterinario: string | null; centro: string | null;
+  }[];
+  recetas: {
+    id: number; fecha: string; indicaciones: string | null; proximo_control: string | null;
+    veterinario: string | null; colegiado: string | null; centro: string | null; medicamentos: MedicamentoReceta[];
+  }[];
+  derivaciones: {
+    fecha: string; origen: string | null; destino: string | null; motivo: string;
+    estado: EstadoDerivacion; resultado: string | null;
+  }[];
 }

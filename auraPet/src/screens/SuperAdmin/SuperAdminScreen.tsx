@@ -21,6 +21,8 @@ import { AprobacionesSuperAdmin } from "./AprobacionesSuperAdmin";
 import { CitasSuperAdmin } from "./CitasSuperAdmin";
 import { SuscripcionesSuperAdmin } from "./SuscripcionesSuperAdmin";
 import { MensajesSuperAdmin } from "./MensajesSuperAdmin";
+import { EliminacionesSuperAdmin } from "./EliminacionesSuperAdmin";
+import { NotasSuperAdmin } from "./NotasSuperAdmin";
 import styles from "../../css/superadmin/SuperAdminLayout.module.css";
 
 // Panel del superadmin: arma la estructura (menú, barra superior y la
@@ -50,6 +52,8 @@ export const SuperAdminScreen = () => {
     aprobaciones: <AprobacionesSuperAdmin solicitudes={solicitudes} />,
     suscripciones: <SuscripcionesSuperAdmin />,
     mensajes: <MensajesSuperAdmin />,
+    eliminaciones: <EliminacionesSuperAdmin />,
+    notas: <NotasSuperAdmin />,
     citas: <CitasSuperAdmin />,
   };
 

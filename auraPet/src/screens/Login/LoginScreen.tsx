@@ -11,9 +11,7 @@ import { ArrowRight, Eye, EyeOff, PawPrint, Stethoscope, X } from 'lucide-react'
 import { useAuth } from '../../Auth/AuthContext';
 import '../../css/LoginPage.css';
 import fondologin from '../../assets/login/fondologin.png'; // TODO: cambiar por la imagen del login cuando la tengas
-import type { DatosLaboralesVeterinario, LoginScreenProps, ModoLogin } from '../../interfaces';
-
-type RolRegistro = 'dueno' | 'veterinario';
+import type { DatosLaboralesVeterinario, LoginScreenProps, ModoLogin, RolRegistro } from '../../interfaces';
 
 export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) => {
   const navigate = useNavigate();

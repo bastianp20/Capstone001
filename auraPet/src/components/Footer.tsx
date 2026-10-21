@@ -46,7 +46,7 @@ export const Footer = () => {
       </div>
 
       <div className="landing-footer-bottom">
-        © Copyright 2026. Derechos Reservados.
+        © auraPet 2026. Derechos Reservados.
       </div>
     </footer>
   );

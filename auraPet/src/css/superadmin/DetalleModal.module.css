@@ -324,7 +324,7 @@
 }
 
 .diaCerrado {
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
 }
 
 /* ---- Personas (administradores y veterinarios) ---- */

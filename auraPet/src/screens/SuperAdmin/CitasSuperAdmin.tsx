@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   CITAS_POR_PAGINA, ESTADO_LABEL, FILTROS_RANGO_CITAS, MS_ESPERA_BUSQUEDA, ORDEN_URGENCIAS,
-  TEXTOS_CITAS, URGENCIA_LABEL,
+  ESTADOS_CITA, TEXTOS_CITAS, URGENCIA_LABEL,
 } from "../../constants";
 import { getAllCitas } from "../../Api/getInfo";
 import { useConsulta } from "../../hooks/useConsulta";
@@ -11,8 +11,6 @@ import { BarraFiltros } from "../../components/ui/BarraFiltros";
 import { Paginacion } from "../../components/ui/Paginacion";
 import { TablaCitas } from "../../components/superadmin/TablaCitas";
 import styles from "../../css/superadmin/SeccionesSuperAdmin.module.css";
-
-const ESTADOS = Object.keys(ESTADO_LABEL) as EstadoCita[];
 
 // Sección "Citas": todas las citas de la plataforma con buscador, rango de
 // fechas, estado, urgencia y paginación. La base filtra y pagina (getAllCitas),
@@ -56,7 +54,7 @@ export const CitasSuperAdmin = () => {
           aria-label="Filtrar por estado"
         >
           <option value="">{TEXTOS_CITAS.todosEstados}</option>
-          {ESTADOS.map((e) => <option key={e} value={e}>{ESTADO_LABEL[e]}</option>)}
+          {ESTADOS_CITA.map((e) => <option key={e} value={e}>{ESTADO_LABEL[e]}</option>)}
         </select>
         <select
           className={styles.select}

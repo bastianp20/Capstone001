@@ -5,6 +5,7 @@ import { VeterinarioScreen } from '../Veterinario/VeterinarioScreen';
 import { SuperAdminScreen } from '../SuperAdmin/SuperAdminScreen';
 import { CentroAdminScreen } from '../CentroAdmin/CentroAdminScreen';
 import { HomeScreen } from '../Home/HomeScreen';
+import { useTemaDelPanel } from '../../hooks/useTemaDelPanel';
 
 // Se muestra una vez que ya hay usuarioActual (post-login). Decide qué
 // pantalla interna corresponde según el rol. Vive en Login/ porque es la
@@ -12,6 +13,8 @@ import { HomeScreen } from '../Home/HomeScreen';
 // ya haya pasado.
 export const LoginRol = () => {
   const { usuarioActual } = useAuth();
+  // Modo claro/oscuro solo dentro de los paneles; la página pública queda en claro
+  useTemaDelPanel();
 
   // Un veterinario que además es admin de un centro puede cambiar entre
   // "Mi agenda" y el panel del centro. null = su panel de veterinario.

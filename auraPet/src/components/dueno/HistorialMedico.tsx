@@ -5,6 +5,7 @@ import type { HistorialMedicoProps } from "../../interfaces";
 import { TarjetaPanel } from "../ui/TarjetaPanel";
 import { EstadoVacio } from "../ui/EstadoVacio";
 import { TarjetaReceta } from "./TarjetaReceta";
+import { DescargaFichaPdf } from "../pdf/DescargaFichaPdf";
 
 // Sección "Historial médico": registros (diagnósticos, vacunas, cirugías...)
 // y recetas, con un filtro por mascota arriba.
@@ -31,6 +32,10 @@ export const HistorialMedico = ({ mascotas, historial, cargando }: HistorialMedi
           ))}
         </div>
       )}
+
+      {/* Ficha en PDF de la mascota filtrada (o de la que elija). key: se reinicia al cambiar el filtro */}
+      <DescargaFichaPdf key={mascotaId ?? "todas"} mascotas={mascotas.map((m) => ({ id: m.id, nombre: m.nombre }))}
+        mascotaInicialId={mascotaId} />
 
       <div className={styles.dosColumnas}>
         <TarjetaPanel titulo="Atenciones y vacunas">

@@ -1,5 +1,5 @@
-import { useState, type CSSProperties } from 'react';
-import { Colors, Iconos, MAX_CITAS_INICIO_DUENO, MAX_HISTORIAL_INICIO_DUENO } from '../../constants';
+import { useState } from 'react';
+import { Iconos, MAX_CITAS_INICIO_DUENO, MAX_HISTORIAL_INICIO_DUENO } from '../../constants';
 import { useConsulta } from '../../hooks/useConsulta';
 import { getMascotasPorDueno, getProximasCitasDueno, getHistorialRecienteDueno, getHistorialDueno, getDerivaciones } from '../../Api/getInfo';
 import { DerivacionesDueno } from '../../components/dueno/DerivacionesDueno';
@@ -18,19 +18,9 @@ import { HistorialMedico } from '../../components/dueno/HistorialMedico';
 import '../../css/duenoPage.css';
 import LogoAuraPetSinFondo from '../../assets/logo/LogoAuraPetSinFondo.png';
 
-const colors = Colors;
 const iconos = Iconos;
 
-const temaVars = {
-  "--color-bg": colors.bg,
-  "--color-sidebar-bg": colors.sidebarBg,
-  "--color-sidebar-active": colors.sidebarActive,
-  "--color-border": colors.border,
-  "--color-text": colors.text,
-  "--color-text-muted": colors.textMuted,
-  "--color-accent": colors.accent,
-  "--color-accent-soft": colors.accentSoft,
-} as CSSProperties;
+
 
 const HISTORIAL_VACIO: HistorialDueno = { registros: [], recetas: [] };
 
@@ -109,7 +99,7 @@ export const DuenoScreen = () => {
   );
 
   return (
-    <div className="dueno-page" style={temaVars}>
+    <div className="dueno-page">
       {/* ---------- Menú lateral ---------- */}
       <div className="dueno-sidebar">
         <div className="dueno-sidebar-brand">

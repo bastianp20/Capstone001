@@ -4,7 +4,7 @@
 .pagina {
   display: flex;
   min-height: 100vh;
-  background: #f6f8f8;
+  background: var(--color-fondo-app);
   font-family: "Inter", system-ui, sans-serif;
   color: var(--color-terciario-texto);
 }
@@ -118,7 +118,7 @@
   gap: 14px;
   padding: 14px 28px;
   border-bottom: 1px solid var(--color-terciario-borde);
-  background: #ffffff;
+  background: var(--color-superficie);
 }
 
 .crear {
@@ -160,7 +160,7 @@
   padding: 6px;
   border: 1px solid var(--color-terciario-borde);
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--color-superficie);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
 }
 
@@ -204,7 +204,7 @@
 }
 
 .botonIcono:hover {
-  background: #f1f3f4;
+  background: var(--color-superficie-suave);
   color: var(--color-terciario-texto);
 }
 

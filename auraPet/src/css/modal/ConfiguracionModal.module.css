@@ -12,8 +12,8 @@
 }
 
 .modal {
-  background: #fff;
-  color: #1a1f27;
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
   width: 100%;
   max-width: 420px;          /* antes 520 */
   max-height: 92vh;
@@ -42,7 +42,7 @@
 .cerrar {
   border: none;
   background: none;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
   cursor: pointer;
   padding: 4px;
   border-radius: 8px;
@@ -50,7 +50,7 @@
 }
 
 .cerrar:hover {
-  background: #f3f4f6;
+  background: var(--color-superficie-suave);
 }
 
 /* ---------- Tarjeta de perfil ---------- */
@@ -66,8 +66,8 @@
   height: 46px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: #e3f5f2;
-  color: #0f8f80;
+  background: var(--color-secundario);
+  color: var(--color-primario-texto);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -83,7 +83,7 @@
 
 .perfilCorreo {
   margin: 1px 0 4px;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
   font-size: 12.5px;
 }
 
@@ -91,21 +91,21 @@
   display: inline-block;
   padding: 1px 8px;
   border-radius: 999px;
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--color-superficie-suave);
+  color: var(--color-terciario-texto);
   font-size: 11px;
   font-weight: 600;
 }
 
 /* ---------- Acordeón ---------- */
 .lista {
-  border: 1px solid #e4e6ea;
+  border: 1px solid var(--color-terciario-borde);
   border-radius: 10px;
   overflow: hidden;
 }
 
 .fila + .fila {
-  border-top: 1px solid #e4e6ea;
+  border-top: 1px solid var(--color-terciario-borde);
 }
 
 .filaBoton {
@@ -115,15 +115,37 @@
   gap: 10px;
   padding: 8px 12px;         /* antes 12px 14px */
   border: none;
-  background: #fff;
-  color: #1a1f27;
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
   text-align: left;
   cursor: pointer;
   font-family: inherit;
+  transition: background 0.15s, box-shadow 0.15s;
 }
 
-.filaBoton:hover:not(:disabled) {
-  background: #f8fafa;
+/* Resaltado al pasar el mouse (o al llegar con el teclado): fondo verde suave,
+   barrita verde a la izquierda, título en verde e ícono relleno */
+.filaBoton:hover:not(:disabled),
+.filaBoton:focus-visible {
+  background: var(--color-secundario);
+  box-shadow: inset 3px 0 0 var(--color-primario);
+  outline: none;
+}
+
+.filaBoton:hover:not(:disabled) .filaTitulo,
+.filaBoton:focus-visible .filaTitulo {
+  color: var(--color-primario-texto);
+}
+
+.filaBoton:hover:not(:disabled) .filaDescripcion,
+.filaBoton:focus-visible .filaDescripcion {
+  color: var(--color-terciario-texto);
+}
+
+.filaBoton:hover:not(:disabled) .filaIcono,
+.filaBoton:focus-visible .filaIcono {
+  background: var(--color-primario);
+  color: #ffffff;
 }
 
 .filaBoton:disabled {
@@ -140,9 +162,10 @@
   height: 28px;
   flex-shrink: 0;
   border-radius: 8px;
-  background: #e3f5f2;
-  color: #0f8f80;
+  background: var(--color-secundario);
+  color: var(--color-primario-texto);
   display: flex;
+  transition: background 0.15s, color 0.15s;
   align-items: center;
   justify-content: center;
 }
@@ -162,18 +185,19 @@
 .filaTitulo {
   font-weight: 600;
   font-size: 13px;
+  transition: color 0.15s;
 }
 
 .filaDescripcion {
   font-size: 11.5px;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
 }
 
 .pildora {
   padding: 1px 7px;
   border-radius: 999px;
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--color-superficie-suave);
+  color: var(--color-terciario-texto-muted);
   font-size: 10.5px;
   font-weight: 600;
 }
@@ -208,12 +232,12 @@
 .campoClave input {
   width: 100%;
   padding: 7px 10px;         /* antes 9px 11px */
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-borde-fuerte);
   border-radius: 7px;
   font-size: 12.5px;
   font-family: inherit;
-  color: #1a1f27;
-  background: #fff;
+  color: var(--color-terciario-texto);
+  background: var(--color-superficie);
   box-sizing: border-box;
 }
 
@@ -231,8 +255,8 @@
 
 .telefono span {
   padding: 7px 9px;
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
+  background: var(--color-superficie-suave);
+  border: 1px solid var(--color-borde-fuerte);
   border-right: none;
   border-radius: 7px 0 0 7px;
   font-weight: 400;
@@ -258,7 +282,7 @@
   transform: translateY(-50%);
   border: none;
   background: none;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
   cursor: pointer;
   display: flex;
 }
@@ -271,7 +295,7 @@
 .ayudaTexto {
   margin-top: -4px;
   font-size: 11px;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
 }
 
 .error {
@@ -285,7 +309,7 @@
 
 .exito {
   margin: 0;
-  color: #0f8f80;
+  color: var(--color-primario-texto);
   font-weight: 600;
   font-size: 12px;
 }
@@ -324,8 +348,8 @@
 }
 
 .btnSecundario {
-  background: #e5e7eb;
-  color: #1a1f27;
+  background: var(--color-terciario-borde);
+  color: var(--color-terciario-texto);
 }
 
 .link {
@@ -333,7 +357,7 @@
   border: none;
   background: none;
   padding: 0;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
   font-size: 11.5px;
   font-family: inherit;
   text-decoration: underline;
@@ -359,9 +383,9 @@
   gap: 4px;
   padding: 8px 6px;
   border-radius: 8px;
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #1a1f27;
+  border: 1px solid var(--color-borde-fuerte);
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
   font-size: 11.5px;
   font-family: inherit;
   cursor: pointer;
@@ -375,8 +399,8 @@
 
 .temaActivo {
   border-color: #0f8f80;
-  background: #e3f5f2;
-  color: #0f8f80;
+  background: var(--color-secundario);
+  color: var(--color-primario-texto);
   font-weight: 600;
 }
 
@@ -388,7 +412,7 @@
 }
 
 .ayuda a {
-  color: #0f8f80;
+  color: var(--color-primario-texto);
   font-size: 12.5px;
   font-weight: 500;
   text-decoration: none;
@@ -409,7 +433,7 @@
   gap: 6px;
   border: 1px solid #dc2626;
   border-radius: 9px;
-  background: #fff;
+  background: var(--color-superficie);
   color: #dc2626;
   font-weight: 600;
   font-size: 12.5px;
@@ -431,4 +455,16 @@
   .filaContenido {
     padding-left: 12px;
   }
+}
+
+.textarea {
+  min-height: 70px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 8px;
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
+  font: inherit;
+  font-size: 13px;
+  resize: vertical;
 }

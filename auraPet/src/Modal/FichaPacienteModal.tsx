@@ -15,6 +15,7 @@ import { FormRegistroMedico } from "../components/veterinario/ficha/FormRegistro
 import { FormDatosClinicos } from "../components/veterinario/ficha/FormDatosClinicos";
 import { FormDerivacion } from "../components/veterinario/ficha/FormDerivacion";
 import { DerivacionesPaciente } from "../components/veterinario/ficha/DerivacionesPaciente";
+import { DescargaFichaPdf } from "../components/pdf/DescargaFichaPdf";
 import styles from "../css/modal/FichaPacienteModal.module.css";
 
 const TITULO_VISTA: Record<Exclude<VistaFicha, "resumen">, string> = {
@@ -68,6 +69,7 @@ export const FichaPacienteModal = ({ mascotaId, onCerrar, onRecetar }: FichaPaci
           onCompletarDatos={() => setVista("datos")}
           onAgregarRegistro={() => setVista("registro")}
         />
+        <DescargaFichaPdf mascotas={[{ id: ficha.id, nombre: ficha.nombre }]} />
         <ResumenPaciente ficha={ficha} />
         <EstadoVacunas vacunas={vacunas} />
         <DerivacionesPaciente mascotaId={mascotaId} recarga={recarga} />

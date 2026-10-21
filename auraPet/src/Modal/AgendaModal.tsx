@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { badgeStyles, Badge, ESTADO_LABEL, URGENCIA_LABEL } from "../constants";
-import { getAgendaVeterinario, type CitaAgendaItem } from "../Api/getInfo";
+import { getAgendaVeterinario } from "../Api/getInfo";
 import { actualizarMiCita, rechazarCita } from "../Api/postInfo";
 import { useConsulta } from "../hooks/useConsulta";
 import { useAccion } from "../hooks/useAccion";
 import { RechazarModal } from "./ReachazarModal";
-import type { ModalAgendaProps, PestanaAgenda } from "../interfaces";
+import type { ModalAgendaProps, PestanaAgenda, CitaAgendaItem } from "../interfaces";
 import styles from "../css/Modal.module.css";
 
 // Muestra las citas de éste veterinario, resueltas por id (mascota, dueño,

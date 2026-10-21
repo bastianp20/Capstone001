@@ -44,7 +44,7 @@
 .datoVacio {
   font-size: 14px;
   font-style: italic;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
 }
 
 /* ---- ResumenPaciente ---- */

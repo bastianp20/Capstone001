@@ -552,6 +552,47 @@ export type Database = {
           },
         ]
       }
+      notas: {
+        Row: {
+          actualizada_en: string
+          color: string
+          contenido: string
+          creada_en: string
+          fijada: boolean
+          id: number
+          perfil_id: string
+          titulo: string
+        }
+        Insert: {
+          actualizada_en?: string
+          color?: string
+          contenido?: string
+          creada_en?: string
+          fijada?: boolean
+          id?: never
+          perfil_id?: string
+          titulo: string
+        }
+        Update: {
+          actualizada_en?: string
+          color?: string
+          contenido?: string
+          creada_en?: string
+          fijada?: boolean
+          id?: never
+          perfil_id?: string
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notas_perfil_id_fkey"
+            columns: ["perfil_id"]
+            isOneToOne: false
+            referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       perfiles: {
         Row: {
           avatar_url: string | null
@@ -839,6 +880,54 @@ export type Database = {
           {
             foreignKeyName: "solicitudes_centro_revisado_por_fkey"
             columns: ["revisado_por"]
+            isOneToOne: false
+            referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solicitudes_eliminacion: {
+        Row: {
+          creada_en: string
+          estado: string
+          id: number
+          motivo: string | null
+          perfil_id: string
+          respuesta: string | null
+          resuelta_en: string | null
+          resuelta_por: string | null
+        }
+        Insert: {
+          creada_en?: string
+          estado?: string
+          id?: never
+          motivo?: string | null
+          perfil_id: string
+          respuesta?: string | null
+          resuelta_en?: string | null
+          resuelta_por?: string | null
+        }
+        Update: {
+          creada_en?: string
+          estado?: string
+          id?: never
+          motivo?: string | null
+          perfil_id?: string
+          respuesta?: string | null
+          resuelta_en?: string | null
+          resuelta_por?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solicitudes_eliminacion_perfil_id_fkey"
+            columns: ["perfil_id"]
+            isOneToOne: false
+            referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "solicitudes_eliminacion_resuelta_por_fkey"
+            columns: ["resuelta_por"]
             isOneToOne: false
             referencedRelation: "perfiles"
             referencedColumns: ["id"]
@@ -1160,6 +1249,7 @@ export type Database = {
         Args: { p_centro_id: number; p_dias: number }
         Returns: undefined
       }
+      ficha_pdf: { Args: { p_mascota_id: number }; Returns: Json }
       historial_de_paciente: {
         Args: { p_mascota_id: number }
         Returns: {
@@ -1215,6 +1305,21 @@ export type Database = {
           puedo_cancelar: boolean
           puedo_responder: boolean
           resultado: string
+        }[]
+      }
+      listar_solicitudes_eliminacion: {
+        Args: never
+        Returns: {
+          correo: string
+          creada_en: string
+          estado: string
+          id: number
+          motivo: string
+          nombre: string
+          perfil_id: string
+          respuesta: string
+          resuelta_en: string
+          rol: string
         }[]
       }
       listar_suscripciones: {
@@ -1295,6 +1400,14 @@ export type Database = {
         }
         Returns: number
       }
+      resolver_solicitud_eliminacion: {
+        Args: {
+          p_aprobar: boolean
+          p_respuesta?: string
+          p_solicitud_id: number
+        }
+        Returns: undefined
+      }
       resolver_solicitud_plan: {
         Args: { p_aprobar: boolean; p_meses?: number; p_solicitud_id: number }
         Returns: undefined
@@ -1350,6 +1463,10 @@ export type Database = {
           p_veterinario_id?: number
         }
         Returns: number
+      }
+      solicitar_eliminacion_cuenta: {
+        Args: { p_motivo?: string }
+        Returns: undefined
       }
       veterinarios_de_centro: {
         Args: { p_centro_id: number }

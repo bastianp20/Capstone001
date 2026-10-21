@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DIAS_SEMANA, TEXTOS_CENTRO_ADMIN as T } from "../../constants";
+import { DIAS_SEMANA, DIAS_SEMANA_ORDEN, TEXTOS_CENTRO_ADMIN as T } from "../../constants";
 import { getCentroDetalle } from "../../Api/getInfo";
 import { useConsulta } from "../../hooks/useConsulta";
 import { textoHorario } from "../../lib/centroAdmin";
@@ -7,8 +7,6 @@ import type { SeccionDeCentroProps } from "../../interfaces";
 import { TarjetaCentro } from "../../components/centroAdmin/TarjetaCentro";
 import { FormularioCentro } from "../../components/centroAdmin/FormularioCentro";
 import styles from "../../css/centroAdmin/PanelCentro.module.css";
-
-const DIAS = [1, 2, 3, 4, 5, 6, 7];
 
 // Mi centro: datos editables + horarios + especialidades.
 export const SeccionMiCentro = ({ centroId }: SeccionDeCentroProps) => {
@@ -33,7 +31,7 @@ export const SeccionMiCentro = ({ centroId }: SeccionDeCentroProps) => {
           <p className={styles.vacio}>{T.sinHorario}</p>
         ) : (
           <dl className={styles.horarios}>
-            {DIAS.map((dia) => {
+            {DIAS_SEMANA_ORDEN.map((dia) => {
               const h = centro.horarios.find((x) => x.diaSemana === dia);
               return (
                 <div key={dia} className={styles.horarioFila}>

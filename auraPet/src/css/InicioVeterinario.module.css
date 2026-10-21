@@ -7,7 +7,7 @@
   flex-direction: column;
   gap: 18px;
   padding: 4px 32px 40px;
-  color: #1a1f27;
+  color: var(--color-terciario-texto);
 }
 
 /* ---------- Encabezado ---------- */
@@ -20,7 +20,7 @@
 .fecha {
   margin: 4px 0 0;
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
 }
 
 .indicadores {
@@ -68,18 +68,18 @@
 
 .proximaDetalle {
   font-weight: 400;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
   font-size: 0.92rem;
 }
 
 .dato {
   margin: 4px 0 0;
   font-size: 0.88rem;
-  color: #1a1f27;
+  color: var(--color-terciario-texto);
 }
 
 .datoEtiqueta {
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
 }
 
 .chips {
@@ -117,7 +117,7 @@
 }
 
 .chipIA select {
-  border: 1px solid #e4e6ea;
+  border: 1px solid var(--color-terciario-borde);
   border-radius: 6px;
   padding: 2px 4px;
   font-size: 0.78rem;
@@ -125,10 +125,10 @@
 
 .botonMini {
   padding: 3px 9px;
-  border: 1px solid #e4e6ea;
+  border: 1px solid var(--color-terciario-borde);
   border-radius: 999px;
-  background: #fff;
-  color: #1a1f27;
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
   font-size: 0.76rem;
   font-weight: 600;
   cursor: pointer;
@@ -166,9 +166,9 @@
 }
 
 .botonSecundario {
-  border: 1px solid #e4e6ea;
-  background: #fff;
-  color: #1a1f27;
+  border: 1px solid var(--color-terciario-borde);
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
 }
 
 .botonPrincipal:disabled,
@@ -195,16 +195,16 @@
 }
 
 .filaAgenda + .filaAgenda {
-  border-top: 1px solid #f0f1f3;
+  border-top: 1px solid var(--color-terciario-borde);
 }
 
 .filaDestacada {
-  background: #f1f8f7;
+  background: var(--color-secundario);
 }
 
 .hora {
   font-weight: 600;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
   font-variant-numeric: tabular-nums;
 }
 
@@ -218,7 +218,7 @@
 .bloque + .bloque {
   margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px solid #f0f1f3;
+  border-top: 1px solid var(--color-terciario-borde);
 }
 
 .bloqueTitulo {
@@ -228,7 +228,7 @@
   margin: 0 0 8px;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
 }
 
 .contador {
@@ -256,7 +256,7 @@
 }
 
 .itemSecundario {
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
   white-space: nowrap;
 }
 
@@ -280,7 +280,7 @@
 }
 
 .totalTexto {
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
   font-size: 0.95rem;
 }
 
