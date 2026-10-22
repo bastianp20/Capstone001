@@ -1,6 +1,7 @@
 import styles from "../../css/DuenoSecciones.module.css";
 import { COLUMNAS_MEDICAMENTO } from "../../constants";
 import type { TarjetaRecetaProps } from "../../interfaces";
+import { BotonRecetaPdf } from "../pdf/BotonRecetaPdf";
 
 // Una receta como la ve el dueño: medicamentos, indicaciones y próximo control.
 export const TarjetaReceta = ({ receta }: TarjetaRecetaProps) => (
@@ -24,7 +25,10 @@ export const TarjetaReceta = ({ receta }: TarjetaRecetaProps) => (
       </table>
     )}
 
-    {receta.indicaciones && <p style={{ margin: "4px 0" }}>{receta.indicaciones}</p>}
+    {receta.indicaciones && <p className={styles.indicacionesReceta}>{receta.indicaciones}</p>}
     {receta.proximoControl && <span className={styles.textoSuave}>Próximo control: {receta.proximoControl}</span>}
+    <div className={styles.accionesReceta}>
+      <BotonRecetaPdf mascotaId={receta.mascotaId} recetaId={receta.id} />
+    </div>
   </div>
 );

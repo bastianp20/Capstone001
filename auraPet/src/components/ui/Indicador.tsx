@@ -3,8 +3,15 @@ import type { IndicadorProps } from "../../interfaces";
 
 // Indicador compacto: etiqueta, número grande y, si se pasa "progreso",
 // una barrita de avance debajo (por ejemplo "Atendidas 2 de 6").
-export const Indicador = ({ etiqueta, valor, tono = "normal", progreso }: IndicadorProps) => (
-  <div className={styles.indicador}>
+// Si se pasa "onClick", se comporta como botón (p. ej. "Por confirmar" abre la agenda).
+export const Indicador = ({ etiqueta, valor, tono = "normal", progreso, onClick }: IndicadorProps) => (
+  <div
+    className={`${styles.indicador} ${onClick ? styles.indicadorClickable : ""}`}
+    onClick={onClick}
+    role={onClick ? "button" : undefined}
+    tabIndex={onClick ? 0 : undefined}
+    onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") onClick(); } : undefined}
+  >
     <span className={styles.indicadorEtiqueta}>{etiqueta}</span>
     <span className={`${styles.indicadorValor} ${tono === "alerta" ? styles.indicadorAlerta : ""}`}>{valor}</span>
     {progreso !== undefined && (

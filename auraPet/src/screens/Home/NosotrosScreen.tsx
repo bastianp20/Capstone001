@@ -29,10 +29,10 @@ const valores = [
 ];
 
 const equipo = [
-  { nombre: "Dra. Elena Ruiz", cargo: "Fundadora" },
-  { nombre: "Carlos Gómez", cargo: "Head de Producto" },
-  { nombre: "Javier Solís", cargo: "Ingeniero Senior" },
-  { nombre: "Dra. Ana Torres", cargo: "Veterinaria asesora" },
+  { nombre: "Bastian Palavecino", cargo: "Fundador y CEO | Desarrollador Full Stack" },
+  { nombre: "Alan Penroz", cargo: "Ing Informatico | Analista de Pruebas QA | CO-Fundador" },
+  { nombre: "vacante", cargo: "Medica Veterinaria | Asesora cientifica auraPet" },
+  { nombre: "vacante", cargo: "Medica Veterinaria | Asesora cientifica auraPet" },
 ];
 
 const logros = [

@@ -1,35 +1,12 @@
 import { useState, type FormEvent } from "react";
 import styles from "../css/modal/CrearProfesionalModal.module.css"; // mismo diseño que los otros modales de crear
-import type { CrearCentroModalProps, HorarioCentroNuevo } from "../interfaces";
+import type { CrearCentroModalProps, DiaFormulario, HorarioCentroNuevo } from "../interfaces";
+import { DIAS_INICIALES_CENTRO } from "../constants";
 import { useConsulta } from "../hooks/useConsulta";
 import { getEspecialidades } from "../Api/getInfo";
 import { crearCentro } from "../Api/postInfo";
 
-// Un día del formulario de horarios
-interface DiaFormulario {
-  dia: number;           // 1 = lunes ... 7 = domingo
-  nombre: string;
-  atiende: boolean;
-  abre: string;
-  cierra: string;
-  conColacion: boolean;
-  inicioColacion: string;
-  finColacion: string;
-}
 
-// Valores por defecto: lunes a viernes 9 a 19 con colación, sábado 10 a 14, domingo cerrado
-const DIAS_INICIALES: DiaFormulario[] = [
-  "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo",
-].map((nombre, i) => ({
-  dia: i + 1,
-  nombre,
-  atiende: i < 6,
-  abre: i === 5 ? "10:00" : "09:00",
-  cierra: i === 5 ? "14:00" : "19:00",
-  conColacion: i < 5,
-  inicioColacion: "14:00",
-  finColacion: "15:00",
-}));
 
 export const ModalCrearCentro = ({ onClose }: CrearCentroModalProps) => {
   const { datos: especialidades = [] } = useConsulta(() => getEspecialidades(), []);
@@ -40,7 +17,7 @@ export const ModalCrearCentro = ({ onClose }: CrearCentroModalProps) => {
   const [comuna, setComuna] = useState("");
   const [telefono, setTelefono] = useState("");
   const [especialidadIds, setEspecialidadIds] = useState<number[]>([]); // un centro puede tener varias
-  const [dias, setDias] = useState<DiaFormulario[]>(DIAS_INICIALES);
+  const [dias, setDias] = useState<DiaFormulario[]>(DIAS_INICIALES_CENTRO);
   const [esPrueba, setEsPrueba] = useState(false);
 
   // Estado del envío

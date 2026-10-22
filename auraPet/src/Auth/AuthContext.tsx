@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { AuthContextValue, DatosRegistro, UsuarioActual } from '../interfaces';
 import { supabase } from '../lib/supabase';
+import { metadatosVeterinario } from '../lib/validacionVeterinario';
+import { RUTA_NUEVA_PASSWORD } from '../constants';
 
 // Sesión real con Supabase Auth.
 // · Supabase guarda la sesión (token) por su cuenta: al recargar la página
@@ -17,6 +19,8 @@ const traducirError = (mensaje: string): string => {
   if (mensaje.includes('Password should be at least')) return 'La contraseña debe tener al menos 6 caracteres.';
   if (mensaje.toLowerCase().includes('rate limit')) return 'Hubo demasiados intentos. Espera unos minutos y vuelve a intentarlo.';
   if (mensaje.includes('Unable to validate email') || mensaje.includes('invalid format')) return 'El email no es válido.';
+  if (mensaje.includes('different from the old password')) return 'La nueva contraseña debe ser distinta a la anterior.';
+  if (mensaje.includes('Auth session missing')) return 'El enlace venció o ya se usó. Pide uno nuevo.';
   console.error('Error de autenticación no traducido:', mensaje);
   return 'No pudimos completar la operación. Inténtalo de nuevo.';
 };
@@ -30,6 +34,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [perfil, setPerfil] = useState<{ userId: string; usuario: UsuarioActual | null } | null>(null);
   // Sube en 1 cada vez que alguien edita su perfil → el efecto 2 lo vuelve a leer.
   const [versionPerfil, setVersionPerfil] = useState(0);
+  // true cuando se abre la app desde el enlace "restablecer contraseña" del correo
+  const [enRecuperacion, setEnRecuperacion] = useState(false);
 
   // 1) Escuchar la sesión: al abrir la app, al ingresar, al salir y al refrescar el token.
   useEffect(() => {
@@ -40,7 +46,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // Ojo: dentro de este callback no se hacen otras llamadas a Supabase
     // (puede trabarse); solo se guarda el id y el efecto 2 carga el perfil.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_evento, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((evento, session) => {
+      if (evento === 'PASSWORD_RECOVERY') setEnRecuperacion(true);
       setUserId(session?.user.id ?? null);
       setEmail(session?.user.email ?? '');
     });
@@ -104,6 +111,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           nombre: datos.nombre.trim(),
           rol: datos.rol,
           telefono: datos.telefono?.replace(/\D/g, '') || undefined,
+          // Veterinario: dónde trabaja y especialidad (la base arma su ficha pendiente, migración 23)
+          ...(datos.rol === 'veterinario' && datos.veterinario ? metadatosVeterinario(datos.veterinario) : {}),
         },
       },
     });
@@ -111,6 +120,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Si Supabase pide confirmar el correo, no hay sesión todavía.
     return { requiereConfirmacion: !data.session };
   };
+
+  // El correo trae un enlace a /nueva-contrasena con una sesión temporal.
+  // Esa URL debe estar en Authentication → URL Configuration → Redirect URLs.
+  const recuperarPassword = async (correo: string): Promise<string | null> => {
+    const { error } = await supabase.auth.resetPasswordForEmail(correo.trim(), {
+      redirectTo: `${window.location.origin}${RUTA_NUEVA_PASSWORD}`,
+    });
+    return error ? traducirError(error.message) : null;
+  };
+
+  const cambiarPassword = async (nueva: string): Promise<string | null> => {
+    const { error } = await supabase.auth.updateUser({ password: nueva });
+    return error ? traducirError(error.message) : null;
+  };
+
+  const terminarRecuperacion = () => setEnRecuperacion(false);
 
   const logout = async () => {
     await supabase.auth.signOut();
@@ -120,7 +145,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const recargarPerfil = () => setVersionPerfil((v) => v + 1);
 
   return (
-    <AuthContext.Provider value={{ usuarioActual, cargando, login, registrar, logout, recargarPerfil }}>
+    <AuthContext.Provider value={{
+      usuarioActual, cargando, login, registrar, logout, recargarPerfil,
+      recuperarPassword, cambiarPassword, enRecuperacion, terminarRecuperacion,
+    }}>
       {children}
     </AuthContext.Provider>
   );

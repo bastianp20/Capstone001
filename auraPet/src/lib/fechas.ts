@@ -133,3 +133,13 @@ export const diaSemanaDeFecha = (fecha: string): number => {
   const dia = new Date(`${fecha}T12:00:00`).getDay(); // 0 = domingo
   return dia === 0 ? 7 : dia;
 };
+
+// "20 de octubre de 2026, 14:30 h" — fecha de emisión de los PDF (hora de Chile).
+export const formatFechaEmision = (fecha = new Date()): string => {
+  const partes = new Intl.DateTimeFormat("es-CL", {
+    timeZone: ZONA, day: "numeric", month: "long", year: "numeric",
+    hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+  }).formatToParts(fecha);
+  const p = Object.fromEntries(partes.map((x) => [x.type, x.value]));
+  return `${p.day} de ${p.month} de ${p.year}, ${p.hour}:${p.minute} h`;
+};

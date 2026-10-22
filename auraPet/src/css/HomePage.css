@@ -427,3 +427,27 @@
   .nosotros-equipo-grid,
   .nosotros-logros-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Mensajes del formulario "¿Te podemos ayudar?" (sobre fondo oscuro) */
+.landing-contacto-estado {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.landing-contacto-estado--ok {
+  background: rgba(15, 143, 128, 0.18);
+  color: #7fe0d3;
+}
+
+.landing-contacto-estado--error {
+  background: rgba(164, 39, 42, 0.22);
+  color: #ffb4b4;
+}
+
+.landing-contacto-form button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}

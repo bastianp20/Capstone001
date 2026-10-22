@@ -142,3 +142,79 @@
   background: rgb(15, 14, 14);
   color: aliceblue;
 }
+
+/* ---- pestañas y acciones de AgendaModal ---- */
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tabActiva {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+.tabContador {
+  min-width: 18px;
+  padding: 0 6px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.25);
+  font-size: 11px;
+  text-align: center;
+}
+
+.itemAcciones {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.btnChico {
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btnChicoConfirmar {
+  border: none;
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.btnChicoRechazar {
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: aliceblue;
+}
+
+.btnChico:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.errorAccion {
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(220, 38, 38, 0.15);
+  color: #fca5a5;
+  font-size: 12.5px;
+}

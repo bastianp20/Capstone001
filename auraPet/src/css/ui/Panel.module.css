@@ -5,11 +5,11 @@
 
 /* ---------- TarjetaPanel ---------- */
 .tarjeta {
-  background: #fff;
-  border: 1px solid #e4e6ea;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-terciario-borde);
   border-radius: 12px;
   padding: 18px 20px;
-  color: #1a1f27;
+  color: var(--color-terciario-texto);
   min-width: 0;
 }
 
@@ -33,22 +33,31 @@
   flex-direction: column;
   gap: 6px;
   padding: 14px 16px;
-  background: #fff;
-  border: 1px solid #e4e6ea;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-terciario-borde);
   border-radius: 12px;
   min-width: 0;
 }
 
+.indicadorClickable {
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.indicadorClickable:hover {
+  border-color: var(--color-accent, #0f8f7e);
+}
+
 .indicadorEtiqueta {
   font-size: 0.82rem;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
 }
 
 .indicadorValor {
   font-size: 1.45rem;
   font-weight: 700;
   line-height: 1.1;
-  color: #1a1f27;
+  color: var(--color-terciario-texto);
 }
 
 .indicadorAlerta {
@@ -58,7 +67,7 @@
 .progreso {
   height: 5px;
   border-radius: 999px;
-  background: #e4e6ea;
+  background: var(--color-terciario-borde);
   overflow: hidden;
 }
 
@@ -78,7 +87,7 @@
   padding: 18px 12px;
   text-align: center;
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
 }
 
 /* ---------- GraficoBarras ---------- */
@@ -91,7 +100,7 @@
   background-image: linear-gradient(#eef0f2 1px, transparent 1px);
   background-size: 100% 25%;
   background-position: 0 0;
-  border-bottom: 1px solid #e4e6ea;
+  border-bottom: 1px solid var(--color-terciario-borde);
   margin-top: 30px; /* espacio para el tooltip de las barras más altas */
 }
 
@@ -127,7 +136,7 @@
 .barraFutura,
 .columna:hover .barraFutura {
   height: 3px !important;
-  background: #e4e6ea;
+  background: var(--color-terciario-borde);
 }
 
 .tooltip {
@@ -155,6 +164,68 @@
   flex: 1;
   text-align: center;
   font-size: 0.72rem;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
   min-height: 14px;
+}
+
+/* ---------- BarraFiltros (buscador + chips) ---------- */
+.barraFiltros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.buscador {
+  position: relative;
+  flex: 1 1 240px;
+  max-width: 320px;
+}
+
+.buscadorIcono {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-terciario-texto-muted);
+  pointer-events: none;
+}
+
+.buscador input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 12px 8px 32px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 9px;
+  background: var(--color-superficie);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.buscador input:focus {
+  border-color: #0f8f80;
+}
+
+.chipFiltro,
+.chipFiltroActivo {
+  padding: 6px 12px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 999px;
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chipFiltroActivo {
+  border-color: #0f8f80;
+  background: var(--color-secundario);
+  color: #0f8f80;
+}
+
+.chipCantidad {
+  margin-left: 6px;
+  opacity: 0.7;
 }

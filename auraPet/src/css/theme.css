@@ -8,6 +8,24 @@
   --color-terciario-borde: #e4e6ea;
   --color-terciario-sidebar: #12181f;
 
+  --color-superficie: #ffffff;          /* tarjetas, modales, inputs */
+  --color-superficie-suave: #f5f7f8;    /* filas alternas, cajitas grises */
+  --color-fondo-app: #f6f8f8;           /* fondo de los paneles */
+  --color-borde-fuerte: #d1d5db;
+  --color-primario-texto: #0f8f80;      /* texto/íconos verdes (más claro en modo oscuro) */
+
+  /* Paneles del veterinario y del dueño (antes venían en línea desde Colors) */
+  --color-bg: rgb(31, 27, 27);
+  --color-sidebar-bg: #12181f;
+  --color-sidebar-active: #0f8f80;
+  --color-border: #e4e6ea;
+  --color-text: #1a1f27;
+  --color-text-muted: #6b7280;
+  --color-accent: #0f8f80;
+  --color-accent-soft: #e3f5f2;
+
+  color-scheme: light;
+
   --color-estado-confirmada: #2452a8;
   --color-estado-completada: #177a4f;
   --color-estado-cancelada: #a4272a;
@@ -22,6 +40,63 @@
   --color-urgencia-baja-bg: #e3f5f2;
   --color-urgencia-baja-texto: #177a4f;
 }
+
+/* =====================================================================
+   MODO OSCURO
+   Configuración → Apariencia guarda la preferencia en <html data-tema>
+   (lib/tema.ts): "oscuro" siempre, "auto" según el sistema operativo.
+   Solo se cambian los tokens; los componentes usan var(--color-*).
+   ===================================================================== */
+:root[data-tema="oscuro"] {
+  --color-secundario: #143a35;
+  --color-terciario-texto: #e6e9ee;
+  --color-terciario-texto-muted: #9aa3ae;
+  --color-terciario-borde: #2c343e;
+  --color-terciario-sidebar: #0b0f14;
+  --color-superficie: #1a1f26;
+  --color-superficie-suave: #20262e;
+  --color-fondo-app: #0f1419;
+  --color-borde-fuerte: #3a434f;
+  --color-primario-texto: #3cc4b4;
+  --color-urgencia-baja-bg: #143a35;
+  --color-urgencia-baja-texto: #7fe0d3;
+
+  --color-bg: #0b0f14;
+  --color-sidebar-bg: #0b0f14;
+  --color-border: #2c343e;
+  --color-text: #e6e9ee;
+  --color-text-muted: #9aa3ae;
+  --color-accent-soft: #143a35;
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-tema="auto"] {
+    --color-secundario: #143a35;
+    --color-terciario-texto: #e6e9ee;
+    --color-terciario-texto-muted: #9aa3ae;
+    --color-terciario-borde: #2c343e;
+    --color-terciario-sidebar: #0b0f14;
+    --color-superficie: #1a1f26;
+    --color-superficie-suave: #20262e;
+    --color-fondo-app: #0f1419;
+    --color-borde-fuerte: #3a434f;
+  --color-primario-texto: #3cc4b4;
+    --color-urgencia-baja-bg: #143a35;
+    --color-urgencia-baja-texto: #7fe0d3;
+
+    --color-bg: #0b0f14;
+    --color-sidebar-bg: #0b0f14;
+    --color-border: #2c343e;
+    --color-text: #e6e9ee;
+    --color-text-muted: #9aa3ae;
+    --color-accent-soft: #143a35;
+
+    color-scheme: dark;
+  }
+}
+
 .btn-primario {
   background: var(--color-primario); /* primario */
   color: #ffffff;

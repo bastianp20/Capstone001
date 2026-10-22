@@ -1,13 +1,12 @@
 import type { KpiCardProps } from "../../interfaces";
-import { Colors } from "../../constants";
-const colors = Colors;
+import styles from "../../css/ui/KpiCard.module.css";
 
 // =====================================================================
 // KpiCard — tarjeta de indicador (KPI = "Key Performance Indicator",
 // un número clave para ver de un vistazo cómo va algo).
 //
 // Se usa en el Resumen del superadmin: Usuarios activos, Centros activos,
-// Veterinarios y Citas hoy (ver screens/SuperAdmin/SuperAdminScreen.tsx).
+// Veterinarios y Citas hoy (ver screens/SuperAdmin/ResumenSuperAdmin.tsx).
 //
 // Cómo se ve, de arriba a abajo:
 //   [ícono]  Etiqueta          ← icon + label
@@ -24,48 +23,25 @@ const colors = Colors;
 //
 // Parecido a components/ui/Indicador.tsx, pero con ícono y línea de detalle.
 // =====================================================================
-export const KpiCard = ({ icon, label, value, hint, cargando }: KpiCardProps) => (
-  // Caja blanca con borde suave. minWidth: 0 evita que un texto largo
-  // estire la tarjeta y rompa la grilla donde va.
+export const KpiCard = ({ icon, label, value, hint, cargando, onClick }: KpiCardProps) => (
+  // Si recibe onClick, la tarjeta se puede apretar (p. ej. ir a la sección)
   <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      gap: 10,
-      background: "white",
-      border: `1px solid ${colors.border}`,
-      borderRadius: 12,
-      padding: "16px 18px",
-      minWidth: 0,
-    }}
+    className={`${styles.tarjeta} ${onClick ? styles.clickable : ""}`}
+    onClick={onClick}
+    role={onClick ? "button" : undefined}
+    tabIndex={onClick ? 0 : undefined}
+    onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") onClick(); } : undefined}
   >
     {/* Fila de arriba: ícono en un cuadradito verde suave + la etiqueta */}
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <div
-        style={{
-          width: 32,
-          height: 32,
-          borderRadius: 8,
-          background: colors.accentSoft,
-          color: colors.accent, // el ícono toma este color (lucide usa currentColor)
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,        // el cuadradito nunca se achica
-        }}
-      >
-        {icon}
-      </div>
-      <span style={{ fontSize: 13, color: colors.textMuted, fontWeight: 500 }}>{label}</span>
+    <div className={styles.cabecera}>
+      <div className={styles.icono}>{icon}</div>
+      <span className={styles.etiqueta}>{label}</span>
     </div>
 
     {/* Número principal. Mientras carga se muestra "–" en vez de un 0 que confunda */}
-    <span style={{ fontSize: 28, fontWeight: 700, color: colors.text, lineHeight: 1, letterSpacing: -0.5 }}>
-      {cargando ? "–" : value}
-    </span>
+    <span className={styles.valor}>{cargando ? "–" : value}</span>
 
-    {/* Línea de detalle. minHeight reserva su espacio para que la tarjeta
-        no "salte" de alto cuando terminan de llegar los datos */}
-    <span style={{ fontSize: 12, color: colors.textMuted, minHeight: 16 }}>{cargando ? "" : hint}</span>
+    {/* Línea de detalle: reserva su alto para que la tarjeta no "salte" al cargar */}
+    <span className={styles.detalle}>{cargando ? "" : hint}</span>
   </div>
 );

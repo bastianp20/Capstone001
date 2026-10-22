@@ -148,3 +148,38 @@
   .contacto-principal { flex-direction: column; }
   .contacto-otras-grid { grid-template-columns: 1fr; }
 }
+
+/* Mensajes del formulario (enviado / error) */
+.contacto-estado {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.contacto-estado--ok {
+  background: var(--landing-secundario);
+  color: var(--landing-primario);
+  font-weight: 600;
+}
+
+.contacto-estado--error {
+  background: #fdecec;
+  color: #a4272a;
+  font-weight: 600;
+}
+
+.contacto-form button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Flecha de las preguntas frecuentes */
+.contacto-faq-flecha {
+  transition: transform 0.2s;
+}
+
+.contacto-faq-flecha--abierta {
+  transform: rotate(180deg);
+}

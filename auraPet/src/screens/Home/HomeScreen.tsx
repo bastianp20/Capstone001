@@ -8,7 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { Colors} from "../../constants";
+import { Colors, CONTACTO_INICIO_VACIO, LIMITES_CONTACTO, PASOS_HOME, TESTIMONIOS_HOME, TESTIMONIOS_VISIBLES_HOME, TEXTOS_CONTACTO } from "../../constants";
 import { LoginScreen } from "../Login/LoginScreen";
 import "../../css/HomePage.css";
 import { Servicios } from "../../components/Servicios";
@@ -16,11 +16,9 @@ import { usePreguntasFrecuentes } from "../../hooks/usePreguntasFrecuentes";
 import fondo from '../../assets/Home/fondo.png';
 import Historial from '../../assets/Home/Historial.png'; 
 import siguientePaso from '../../assets/Home/siguientePaso.png'; 
+import { useFormularioContacto } from "../../hooks/useFormularioContacto";
 const colors = Colors;
 
-// variables de tema que le pasamos al contenedor raíz, mismo patrón que
-// usamos en duenos.tsx / VeterinarioScreen.tsx para bajar los colores de
-// constants.ts a CSS custom properties de esta pantalla
 const temaVars = {
   "--landing-primario": colors.primario,
   "--landing-secundario": colors.secundario,
@@ -32,18 +30,7 @@ const temaVars = {
   "--landing-borde": colors.borde,
 } as React.CSSProperties;
 
-const testimonios = [
-  { texto: "Agendar hora para mi perro nunca había sido tan fácil.", nombre: "Camila Rojas", rol: "Dueña de mascota" },
-  { texto: "Tener el historial digital me ahorra tiempo en cada consulta.", nombre: "Ana Duarte", rol: "Veterinaria" },
-  { texto: "Encontré una veterinaria cerca en minutos.", nombre: "Joaquín Bahes", rol: "Dueño de mascota" },
-  { texto: "La app me ayuda a organizar mi agenda de pacientes.", nombre: "Frank de Álamos", rol: "Veterinario" },
-];
 
-const pasos = [
-  { numero: 1, titulo: "Regístrate", descripcion: "Crea tu cuenta como dueño o veterinaria en minutos." },
-  { numero: 2, titulo: "Encuentra tu veterinaria", descripcion: "Busca por cercanía, especialidad o disponibilidad." },
-  { numero: 3, titulo: "Agenda tu cita", descripcion: "Elige el horario que más te acomode y listo." },
-];
 
 
 export const HomeScreen = () => { 
@@ -52,20 +39,14 @@ export const HomeScreen = () => {
   const [testimonioActual, setTestimonioActual] = useState(0);
   const [faqAbierta, setFaqAbierta] = useState<number | null>(null);
   const { preguntas: preguntasFrecuentes } = usePreguntasFrecuentes();
-  const [formulario, setFormulario] = useState({ nombre: "", correo: "", mensaje: "" });
+  // Formulario "¿Te podemos ayudar?" (asunto fijo, ver constants.ts)
+  const contacto = useFormularioContacto(CONTACTO_INICIO_VACIO);
 
-  const testimoniosVisibles = 3;
-  const maxIndice = Math.max(0, testimonios.length - testimoniosVisibles);
+  const testimoniosVisibles = TESTIMONIOS_VISIBLES_HOME;
+  const maxIndice = Math.max(0, TESTIMONIOS_HOME.length - testimoniosVisibles);
 
   const anteriorTestimonio = () => setTestimonioActual((i) => Math.max(0, i - 1));
   const siguienteTestimonio = () => setTestimonioActual((i) => Math.min(maxIndice, i + 1));
-
-  const handleEnviar = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: conectar con backend real cuando exista. Por ahora solo mock.
-    console.log("formulario de contacto:", formulario);
-    setFormulario({ nombre: "", correo: "", mensaje: "" });
-  };
 
 
   return (
@@ -127,7 +108,7 @@ export const HomeScreen = () => {
           </button>
 
           <div className="landing-testimonios-grid">
-            {testimonios
+            {TESTIMONIOS_HOME
               .slice(testimonioActual, testimonioActual + testimoniosVisibles)
               .map((t) => (
                 <div className="landing-testimonio-card" key={t.nombre}>
@@ -154,7 +135,7 @@ export const HomeScreen = () => {
       <section className="landing-seccion landing-seccion-suave" id="como-funciona">
         <h2>¿Cómo funciona?</h2>
         <div className="landing-pasos-grid">
-          {pasos.map((paso) => (
+          {PASOS_HOME.map((paso) => (
             <div className="landing-paso" key={paso.numero}>
               <div className="landing-paso-icono">
                 {paso.numero === 1 && <UserPlus size={20} color={colors.primario} />}
@@ -208,27 +189,46 @@ export const HomeScreen = () => {
           ))}
         </div>
 
-        <form className="landing-contacto-form" onSubmit={handleEnviar}>
+          {/* aquí enviamos el mensaje que aparece abajito en la pantalla principal */}
+        <form className="landing-contacto-form" onSubmit={contacto.enviar}>
           <h3>¿Te podemos ayudar?</h3>
           <p>Si necesitas asesoría, ¡contáctanos!</p>
           <input
             type="text"
             placeholder="Ingresa tu nombre"
-            value={formulario.nombre}
-            onChange={(e) => setFormulario({ ...formulario, nombre: e.target.value })}
+            value={contacto.formulario.nombre}
+            onChange={(e) => contacto.cambiar({ nombre: e.target.value })}
+            maxLength={LIMITES_CONTACTO.nombreMax}
+            autoComplete="name"
+            required
           />
           <input
             type="email"
             placeholder="Ingresa tu correo electrónico"
-            value={formulario.correo}
-            onChange={(e) => setFormulario({ ...formulario, correo: e.target.value })}
+            value={contacto.formulario.correo}
+            onChange={(e) => contacto.cambiar({ correo: e.target.value })}
+            maxLength={LIMITES_CONTACTO.correoMax}
+            autoComplete="email"
+            required
           />
           <textarea
             placeholder="Mensaje"
-            value={formulario.mensaje}
-            onChange={(e) => setFormulario({ ...formulario, mensaje: e.target.value })}
+            value={contacto.formulario.mensaje}
+            onChange={(e) => contacto.cambiar({ mensaje: e.target.value })}
+            maxLength={LIMITES_CONTACTO.mensajeMax}
+            required
           />
-          <button type="submit" className="landing-btn-primario">Enviar</button>
+
+          {contacto.mensajeError && (
+            <p className="landing-contacto-estado landing-contacto-estado--error" role="alert">{contacto.mensajeError}</p>
+          )}
+          {contacto.enviado && (
+            <p className="landing-contacto-estado landing-contacto-estado--ok" role="status">{TEXTOS_CONTACTO.enviado}</p>
+          )}
+
+          <button type="submit" className="landing-btn-primario" disabled={contacto.ocupado}>
+            {contacto.ocupado ? TEXTOS_CONTACTO.enviando : TEXTOS_CONTACTO.enviarCorto}
+          </button>
         </form>
       </section>
 
