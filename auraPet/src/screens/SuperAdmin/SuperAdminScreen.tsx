@@ -8,6 +8,7 @@ import { Aviso } from "../../components/ui/Aviso";
 import { RechazarModal } from "../../Modal/ReachazarModal";
 import { DetalleSolicitudCentroModal } from "../../Modal/DetalleSolicitudCentroModal";
 import { ConfiguracionModal } from "../../Modal/ConfiguracionModal";
+import { DarEnAdopcionModal } from "../../Modal/DarEnAdopcionModal";
 import { ModalCrearProfesional } from "../../Modal/CrearProfesionalModal";
 import { ModalCrearDueno } from "../../Modal/CrearDuenoModal";
 import { ModalCrearSuperadmin } from "../../Modal/CrearSuperadminModal";
@@ -33,6 +34,7 @@ export const SuperAdminScreen = () => {
   const [seccion, setSeccion] = useState<SeccionSuperAdmin>("resumen");
   const [modalCrear, setModalCrear] = useState<TipoCrearSuperAdmin | null>(null);
   const [mostrarConfiguracion, setMostrarConfiguracion] = useState(false);
+  const [darEnAdopcion, setDarEnAdopcion] = useState(false);
 
   // Al crear algo se vuelven a pedir los datos (KPIs, listas, pendientes)
   const [recarga, setRecarga] = useState(0);
@@ -59,7 +61,7 @@ export const SuperAdminScreen = () => {
 
   return (
     <div className={styles.pagina}>
-      <MenuLateralSuperAdmin seccion={seccion} pendientes={solicitudes.pendientes.length} onCambiar={setSeccion} />
+      <MenuLateralSuperAdmin seccion={seccion} pendientes={solicitudes.pendientes.length} onCambiar={setSeccion} onDarEnAdopcion={() => setDarEnAdopcion(true)} />
 
       <div className={styles.principal}>
         <BarraSuperiorSuperAdmin
@@ -97,6 +99,7 @@ export const SuperAdminScreen = () => {
       )}
 
       {mostrarConfiguracion && <ConfiguracionModal onCerrar={() => setMostrarConfiguracion(false)} />}
+      {darEnAdopcion && <DarEnAdopcionModal onCerrar={() => setDarEnAdopcion(false)} />}
       {modalCrear === "profesional" && <ModalCrearProfesional onClose={cerrarModalCrear} />}
       {modalCrear === "dueno" && <ModalCrearDueno onClose={cerrarModalCrear} />}
       {modalCrear === "administrativo" && <ModalCrearAdministrativo onClose={cerrarModalCrear} />}

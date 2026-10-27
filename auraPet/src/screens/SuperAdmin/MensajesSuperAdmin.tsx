@@ -69,7 +69,7 @@ export const MensajesSuperAdmin = () => {
         {visibles.map((m) => (
           <FilaTabla key={m.id} columnas={COLUMNAS} atenuada={ocupado && enCurso === m.id}>
             <div className={styles.celdaDoble}>
-              <span className={styles.fuerte}>{m.nombre}</span>
+              <span className={`${styles.fuerte} ${styles.recortado}`} title={m.nombre}>{m.nombre}</span>
               <span className={`${styles.detalle} ${styles.recortado}`} title={m.correo}>{m.correo}</span>
             </div>
             <span className={styles.suave}>{m.asunto}</span>

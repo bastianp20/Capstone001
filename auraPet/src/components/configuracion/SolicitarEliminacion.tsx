@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { MAX_CARACTERES_MOTIVO_ELIMINACION, TEXTOS_ELIMINACION as T } from "../../constants";
+import { CONFIRMACIONES, MAX_CARACTERES_MOTIVO_ELIMINACION, TEXTOS_ELIMINACION as T } from "../../constants";
 import { getMiSolicitudEliminacion } from "../../Api/getInfo";
 import { solicitarEliminacionCuenta } from "../../Api/postInfo";
 import { useAccion } from "../../hooks/useAccion";
 import { useConsulta } from "../../hooks/useConsulta";
+import { useConfirmar } from "../../hooks/useConfirmar";
 import type { SolicitarEliminacionProps } from "../../interfaces";
 import styles from "../../css/modal/ConfiguracionModal.module.css";
 
@@ -13,10 +14,11 @@ export const SolicitarEliminacion = ({ perfilId }: SolicitarEliminacionProps) =>
   const [recarga, setRecarga] = useState(0);
   const [motivo, setMotivo] = useState("");
   const { ejecutar, ocupado, error } = useAccion();
+  const confirmar = useConfirmar();
   const { datos: solicitud } = useConsulta(() => getMiSolicitudEliminacion(perfilId), [perfilId, recarga]);
 
   const pedir = async () => {
-    if (!window.confirm(T.confirmar)) return;
+    if (!(await confirmar(CONFIRMACIONES.pedirEliminacionCuenta()))) return;
     const ok = await ejecutar(() => solicitarEliminacionCuenta(motivo), "No se pudo enviar la solicitud.");
     if (ok) {
       setMotivo("");

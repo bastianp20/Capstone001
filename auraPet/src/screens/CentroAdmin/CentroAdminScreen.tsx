@@ -4,6 +4,7 @@ import { useAuth } from "../../Auth/AuthContext";
 import { useConsulta } from "../../hooks/useConsulta";
 import { getMisCentrosAdmin } from "../../Api/getInfo";
 import { ConfiguracionModal } from "../../Modal/ConfiguracionModal";
+import { DarEnAdopcionModal } from "../../Modal/DarEnAdopcionModal";
 import { MenuLateralCentro } from "../../components/centroAdmin/MenuLateralCentro";
 import type { CentroAdminScreenProps, SeccionCentroAdmin } from "../../interfaces";
 import { SeccionResumenCentro } from "./SeccionResumenCentro";
@@ -21,6 +22,7 @@ export const CentroAdminScreen = ({ centroInicialId, onVolver }: CentroAdminScre
   const { usuarioActual } = useAuth();
   const [seccion, setSeccion] = useState<SeccionCentroAdmin>("resumen");
   const [mostrarConfiguracion, setMostrarConfiguracion] = useState(false);
+  const [darEnAdopcion, setDarEnAdopcion] = useState(false);
 
   // Centros que administra (puede ser más de uno)
   const { datos: misCentros = [], cargando: cargandoCentros } =
@@ -40,7 +42,7 @@ export const CentroAdminScreen = ({ centroInicialId, onVolver }: CentroAdminScre
   return (
     <div className={layout.pagina}>
       <MenuLateralCentro seccion={seccion} onCambiar={setSeccion} onVolver={onVolver}
-        onConfiguracion={() => setMostrarConfiguracion(true)} />
+        onConfiguracion={() => setMostrarConfiguracion(true)} onDarEnAdopcion={() => setDarEnAdopcion(true)} />
 
       <div className={layout.principal}>
         {/* Barra superior: selector de centro (si administra más de uno) y usuario */}
@@ -72,6 +74,7 @@ export const CentroAdminScreen = ({ centroInicialId, onVolver }: CentroAdminScre
       </div>
 
       {mostrarConfiguracion && <ConfiguracionModal onCerrar={() => setMostrarConfiguracion(false)} />}
+      {darEnAdopcion && <DarEnAdopcionModal onCerrar={() => setDarEnAdopcion(false)} />}
     </div>
   );
 };

@@ -11,9 +11,12 @@ import { Nosotros } from './screens/Home/NosotrosScreen';
 import { ContactoScreen } from './screens/Home/ContactoScreen';
 import { PantallaCarga } from './components/PantallaCarga';
 import { SolicitarCentro } from './screens/Centros/SolicitarCentro';
+import { AdopcionScreen } from './screens/Adopciones/AdopcionScreen';
+import { FichaAdopcionScreen } from './screens/Adopciones/FichaAdopcionScreen';
+import { PublicarAdopcionScreen } from './screens/Adopciones/PublicarAdopcionScreen';
 import { RutaProtegida } from './components/rutas/RutaProtegida';
 import { SoloSinSesion } from './components/rutas/SoloSinSesion';
-import { RUTA_NUEVA_PASSWORD, RUTA_PANEL, RUTA_SOLICITAR_CENTRO } from './constants';
+import { RUTA_ADOPTA, RUTA_PUBLICAR_ADOPCION, RUTA_NUEVA_PASSWORD, RUTA_PANEL, RUTA_SOLICITAR_CENTRO } from './constants';
 
 export const App = () => {
   const { usuarioActual, cargando, enRecuperacion } = useAuth();
@@ -41,6 +44,13 @@ export const App = () => {
 
         {/* Solicitud de centros: pantalla completa, con su propio panel de marca (sin NavBar/Footer) */}
         <Route path={RUTA_SOLICITAR_CENTRO} element={<SolicitarCentro />} />
+      </Route>
+
+      {/* Adopción: pública para todos, con o sin sesión (misma NavBar y Footer) */}
+      <Route element={<Layout />}>
+        <Route path={RUTA_ADOPTA} element={<AdopcionScreen />} />
+        <Route path={RUTA_PUBLICAR_ADOPCION} element={<PublicarAdopcionScreen />} />
+        <Route path={`${RUTA_ADOPTA}/:id`} element={<FichaAdopcionScreen />} />
       </Route>
 
       {/* Protegidas: el panel de cada rol (LoginRol decide cuál) */}

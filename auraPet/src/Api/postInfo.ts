@@ -1,5 +1,7 @@
 // aquí van las acciones que CREAN o CAMBIAN datos en la base (los "POST").
-import type { DatosNuevaMascota, DatosNuevoCentro, DatosNuevoDueno, DatosNuevoProfesional, DatosNuevoSuperadmin, DatosEdicionCentro, DatosNuevoAdministrativo, CambioCita, DatosSolicitudCita, CambiosCuenta, NuevoRegistroMedico, CambiosDatosClinicos, DatosSolicitudCentro, NuevaReceta, NuevaDerivacion, DatosContacto, EstadoContacto, DatosNota } from "../interfaces";
+import type { DatosNuevaMascota, DatosNuevoCentro, DatosNuevoDueno, DatosNuevoProfesional, DatosNuevoSuperadmin, DatosEdicionCentro, DatosNuevoAdministrativo, CambioCita, DatosSolicitudCita, CambiosCuenta, NuevoRegistroMedico, CambiosDatosClinicos, DatosSolicitudCentro, NuevaReceta, NuevaDerivacion, DatosContacto, EstadoContacto, DatosNota, DatosPostulacionAdopcion, DatosPublicarAdopcion } from "../interfaces";
+import { BUCKET_ADOPCIONES } from "../constants";
+import { fechaDesdeEdad } from "../lib/adopcion";
 import { supabase } from "../lib/supabase";
 import type { Json } from "../lib/database.types";
 
@@ -242,6 +244,19 @@ export const actualizarDatosClinicos = async (mascotaId: number, cambios: Cambio
 // mascota sea suya, el horario del centro, que la hora esté libre, etc.
 // Si algo no calza, su mensaje ("El centro no atiende ese día") llega tal cual.
 export const solicitarCita = async (datos: DatosSolicitudCita) => {
+  // Sin centro = veterinario independiente (migración 35): el veterinario es obligatorio
+  if (datos.centroId === null) {
+    if (datos.veterinarioId === null) throw new Error("Elige el veterinario independiente que te atenderá.");
+    const { data, error } = await supabase.rpc("solicitar_cita_independiente", {
+      p_mascota_id: datos.mascotaId,
+      p_veterinario_id: datos.veterinarioId,
+      p_fecha_hora: datos.fechaHora,
+      p_motivo: datos.motivo.trim(),
+      p_sintomas: datos.sintomas,
+    });
+    if (error) throw new Error(error.message || "No se pudo solicitar la cita.");
+    return data;
+  }
   const { data, error } = await supabase.rpc("solicitar_cita", {
     p_mascota_id: datos.mascotaId,
     p_centro_id: datos.centroId,
@@ -418,4 +433,77 @@ export const actualizarNota = async (notaId: number, cambios: Partial<DatosNota>
 export const borrarNota = async (notaId: number) => {
   const { error } = await supabase.from("notas").delete().eq("id", notaId);
   if (error) throw new Error(error.message || "No se pudo borrar la nota.");
+};
+
+// ---------- ADOPCIÓN (migraciones 36 y 37) ----------
+
+// "Quiero adoptarlo": la base revisa que el animal esté disponible, que no sea
+// tuyo y que no hayas postulado antes.
+export const postularAdopcion = async (adopcionId: number, d: DatosPostulacionAdopcion): Promise<number> => {
+  const { data, error } = await supabase.rpc("postular_adopcion", {
+    p_adopcion_id: adopcionId,
+    p_vivienda: d.vivienda ?? "",
+    p_tiene_patio: !!d.tienePatio,
+    p_tenencia: d.tenencia ?? "",
+    p_permiten_mascotas: !!d.permitenMascotas,
+    p_hay_ninos: !!d.hayNinos,
+    p_edades_ninos: d.edadesNinos,
+    p_otras_mascotas: !!d.otrasMascotas,
+    p_cuales_mascotas: d.cualesMascotas,
+    p_todos_de_acuerdo: !!d.todosDeAcuerdo,
+    p_experiencia: d.experiencia,
+    p_motivo: d.motivo,
+  });
+  if (error) throw new Error(error.message || "No se pudo enviar la postulación.");
+  return data;
+};
+
+// "Dar en adopción": primero sube las fotos al bucket (carpeta de quien publica)
+// y después crea la publicación. Si algo falla, borra las fotos que alcanzó a subir.
+export const publicarAdopcion = async (perfilId: string, d: DatosPublicarAdopcion): Promise<number> => {
+  const bucket = supabase.storage.from(BUCKET_ADOPCIONES);
+  const rutas: string[] = [];
+  try {
+    for (const [i, foto] of d.fotos.entries()) {
+      const extension = foto.archivo.name.split(".").pop()?.toLowerCase() || "jpg";
+      const ruta = `${perfilId}/${Date.now()}-${i}.${extension}`;
+      const { error } = await bucket.upload(ruta, foto.archivo, { contentType: foto.archivo.type, upsert: false });
+      if (error) throw new Error("No se pudieron subir las fotos.");
+      rutas.push(ruta);
+    }
+
+    const { data, error } = await supabase
+      .from("adopciones")
+      .insert({
+        publicado_por: perfilId,
+        nombre: d.nombre.trim(),
+        especie: d.especie ?? "otro",
+        raza: d.raza.trim() || null,
+        sexo: d.sexo ?? "macho",
+        tamano: d.tamano ?? "mediano",
+        fecha_nacimiento: fechaDesdeEdad(d.anios, d.meses),
+        comuna: d.comuna.trim(),
+        historia: d.historia.trim() || null,
+        frase: d.frase.trim() || null,
+        personalidad: d.personalidad,
+        energia: d.rasgos.energia,
+        sociable_perros: d.rasgos.sociablePerros,
+        sociable_gatos: d.rasgos.sociableGatos,
+        sociable_ninos: d.rasgos.sociableNinos,
+        peso_kg: d.pesoKg.trim() ? Number(d.pesoKg.replace(",", ".")) : null,
+        alergias: d.alergias.trim() || null,
+        vacunas_al_dia: d.vacunasAlDia,
+        esterilizado: d.esterilizado,
+        con_microchip: d.conMicrochip,
+        solicita_chequeo: d.solicitaChequeo,
+        fotos: rutas,
+      })
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message || "No se pudo publicar.");
+    return data.id;
+  } catch (e) {
+    if (rutas.length) await bucket.remove(rutas);
+    throw e;
+  }
 };

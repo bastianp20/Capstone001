@@ -1,14 +1,17 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DATOS_LABORALES_VACIOS, RUTA_SOLICITAR_CENTRO, TEXTOS_CONFIRMAR_PASSWORD, TEXTOS_RECUPERAR_PASSWORD, TEXTOS_REGISTRO_VETERINARIO } from '../../constants';
+import { DATOS_LABORALES_VACIOS, RUTA_ADOPTA, RUTA_SOLICITAR_CENTRO, TEXTOS_CONFIRMAR_PASSWORD, TEXTOS_RECUPERAR_PASSWORD, TEXTOS_REGISTRO_VETERINARIO } from '../../constants';
 import { bloquearCopiarPegar, passwordsNoCoinciden } from '../../lib/formularios';
 import { getCentrosParaCita, getEspecialidades } from '../../Api/getInfo';
 import { useConsulta } from '../../hooks/useConsulta';
+import { useDestacadosAdopcion } from '../../hooks/useDestacadosAdopcion';
 import { validarDatosLaborales } from '../../lib/validacionVeterinario';
 import { SelectorCentroVeterinario } from '../../components/veterinario/registro/SelectorCentroVeterinario';
 import { SelectorEspecialidad } from '../../components/veterinario/registro/SelectorEspecialidad';
 import { ArrowRight, Eye, EyeOff, PawPrint, Stethoscope, X } from 'lucide-react';
 import { useAuth } from '../../Auth/AuthContext';
+import { CarruselAdopcionLogin } from '../../components/adopcion/CarruselAdopcionLogin';
+import { FranjaAdopcionLogin } from '../../components/adopcion/FranjaAdopcionLogin';
 import '../../css/LoginPage.css';
 import fondologin from '../../assets/login/fondologin.png'; // TODO: cambiar por la imagen del login cuando la tengas
 import type { DatosLaboralesVeterinario, LoginScreenProps, ModoLogin, RolRegistro } from '../../interfaces';
@@ -17,6 +20,8 @@ export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) =
   const navigate = useNavigate();
   // "Solicita unirte": si quien abre el login no pasa su propia acción, va a la página de solicitud
   const irASolicitudCentro = onSolicitarCentro ?? (() => { onCerrar(); navigate(RUTA_SOLICITAR_CENTRO); });
+  const irAAdopta = () => { onCerrar(); navigate(RUTA_ADOPTA); };
+  const adopcion = useDestacadosAdopcion(); // "Ellos también buscan hogar"
   const { login, registrar, recuperarPassword } = useAuth();
   const [modo, setModo] = useState<ModoLogin>('ingresar');
 
@@ -163,6 +168,7 @@ export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) =
             <h2>Tu mascota, en buenas manos</h2>
             <p>Citas, historial y veterinarias de confianza en un solo lugar.</p>
           </div>
+          <CarruselAdopcionLogin animales={adopcion.animales} onVerTodos={irAAdopta} />
         </div>
 
         {/* Panel derecho: formulario */}
@@ -170,6 +176,8 @@ export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) =
           <button className="login-close-btn" onClick={onCerrar} aria-label="Cerrar">
             <X size={18} />
           </button>
+
+          <FranjaAdopcionLogin total={adopcion.total} onVerTodos={irAAdopta} />
 
           <div className="login-contenido">
             <h1 className="login-titulo">

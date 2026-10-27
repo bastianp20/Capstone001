@@ -1,0 +1,163 @@
+@import './theme.css';
+
+/* =====================================================================
+   Ficha del animal /adopta/:id y modal "Quiero adoptarlo"
+   (lo común está en AdopcionCompartido.css)
+   ===================================================================== */
+.ficha { padding: 28px 0 64px; }
+.ficha-contenedor { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+.ficha-estado {
+  min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  text-align: center; color: var(--adopta-suave); padding: 48px 16px;
+}
+.ficha-estado svg { color: var(--adopta-primario); }
+.ficha-estado p { margin: 0; font-size: 16px; color: var(--adopta-texto); }
+.ficha-volver {
+  display: inline-flex; align-items: center; gap: 6px; margin-bottom: 18px;
+  color: var(--adopta-suave); font-size: 14px; font-weight: 600; text-decoration: none;
+}
+.ficha-volver:hover { color: var(--adopta-primario); }
+
+.ficha-columnas { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px; align-items: start; }
+.ficha-principal { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.ficha-lateral { position: sticky; top: 96px; display: flex; flex-direction: column; gap: 14px; }
+
+/* Presentación: galería + cabecera */
+.ficha-presentacion { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.ficha-galeria { display: flex; flex-direction: column; gap: 10px; }
+.ficha-galeria-principal { aspect-ratio: 4 / 3; border-radius: 22px; box-shadow: 0 10px 30px rgba(18, 24, 31, 0.08); }
+.ficha-galeria-miniaturas { display: grid; grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); gap: 8px; }
+.ficha-miniatura {
+  aspect-ratio: 1; padding: 0; border-radius: 12px; overflow: hidden; border: 2px solid transparent;
+  background: none; cursor: pointer; opacity: 0.75; transition: opacity 0.15s, border-color 0.15s;
+}
+.ficha-miniatura img { width: 100%; height: 100%; object-fit: cover; }
+.ficha-miniatura-activa, .ficha-miniatura:hover { opacity: 1; border-color: var(--adopta-primario); }
+
+.ficha-cabecera h1 { font-size: 44px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
+.ficha-datos { margin: 0 0 16px; color: var(--adopta-suave); font-size: 15px; }
+.ficha-historia { margin: 0 0 16px; font-size: 16px; line-height: 1.6; color: #374151; white-space: pre-line; }
+.ficha-frase { margin: 0; font-size: 18px; font-style: italic; color: #374151; }
+
+/* Tarjetas blancas */
+.ficha-tarjeta {
+  padding: 24px; border-radius: 20px; background: #ffffff; border: 1px solid var(--adopta-borde);
+}
+.ficha-tarjeta h2, .ficha-otros h2 { font-size: 20px; font-weight: 800; margin-bottom: 16px; }
+
+.ficha-personalidad { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 24px; align-items: center; }
+.ficha-rasgos { display: flex; flex-direction: column; gap: 12px; }
+.ficha-rasgo { display: grid; grid-template-columns: 150px 1fr; align-items: center; gap: 12px; font-size: 14px; color: #374151; }
+.ficha-rasgo span:first-child { text-align: right; }
+.ficha-rasgo-barra { height: 8px; border-radius: 4px; background: #e9ecef; overflow: hidden; }
+.ficha-rasgo-barra span { display: block; height: 100%; border-radius: 4px; background: var(--adopta-primario); }
+
+.ficha-salud { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 20px; margin: 0; padding: 0; list-style: none; }
+.ficha-salud-item { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; }
+.ficha-salud-item strong { display: block; font-weight: 600; color: var(--adopta-suave); font-size: 13.5px; }
+.ficha-salud-icono {
+  flex-shrink: 0; width: 30px; height: 30px; border-radius: 10px; display: grid; place-items: center;
+  background: #e3f5f2; color: var(--adopta-primario);
+}
+.ficha-salud-pendiente { color: var(--adopta-suave); }
+.ficha-salud-pendiente .ficha-salud-icono { background: #f1f3f4; color: var(--adopta-suave); }
+
+/* Chequeo */
+.ficha-chequeo {
+  display: flex; gap: 16px; align-items: flex-start; padding: 22px 24px; border-radius: 20px;
+  background: linear-gradient(120deg, #e3f5f2 0%, #e9e5fb 100%); color: #0b6b60;
+  box-shadow: 0 10px 26px rgba(15, 143, 128, 0.12);
+}
+.ficha-chequeo svg { flex-shrink: 0; }
+.ficha-chequeo div { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.ficha-chequeo-titulo { margin: 0; font-size: 13.5px; color: #3c5b57; }
+.ficha-chequeo strong { font-family: var(--fuente-marca); font-size: 19px; color: var(--adopta-texto); }
+.ficha-chequeo-solidario { padding: 3px 10px; border-radius: 999px; background: #ffffff; font-size: 12.5px; font-weight: 700; }
+.ficha-chequeo-pendiente { background: #fff3d1; color: #5a4b00; box-shadow: none; }
+.ficha-chequeo-pendiente p { margin: 0; font-size: 14px; }
+
+/* Quién lo publica */
+.ficha-publicador {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;
+  padding: 24px 20px; border-radius: 20px; background: #ffffff; border: 1px solid var(--adopta-borde);
+  box-shadow: 0 10px 30px rgba(18, 24, 31, 0.06);
+}
+.ficha-publicador-avatar {
+  width: 64px; height: 64px; margin-bottom: 8px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--adopta-durazno); color: #7a3d12; font-family: var(--fuente-marca); font-size: 22px; font-weight: 800;
+}
+.ficha-publicador strong { font-family: var(--fuente-marca); font-size: 17px; }
+.ficha-publicador-tipo, .ficha-publicador-adopciones { font-size: 13.5px; color: var(--adopta-suave); }
+.ficha-btn-adoptar { width: 100%; margin-top: 16px; min-height: 50px; font-size: 16px; }
+.ficha-publicador-acciones { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin-top: 10px; }
+.ficha-publicador-acciones .adopta-btn { padding: 0 10px; font-size: 14px; min-height: 40px; }
+.ficha-guardado { color: #c2410c; border-color: #fdba74; }
+.ficha-ley { margin: 0; padding: 0 8px; text-align: center; font-size: 13px; color: var(--adopta-suave); line-height: 1.5; }
+
+/* Otros que también buscan hogar */
+.ficha-otros { margin-top: 44px; }
+.ficha-otros-cabecera { display: flex; justify-content: space-between; align-items: center; }
+.ficha-otros-cabecera h2 { margin-bottom: 0; }
+.ficha-otros-flechas { display: flex; gap: 8px; }
+.ficha-otros-fila {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 180px; gap: 14px;
+  overflow-x: auto; scroll-snap-type: x mandatory; padding: 16px 2px 8px; scrollbar-width: none;
+}
+.ficha-otros-fila::-webkit-scrollbar { display: none; }
+.ficha-otro {
+  scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 18px 12px; border-radius: 18px; border: 1px solid var(--adopta-borde); background: #ffffff;
+  font: inherit; color: var(--adopta-texto); text-align: center; cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.ficha-otro:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(18, 24, 31, 0.1); }
+.ficha-otro:focus-visible { outline: 3px solid rgba(15, 143, 128, 0.35); outline-offset: 2px; }
+.ficha-otro-avatar { width: 84px; height: 84px; border-radius: 50%; margin-bottom: 8px; border: 3px solid #ffffff; box-shadow: 0 4px 12px rgba(18, 24, 31, 0.1); }
+.ficha-otro strong { font-family: var(--fuente-marca); font-size: 15px; }
+.ficha-otro span { font-size: 12.5px; color: var(--adopta-suave); }
+.ficha-otro-comuna { display: inline-flex; align-items: center; gap: 3px; }
+
+/* ---------- Modal "Quiero adoptarlo" ---------- */
+.postula-cabecera { padding: 24px 28px 18px; border-bottom: 1px solid var(--adopta-borde); display: flex; flex-direction: column; gap: 16px; }
+.postula-cabecera h2 { font-size: 22px; font-weight: 800; text-align: center; padding: 0 30px; }
+.postula-cuerpo { flex: 1; overflow-y: auto; padding: 22px 28px; display: flex; flex-direction: column; gap: 20px; }
+.postula-pie { display: flex; justify-content: space-between; gap: 12px; padding: 16px 28px; border-top: 1px solid var(--adopta-borde); }
+.postula-resumen-titulo { font-size: 16px; font-weight: 800; }
+.postula-resumen { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; font-size: 14px; }
+.postula-resumen dt { color: var(--adopta-suave); }
+.postula-resumen dd { margin: 0; white-space: pre-line; }
+.postula-compromiso { display: flex; gap: 10px; align-items: flex-start; padding: 14px; border-radius: 14px; background: #e3f5f2; font-size: 14px; line-height: 1.45; cursor: pointer; }
+.postula-compromiso input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--adopta-primario); }
+
+.postula-enviada { padding: 40px 32px 36px; display: flex; flex-direction: column; align-items: center; gap: 18px; text-align: center; }
+.postula-enviada h2 { font-size: 30px; font-weight: 800; }
+.postula-enviada p { margin: 0; max-width: 420px; color: #374151; line-height: 1.55; }
+.postula-ilustracion {
+  position: relative; width: 220px; height: 140px; border-radius: 50% 50% 40% 40%;
+  background: radial-gradient(circle at 50% 70%, #ffe6d5 0%, #fff3d1 60%, transparent 61%);
+}
+.postula-ilustracion span { position: absolute; display: grid; place-items: center; border-radius: 50%; }
+.postula-ilustracion-perro { left: 50%; bottom: 8px; transform: translateX(-50%); width: 96px; height: 96px; background: #ffffff; color: var(--adopta-primario); box-shadow: 0 8px 20px rgba(18, 24, 31, 0.1); }
+.postula-ilustracion-gato { left: 14px; bottom: 18px; width: 64px; height: 64px; background: #e9e5fb; color: #4b3fa0; }
+.postula-ilustracion-corazon { right: 22px; top: 6px; width: 54px; height: 54px; background: #fde2e2; color: #e0403f; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1000px) {
+  /* Una columna: el botón "Quiero adoptarlo" queda justo después de la presentación */
+  .ficha-columnas { display: flex; flex-direction: column; gap: 20px; }
+  .ficha-principal { display: contents; }
+  .ficha-presentacion { order: 1; }
+  .ficha-lateral { order: 2; position: static; }
+  .ficha-principal > :not(.ficha-presentacion) { order: 3; }
+}
+@media (max-width: 760px) {
+  .ficha-contenedor { padding: 0 16px; }
+  .ficha-presentacion, .ficha-personalidad { grid-template-columns: 1fr; }
+  .ficha-cabecera h1 { font-size: 34px; }
+  .ficha-salud { grid-template-columns: 1fr 1fr; }
+  .ficha-rasgo { grid-template-columns: 120px 1fr; }
+  .postula-cabecera, .postula-cuerpo, .postula-pie { padding-left: 18px; padding-right: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ficha-otro, .ficha-miniatura { transition: none; }
+}

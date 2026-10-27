@@ -1,9 +1,10 @@
 import { useState } from "react";
 import {
-  ESTADO_DERIVACION, MAX_CARACTERES_RESULTADO_DERIVACION, TEXTOS_DERIVACION as T,
+  ESTADO_DERIVACION, MAX_CARACTERES_RESULTADO_DERIVACION, TEXTOS_DERIVACION as T, CONFIRMACIONES,
 } from "../../constants";
 import { responderDerivacion } from "../../Api/postInfo";
 import { useAccion } from "../../hooks/useAccion";
+import { useConfirmar } from "../../hooks/useConfirmar";
 import type { RespuestaDerivacion, TarjetaDerivacionProps } from "../../interfaces";
 import { Etiqueta } from "../ui/Etiqueta";
 import { Boton } from "../ui/Boton";
@@ -15,6 +16,7 @@ export const TarjetaDerivacion = ({ derivacion: d, mostrarMascota, onCambio, onV
   const [respuesta, setRespuesta] = useState<RespuestaDerivacion>(null);
   const [texto, setTexto] = useState("");
   const { ejecutar, ocupado, error } = useAccion();
+  const confirmar = useConfirmar();
 
   const enviar = async (realizada: boolean) => {
     const ok = await ejecutar(() => responderDerivacion(d.id, realizada, texto), "No se pudo actualizar la derivación.");
@@ -25,8 +27,8 @@ export const TarjetaDerivacion = ({ derivacion: d, mostrarMascota, onCambio, onV
     }
   };
 
-  const cancelar = () => {
-    if (window.confirm(T.confirmarCancelar)) enviar(false);
+  const cancelar = async () => {
+    if (await confirmar(CONFIRMACIONES.cancelarDerivacion(`${d.mascota} → ${d.destino}`))) enviar(false);
   };
 
   const titulo = d.direccion === "recibida"

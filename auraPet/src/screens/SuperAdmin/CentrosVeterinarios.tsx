@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { COLUMNAS_SUPERADMIN, ESTADO_VERIFICACION, FILTROS_ASIGNACIONES, Iconos, PREDICADOS_FILTRO_ASIGNACIONES, TEXTOS_CENTRO_VETERINARIO } from "../../constants";
+import { CONFIRMACIONES, COLUMNAS_SUPERADMIN, ESTADO_VERIFICACION, FILTROS_ASIGNACIONES, Iconos, PREDICADOS_FILTRO_ASIGNACIONES, TEXTOS_CENTRO_VETERINARIO } from "../../constants";
 import { useConsulta } from "../../hooks/useConsulta";
+import { useConfirmar } from "../../hooks/useConfirmar";
 import { useFiltro } from "../../hooks/useFiltro";
 import { getAsignacionesVeterinarios, getCentrosSelector } from "../../Api/getInfo";
 import { asignarCentroAVeterinario, quitarCentroAVeterinario } from "../../Api/postInfo";
@@ -21,6 +22,7 @@ export const CentrosVeterinarios = () => {
   const [recarga, setRecarga] = useState(0);
   const { datos: veterinarios = [], cargando, error } = useConsulta(() => getAsignacionesVeterinarios(), [recarga]);
   const { datos: centros = [] } = useConsulta(() => getCentrosSelector(), []);
+  const confirmar = useConfirmar();
 
   // Buscador + chips (hook reutilizable)
   const { busqueda, setBusqueda, filtro, setFiltro, visibles, cantidad } = useFiltro({
@@ -54,11 +56,8 @@ export const CentrosVeterinarios = () => {
     setCentroElegido((prev) => ({ ...prev, [v.id]: "" }));
   };
 
-  const quitar = (v: VeterinarioAsignaciones, centroId: number, nombreCentro: string) => {
-    const seguro = window.confirm(
-      `¿Quitar a ${v.nombre} de ${nombreCentro}?\n\nTambién se borran sus horarios de atención en ese centro.`
-    );
-    if (!seguro) return;
+  const quitar = async (v: VeterinarioAsignaciones, centroId: number, nombreCentro: string) => {
+    if (!(await confirmar(CONFIRMACIONES.quitarVeterinarioDeCentro(v.nombre, nombreCentro)))) return;
     ejecutar(v.id, () => quitarCentroAVeterinario(v.id, centroId), `${v.nombre} ya no atiende en ${nombreCentro}.`);
   };
 

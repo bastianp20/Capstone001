@@ -1,15 +1,19 @@
 import { useState, type FormEvent } from "react";
 import styles from "../css/modal/CrearProfesionalModal.module.css"; // mismo diseño que los otros modales
-import { EMOJI_ESPECIE, PASO_HORA_CITA_SEGUNDOS, SINTOMAS_FRECUENTES } from "../constants";
+import {
+  EMOJI_ESPECIE, ESPECIALIDAD_POR_DEFECTO, PASO_HORA_CITA_SEGUNDOS, SINTOMAS_FRECUENTES, TEXTOS_SOLICITAR_CITA as T,
+  VALOR_ATENCION_INDEPENDIENTE,
+} from "../constants";
 import { useConsulta } from "../hooks/useConsulta";
-import { getCentrosParaCita, getVeterinariosDeCentro } from "../Api/getInfo";
+import { getCentrosParaCita, getVeterinariosDeCentro, getVeterinariosIndependientes } from "../Api/getInfo";
 import { solicitarCita } from "../Api/postInfo";
 import { diaSemanaDeFecha, fechaDentroDe } from "../lib/fechas";
 import type { SolicitarCitaModalProps } from "../interfaces";
 import { useAuth } from "../Auth/AuthContext";
 
-// Modal "Solicitar cita" del dueño: mascota, centro, veterinario (opcional),
-// fecha y hora, motivo y síntomas. La cita queda "pendiente" hasta que el
+// Modal "Solicitar cita" del dueño: mascota, dónde (un centro o un veterinario
+// independiente), veterinario (opcional en un centro, obligatorio si es
+// independiente; con su especialidad), fecha y hora, motivo y síntomas. La cita queda "pendiente" hasta que el
 // veterinario la confirme. La base revisa horario, hora libre, etc.
 export const ModalSolicitarCita = ({ mascotas, mascotaInicialId, onClose, onCreada }: SolicitarCitaModalProps) => {
   const { usuarioActual } = useAuth();
@@ -20,7 +24,10 @@ export const ModalSolicitarCita = ({ mascotas, mascotaInicialId, onClose, onCrea
 
   // ---------- Campos ----------
   const [mascotaId, setMascotaId] = useState<number | null>(mascotaInicialId ?? (mascotas.length === 1 ? mascotas[0].id : null));
-  const [centroId, setCentroId] = useState<number | null>(null);
+  // Dónde atenderse: "" (sin elegir), VALOR_ATENCION_INDEPENDIENTE o el id del centro
+  const [destino, setDestino] = useState("");
+  const esIndependiente = destino === VALOR_ATENCION_INDEPENDIENTE;
+  const centroId = destino && !esIndependiente ? Number(destino) : null;
   const [veterinarioId, setVeterinarioId] = useState<number | null>(null); // null = sin preferencia
   const [fecha, setFecha] = useState("");
   const [hora, setHora] = useState("");
@@ -31,11 +38,14 @@ export const ModalSolicitarCita = ({ mascotas, mascotaInicialId, onClose, onCrea
   const [error, setError] = useState<string | null>(null);
   const [listo, setListo] = useState(false);
 
-  // Veterinarios del centro elegido (se vuelve a pedir al cambiar de centro)
-  const { datos: veterinarios = [] } = useConsulta(
-    () => (centroId ? getVeterinariosDeCentro(centroId) : Promise.resolve([])),
-    [centroId]
+  // Veterinarios del centro elegido, o los independientes (se vuelve a pedir al cambiar)
+  const { datos: veterinarios = [], cargando: cargandoVeterinarios } = useConsulta(
+    () => (esIndependiente
+      ? getVeterinariosIndependientes()
+      : centroId ? getVeterinariosDeCentro(centroId) : Promise.resolve([])),
+    [centroId, esIndependiente]
   );
+  const veterinarioElegido = veterinarios.find((v) => v.id === veterinarioId);
 
   const centro = centros.find((c) => c.id === centroId);
 
@@ -52,15 +62,19 @@ export const ModalSolicitarCita = ({ mascotas, mascotaInicialId, onClose, onCrea
   const alternarSintoma = (s: string) =>
     setSintomas((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));
 
-  const elegirCentro = (id: number | null) => {
-    setCentroId(id);
-    setVeterinarioId(null); // el veterinario elegido podría no atender en el nuevo centro
+  const elegirDestino = (valor: string) => {
+    setDestino(valor);
+    setVeterinarioId(null); // el veterinario elegido podría no atender en el nuevo lugar
   };
 
   const enviar = async (e: FormEvent) => {
     e.preventDefault();
-    if (!mascotaId || !centroId || !fecha || !hora || !motivo.trim()) {
-      setError("Completa mascota, centro, fecha, hora y motivo.");
+    if (!mascotaId || !destino || !fecha || !hora || !motivo.trim()) {
+      setError(T.faltanDatos);
+      return;
+    }
+    if (esIndependiente && veterinarioId === null) {
+      setError(T.faltaVeterinario);
       return;
     }
     setEnviando(true);
@@ -96,7 +110,7 @@ export const ModalSolicitarCita = ({ mascotas, mascotaInicialId, onClose, onCrea
         {listo ? (
           // ---------- Éxito ----------
           <div className={styles.exito}>
-            <p>✅ Tu solicitud fue enviada a <strong>{centro?.nombre}</strong>.</p>
+            <p>✅ {T.enviadaA(esIndependiente ? veterinarioElegido?.nombre ?? "" : centro?.nombre ?? "")}</p>
             <p>Queda como <strong>pendiente</strong> hasta que el veterinario la confirme. La verás en "Próximas citas".</p>
             <div className={styles.acciones}>
               <button type="button" className={styles.enviar} onClick={onClose}>Listo</button>
@@ -127,22 +141,39 @@ export const ModalSolicitarCita = ({ mascotas, mascotaInicialId, onClose, onCrea
 
             <label className={styles.campo}>
               Centro
-              <select value={centroId ?? ""} onChange={(e) => elegirCentro(e.target.value ? Number(e.target.value) : null)}>
-                <option value="">{cargandoCentros ? "Cargando…" : "Elige un centro"}</option>
-                {centros.map((c) => <option key={c.id} value={c.id}>{c.nombre} · {c.comuna}</option>)}
+              <select value={destino} onChange={(e) => elegirDestino(e.target.value)}>
+                <option value="">{cargandoCentros ? "Cargando…" : T.elegirCentro}</option>
+                <optgroup label={T.grupoCentros}>
+                  {centros.map((c) => <option key={c.id} value={c.id}>{c.nombre} · {c.comuna}</option>)}
+                </optgroup>
+                <optgroup label={T.grupoIndependiente}>
+                  <option value={VALOR_ATENCION_INDEPENDIENTE}>{T.opcionIndependiente}</option>
+                </optgroup>
               </select>
             </label>
 
             <label className={styles.campo}>
               Veterinario
-              <select value={veterinarioId ?? ""} disabled={!centroId}
+              <select value={veterinarioId ?? ""} disabled={!destino}
                 onChange={(e) => setVeterinarioId(e.target.value ? Number(e.target.value) : null)}>
-                <option value="">Sin preferencia</option>
+                <option value="">
+                  {esIndependiente
+                    ? (!cargandoVeterinarios && veterinarios.length === 0 ? T.sinIndependientes : T.elegirVeterinario)
+                    : T.sinPreferencia}
+                </option>
                 {veterinarios.map((v) => (
-                  <option key={v.id} value={v.id}>{v.nombre}{v.especialidad ? ` · ${v.especialidad}` : ""}</option>
+                  <option key={v.id} value={v.id}>{v.nombre} · {v.especialidad ?? ESPECIALIDAD_POR_DEFECTO}</option>
                 ))}
               </select>
             </label>
+
+            {/* La especialidad del profesional elegido, bien a la vista */}
+            {veterinarioElegido && (
+              <small className={`${styles.ayuda} ${styles.completo} ${styles.especialidadElegida}`}>
+                {T.especialidad(veterinarioElegido.especialidad ?? ESPECIALIDAD_POR_DEFECTO)}
+              </small>
+            )}
+            {esIndependiente && <small className={`${styles.ayuda} ${styles.completo}`}>{T.ayudaIndependiente}</small>}
 
             <label className={styles.campo}>
               Fecha

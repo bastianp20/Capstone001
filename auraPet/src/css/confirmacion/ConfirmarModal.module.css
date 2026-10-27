@@ -1,0 +1,187 @@
+/* Modal de confirmación (ConfirmarModal). Usa los tokens del tema: se ve bien
+   en claro y en oscuro. Va por encima de cualquier otro modal. */
+@import '../theme.css';
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(8, 11, 15, 0.6);
+  backdrop-filter: blur(3px);
+  animation: aparecerFondo 0.15s ease-out;
+}
+
+.modal {
+  --acento: #a4272a;
+  --acento-suave: rgba(164, 39, 42, 0.12);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 440px;
+  overflow: hidden;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 14px;
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  font-family: var(--fuente-texto);
+  animation: aparecerModal 0.18s ease-out;
+}
+
+.peligro {
+  --acento: #c0392b;
+  --acento-suave: rgba(192, 57, 43, 0.12);
+}
+
+.advertencia {
+  --acento: #c98a12;
+  --acento-suave: rgba(201, 138, 18, 0.14);
+}
+
+.cuerpo {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 22px 20px 18px 22px;
+}
+
+.icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--acento-suave);
+  color: var(--acento);
+}
+
+.textos {
+  flex: 1;
+  min-width: 0;
+}
+
+.titulo {
+  margin: 2px 0 6px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.mensaje {
+  margin: 0;
+  color: var(--color-terciario-texto-muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.detalle {
+  margin: 10px 0 0;
+  padding: 7px 10px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--color-superficie-suave);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.permanente {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--acento);
+  border-radius: 6px;
+  background: var(--acento-suave);
+  color: var(--color-terciario-texto);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.permanente svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--acento);
+}
+
+.cerrar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-terciario-texto-muted);
+  cursor: pointer;
+}
+
+.cerrar:hover {
+  background: var(--color-superficie-suave);
+  color: var(--color-terciario-texto);
+}
+
+.pie {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--color-terciario-borde);
+  background: var(--color-superficie-suave);
+}
+
+.botonCancelar,
+.botonConfirmar {
+  padding: 9px 16px;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s, background 0.15s;
+}
+
+.botonCancelar {
+  border: 1px solid var(--color-borde-fuerte);
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
+}
+
+.botonCancelar:hover {
+  background: var(--color-superficie-suave);
+}
+
+.botonConfirmar {
+  border: none;
+  background: var(--acento);
+  color: #ffffff;
+}
+
+.botonConfirmar:hover {
+  filter: brightness(1.08);
+}
+
+.botonCancelar:focus-visible,
+.botonConfirmar:focus-visible,
+.cerrar:focus-visible {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 2px;
+}
+
+@keyframes aparecerFondo {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes aparecerModal {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}

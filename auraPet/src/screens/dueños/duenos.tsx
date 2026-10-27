@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Iconos, MAX_CITAS_INICIO_DUENO, MAX_HISTORIAL_INICIO_DUENO } from '../../constants';
+import { CONFIRMACIONES, Iconos, MAX_CITAS_INICIO_DUENO, MAX_HISTORIAL_INICIO_DUENO } from '../../constants';
 import { useConsulta } from '../../hooks/useConsulta';
+import { useConfirmar } from '../../hooks/useConfirmar';
 import { getMascotasPorDueno, getProximasCitasDueno, getHistorialRecienteDueno, getHistorialDueno, getDerivaciones } from '../../Api/getInfo';
 import { DerivacionesDueno } from '../../components/dueno/DerivacionesDueno';
 import { cancelarCita } from '../../Api/postInfo';
@@ -8,6 +9,7 @@ import { getIniciales } from '../../utils';
 import { useAuth } from '../../Auth/AuthContext';
 import type { HistorialDueno, ItemMenuDueno, SeccionDueno } from '../../interfaces';
 import { ConfiguracionModal } from '../../Modal/ConfiguracionModal';
+import { DarEnAdopcionModal } from '../../Modal/DarEnAdopcionModal';
 import { ModalCrearMascota } from '../../Modal/AgregarMascotaModal';
 import { ModalSolicitarCita } from '../../Modal/SolicitarCitaModal';
 import { MenuDueno } from '../../components/dueno/MenuDueno';
@@ -24,7 +26,7 @@ const iconos = Iconos;
 
 const HISTORIAL_VACIO: HistorialDueno = { registros: [], recetas: [] };
 
-type Modal = "configuracion" | "mascota" | "cita" | null;
+type Modal = "configuracion" | "mascota" | "cita" | "adopcion" | null;
 
 // Panel del dueño. Esta pantalla maneja la navegación, los datos y los modales;
 // cada parte visual vive en components/dueno/.
@@ -62,6 +64,7 @@ export const DuenoScreen = () => {
   const elegirMenu = (id: ItemMenuDueno["id"]) => {
     if (id === "solicitar") abrirSolicitarCita();
     else if (id === "configuracion") setModal("configuracion");
+    else if (id === "adopcion") setModal("adopcion");
     else setSeccion(id);
   };
 
@@ -70,10 +73,13 @@ export const DuenoScreen = () => {
     setModal("cita");
   };
 
+  const confirmar = useConfirmar();
   const [cancelandoId, setCancelandoId] = useState<number | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const cancelar = async (citaId: number) => {
-    if (!window.confirm("¿Seguro que quieres cancelar esta cita?")) return;
+    const cita = proximasCitas.find((c) => c.id === citaId);
+    const detalle = cita && `${cita.mascota} · ${cita.dia} ${cita.mes} · ${cita.hora} · ${cita.centro}`;
+    if (!(await confirmar(CONFIRMACIONES.cancelarCita(detalle)))) return;
     setCancelandoId(citaId);
     setAviso(null);
     try {
@@ -185,6 +191,7 @@ export const DuenoScreen = () => {
 
       {/* ---------- Modales ---------- */}
       {modal === "configuracion" && <ConfiguracionModal onCerrar={() => setModal(null)} />}
+      {modal === "adopcion" && <DarEnAdopcionModal onCerrar={() => setModal(null)} />}
       {modal === "mascota" && (
         <ModalCrearMascota
           duenoId={duenoId}

@@ -1,0 +1,240 @@
+@import './theme.css';
+
+/* =====================================================================
+   Adopción — estilos compartidos por /adopta, la ficha y "Dar en adopción"
+   (siempre en claro, como el resto de la landing)
+   ===================================================================== */
+.adopta {
+  --adopta-crema: #fff9ee;
+  --adopta-menta: #cdede7;
+  --adopta-durazno: #ffe6d5;
+  --adopta-lavanda: #e9e5fb;
+  --adopta-texto: #1a1f27;
+  --adopta-suave: #6b7280;
+  --adopta-borde: #e4e6ea;
+  --adopta-primario: #0f8f80;
+  background: #f6f8f8;
+  color: var(--adopta-texto);
+  font-family: "Inter", system-ui, sans-serif;
+}
+.adopta h1, .adopta h2, .adopta h3 { font-family: var(--fuente-marca); margin: 0; }
+
+.adopta-contenedor { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+.adopta-subtitulo { font-size: 24px; font-weight: 800; margin-bottom: 18px; letter-spacing: -0.01em; }
+.adopta-solo-lector {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* ---------- Botones y píldoras ---------- */
+.adopta-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 0 22px;
+  border-radius: 999px; border: 2px solid transparent;
+  font-family: var(--fuente-marca); font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: filter 0.15s, transform 0.15s, background 0.15s;
+}
+.adopta-btn:hover { transform: translateY(-1px); }
+.adopta-btn-primario { background: var(--adopta-primario); color: #ffffff; }
+.adopta-btn-primario:hover { filter: brightness(1.08); }
+.adopta-btn-borde { background: #ffffff; color: var(--adopta-texto); border-color: var(--adopta-borde); }
+.adopta-btn-borde:hover { border-color: var(--adopta-primario); color: var(--adopta-primario); }
+.adopta-btn-blanco { background: #ffffff; color: var(--adopta-primario); }
+.adopta-btn:focus-visible, .adopta-pildora:focus-visible, .adopta-tarjeta-conocer:focus-visible,
+.adopta-icono-btn:focus-visible { outline: 3px solid rgba(15, 143, 128, 0.35); outline-offset: 2px; }
+
+.adopta-pildora {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 40px; padding: 0 16px;
+  border-radius: 999px; border: 1px solid transparent;
+  background: #ffffff; color: var(--adopta-texto);
+  font: inherit; font-size: 14px; font-weight: 600;
+  box-shadow: 0 1px 3px rgba(18, 24, 31, 0.06);
+  cursor: pointer; transition: background 0.15s, color 0.15s;
+}
+.adopta-pildora:hover { color: var(--adopta-primario); }
+.adopta-pildora-activa, .adopta-pildora-activa:hover { background: var(--adopta-primario); color: #ffffff; }
+.adopta-pildora-borde { border-color: var(--adopta-borde); box-shadow: none; }
+.adopta-contador {
+  min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px;
+  background: var(--adopta-primario); color: #ffffff; font-size: 12px;
+  display: inline-grid; place-items: center;
+}
+
+.adopta-etiquetas { display: flex; flex-wrap: wrap; gap: 8px; }
+.adopta-etiqueta {
+  display: inline-block; padding: 5px 12px; border-radius: 999px;
+  background: var(--adopta-durazno); color: #7a3d12; font-size: 13px; font-weight: 600;
+}
+.adopta-etiqueta:nth-child(2) { background: #fff3d1; color: #5a4b00; }
+.adopta-etiqueta:nth-child(3) { background: var(--adopta-lavanda); color: #4b3fa0; }
+.adopta-etiqueta-clara { background: rgba(255, 255, 255, 0.92); color: var(--adopta-texto); }
+
+/* ---------- Avatar (foto o ícono de la especie) ---------- */
+.adopta-avatar { display: grid; place-items: center; overflow: hidden; color: rgba(15, 143, 128, 0.55); }
+.adopta-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- Sello "Revisado por veterinario" ---------- */
+.adopta-sello {
+  width: 32px; height: 32px; border-radius: 10px;
+  display: grid; place-items: center;
+  background: #e3f5f2; color: var(--adopta-primario);
+  box-shadow: 0 2px 8px rgba(18, 24, 31, 0.12);
+}
+.adopta-sello-completo {
+  display: flex; gap: 10px; align-items: flex-start;
+  max-width: 300px; padding: 12px 14px; border-radius: 14px;
+  background: #e3f5f2; color: #0b6b60; font-size: 13px;
+}
+.adopta-sello-completo svg { flex-shrink: 0; margin-top: 2px; }
+.adopta-sello-completo div { display: flex; flex-direction: column; gap: 2px; }
+.adopta-sello-completo strong { font-size: 13.5px; }
+.adopta-sello-completo em {
+  align-self: flex-start; margin-top: 4px; padding: 2px 8px; border-radius: 999px;
+  background: #ffffff; font-style: normal; font-size: 11.5px; font-weight: 700;
+}
+
+/* ---------- Interruptor ---------- */
+.adopta-interruptor { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.adopta-interruptor input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.adopta-interruptor-riel {
+  position: relative; width: 42px; height: 24px; border-radius: 12px;
+  background: #d1d5db; transition: background 0.2s;
+}
+.adopta-interruptor-riel::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%;
+  background: #ffffff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); transition: transform 0.2s;
+}
+.adopta-interruptor input:checked + .adopta-interruptor-riel { background: var(--adopta-primario); }
+.adopta-interruptor input:checked + .adopta-interruptor-riel::after { transform: translateX(18px); }
+.adopta-interruptor input:focus-visible + .adopta-interruptor-riel { outline: 3px solid rgba(15, 143, 128, 0.35); outline-offset: 2px; }
+
+/* ---------- Aviso de confianza ---------- */
+.adopta-confianza {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 40px 32px 56px; text-align: center; border-top: 1px solid var(--adopta-borde);
+}
+.adopta-confianza svg { color: var(--adopta-primario); }
+.adopta-confianza p { margin: 0; font-size: 17px; }
+.adopta-confianza a { color: var(--adopta-suave); font-size: 14px; }
+.adopta-confianza a:hover { color: var(--adopta-primario); }
+
+.adopta-confianza-compacta {
+  padding: 16px; border: 1px solid var(--adopta-borde); border-radius: 16px; background: #ffffff; gap: 6px;
+}
+.adopta-confianza-compacta p { font-size: 14px; }
+.adopta-confianza-compacta a { font-size: 13px; }
+
+/* ---------- Botón de ícono ---------- */
+.adopta-icono-btn {
+  width: 36px; height: 36px; border-radius: 50%; border: none;
+  background: #f1f3f4; color: var(--adopta-suave); display: grid; place-items: center; cursor: pointer;
+}
+
+/* ---------- Grupos de opciones y buscador ---------- */
+.adopta-grupo { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; border: none; }
+.adopta-grupo legend, .adopta-grupo-titulo { font-family: var(--fuente-marca); font-size: 15px; font-weight: 700; padding: 0; margin-bottom: 10px; }
+.adopta-grupo-titulo { margin-bottom: 0; }
+.adopta-grupo-opciones { display: flex; flex-wrap: wrap; gap: 8px; }
+.adopta-grupo .adopta-pildora { border-color: var(--adopta-borde); box-shadow: none; }
+.adopta-select {
+  height: 46px; padding: 0 14px; border-radius: 12px;
+  border: 1px solid var(--adopta-borde); background: #ffffff; font: inherit; font-size: 14px;
+}
+
+
+/* ---------- Campos de formulario (postular y publicar) ---------- */
+.adopta-campo { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; border: none; min-width: 0; }
+.adopta-campo > label, .adopta-campo > legend, .adopta-campo-titulo, .adopta-grupo legend {
+  font-family: var(--fuente-marca); font-size: 14.5px; font-weight: 700; color: var(--adopta-texto); padding: 0;
+}
+.adopta-campo > legend { margin-bottom: 8px; }
+.adopta-input {
+  width: 100%; box-sizing: border-box; min-height: 46px; padding: 10px 14px;
+  border: 1px solid var(--adopta-borde); border-radius: 12px; background: #ffffff;
+  font: inherit; font-size: 14.5px; color: var(--adopta-texto);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+textarea.adopta-input { resize: vertical; min-height: 110px; line-height: 1.5; }
+.adopta-input:focus { outline: none; border-color: var(--adopta-primario); box-shadow: 0 0 0 3px rgba(15, 143, 128, 0.15); }
+.adopta-input-error, .adopta-input-error:focus { border-color: #c9302c; }
+.adopta-campo-pie { display: flex; justify-content: space-between; gap: 12px; min-height: 0; }
+.adopta-campo-error { margin: 0; color: #c9302c; font-size: 13px; font-weight: 600; }
+.adopta-campo-ayuda { margin: 0; color: var(--adopta-suave); font-size: 13px; }
+.adopta-campo-contador { color: var(--adopta-suave); font-size: 12px; white-space: nowrap; }
+.adopta-pildora:disabled { opacity: 0.45; cursor: not-allowed; }
+.adopta-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* Indicador de pasos */
+.adopta-pasos-indicador { display: flex; flex-direction: column; gap: 10px; }
+.adopta-pasos-barra { height: 6px; border-radius: 3px; background: #e9ecef; overflow: hidden; }
+.adopta-pasos-barra span { display: block; height: 100%; background: var(--adopta-primario); border-radius: 3px; transition: width 0.3s ease; }
+.adopta-pasos-indicador ol { display: flex; justify-content: space-between; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.adopta-pasos-indicador li { font-size: 13px; color: var(--adopta-suave); padding: 4px 10px; border-radius: 999px; }
+.adopta-paso-hecho { color: var(--adopta-primario) !important; font-weight: 600; }
+.adopta-paso-actual { background: var(--adopta-primario); color: #ffffff !important; font-weight: 700; }
+
+/* Nivel de 1 a 5 */
+.adopta-nivel { margin: 0; padding: 0; border: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.adopta-nivel legend { float: left; font-size: 14px; font-weight: 600; padding: 0; }
+.adopta-nivel-opciones { display: flex; align-items: center; gap: 6px; }
+.adopta-nivel-punto {
+  width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--adopta-borde);
+  background: #ffffff; color: var(--adopta-suave); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.adopta-nivel-lleno { background: var(--adopta-primario); border-color: var(--adopta-primario); color: #ffffff; }
+.adopta-nivel-nose {
+  margin-left: 6px; padding: 6px 10px; border-radius: 999px; border: 1px dashed var(--adopta-borde);
+  background: none; color: var(--adopta-suave); font: inherit; font-size: 12.5px; cursor: pointer;
+}
+.adopta-nivel-nose-activo { border-style: solid; color: var(--adopta-texto); }
+
+/* Fotos */
+.adopta-fotos {
+  padding: 18px; border: 2px dashed #cfd8dc; border-radius: 18px; background: #f7fafa;
+  transition: border-color 0.15s, background 0.15s;
+}
+.adopta-fotos-encima { border-color: var(--adopta-primario); background: #e3f5f2; }
+.adopta-fotos-error { border-color: #e6a19f; }
+.adopta-fotos-titulo { margin: 0 0 14px; text-align: center; font-size: 14px; color: var(--adopta-suave); }
+.adopta-fotos-grilla { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.adopta-foto, .adopta-foto-hueco { position: relative; margin: 0; aspect-ratio: 1; border-radius: 12px; overflow: hidden; }
+.adopta-foto img { width: 100%; height: 100%; object-fit: cover; }
+.adopta-foto-principal {
+  position: absolute; left: 6px; bottom: 6px; padding: 2px 8px; border-radius: 999px;
+  background: rgba(18, 24, 31, 0.7); color: #ffffff; font-size: 11px; font-weight: 700;
+}
+.adopta-foto-quitar {
+  position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%; border: none;
+  background: rgba(255, 255, 255, 0.92); color: var(--adopta-texto); display: grid; place-items: center; cursor: pointer;
+}
+.adopta-foto-hueco {
+  border: 1px solid var(--adopta-borde); background: #ffffff; color: var(--adopta-primario);
+  display: grid; place-items: center; cursor: pointer;
+}
+.adopta-foto-hueco:hover { border-color: var(--adopta-primario); }
+
+@media (max-width: 600px) {
+  .adopta-fotos-grilla { grid-template-columns: repeat(3, 1fr); }
+  .adopta-pasos-indicador li { font-size: 11.5px; padding: 3px 6px; }
+}
+
+/* ---------- Modal de adopción (postular y dar en adopción) ---------- */
+.adopta-modal-fondo {
+  position: fixed; inset: 0; z-index: 95; padding: 16px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(18, 24, 31, 0.5); backdrop-filter: blur(4px);
+}
+.adopta-modal {
+  position: relative; width: min(560px, 100%); max-height: calc(100vh - 32px);
+  display: flex; flex-direction: column; overflow: hidden;
+  background: #ffffff; border-radius: 22px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+  animation: adopta-modal-entrar 0.2s ease;
+}
+@keyframes adopta-modal-entrar { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }
+.adopta-modal-cerrar { position: absolute; top: 14px; right: 14px; z-index: 1; }
+.adopta-modal-ancho { width: min(720px, 100%); }
+.adopta-modal-cabecera { padding: 22px 28px 0; padding-right: 64px; }
+.adopta-modal-cabecera h2 { font-size: 22px; font-weight: 800; }
+.adopta-modal-cabecera p { margin: 4px 0 0; color: var(--adopta-suave); font-size: 14px; }
+.adopta-modal-cuerpo { overflow-y: auto; }
+@media (prefers-reduced-motion: reduce) { .adopta-modal { animation: none; } }

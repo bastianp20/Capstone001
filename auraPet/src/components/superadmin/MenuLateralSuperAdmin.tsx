@@ -1,10 +1,12 @@
 import { MENU_SUPERADMIN } from "../../constants";
 import type { MenuLateralSuperAdminProps } from "../../interfaces";
+import { ItemMenuDarEnAdopcion } from "../adopcion/ItemMenuDarEnAdopcion";
+import propios from "../../css/centroAdmin/PanelCentro.module.css";
 import LogoAuraPetSinFondo from "../../assets/logo/LogoAuraPetSinFondo.png";
 import styles from "../../css/superadmin/SuperAdminLayout.module.css";
 
 // Menú lateral del superadmin. "Aprobaciones" muestra cuántas hay pendientes.
-export const MenuLateralSuperAdmin = ({ seccion, pendientes, onCambiar }: MenuLateralSuperAdminProps) => (
+export const MenuLateralSuperAdmin = ({ seccion, pendientes, onCambiar, onDarEnAdopcion }: MenuLateralSuperAdminProps) => (
   <aside className={styles.sidebar}>
     <div className={styles.marca}>
       <img src={LogoAuraPetSinFondo} alt="" className={styles.logo} />
@@ -26,5 +28,9 @@ export const MenuLateralSuperAdmin = ({ seccion, pendientes, onCambiar }: MenuLa
         </button>
       ))}
     </nav>
+
+    <div className={propios.menuPie}>
+      <ItemMenuDarEnAdopcion className={styles.itemMenu} claseTexto={styles.itemMenuTexto} onClick={onDarEnAdopcion} />
+    </div>
   </aside>
 );

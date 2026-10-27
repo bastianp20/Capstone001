@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Iconos, TEXTOS_CENTRO_VETERINARIO } from '../../constants';
+import { ICONO_DAR_EN_ADOPCION as IconoAdopcion, Iconos, TEXTOS_CENTRO_VETERINARIO, TEXTOS_DAR_EN_ADOPCION_PANEL } from '../../constants';
 import { getInfoVeterinario, getMisCentrosAdmin } from '../../Api/getInfo';
 import { useConsulta } from '../../hooks/useConsulta';
 import { ModalAgenda } from '../../Modal/AgendaModal';
@@ -10,6 +10,7 @@ import { RecetaModal } from '../../Modal/RecetasModal';
 import { DerivacionesModal } from '../../Modal/DerivacionesModal';
 import { NotasModal } from '../../Modal/NotasModal';
 import { ConfiguracionModal } from '../../Modal/ConfiguracionModal';
+import { DarEnAdopcionModal } from '../../Modal/DarEnAdopcionModal';
 import { useAuth } from '../../Auth/AuthContext';
 import { InicioVeterinario } from '../../components/veterinario/InicioVeterinario';
 import { Aviso } from '../../components/ui/Aviso';
@@ -41,7 +42,7 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
   // Controla qué modal está abierto. Por ahora solo existe el de agenda;
   // cuando armemos Historial/Recetas se suman como más valores posibles
   // ("historial" | "recetas" | ...) en vez de un booleano por modal.
-  const [modalAbierto, setModalAbierto] = useState<"agenda" | "pacientes" | "receta" | "derivaciones" | "notas" | "configuracion" | null>(null);
+  const [modalAbierto, setModalAbierto] = useState<"agenda" | "pacientes" | "receta" | "derivaciones" | "notas" | "adopcion" | "configuracion" | null>(null);
   // Si la receta se abre desde "Recetar" en una cita, guarda qué mascota viene elegida
   const [pacienteParaReceta, setPacienteParaReceta] = useState<number | null>(null);
   // En qué pestaña se abre la agenda ("Mi Agenda" o la tarjeta "Por confirmar")
@@ -96,6 +97,10 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
           <div className="vet-nav-item" onClick={() => setModalAbierto("notas")}>
             <iconos.nota size={18} />
             <span className="vet-nav-item-label">Notas</span>
+          </div>
+          <div className="vet-nav-item" onClick={() => setModalAbierto("adopcion")}>
+            <IconoAdopcion size={18} />
+            <span className="vet-nav-item-label">{TEXTOS_DAR_EN_ADOPCION_PANEL.menu}</span>
           </div>
           <div className="vet-nav-item" onClick={() => setModalAbierto("configuracion")}>
             <iconos.configuracion size={18} />
@@ -179,6 +184,7 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
         />
       )}
       {modalAbierto === "notas" && <NotasModal onCerrar={() => setModalAbierto(null)} />}
+      {modalAbierto === "adopcion" && <DarEnAdopcionModal onCerrar={() => setModalAbierto(null)} />}
       {modalAbierto === "configuracion" && (
         <ConfiguracionModal onCerrar={() => setModalAbierto(null)} />
       )}

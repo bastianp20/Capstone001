@@ -1,13 +1,16 @@
 import type { CSSProperties } from "react";
+import fotoAdoptaPerro from "./assets/login/fondologin.png";
+import fotoAdoptaPareja from "./assets/Home/siguientePaso.png";
+import fotoAdoptaRetrato from "./assets/Home/fondo.png";
 import type {EstadoCita, UrgenciaCita, EspecieMascota, 
   // VistaHome, 
   Servicio, MedicamentoReceta, ColumnaMedicamento, AtajoProximoControl, PasoCita, ItemMenuDueno, TipoRegistro,
-  OpcionFiltro, FiltroUsuarios, FiltroAsignaciones, FiltroCentros, EstadoVerificacion, RolCuenta, EstadoVacuna, CargoResponsable, DatosSolicitudCentro, ItemConIcono, OpcionChip, PasoWizard, PreguntaRespuesta, TipoSolicitud, ItemMenuSuperAdmin, OpcionCrearSuperAdmin, CuentaUsuario, CentroListado, VeterinarioAsignaciones, FiltroHistorial, RangoCitas, SolicitudHistorial, DatosLaboralesVeterinario, OpcionModoCentro, EstadoSuscripcion, EstadoHistorialSuscripcion, FuncionPlan, PlanId, FiltroSuscripciones, SuscripcionListada, EstadoDerivacion, PestanaDerivaciones, DatosContacto, EstadoContacto, FiltroMensajes, MensajeContacto, OtraFormaContacto, ItemMenuCentroAdmin, EstadoSolicitudEliminacion, ColorNota, DatosNota, OpcionTema, DiaFormulario, TestimonioHome, PasoHome} from '../src/interfaces'; 
+  OpcionFiltro, FiltroUsuarios, FiltroAsignaciones, FiltroCentros, EstadoVerificacion, RolCuenta, EstadoVacuna, CargoResponsable, DatosSolicitudCentro, ItemConIcono, OpcionChip, PasoWizard, PreguntaRespuesta, TipoSolicitud, ItemMenuSuperAdmin, OpcionCrearSuperAdmin, CuentaUsuario, CentroListado, VeterinarioAsignaciones, FiltroHistorial, RangoCitas, SolicitudHistorial, DatosLaboralesVeterinario, OpcionModoCentro, EstadoSuscripcion, EstadoHistorialSuscripcion, FuncionPlan, PlanId, FiltroSuscripciones, SuscripcionListada, EstadoDerivacion, PestanaDerivaciones, DatosContacto, EstadoContacto, FiltroMensajes, MensajeContacto, OtraFormaContacto, ItemMenuCentroAdmin, EstadoSolicitudEliminacion, ColorNota, DatosNota, OpcionTema, DiaFormulario, TestimonioHome, PasoHome, OpcionesConfirmacion, AnimalAdopcion, OpcionAdopcion, TamanoAdopcion, EtapaAdopcion, SexoAdopcion, FiltroEspecieAdopcion, FiltrosExtraAdopcion, EspecieAdopcion, FotoMosaico, RasgoAdopcion, RasgosAdopcion, PasoFormulario, CampoPostulacionAdopcion, CampoPublicarAdopcion, DatosPostulacionAdopcion, DatosPublicarAdopcion, ViviendaAdopcion, TenenciaAdopcion, EstadoBotonAdoptar} from '../src/interfaces'; 
 import {
   Menu, Search, Bell, User, UserCircle, Megaphone, Inbox, UserX, StickyNote, Pin, PinOff, Download, Sun, Moon, Monitor, LogOut, Settings, Calendar, Filter, ChevronDown, ChevronRight, X, Plus, MoreVertical, Home,
   PawPrint, Heart, CalendarPlus, History, FileText,Stethoscope, Syringe, ClipboardList, ClipboardPlus, Share2, Microscope, Activity,
   Building2, Clock, MapPin, Phone, Users, ShieldCheck, Building, Settings2, AlertTriangle, AlertCircle, Info, Brain, ListOrdered,
-  CheckCircle2, XCircle, Clock3, Loader2, Dog, Cat, ShieldPlus, Scissors, Trash2, ChevronLeft, Pencil, Scale, CalendarCheck, Send, SearchCheck, BadgeCheck, Check, ArrowRight, ArrowLeft, LayoutDashboard, ClipboardCheck, CalendarDays, Link2, CreditCard, Sparkles, Lock,
+  CheckCircle2, XCircle, Clock3, Loader2, Dog, Cat, ShieldPlus, Scissors, Trash2, ChevronLeft, Pencil, Scale, CalendarCheck, Send, SearchCheck, BadgeCheck, Check, ArrowRight, ArrowLeft, LayoutDashboard, ClipboardCheck, CalendarDays, Link2, CreditCard, Sparkles, Lock, Camera, HeartHandshake,
 } from 'lucide-react';
 
 export const Colors = {
@@ -187,10 +190,16 @@ export const getFechaHoy = (): number => {
   return Number(`${yyyy}${mm}${dd}`);
 };
 
+export const RUTA_ADOPTA = "/adopta"; // página pública de adopción
+export const RUTA_PUBLICAR_ADOPCION = "/adopta/publicar"; // "Dar en adopción"
+export const rutaFichaAdopcion = (id: number) => `/adopta/${id}`;
+export const RUTA_CONTACTO_REPORTE = "/contacto"; // "Reportar una publicación" (por ahora, el formulario de contacto)
+
 export const links: { ruta: string; label: string }[] = [
   { ruta: "/como-funciona", label: "Cómo funciona" },
   { ruta: "/veterinarias", label: "Para veterinarias" },
   { ruta: "/duenos", label: "Para dueños" },
+  { ruta: RUTA_ADOPTA, label: "Adopta" },
   { ruta: "/nosotros", label: "Nosotros" },
   { ruta: "/contacto", label: "Contacto" },
 ];
@@ -336,6 +345,7 @@ export const MENU_DUENO: ItemMenuDueno[] = [
   { id: "mascotas", texto: "Mis mascotas", icono: PawPrint },
   { id: "solicitar", texto: "Solicitar cita", icono: CalendarPlus },
   { id: "historial", texto: "Historial médico", icono: History },
+  { id: "adopcion", texto: "Dar en adopción", icono: HeartHandshake },
   { id: "configuracion", texto: "Configuración", icono: Settings },
 ];
 
@@ -475,6 +485,7 @@ export const TEXTO_SIN_REGISTRAR = "Sin registrar";
 // =====================================================================
 export const RUTA_SOLICITAR_CENTRO = "/solicitar-centro";
 export const RUTA_PANEL = "/panel";                       // paneles internos (con sesión)
+export const TEXTO_MI_PANEL = "Mi panel";                  // botón de la barra pública cuando hay sesión
 export const RUTA_NUEVA_PASSWORD = "/nueva-contrasena";   // destino del enlace "restablecer contraseña"
 
 export const LARGO_TELEFONO_CL = 9;          // sin el +56
@@ -650,7 +661,7 @@ export const COLUMNAS_SUPERADMIN = {
   centros: "1.7fr 0.9fr 1.1fr 0.9fr 0.7fr 0.5fr 0.8fr 1.6fr",
   asignaciones: "1.6fr 0.8fr 2fr 1.5fr",
   suscripciones: "1.6fr 1fr 0.9fr 0.9fr 0.7fr 2fr 1.7fr",
-  mensajes: "1.5fr 1fr 2.6fr 1fr 0.9fr 1.6fr",
+  mensajes: "1.8fr 1.1fr 2.3fr 0.9fr 0.9fr 1.7fr",
   eliminaciones: "1.6fr 0.9fr 2.2fr 0.9fr 1fr 1.6fr",
 };
 
@@ -979,7 +990,6 @@ export const TEXTOS_SUSCRIPCIONES = {
   extender: `+${DIAS_EXTENSION_SUSCRIPCION} días`,
   sinSolicitud: "—",
   ilimitado: "∞",
-  confirmarRechazo: (centro: string, plan: string) => `¿Rechazar la solicitud de ${centro} para pasar al plan ${plan}?`,
   activado: (centro: string, plan: string) => `${centro} quedó con el plan ${plan} activo.`,
   rechazado: (centro: string) => `Se rechazó la solicitud de ${centro}.`,
   extendido: (centro: string) => `Se extendió la suscripción de ${centro} en ${DIAS_EXTENSION_SUSCRIPCION} días.`,
@@ -1019,7 +1029,6 @@ export const TEXTOS_DERIVACION = {
   marcarRealizada: "Marcar realizada",
   rechazar: "Rechazar",
   cancelar: "Cancelar derivación",
-  confirmarCancelar: "¿Cancelar esta derivación?",
   resultado: "Resultado de la atención",
   placeholderResultado: "Qué se hizo y qué se encontró (lo verá quien derivó y el dueño).",
   placeholderRechazo: "Motivo del rechazo (opcional)",
@@ -1190,7 +1199,6 @@ export const TEXTOS_ELIMINACION = {
   placeholderMotivo: "¿Por qué quieres eliminar tu cuenta? (opcional)",
   pedir: "Pedir eliminación",
   pidiendo: "Enviando…",
-  confirmar: "¿Seguro que quieres pedir la eliminación de tu cuenta?",
   enRevision: (fecha: string) => `Pediste la eliminación el ${fecha}. Está en revisión.`,
   rechazada: "Tu solicitud anterior fue rechazada.",
   // Superadmin
@@ -1198,7 +1206,6 @@ export const TEXTOS_ELIMINACION = {
   subtituloSeccion: "Cuentas que pidieron ser eliminadas. Desactivar impide que vuelvan a ingresar; el historial médico se conserva.",
   aprobar: "Desactivar cuenta",
   rechazar: "Rechazar",
-  confirmarAprobar: (nombre: string) => `¿Desactivar la cuenta de ${nombre}? Ya no podrá ingresar.`,
   tituloRechazo: "Rechazar solicitud de eliminación",
   descripcionRechazo: "La persona verá este motivo en Configuración.",
   desactivada: (nombre: string) => `La cuenta de ${nombre} quedó desactivada.`,
@@ -1237,7 +1244,6 @@ export const TEXTOS_NOTAS = {
   fijar: "Fijar arriba",
   desfijar: "Quitar de arriba",
   borrar: "Borrar",
-  confirmarBorrar: (titulo: string) => `¿Borrar la nota "${titulo}"? No se puede deshacer.`,
   vacio: "Todavía no tienes notas. Crea la primera con \"Nueva nota\".",
   editada: (fecha: string) => `Editada ${fecha}`,
   buscar: "Buscar en mis notas…",
@@ -1378,3 +1384,467 @@ export const MEDIDAS_PDF = {
   reservaPie: 26,       // alto reservado para el pie de página
   ptAMm: 0.3528,        // 1 punto tipográfico en mm
 };
+
+// ---- Solicitar cita: centro o veterinario independiente (migración 35) ----
+export const VALOR_ATENCION_INDEPENDIENTE = "independiente";   // valor del <select> de centro
+export const TEXTO_ATENCION_INDEPENDIENTE = "Atención independiente";
+export const ESPECIALIDAD_POR_DEFECTO = "Medicina general";
+
+export const TEXTOS_SOLICITAR_CITA = {
+  elegirCentro: "Elige un centro",
+  grupoCentros: "Centros",
+  grupoIndependiente: "Sin centro",
+  opcionIndependiente: "Veterinario independiente",
+  sinPreferencia: "Sin preferencia",
+  elegirVeterinario: "Elige un veterinario",
+  sinIndependientes: "No hay veterinarios independientes disponibles",
+  especialidad: (e: string) => `Especialidad: ${e}`,
+  ayudaIndependiente: "Atiende de forma independiente: al confirmar tu hora te indicará dónde será la atención.",
+  faltanDatos: "Completa mascota, dónde atenderte, fecha, hora y motivo.",
+  faltaVeterinario: "Elige el veterinario independiente que te atenderá.",
+  enviadaA: (destino: string) => `Tu solicitud fue enviada a ${destino}.`,
+};
+
+// =====================================================================
+// CONFIRMACIONES (components/confirmacion/ConfirmarModal.tsx)
+// Cada acción delicada tiene aquí su texto; se usan con useConfirmar().
+// =====================================================================
+export const TEXTOS_CONFIRMACION = {
+  cancelar: "Cancelar",
+  cerrar: "Cerrar",
+  permanente: "Atención: esto se eliminará de forma permanente y no se podrá recuperar. ¿Aún así deseas continuar?",
+  sinVuelta: "Esta acción no se puede deshacer.",
+};
+
+export const CONFIRMACIONES = {
+  borrarNota: (titulo: string): OpcionesConfirmacion => ({
+    tipo: "peligro",
+    titulo: "¿Borrar esta nota?",
+    mensaje: "La nota se borrará de tu libreta.",
+    detalle: titulo,
+    permanente: true,
+    textoConfirmar: "Sí, borrar nota",
+  }),
+  quitarVeterinarioDeCentro: (veterinario: string, centro: string): OpcionesConfirmacion => ({
+    tipo: "peligro",
+    titulo: "¿Quitar al veterinario del centro?",
+    mensaje: `${veterinario} dejará de atender en ${centro}. También se borran sus horarios de atención en ese centro.`,
+    detalle: `${veterinario} · ${centro}`,
+    permanente: true,
+    textoConfirmar: "Sí, quitar",
+  }),
+  cancelarCita: (detalle?: string): OpcionesConfirmacion => ({
+    tipo: "advertencia",
+    titulo: "¿Cancelar esta cita?",
+    mensaje: "El veterinario verá que la cancelaste. Si la necesitas de nuevo, tendrás que pedir otra hora.",
+    detalle,
+    textoConfirmar: "Sí, cancelar cita",
+    textoCancelar: "Volver",
+  }),
+  cancelarDerivacion: (detalle: string): OpcionesConfirmacion => ({
+    tipo: "advertencia",
+    titulo: "¿Cancelar la derivación?",
+    mensaje: "El destino dejará de verla como pendiente. Para volver a derivar tendrás que crear una nueva.",
+    detalle,
+    textoConfirmar: "Sí, cancelar derivación",
+    textoCancelar: "Volver",
+  }),
+  desactivarCuenta: (nombre: string): OpcionesConfirmacion => ({
+    tipo: "peligro",
+    titulo: "¿Desactivar esta cuenta?",
+    mensaje: `${nombre} ya no podrá ingresar a AuraPet. El historial médico de sus mascotas se conserva.`,
+    detalle: nombre,
+    textoConfirmar: "Sí, desactivar",
+  }),
+  pedirEliminacionCuenta: (): OpcionesConfirmacion => ({
+    tipo: "peligro",
+    titulo: "¿Pedir la eliminación de tu cuenta?",
+    mensaje: "Si el equipo de AuraPet la aprueba, tu cuenta se desactivará y ya no podrás ingresar.",
+    textoConfirmar: "Sí, pedir eliminación",
+  }),
+  rechazarPlan: (centro: string, plan: string): OpcionesConfirmacion => ({
+    tipo: "advertencia",
+    titulo: "¿Rechazar el cambio de plan?",
+    mensaje: `${centro} seguirá con su plan actual y su solicitud quedará como rechazada.`,
+    detalle: `${centro} → ${plan}`,
+    textoConfirmar: "Sí, rechazar",
+  }),
+};
+
+// =====================================================================
+// Adopción
+// =====================================================================
+export const TEXTOS_ADOPCION_LOGIN = {
+  titulo: "Ellos también buscan hogar",
+  revisado: "Revisado por veterinario",
+  verTodos: "Ver animales en adopción",
+  ver: "Ver",
+  anterior: "Anterior",
+  siguiente: "Siguiente",
+  irA: (n: number) => `Ir al grupo ${n}`,
+  franja: (n: number) => (n === 1 ? "1 animal busca hogar" : `${n} animales buscan hogar`),
+} as const;
+
+export const VISIBLES_CARRUSEL_ADOPCION = 2;
+export const INTERVALO_CARRUSEL_ADOPCION_MS = 4500;
+// Fondo del avatar cuando el animal todavía no tiene foto (pastel de adopción).
+export const TONOS_ADOPCION = ["#FFE6D5", "#E3F5F2", "#FFF3D1", "#E9E5FB"];
+
+// --- Página /adopta ---
+
+export const TEXTOS_ADOPCION = {
+  titulo: "Adopta, cambia dos vidas",
+  bajada: "Animales revisados por veterinarios de la red AuraPet, esperando una familia",
+  conocerlos: "Conocerlos",
+  darEnAdopcion: "Dar en adopción",
+  esperando: "esperando hogar",
+  revisados: "revisados por veterinarios",
+  conFamilia: "ya tienen familia",
+  yaTieneFamilia: (nombre: string) => `¡${nombre} ya tiene familia! 🧡`,
+  destacadoTitulo: "Esta semana te presentamos a…",
+  conocer: (nombre: string) => `Conocer a ${nombre}`,
+  revisadoPor: (vet: string) => `Revisado por ${vet}`,
+  revisadoCorto: "Revisado por veterinario",
+  solidario: "Chequeo solidario",
+  enProceso: "En proceso de adopción",
+  soloRevisados: "Solo revisados por veterinario",
+  masFiltros: "Más filtros",
+  sinResultados: "No encontramos animales con esos filtros",
+  sinPublicaciones: "Todavía no hay animales en adopción. ¡Pronto llegarán los primeros!",
+  errorCarga: "No pudimos cargar los animales en adopción. Intenta de nuevo en un rato.",
+  limpiarFiltros: "Limpiar filtros",
+  cargando: "Buscando animales…",
+  panelTitulo: "Filtros",
+  buscar: "Busca por nombre, raza o comuna",
+  comuna: "Comuna",
+  todasLasComunas: "Todas las comunas",
+  verResultados: (n: number) => (n === 1 ? "Ver 1 animal" : `Ver ${n} animales`),
+  cerrar: "Cerrar filtros",
+  bandaTitulo: "¿Necesitas darle un hogar a un animal?",
+  publicar: "Publicar un animal",
+  historiasTitulo: "Ya tienen familia",
+  confianzaTitulo: "En AuraPet la adopción es gratuita.",
+  confianzaTexto: "Nunca pagues por un animal.",
+  reportar: "Reportar una publicación",
+} as const;
+
+export const ICONO_ESPECIE_ADOPCION: Record<EspecieAdopcion, typeof Dog> = { perro: Dog, gato: Cat, otro: PawPrint };
+
+export const FILTROS_ESPECIE_ADOPCION: Record<FiltroEspecieAdopcion, (a: AnimalAdopcion) => boolean> = {
+  todos: () => true,
+  perro: (a) => a.especie === "perro",
+  gato: (a) => a.especie === "gato",
+  otro: (a) => a.especie === "otro",
+};
+export const OPCIONES_ESPECIE_ADOPCION: { valor: FiltroEspecieAdopcion; label: string; icono: typeof Dog }[] = [
+  { valor: "todos", label: "Todos", icono: Users },
+  { valor: "perro", label: "Perros", icono: Dog },
+  { valor: "gato", label: "Gatos", icono: Cat },
+  { valor: "otro", label: "Otros", icono: PawPrint },
+];
+export const CAMPOS_BUSQUEDA_ADOPCION = (a: AnimalAdopcion) => [a.nombre, a.raza, a.comuna];
+
+export const OPCIONES_TAMANO_ADOPCION: readonly OpcionAdopcion<TamanoAdopcion>[] = [
+  { valor: "pequeno", label: "Pequeño" },
+  { valor: "mediano", label: "Mediano" },
+  { valor: "grande", label: "Grande" },
+];
+export const OPCIONES_ETAPA_ADOPCION: readonly OpcionAdopcion<EtapaAdopcion>[] = [
+  { valor: "cachorro", label: "Cachorro" },
+  { valor: "adulto", label: "Adulto" },
+  { valor: "senior", label: "Senior" },
+];
+export const OPCIONES_SEXO_ADOPCION: readonly OpcionAdopcion<SexoAdopcion>[] = [
+  { valor: "hembra", label: "Hembra" },
+  { valor: "macho", label: "Macho" },
+];
+export const TITULOS_FILTROS_ADOPCION = { tamano: "Tamaño", etapa: "Edad", sexo: "Sexo" } as const;
+
+export const FILTROS_EXTRA_ADOPCION_VACIOS: FiltrosExtraAdopcion = {
+  soloRevisados: false,
+  tamano: null,
+  etapa: null,
+  sexo: null,
+  comuna: null,
+};
+
+// Fotos del mosaico del hero (imágenes de marca, no son animales publicados)
+export const FOTOS_HERO_ADOPCION: FotoMosaico[] = [
+  { src: fotoAdoptaPerro, alt: "Perro descansando en un sillón" },
+  { src: fotoAdoptaPareja, alt: "Gato y perro durmiendo juntos" },
+  { src: fotoAdoptaRetrato, alt: "Perro mirando a un lado" },
+];
+
+// Pasos de la banda "Dar en adopción"
+export const PASOS_DAR_EN_ADOPCION = [
+  { icono: Camera, texto: "Publica con fotos", detalle: "Sube fotos claras y cuenta su historia." },
+  { icono: Stethoscope, texto: "Un veterinario de la red lo revisa", detalle: "Así quien adopta sabe cómo está de salud." },
+  { icono: Users, texto: "Elige a la mejor familia", detalle: "Revisa las postulaciones y elige con calma." },
+];
+
+// Alturas de las tarjetas de la grilla. Son 4 para que no coincidan con las 3 columnas
+// y cada columna quede con un ritmo distinto (efecto mosaico).
+export const ALTURAS_TARJETA_ADOPCION = [320, 260, 360, 300];
+// Giro de las polaroids de "Ya tienen familia"
+export const GIROS_POLAROID = [-4, 2, -1.5, 3];
+
+// Desde qué edad (años) un animal se muestra como "Senior"; menor de 1 año = "Cachorro".
+export const EDAD_SENIOR_ADOPCION: Record<EspecieAdopcion, number> = { perro: 8, gato: 10, otro: 8 };
+// Si quien publica no indica la raza
+export const RAZA_SIN_INDICAR: Record<SexoAdopcion, string> = { macho: "Mestizo", hembra: "Mestiza" };
+export const EDAD_DESCONOCIDA = "Edad por confirmar";
+// Animales que se muestran en el carrusel del login
+export const MAX_ADOPCION_LOGIN = 6;
+// Historias de "Ya tienen familia"
+export const MAX_HISTORIAS_ADOPCION = 6;
+
+// --- Ficha del animal (/adopta/:id) ---
+export const BUCKET_ADOPCIONES = "adopciones";       // bucket de Supabase Storage (migración 36)
+export const MAX_OTROS_ADOPCION = 8;                 // "Otros que también buscan hogar"
+export const CLAVE_GUARDADOS_ADOPCION = "aurapet:adopciones-guardadas"; // corazones (solo en este navegador)
+
+export const ETIQUETAS_RASGOS_ADOPCION: Record<RasgoAdopcion, string> = {
+  energia: "Energía",
+  sociablePerros: "Sociable con perros",
+  sociableGatos: "Con gatos",
+  sociableNinos: "Con niños",
+};
+export const RASGOS_ADOPCION: RasgoAdopcion[] = ["energia", "sociablePerros", "sociableGatos", "sociableNinos"];
+export const NIVEL_MAXIMO_RASGO = 5;
+export const RASGOS_ADOPCION_VACIOS: RasgosAdopcion = { energia: null, sociablePerros: null, sociableGatos: null, sociableNinos: null };
+
+export const TAMANO_ADOPCION_LABEL: Record<TamanoAdopcion, string> = { pequeno: "pequeño", mediano: "mediano", grande: "grande" };
+
+export const TEXTOS_FICHA_ADOPCION = {
+  volver: "Volver a adopciones",
+  cargando: "Cargando la ficha…",
+  noEncontrada: "No encontramos este animal. Puede que ya no esté publicado.",
+  verOtros: "Ver animales en adopción",
+  personalidad: "Personalidad",
+  salud: "Salud",
+  vacunas: "Vacunas al día",
+  vacunasPendientes: "Vacunas pendientes",
+  esterilizado: (sexo: SexoAdopcion) => (sexo === "hembra" ? "Esterilizada" : "Esterilizado"),
+  sinEsterilizar: "Sin esterilizar",
+  microchip: "Microchip",
+  sinMicrochip: "Sin microchip",
+  peso: "Peso",
+  alergias: "Alergias",
+  sinDato: "Sin información",
+  sinAlergias: "Ninguna conocida",
+  chequeoTitulo: (fecha: string, vet: string, centro: string | null) =>
+    `Chequeo veterinario · ${fecha} · ${vet}${centro ? `, ${centro}` : ""}`,
+  chequeoSolicitado: "Revisión veterinaria solicitada",
+  chequeoSolicitadoDetalle: "Un veterinario de la red AuraPet lo revisará pronto.",
+  adopciones: (n: number) => (n === 1 ? "1 adopción" : `${n} adopciones`),
+  quieroAdoptar: (sexo: SexoAdopcion) => (sexo === "hembra" ? "Quiero adoptarla" : "Quiero adoptarlo"),
+  botonDeshabilitado: {
+    mia: "Es tu publicación",
+    postulado: "Ya postulaste",
+    en_proceso: "En proceso de adopción",
+    adoptado: "¡Ya tiene familia!",
+  } as Record<Exclude<EstadoBotonAdoptar, "disponible">, string>,
+  compartir: "Compartir",
+  copiado: "¡Enlace copiado!",
+  guardar: "Guardar",
+  guardado: "Guardado",
+  ley: "Al adoptar, actualiza el registro y el microchip a tu nombre (Ley 21.020).",
+  otros: "Otros que también buscan hogar",
+  anterior: "Ver anteriores",
+  siguiente: "Ver más",
+  compartirTexto: (nombre: string) => `${nombre} busca hogar en AuraPet`,
+} as const;
+
+// --- Postular ("Quiero adoptarlo") ---
+export const OPCIONES_VIVIENDA_ADOPCION: readonly OpcionAdopcion<ViviendaAdopcion>[] = [
+  { valor: "casa", label: "Casa" },
+  { valor: "departamento", label: "Departamento" },
+  { valor: "parcela", label: "Parcela" },
+];
+export const OPCIONES_TENENCIA_ADOPCION: readonly OpcionAdopcion<TenenciaAdopcion>[] = [
+  { valor: "propia", label: "Propia" },
+  { valor: "arrendada", label: "Arrendada" },
+  { valor: "familiar", label: "De un familiar" },
+];
+
+export const PASOS_POSTULACION_ADOPCION: readonly PasoFormulario<CampoPostulacionAdopcion>[] = [
+  { titulo: "Tu hogar", campos: ["vivienda", "tienePatio", "tenencia", "permitenMascotas"] },
+  { titulo: "Tu familia", campos: ["hayNinos", "edadesNinos", "otrasMascotas", "cualesMascotas", "todosDeAcuerdo"] },
+  { titulo: "Tu experiencia", campos: ["experiencia", "motivo"] },
+  { titulo: "Confirmación", campos: ["aceptaCompromiso"] },
+];
+
+export const DATOS_POSTULACION_VACIOS: DatosPostulacionAdopcion = {
+  vivienda: null,
+  tienePatio: null,
+  tenencia: null,
+  permitenMascotas: null,
+  hayNinos: null,
+  edadesNinos: "",
+  otrasMascotas: null,
+  cualesMascotas: "",
+  todosDeAcuerdo: null,
+  experiencia: "",
+  motivo: "",
+  aceptaCompromiso: false,
+};
+
+export const MIN_MOTIVO_POSTULACION = 10;
+export const MAX_TEXTO_POSTULACION = 800;
+
+export const TEXTOS_POSTULACION = {
+  titulo: (nombre: string) => `Quiero adoptar a ${nombre}`,
+  cerrar: "Cerrar",
+  vivienda: "¿Dónde vives?",
+  patio: "¿Tiene patio?",
+  tenencia: "La vivienda es…",
+  permitenMascotas: "¿Te permiten tener mascotas?",
+  hayNinos: "¿Hay niños en casa?",
+  edadesNinos: "Edades (si hay niños)",
+  edadesPlaceholder: "Ej: 5, 8",
+  otrasMascotas: "¿Hay otras mascotas en casa?",
+  cualesMascotas: "Cuáles (si hay otras mascotas)",
+  cualesPlaceholder: "Ej: un gato, un hámster",
+  todosDeAcuerdo: "¿Todos en casa están de acuerdo con la adopción?",
+  experiencia: "¿Has tenido mascotas antes? Cuéntanos (opcional)",
+  experienciaPlaceholder: "Ej: tuve una perrita por 12 años…",
+  motivo: "¿Por qué quieres adoptar?",
+  motivoPlaceholder: "Cuéntale a quien lo cuida qué le puedes ofrecer",
+  resumen: "Revisa tu postulación",
+  compromiso: (nombre: string) =>
+    `Me comprometo a cuidar a ${nombre}, a llevarle a sus controles veterinarios y a actualizar su registro y microchip a mi nombre.`,
+  si: "Sí",
+  no: "No",
+  atras: "Atrás",
+  continuar: "Continuar",
+  enviar: "Enviar postulación",
+  enviando: "Enviando…",
+  error: "No se pudo enviar la postulación.",
+  enviadaTitulo: "¡Postulación enviada!",
+  enviadaTexto: (publicador: string) =>
+    `${publicador} revisará tu solicitud y te contactará pronto para coordinar el siguiente paso. Mientras tanto, puedes ver otros animales que también buscan hogar.`,
+  verMas: "Ver más animales en adopción",
+  errores: {
+    elegir: "Elige una opción",
+    edades: "Cuéntanos las edades",
+    cuales: "Cuéntanos qué mascotas",
+    motivo: `Escribe al menos ${10} caracteres`,
+    compromiso: "Debes aceptar el compromiso para enviar",
+  },
+} as const;
+
+// --- Publicar ("Dar en adopción") ---
+export const MAX_FOTOS_ADOPCION = 6;
+export const MAX_MB_FOTO_ADOPCION = 5;
+export const TIPOS_FOTO_ADOPCION = ["image/jpeg", "image/png", "image/webp"];
+export const MAX_PERSONALIDAD_ADOPCION = 5;
+export const OPCIONES_PERSONALIDAD_ADOPCION = [
+  "Juguetón", "Cariñoso", "Tranquilo", "Leal", "Sociable", "Curioso", "Independiente",
+  "Protector", "Regalón", "Ideal para departamento", "Bueno con niños", "Le gusta pasear",
+] as const;
+
+export const OPCIONES_ESPECIE_PUBLICAR: readonly { valor: EspecieMascota; label: string }[] = [
+  { valor: "perro", label: "Perro" },
+  { valor: "gato", label: "Gato" },
+  { valor: "conejo", label: "Conejo" },
+  { valor: "ave", label: "Ave" },
+  { valor: "otro", label: "Otro" },
+];
+
+export const PASOS_PUBLICAR_ADOPCION: readonly PasoFormulario<CampoPublicarAdopcion>[] = [
+  { titulo: "Datos básicos", campos: ["fotos", "nombre", "especie", "sexo", "anios", "meses", "tamano", "comuna"] },
+  { titulo: "Personalidad", campos: ["personalidad", "frase"] },
+  { titulo: "Salud e historia", campos: ["raza", "pesoKg", "alergias", "historia"] },
+  { titulo: "Revisa y publica", campos: [] },
+];
+
+export const DATOS_PUBLICAR_VACIOS: DatosPublicarAdopcion = {
+  fotos: [],
+  nombre: "",
+  especie: null,
+  sexo: null,
+  anios: "",
+  meses: "",
+  tamano: null,
+  comuna: "",
+  solicitaChequeo: true,
+  personalidad: [],
+  rasgos: RASGOS_ADOPCION_VACIOS,
+  frase: "",
+  raza: "",
+  pesoKg: "",
+  vacunasAlDia: false,
+  esterilizado: false,
+  conMicrochip: false,
+  alergias: "",
+  historia: "",
+};
+
+export const TEXTOS_PUBLICAR = {
+  titulo: "Dar en adopción",
+  paso: (n: number, titulo: string) => `Paso ${n}: ${titulo}`,
+  fotos: (n: number) => `Arrastra y suelta hasta ${MAX_FOTOS_ADOPCION} fotos, o haz clic para elegirlas (${n}/${MAX_FOTOS_ADOPCION})`,
+  quitarFoto: "Quitar foto",
+  fotoPrincipal: "Principal",
+  nombre: "Nombre del animal",
+  nombrePlaceholder: "Ej: Luna",
+  especie: "Especie",
+  elegir: "Elige una opción",
+  sexo: "Sexo",
+  edad: "Edad aproximada",
+  anios: "Años",
+  meses: "Meses",
+  tamano: "Tamaño",
+  comuna: "Comuna",
+  revision: "Quiero que un veterinario de AuraPet lo revise",
+  personalidad: `Personalidad (elige hasta ${MAX_PERSONALIDAD_ADOPCION})`,
+  rasgos: "¿Cómo es? (1 = poco, 5 = mucho)",
+  sinDato: "No sé",
+  frase: "Una frase en primera persona (opcional)",
+  frasePlaceholder: "Ej: Me encanta dormir al sol y que me rasquen las orejas",
+  raza: "Raza (si no sabes, déjalo en blanco)",
+  razaPlaceholder: "Ej: Mestizo, Labrador",
+  peso: "Peso aproximado (kg)",
+  vacunas: "Tiene las vacunas al día",
+  esterilizado: "Está esterilizado/a",
+  microchip: "Tiene microchip",
+  alergias: "Alergias o condiciones (opcional)",
+  historia: "Su historia",
+  historiaPlaceholder: "¿Cómo llegó contigo? ¿Qué familia le vendría bien?",
+  revisaTitulo: "Así se verá tu publicación",
+  atras: "Atrás",
+  continuar: "Continuar",
+  publicar: "Publicar",
+  publicando: "Publicando…",
+  error: "No se pudo publicar. Intenta de nuevo.",
+  listoTitulo: (nombre: string) => `¡${nombre} ya está publicado!`,
+  listoTexto: "Te avisaremos cuando alguien postule. Si pediste revisión, un veterinario de la red se pondrá en contacto.",
+  verPublicacion: "Ver la publicación",
+  otra: "Publicar otro animal",
+  sesionTitulo: "Inicia sesión para dar en adopción",
+  sesionTexto: "Así las familias interesadas pueden postular y tú puedes elegir con calma.",
+  ingresar: "Ingresar o crear cuenta",
+  errores: {
+    fotos: "Sube al menos una foto",
+    fotoTipo: "Solo fotos JPG, PNG o WebP",
+    fotoPeso: `Cada foto puede pesar hasta ${MAX_MB_FOTO_ADOPCION} MB`,
+    fotoMaximo: `Puedes subir hasta ${MAX_FOTOS_ADOPCION} fotos`,
+    nombre: "Escribe su nombre",
+    elegir: "Elige una opción",
+    edad: "Indica años o meses (aproximado)",
+    comuna: "Elige la comuna",
+    personalidad: "Elige al menos una",
+    peso: "Escribe un peso válido",
+    historia: "Cuéntanos un poco de su historia (mín. 20 caracteres)",
+  },
+} as const;
+export const MIN_HISTORIA_ADOPCION = 20;
+
+// --- "Dar en adopción" desde los paneles (cualquier rol) ---
+export const TEXTOS_DAR_EN_ADOPCION_PANEL = {
+  menu: "Dar en adopción",
+  titulo: "Dar en adopción",
+  subtitulo: "Publica un animal que busca hogar. Se verá en la página Adopta de AuraPet.",
+  cerrar: "Cerrar",
+} as const;
+export const ICONO_DAR_EN_ADOPCION = HeartHandshake;

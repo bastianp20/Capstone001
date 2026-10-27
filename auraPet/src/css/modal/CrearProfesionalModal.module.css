@@ -10,12 +10,14 @@
 }
 
 .modal {
+  box-sizing: border-box;
   background: var(--color-superficie);
   border-radius: 14px;
   width: 100%;
-  max-width: 520px;
+  max-width: 560px;
   max-height: 90vh;
   overflow-y: auto;
+  overflow-x: hidden;          /* nunca scroll horizontal: el contenido se ajusta al ancho */
   padding: 24px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
   color: var(--color-terciario-texto);
@@ -43,7 +45,8 @@
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, 1fr): las columnas no crecen por un texto largo (p. ej. una opción del select) */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
 }
 
@@ -55,18 +58,31 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
   font-size: 0.9rem;
   font-weight: 500;
 }
 
 .campo input,
-.campo select {
+.campo select,
+.campo textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   padding: 9px 11px;
   border: 1px solid var(--color-borde-fuerte);
   border-radius: 8px;
   font-size: 0.9rem;
   color: var(--color-terciario-texto);
   background: var(--color-superficie);
+  font-family: inherit;
+}
+
+/* Si el texto elegido no cabe, se corta con "…" en vez de ensanchar el modal */
+.campo select {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .campo input:focus,
@@ -114,8 +130,8 @@
 
 .chipActivo {
   background: var(--color-secundario);
-  border-color: #0f8f80;
-  color: #0f8f80;
+  border-color: var(--color-primario);
+  color: var(--color-primario-texto);
   font-weight: 600;
 }
 
@@ -135,6 +151,7 @@
 
 .acciones {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 10px;
   margin-top: 6px;
@@ -167,6 +184,16 @@
   font-size: 0.78rem;
   font-weight: 400;
   color: var(--color-terciario-texto-muted);
+}
+
+/* Especialidad del veterinario elegido (Solicitar cita) */
+.especialidadElegida {
+  justify-self: start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--color-secundario);
+  color: var(--color-primario-texto);
+  font-weight: 600;
 }
 
 .error {

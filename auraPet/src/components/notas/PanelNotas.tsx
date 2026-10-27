@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Iconos, TEXTOS_NOTAS as T } from "../../constants";
+import { CONFIRMACIONES, Iconos, TEXTOS_NOTAS as T } from "../../constants";
 import { useNotas } from "../../hooks/useNotas";
+import { useConfirmar } from "../../hooks/useConfirmar";
 import type { DatosNota, Nota, PanelNotasProps } from "../../interfaces";
 import { Boton } from "../ui/Boton";
 import { FormNota } from "./FormNota";
@@ -11,6 +12,7 @@ import styles from "../../css/notas/Notas.module.css";
 // botón "Nueva nota" y la grilla. Una nota a la vez se edita en su lugar.
 export const PanelNotas = ({ descripcion }: PanelNotasProps) => {
   const { notas, cargando, error, ocupado, crear, editar, alternarFijada, borrar } = useNotas();
+  const confirmar = useConfirmar();
   const [creando, setCreando] = useState(false);
   const [editando, setEditando] = useState<number | null>(null);
   const [busqueda, setBusqueda] = useState("");
@@ -28,8 +30,8 @@ export const PanelNotas = ({ descripcion }: PanelNotasProps) => {
     if (await editar(nota, datos)) setEditando(null);
   };
 
-  const confirmarBorrado = (nota: Nota) => {
-    if (window.confirm(T.confirmarBorrar(nota.titulo))) borrar(nota);
+  const confirmarBorrado = async (nota: Nota) => {
+    if (await confirmar(CONFIRMACIONES.borrarNota(nota.titulo))) borrar(nota);
   };
 
   return (

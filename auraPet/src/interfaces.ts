@@ -688,7 +688,7 @@ export type TipoRegistro = "diagnostico" | "vacuna" | "cirugia" | "control" | "o
 // Secciones que se ven en el panel; "Solicitar cita" y "Configuración" abren modales
 export type SeccionDueno = "inicio" | "mascotas" | "historial";
 export interface ItemMenuDueno {
-  id: SeccionDueno | "solicitar" | "configuracion";
+  id: SeccionDueno | "solicitar" | "adopcion" | "configuracion";
   texto: string;
   icono: LucideIcon;
 }
@@ -733,8 +733,8 @@ export interface VeterinarioParaCita {
 }
 export interface DatosSolicitudCita {
   mascotaId: number;
-  centroId: number;
-  veterinarioId: number | null;    // null = sin preferencia
+  centroId: number | null;         // null = atención independiente (sin centro, migración 35)
+  veterinarioId: number | null;    // null = sin preferencia (obligatorio si es independiente)
   fechaHora: string;               // ISO (timestamptz)
   motivo: string;
   sintomas: string[];
@@ -1252,6 +1252,7 @@ export interface MenuLateralSuperAdminProps {
   seccion: SeccionSuperAdmin;
   pendientes: number;                 // contador junto a "Aprobaciones"
   onCambiar: (seccion: SeccionSuperAdmin) => void;
+  onDarEnAdopcion: () => void;
 }
 
 export interface BarraSuperiorSuperAdminProps {
@@ -1843,6 +1844,7 @@ export interface MenuLateralCentroProps {
   onCambiar: (seccion: SeccionCentroAdmin) => void;
   onVolver?: () => void;
   onConfiguracion: () => void;
+  onDarEnAdopcion: () => void;
 }
 
 // Números del resumen (lib/centroAdmin.ts los calcula a partir de las citas)
@@ -2123,4 +2125,492 @@ export interface FichaPdfCruda {
     fecha: string; origen: string | null; destino: string | null; motivo: string;
     estado: EstadoDerivacion; resultado: string | null;
   }[];
+}
+
+// =====================================================================
+// MODAL DE CONFIRMACIÓN (reemplaza window.confirm en toda la app)
+// =====================================================================
+// peligro = borra o deshace algo (rojo); advertencia = cambio importante (ámbar)
+export type TipoConfirmacion = "peligro" | "advertencia";
+
+export interface OpcionesConfirmacion {
+  tipo: TipoConfirmacion;
+  titulo: string;
+  mensaje: string;
+  detalle?: string;                    // qué se afecta, p. ej. el título de la nota
+  permanente?: boolean;                // muestra "Atención: se eliminará de forma permanente…"
+  textoConfirmar: string;
+  textoCancelar?: string;
+}
+
+// confirmar(...) abre el modal y responde true (Confirmar) o false (Cancelar)
+export type FuncionConfirmar = (opciones: OpcionesConfirmacion) => Promise<boolean>;
+
+export interface ConfirmacionProviderProps {
+  children: ReactNode;
+}
+
+export interface ConfirmarModalProps {
+  opciones: OpcionesConfirmacion;
+  onResponder: (aceptado: boolean) => void;
+}
+
+// =====================================================================
+// Adopción
+// =====================================================================
+export type EspecieAdopcion = 'perro' | 'gato' | 'otro';
+
+/** Lo mínimo de un animal en adopción para mostrarlo en una tarjeta chica (login, carruseles). */
+export interface AnimalAdopcionResumen {
+  id: number;
+  nombre: string;
+  especie: EspecieAdopcion;
+  edad: string;            // "2 años", "4 meses"
+  comuna: string;
+  revisadoPorVet: boolean; // tiene al menos un chequeo de un veterinario de la red
+  fotoUrl: string | null;
+}
+
+export type TamanoAdopcion = 'pequeno' | 'mediano' | 'grande';
+export type EtapaAdopcion = 'cachorro' | 'adulto' | 'senior';
+export type SexoAdopcion = 'macho' | 'hembra';
+export type EstadoAdopcion = 'disponible' | 'en_proceso';
+export type FiltroEspecieAdopcion = 'todos' | EspecieAdopcion;
+
+/** Chequeo que le hizo un veterinario de la red al animal (el sello de confianza). */
+export interface ChequeoAdopcion {
+  veterinario: string;
+  centro: string | null;
+  fecha: string;        // "2026-10-12"
+  resumen: string;      // "Vacunas al día, esterilizada"
+  solidario: boolean;   // el veterinario no lo cobró
+}
+
+/** Animal publicado en /adopta (todo lo que muestra la página). */
+export interface AnimalAdopcion extends AnimalAdopcionResumen {
+  raza: string;
+  sexo: SexoAdopcion;
+  tamano: TamanoAdopcion;
+  etapa: EtapaAdopcion;
+  personalidad: string[];
+  frase: string | null;   // en primera persona: "Me encanta dormir al sol"
+  chequeo: ChequeoAdopcion | null;
+  estado: EstadoAdopcion;
+}
+
+/** Animal que ya encontró familia ("Ya tienen familia"). */
+export interface HistoriaAdopcion {
+  id: number;
+  nombre: string;
+  especie: EspecieAdopcion;
+  frase: string;          // lo que cuenta quien lo adoptó
+  adoptante: string;
+  fotoUrl: string | null;
+}
+
+export interface EstadisticasAdopcion {
+  esperando: number;
+  revisados: number;
+  conFamilia: number;
+}
+
+/** Filtros del panel lateral "Más filtros" (null = cualquiera). */
+export interface FiltrosExtraAdopcion {
+  soloRevisados: boolean;
+  tamano: TamanoAdopcion | null;
+  etapa: EtapaAdopcion | null;
+  sexo: SexoAdopcion | null;
+  comuna: string | null;
+}
+
+export interface OpcionAdopcion<V extends string> {
+  valor: V;
+  label: string;
+}
+
+export interface FotoMosaico {
+  src: string;
+  alt: string;
+}
+
+export interface AvatarAnimalProps {
+  especie: EspecieAdopcion;
+  fotoUrl: string | null;
+  nombre: string;
+  tono: string;
+  tamanoIcono?: number;
+  className?: string;
+}
+
+export interface SelloRevisadoProps {
+  chequeo: ChequeoAdopcion;
+  completo?: boolean; // true: muestra quién lo revisó y el resumen
+}
+
+export interface MosaicoHeroAdopcionProps {
+  fotos: FotoMosaico[];
+  etiqueta: string | null;
+}
+
+export interface HeroAdopcionProps {
+  estadisticas: EstadisticasAdopcion;
+  fotos: FotoMosaico[];
+  etiquetaFlotante: string | null;
+  onConocerlos: () => void;
+  onDarEnAdopcion: () => void;
+}
+
+export interface TarjetaDestacadaAdopcionProps {
+  animal: AnimalAdopcion;
+  onConocer?: (animal: AnimalAdopcion) => void;
+}
+
+export interface FiltrosAdopcionProps {
+  especie: FiltroEspecieAdopcion;
+  onEspecie: (especie: FiltroEspecieAdopcion) => void;
+  soloRevisados: boolean;
+  onSoloRevisados: (activo: boolean) => void;
+  filtrosActivos: number;
+  onMasFiltros: () => void;
+}
+
+export interface PanelFiltrosAdopcionProps {
+  abierto: boolean;
+  busqueda: string;
+  onBusqueda: (texto: string) => void;
+  filtros: FiltrosExtraAdopcion;
+  onCambiar: (cambios: Partial<FiltrosExtraAdopcion>) => void;
+  comunas: string[];
+  resultados: number;
+  onLimpiar: () => void;
+  onCerrar: () => void;
+}
+
+export interface GrupoOpcionesAdopcionProps<V extends string> {
+  titulo: string;
+  opciones: readonly OpcionAdopcion<V>[];
+  valor: V | null;
+  onElegir: (valor: V | null) => void;
+}
+
+export interface TarjetaAdopcionProps {
+  animal: AnimalAdopcion;
+  alto: number;
+  tono: string;
+  onConocer?: (animal: AnimalAdopcion) => void;
+}
+
+export interface GrillaAdopcionProps {
+  animales: AnimalAdopcion[];
+  cargando: boolean;
+  hayPublicaciones: boolean; // false = la base no tiene ninguno (no es culpa de los filtros)
+  error?: string;
+  onLimpiarFiltros: () => void;
+  onConocer?: (animal: AnimalAdopcion) => void;
+}
+
+export interface BandaDarEnAdopcionProps {
+  onPublicar: () => void;
+}
+
+export interface HistoriasExitoProps {
+  historias: HistoriaAdopcion[];
+}
+
+export interface PolaroidHistoriaProps {
+  historia: HistoriaAdopcion;
+  giro: number;   // grados
+  tono: string;
+}
+
+// ---------- Ficha del animal (/adopta/:id) ----------
+export type RasgoAdopcion = 'energia' | 'sociablePerros' | 'sociableGatos' | 'sociableNinos';
+export type RasgosAdopcion = Record<RasgoAdopcion, number | null>; // 1 a 5
+
+export interface PublicadorAdopcion {
+  nombre: string;
+  tipo: string;        // "Rescatista particular", nombre del centro…
+  adopciones: number;  // adopciones concretadas
+}
+
+export interface FichaAdopcion extends AnimalAdopcion {
+  historia: string | null;
+  fotos: string[];     // URLs públicas
+  rasgos: RasgosAdopcion;
+  vacunasAlDia: boolean;
+  esterilizado: boolean;
+  conMicrochip: boolean;
+  pesoKg: number | null;
+  alergias: string | null;
+  solicitaChequeo: boolean;
+  adoptado: boolean;
+  publicador: PublicadorAdopcion;
+  esMia: boolean;
+  yaPostule: boolean;
+}
+
+export interface GaleriaAdopcionProps {
+  fotos: string[];
+  nombre: string;
+  especie: EspecieAdopcion;
+}
+
+export interface CabeceraFichaAdopcionProps {
+  ficha: FichaAdopcion;
+}
+
+export interface BarraRasgoAdopcionProps {
+  etiqueta: string;
+  valor: number | null;
+}
+
+export interface TarjetaPersonalidadAdopcionProps {
+  personalidad: string[];
+  rasgos: RasgosAdopcion;
+}
+
+export interface ItemSaludAdopcionProps {
+  icono: ReactNode;
+  etiqueta: string;
+  valor?: string;
+  pendiente?: boolean; // se muestra atenuado ("Vacunas pendientes")
+}
+
+export interface TarjetaSaludAdopcionProps {
+  ficha: FichaAdopcion;
+}
+
+export interface ChequeoDestacadoAdopcionProps {
+  chequeo: ChequeoAdopcion | null;
+  solicitado: boolean;
+}
+
+export type EstadoBotonAdoptar = 'disponible' | 'mia' | 'postulado' | 'en_proceso' | 'adoptado';
+
+export interface TarjetaPublicadorAdopcionProps {
+  publicador: PublicadorAdopcion;
+  nombreAnimal: string;
+  sexo: SexoAdopcion;
+  estadoBoton: EstadoBotonAdoptar;
+  guardado: boolean;
+  textoCompartir: string;
+  onAdoptar: () => void;
+  onCompartir: () => void;
+  onGuardar: () => void;
+}
+
+export interface FilaOtrosAdopcionProps {
+  animales: AnimalAdopcion[];
+  onConocer: (animal: AnimalAdopcion) => void;
+}
+
+export interface TarjetaOtroAdopcionProps {
+  animal: AnimalAdopcion;
+  tono: string;
+  onConocer: (animal: AnimalAdopcion) => void;
+}
+
+export interface AvisoConfianzaAdopcionProps {
+  compacto?: boolean; // versión chica para la columna lateral de la ficha
+}
+
+// ---------- Formularios por pasos (postular y publicar) ----------
+/** Un paso del formulario: su título y qué campos valida al avanzar. */
+export interface PasoFormulario<C extends string> {
+  titulo: string;
+  campos: readonly C[];
+}
+
+export type ErroresFormulario<C extends string> = Partial<Record<C, string>>;
+
+export interface OpcionesFormularioPasos<D, C extends string> {
+  inicial: D;
+  pasos: readonly PasoFormulario<C>[];
+  validar: (datos: D) => ErroresFormulario<C>;
+}
+
+export interface IndicadorPasosAdopcionProps {
+  pasos: readonly string[];
+  actual: number;
+}
+
+export interface CampoSiNoAdopcionProps {
+  etiqueta: string;
+  valor: boolean | null;
+  onCambiar: (valor: boolean) => void;
+  error?: string;
+}
+
+export interface CampoTextoAdopcionProps {
+  id: string;
+  etiqueta: string;
+  valor: string;
+  onCambiar: (valor: string) => void;
+  error?: string;
+  placeholder?: string;
+  multilinea?: boolean;
+  maximo?: number;
+  tipo?: 'text' | 'number';
+  ayuda?: string;
+}
+
+export interface CampoSelectAdopcionProps {
+  id: string;
+  etiqueta: string;
+  valor: string;
+  opciones: readonly { valor: string; label: string }[];
+  onCambiar: (valor: string) => void;
+  error?: string;
+  placeholder?: string;
+}
+
+// ---------- Postular ("Quiero adoptarlo") ----------
+export type ViviendaAdopcion = 'casa' | 'departamento' | 'parcela';
+export type TenenciaAdopcion = 'propia' | 'arrendada' | 'familiar';
+
+export interface DatosPostulacionAdopcion {
+  vivienda: ViviendaAdopcion | null;
+  tienePatio: boolean | null;
+  tenencia: TenenciaAdopcion | null;
+  permitenMascotas: boolean | null;
+  hayNinos: boolean | null;
+  edadesNinos: string;
+  otrasMascotas: boolean | null;
+  cualesMascotas: string;
+  todosDeAcuerdo: boolean | null;
+  experiencia: string;
+  motivo: string;
+  aceptaCompromiso: boolean;
+}
+
+export type CampoPostulacionAdopcion = keyof DatosPostulacionAdopcion;
+
+export interface PasoPostulacionProps {
+  datos: DatosPostulacionAdopcion;
+  errores: ErroresFormulario<CampoPostulacionAdopcion>;
+  onCambiar: <K extends CampoPostulacionAdopcion>(campo: K, valor: DatosPostulacionAdopcion[K]) => void;
+}
+
+export interface PasoConfirmacionPostulacionProps extends PasoPostulacionProps {
+  nombreAnimal: string;
+}
+
+export interface ModalPostulacionAdopcionProps {
+  adopcionId: number;
+  nombreAnimal: string;
+  publicador: string;
+  onCerrar: () => void;
+  onEnviada: () => void;
+}
+
+export interface PostulacionEnviadaAdopcionProps {
+  publicador: string;
+  onVerMas: () => void;
+}
+
+// ---------- Publicar ("Dar en adopción") ----------
+export interface FotoNuevaAdopcion {
+  id: string;
+  archivo: File;
+  vista: string; // URL local para la vista previa
+}
+
+export interface DatosPublicarAdopcion {
+  fotos: FotoNuevaAdopcion[];
+  nombre: string;
+  especie: EspecieMascota | null;
+  sexo: SexoAdopcion | null;
+  anios: string;
+  meses: string;
+  tamano: TamanoAdopcion | null;
+  comuna: string;
+  solicitaChequeo: boolean;
+  personalidad: string[];
+  rasgos: RasgosAdopcion;
+  frase: string;
+  raza: string;
+  pesoKg: string;
+  vacunasAlDia: boolean;
+  esterilizado: boolean;
+  conMicrochip: boolean;
+  alergias: string;
+  historia: string;
+}
+
+export type CampoPublicarAdopcion = keyof DatosPublicarAdopcion;
+
+export interface PasoPublicarProps {
+  datos: DatosPublicarAdopcion;
+  errores: ErroresFormulario<CampoPublicarAdopcion>;
+  onCambiar: <K extends CampoPublicarAdopcion>(campo: K, valor: DatosPublicarAdopcion[K]) => void;
+}
+
+export interface ZonaFotosAdopcionProps {
+  fotos: FotoNuevaAdopcion[];
+  onCambiar: (fotos: FotoNuevaAdopcion[]) => void;
+  error?: string;
+}
+
+export interface SelectorNivelAdopcionProps {
+  etiqueta: string;
+  valor: number | null;
+  onCambiar: (valor: number | null) => void;
+}
+
+export interface SelectorEtiquetasAdopcionProps {
+  opciones: readonly string[];
+  elegidas: string[];
+  maximo: number;
+  onCambiar: (elegidas: string[]) => void;
+  error?: string;
+}
+
+export interface InterruptorAdopcionProps {
+  etiqueta: string;
+  activo: boolean;
+  onCambiar: (activo: boolean) => void;
+}
+
+export interface BandaPasosPublicarProps {
+  pasos: readonly { icono: LucideIcon; texto: string; detalle: string }[];
+}
+
+export interface InvitacionSesionAdopcionProps {
+  onIngresar: () => void;
+}
+
+export interface PublicacionListaAdopcionProps {
+  nombre: string;
+  onVer: () => void;
+  onOtra: () => void;
+}
+
+export interface FormularioPublicarAdopcionProps {
+  onVerPublicacion: (id: number) => void;
+  enModal?: boolean; // sin sombra ni bordes, porque ya está dentro del modal
+}
+
+export interface DarEnAdopcionModalProps {
+  onCerrar: () => void;
+}
+
+export interface ItemMenuDarEnAdopcionProps {
+  className: string;
+  claseTexto: string;
+  onClick: () => void;
+}
+
+export interface MiniTarjetaAdopcionProps {
+  animal: AnimalAdopcionResumen;
+  tono: string; // fondo del avatar si no hay foto
+}
+
+export interface CarruselAdopcionLoginProps {
+  animales: AnimalAdopcionResumen[];
+  onVerTodos: () => void;
+}
+
+export interface FranjaAdopcionLoginProps {
+  total: number;
+  onVerTodos: () => void;
 }

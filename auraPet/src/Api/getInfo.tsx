@@ -9,6 +9,12 @@
 
 // Tipos que ya usaban las pantallas (formato "listo para mostrar").
 import type {
+  AnimalAdopcion,          // animal publicado en /adopta
+  ChequeoAdopcion,         // último chequeo de un veterinario
+  FichaAdopcion,           // ficha /adopta/:id
+  EstadisticasAdopcion,    // números del hero de /adopta
+  HistoriaAdopcion,        // "Ya tienen familia"
+  SexoAdopcion, TamanoAdopcion,
   CitaProximaDueno,        // cita para el cuadradito del panel del dueño
   HistorialRecienteItem,   // ítem de "historial reciente" del dueño
   Mascota,                 // mascota con los campos que muestra la app
@@ -61,8 +67,9 @@ import { supabase } from "../lib/supabase";
 // Funciones para mostrar las fechas que vienen de la base.
 import { nombreConComuna } from "../lib/centroVeterinario";
 import { formatEdad, resumirVacunas } from "../lib/fichaPaciente";
+import { edadAdopcion, especieAdopcion, etapaAdopcion, urlFotoAdopcion } from "../lib/adopcion";
 import { calcularEdad, formatFechaEmision, formatHorario, formatFechaCaja, formatFechaCorta, formatFechaHora, formatFechaLarga, formatHora12h, formatHora24, diaDelMesEnChile, fechaDentroDe, rangosDeFecha } from "../lib/fechas";
-import { CARGOS_RESPONSABLE, DIAS_CONTROLES_PROXIMOS, ESTADO_VERIFICACION, ESTILO_ROL, MAX_ITEMS_PENDIENTES, MOTIVO_RECHAZO_SIN_DETALLE, MS_CREADO_YA_APROBADO, URGENCIAS_ALTAS, SEXO_LABEL, TEXTO_SIN_REGISTRAR } from "../constants";
+import { CARGOS_RESPONSABLE, DIAS_CONTROLES_PROXIMOS, ESTADO_VERIFICACION, ESTILO_ROL, MAX_ITEMS_PENDIENTES, MOTIVO_RECHAZO_SIN_DETALLE, MS_CREADO_YA_APROBADO, URGENCIAS_ALTAS, SEXO_LABEL, MAX_HISTORIAS_ADOPCION, RAZA_SIN_INDICAR, TEXTO_ATENCION_INDEPENDIENTE, TEXTO_SIN_REGISTRAR } from "../constants";
 
 // Pone la primera letra en mayúscula: "perro" -> "Perro".
 const capitalize = (s: string): string => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
@@ -117,7 +124,7 @@ export const getProximasCitasDueno = async (duenoId: string, limite = 3): Promis
     id: c.id,
     mascotaId: c.mascota_id,
     mascota: c.mascotas?.nombre ?? "Mascota desconocida",   // "?." por si viniera vacío
-    centro: c.centros?.nombre ?? "Centro desconocido",
+    centro: c.centros?.nombre ?? TEXTO_ATENCION_INDEPENDIENTE,   // sin centro = veterinario independiente
     ...formatFechaCaja(c.fecha_hora),             // agrega { dia: "10", mes: "SEP" }
     hora: formatHora24(c.fecha_hora),             // "10:30"
     puedeCancelar: c.estado === "pendiente" || c.estado === "confirmada",
@@ -956,6 +963,13 @@ export const getVeterinariosDeCentro = async (centroId: number): Promise<Veterin
   return data ?? [];
 };
 
+// Veterinarios aprobados SIN centro, del mismo "mundo" (real/prueba) que la cuenta (migración 35)
+export const getVeterinariosIndependientes = async (): Promise<VeterinarioParaCita[]> => {
+  const { data, error } = await supabase.rpc("veterinarios_independientes");
+  if (error) throw error;
+  return data ?? [];
+};
+
 // Todos los centros (aprobados, pendientes, rechazados, reales y de prueba)
 // para la sección "Centros" del superadmin, con cuántos veterinarios tiene cada uno.
 export const getCentrosSuperadmin = async (): Promise<CentroListado[]> => {
@@ -1382,4 +1396,115 @@ export const getFichaPdf = async (mascotaId: number): Promise<FichaPdf> => {
       resultado: d.resultado,
     })),
   };
+};
+
+// =====================================================================
+// Adopción (/adopta) — migración 36
+// =====================================================================
+// Son funciones de la base (security definer): las puede llamar un visitante
+// sin cuenta, y traen el nombre del veterinario que hizo el chequeo.
+
+// Columnas que comparten listar_adopciones y detalle_adopcion
+type FilaAnimalAdopcion = {
+  id: number; nombre: string; especie: string; raza: string | null; sexo: string; tamano: string;
+  fecha_nacimiento: string | null; comuna: string; personalidad: string[] | null; frase: string | null;
+  estado: string; chequeo_veterinario: string | null; chequeo_centro: string | null;
+  chequeo_fecha: string | null; chequeo_resumen: string | null; chequeo_solidario: boolean | null;
+};
+
+const chequeoDesdeFila = (a: FilaAnimalAdopcion): ChequeoAdopcion | null =>
+  a.chequeo_veterinario && a.chequeo_resumen
+    ? {
+        veterinario: a.chequeo_veterinario,
+        centro: a.chequeo_centro,
+        fecha: a.chequeo_fecha?.slice(0, 10) ?? "", // "AAAA-MM-DD"
+        resumen: a.chequeo_resumen,
+        solidario: !!a.chequeo_solidario,
+      }
+    : null;
+
+const animalDesdeFila = (a: FilaAnimalAdopcion, foto: string | null): AnimalAdopcion => {
+  const especie = especieAdopcion(a.especie);
+  const sexo = a.sexo as SexoAdopcion;
+  const chequeo = chequeoDesdeFila(a);
+  return {
+    id: a.id,
+    nombre: a.nombre,
+    especie,
+    raza: a.raza?.trim() || RAZA_SIN_INDICAR[sexo],
+    sexo,
+    tamano: a.tamano as TamanoAdopcion,
+    edad: edadAdopcion(a.fecha_nacimiento),
+    etapa: etapaAdopcion(especie, a.fecha_nacimiento),
+    comuna: a.comuna,
+    personalidad: a.personalidad ?? [],
+    frase: a.frase,
+    chequeo,
+    revisadoPorVet: !!chequeo,
+    estado: a.estado === "en_proceso" ? "en_proceso" : "disponible",
+    fotoUrl: urlFotoAdopcion(foto),
+  };
+};
+
+// Animales esperando hogar (primero los disponibles), con su último chequeo.
+export const getAnimalesAdopcion = async (): Promise<AnimalAdopcion[]> => {
+  const { data, error } = await supabase.rpc("listar_adopciones");
+  if (error) throw error;
+  return (data ?? []).map((a) => animalDesdeFila(a, a.foto_url));
+};
+
+// Ficha /adopta/:id (migración 37). null si no existe o no se puede ver.
+export const getDetalleAdopcion = async (id: number): Promise<FichaAdopcion | null> => {
+  const { data, error } = await supabase.rpc("detalle_adopcion", { p_id: id });
+  if (error) throw error;
+  const a = data?.[0];
+  if (!a) return null;
+  const fotos = (a.fotos ?? []).map(urlFotoAdopcion).filter((f): f is string => !!f);
+  return {
+    ...animalDesdeFila(a, a.fotos?.[0] ?? null),
+    historia: a.historia,
+    fotos,
+    rasgos: {
+      energia: a.energia,
+      sociablePerros: a.sociable_perros,
+      sociableGatos: a.sociable_gatos,
+      sociableNinos: a.sociable_ninos,
+    },
+    vacunasAlDia: a.vacunas_al_dia,
+    esterilizado: a.esterilizado,
+    conMicrochip: a.con_microchip,
+    pesoKg: a.peso_kg === null ? null : Number(a.peso_kg),
+    alergias: a.alergias,
+    solicitaChequeo: a.solicita_chequeo,
+    adoptado: a.estado === "adoptada",
+    publicador: {
+      nombre: a.publicador_nombre,
+      tipo: a.publicador_tipo,
+      adopciones: Number(a.publicador_adopciones ?? 0),
+    },
+    esMia: !!a.es_mia,
+    yaPostule: !!a.ya_postule,
+  };
+};
+
+// "Ya tienen familia": adopciones concretadas con testimonio.
+export const getHistoriasAdopcion = async (): Promise<HistoriaAdopcion[]> => {
+  const { data, error } = await supabase.rpc("historias_adopcion", { p_limite: MAX_HISTORIAS_ADOPCION });
+  if (error) throw error;
+  return (data ?? []).map((h) => ({
+    id: h.id,
+    nombre: h.nombre,
+    especie: especieAdopcion(h.especie),
+    frase: h.testimonio,
+    adoptante: h.testimonio_autor ?? "",
+    fotoUrl: h.foto_url,
+  }));
+};
+
+// Números del hero: esperando hogar · revisados por veterinarios · ya tienen familia.
+export const getResumenAdopciones = async (): Promise<EstadisticasAdopcion> => {
+  const { data, error } = await supabase.rpc("resumen_adopciones");
+  if (error) throw error;
+  const fila = data?.[0];
+  return { esperando: Number(fila?.esperando ?? 0), revisados: Number(fila?.revisados ?? 0), conFamilia: Number(fila?.con_familia ?? 0) };
 };

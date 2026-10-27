@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { COLUMNAS_SUPERADMIN, ESTADO_SOLICITUD_ELIMINACION, ESTILO_ROL, TEXTOS_ELIMINACION as T } from "../../constants";
+import { CONFIRMACIONES, COLUMNAS_SUPERADMIN, ESTADO_SOLICITUD_ELIMINACION, ESTILO_ROL, TEXTOS_ELIMINACION as T } from "../../constants";
 import { useConsulta } from "../../hooks/useConsulta";
 import { useAccion } from "../../hooks/useAccion";
+import { useConfirmar } from "../../hooks/useConfirmar";
 import { getSolicitudesEliminacion } from "../../Api/getInfo";
 import { resolverSolicitudEliminacion } from "../../Api/postInfo";
 import { TablaPanel } from "../../components/ui/TablaPanel";
@@ -20,6 +21,7 @@ export const EliminacionesSuperAdmin = () => {
   const [recarga, setRecarga] = useState(0);
   const { datos: solicitudes = [], cargando, error } = useConsulta(() => getSolicitudesEliminacion(), [recarga]);
   const { ejecutar, ocupado, error: errorAccion } = useAccion();
+  const confirmar = useConfirmar();
   const [aRechazar, setARechazar] = useState<SolicitudEliminacionListada | null>(null);
   const [aviso, setAviso] = useState<AvisoEstado | null>(null);
 
@@ -33,8 +35,8 @@ export const EliminacionesSuperAdmin = () => {
     }
   };
 
-  const aprobar = (s: SolicitudEliminacionListada) => {
-    if (window.confirm(T.confirmarAprobar(s.nombre))) resolver(s, true);
+  const aprobar = async (s: SolicitudEliminacionListada) => {
+    if (await confirmar(CONFIRMACIONES.desactivarCuenta(s.nombre))) resolver(s, true);
   };
 
   const pendientes = solicitudes.filter((s) => s.estado === "pendiente").length;
