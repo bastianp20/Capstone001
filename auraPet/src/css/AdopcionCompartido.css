@@ -238,3 +238,13 @@ textarea.adopta-input { resize: vertical; min-height: 110px; line-height: 1.5; }
 .adopta-modal-cabecera p { margin: 4px 0 0; color: var(--adopta-suave); font-size: 14px; }
 .adopta-modal-cuerpo { overflow-y: auto; }
 @media (prefers-reduced-motion: reduce) { .adopta-modal { animation: none; } }
+
+/* ---------- Pestañas Animales · Refugios ---------- */
+.adopta-pestanas { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: #ffffff; border: 1px solid var(--adopta-borde, #e4e6ea); }
+.adopta-pestanas a {
+  padding: 8px 18px; border-radius: 999px; color: var(--adopta-suave, #6b7280);
+  font-family: var(--fuente-marca); font-weight: 700; font-size: 14px; text-decoration: none;
+}
+.adopta-pestanas a.adopta-pestanas-activa { background: #0f8f80; color: #ffffff; }
+.adopta-filtro-refugio { margin: 14px 0 0; padding: 10px 16px; border-radius: 14px; background: #e9e5fb; color: #3f3591; font-weight: 600; }
+.adopta-enlace { padding: 0; border: none; background: none; color: #0f8f80; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }

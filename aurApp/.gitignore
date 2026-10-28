@@ -51,3 +51,9 @@ _to_delete/
 credentials.json
 credentials/
 *.keystore
+
+# Datos de demo y de prueba (se usan en local, no se suben)
+pruebas/
+datos_prueba*
+*_demo.*
+*.demo.*

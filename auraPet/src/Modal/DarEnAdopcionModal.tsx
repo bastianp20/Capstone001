@@ -10,7 +10,7 @@ import "../css/PublicarAdopcionPage.css";
 
 // "Dar en adopción" desde el panel de cualquier rol (dueño, veterinario, centro o
 // superadmin): el mismo formulario de /adopta/publicar, en un modal.
-export const DarEnAdopcionModal = ({ onCerrar }: DarEnAdopcionModalProps) => {
+export const DarEnAdopcionModal = ({ onCerrar, onPublicada, refugioId }: DarEnAdopcionModalProps) => {
   const idTitulo = useId();
   const navigate = useNavigate();
   useTeclaEscape(onCerrar);
@@ -26,7 +26,7 @@ export const DarEnAdopcionModal = ({ onCerrar }: DarEnAdopcionModalProps) => {
           <p>{T.subtitulo}</p>
         </header>
         <div className="adopta-modal-cuerpo">
-          <FormularioPublicarAdopcion enModal onVerPublicacion={(id) => navigate(rutaFichaAdopcion(id))} />
+          <FormularioPublicarAdopcion enModal refugioId={refugioId} onPublicada={onPublicada} onVerPublicacion={(id) => navigate(rutaFichaAdopcion(id))} />
         </div>
       </div>
     </div>

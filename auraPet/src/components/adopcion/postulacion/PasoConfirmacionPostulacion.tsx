@@ -29,5 +29,6 @@ export const PasoConfirmacionPostulacion = ({ datos, errores, onCambiar, nombreA
       <span>{T.compromiso(nombreAnimal)}</span>
     </label>
     {errores.aceptaCompromiso && <p className="adopta-campo-error">{errores.aceptaCompromiso}</p>}
+    <p className="adopta-campo-ayuda">{T.avisoContacto}</p>
   </>
 );

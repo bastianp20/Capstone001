@@ -1,5 +1,6 @@
-import { useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMemo, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { PestanasAdopta } from "../../components/adopcion/PestanasAdopta";
 import { AvisoConfianzaAdopcion } from "../../components/adopcion/AvisoConfianzaAdopcion";
 import { BandaDarEnAdopcion } from "../../components/adopcion/BandaDarEnAdopcion";
 import { FiltrosAdopcion } from "../../components/adopcion/FiltrosAdopcion";
@@ -8,7 +9,7 @@ import { HeroAdopcion } from "../../components/adopcion/HeroAdopcion";
 import { HistoriasExito } from "../../components/adopcion/HistoriasExito";
 import { PanelFiltrosAdopcion } from "../../components/adopcion/PanelFiltrosAdopcion";
 import { TarjetaDestacadaAdopcion } from "../../components/adopcion/TarjetaDestacadaAdopcion";
-import { FOTOS_HERO_ADOPCION, RUTA_PUBLICAR_ADOPCION, rutaFichaAdopcion, TEXTOS_ADOPCION as T } from "../../constants";
+import { FOTOS_HERO_ADOPCION, RUTA_ADOPTA, RUTA_PUBLICAR_ADOPCION, rutaFichaAdopcion, TEXTOS_ADOPCION as T, TEXTOS_REFUGIOS } from "../../constants";
 import { useAdopciones } from "../../hooks/useAdopciones";
 import { useFiltrosAdopcion } from "../../hooks/useFiltrosAdopcion";
 import type { AnimalAdopcion } from "../../interfaces";
@@ -22,7 +23,12 @@ import "../../css/AdopcionPage.css";
 export const AdopcionScreen = () => {
   const navigate = useNavigate();
   const { animales, historias, estadisticas, destacado, cargando, error } = useAdopciones();
-  const f = useFiltrosAdopcion(animales);
+  // /adopta?refugio=3 → solo los animales de ese refugio (desde la página de Refugios)
+  const [parametros] = useSearchParams();
+  const refugioId = Number(parametros.get("refugio")) || null;
+  const deRefugio = useMemo(() => (refugioId ? animales.filter((a) => a.refugioId === refugioId) : animales), [animales, refugioId]);
+  const nombreRefugio = deRefugio[0]?.refugio ?? null;
+  const f = useFiltrosAdopcion(deRefugio);
   const grillaRef = useRef<HTMLDivElement>(null);
 
   const irAGrilla = () => grillaRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -42,6 +48,17 @@ export const AdopcionScreen = () => {
       <div className="adopta-contenedor">
         {destacado && <TarjetaDestacadaAdopcion animal={destacado} onConocer={conocer} />}
 
+        <div className="adopta-pestanas-fila">
+          <PestanasAdopta actual="animales" />
+        </div>
+        {refugioId && nombreRefugio && (
+          <p className="adopta-filtro-refugio">
+            {TEXTOS_REFUGIOS.filtrandoRefugio(nombreRefugio)} ·{" "}
+            <button type="button" className="adopta-enlace" onClick={() => navigate(RUTA_ADOPTA)}>
+              {TEXTOS_REFUGIOS.quitarFiltro}
+            </button>
+          </p>
+        )}
         <div ref={grillaRef} className="adopta-ancla">
           <FiltrosAdopcion
             especie={f.especie}

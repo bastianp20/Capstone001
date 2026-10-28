@@ -24,20 +24,26 @@ export const barraNavegacionStyles = StyleSheet.create({
     alignItems: 'center',
     gap: 3,
   },
+  botonPresionado: {
+    opacity: 0.6,
+  },
+  // Android no redondea bien cuando el radio es exactamente la mitad del alto:
+  // por eso el radio (14) queda un poco por debajo de la mitad (34 / 2 = 17).
   contenedorIcono: {
-    width: 52,
-    height: 32,
-    borderRadius: 16,
+    width: 60,
+    height: 34,
+    borderRadius: 14,
+    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
   },
   contenedorIconoActivo: {
-    backgroundColor: COLORES.primario,
+    backgroundColor: COLORES.primarioSuave,
   },
   etiqueta: {
     fontFamily: FUENTES.semibold,
     fontSize: 11.5,
-    color: COLORES.texto,
+    color: COLORES.textoSecundario,
   },
   etiquetaActiva: {
     fontFamily: FUENTES.bold,

@@ -1,7 +1,9 @@
 // aquí van las acciones que CREAN o CAMBIAN datos en la base (los "POST").
-import type { DatosNuevaMascota, DatosNuevoCentro, DatosNuevoDueno, DatosNuevoProfesional, DatosNuevoSuperadmin, DatosEdicionCentro, DatosNuevoAdministrativo, CambioCita, DatosSolicitudCita, CambiosCuenta, NuevoRegistroMedico, CambiosDatosClinicos, DatosSolicitudCentro, NuevaReceta, NuevaDerivacion, DatosContacto, EstadoContacto, DatosNota, DatosPostulacionAdopcion, DatosPublicarAdopcion } from "../interfaces";
+import type { DatosNuevaMascota, DatosNuevoCentro, DatosNuevoDueno, DatosNuevoProfesional, DatosNuevoSuperadmin, DatosEdicionCentro, DatosNuevoAdministrativo, CambioCita, DatosSolicitudCita, CambiosCuenta, NuevoRegistroMedico, CambiosDatosClinicos, DatosSolicitudCentro, NuevaReceta, NuevaDerivacion, DatosContacto, EstadoContacto, DatosNota, DatosPostulacionAdopcion, DatosPublicarAdopcion, DatosAtencionAdopcion, DatosConcretarAdopcion, DatosEditarMiRefugio, DatosRefugio, ImagenRefugio, RecepcionRefugio } from "../interfaces";
 import { BUCKET_ADOPCIONES } from "../constants";
 import { fechaDesdeEdad } from "../lib/adopcion";
+import { telefonoParaGuardar } from "../lib/refugios";
+import { nulable } from "../lib/argumentosRpc";
 import { supabase } from "../lib/supabase";
 import type { Json } from "../lib/database.types";
 
@@ -496,6 +498,7 @@ export const publicarAdopcion = async (perfilId: string, d: DatosPublicarAdopcio
         esterilizado: d.esterilizado,
         con_microchip: d.conMicrochip,
         solicita_chequeo: d.solicitaChequeo,
+        refugio_id: d.refugioId,
         fotos: rutas,
       })
       .select("id")
@@ -504,6 +507,144 @@ export const publicarAdopcion = async (perfilId: string, d: DatosPublicarAdopcio
     return data.id;
   } catch (e) {
     if (rutas.length) await bucket.remove(rutas);
+    throw e;
+  }
+};
+
+// ---------- MIS PUBLICACIONES, ADOPCIÓN SOLIDARIA (migración 39) ----------
+
+// Elegir (pasa a "en proceso") o rechazar una postulación
+export const responderPostulacion = async (postulacionId: number, aceptar: boolean) => {
+  const { error } = await supabase.rpc("responder_postulacion", { p_postulacion_id: postulacionId, p_aceptar: aceptar });
+  if (error) throw new Error(error.message || "No se pudo responder la postulación.");
+};
+
+// Cerrar la adopción. Devuelve el id de la mascota creada en la cuenta del adoptante (si se pidió traspasar).
+export const concretarAdopcion = async (adopcionId: number, postulacionId: number, d: DatosConcretarAdopcion): Promise<number | null> => {
+  const { data, error } = await supabase.rpc("concretar_adopcion", {
+    p_adopcion_id: adopcionId,
+    p_postulacion_id: postulacionId,
+    p_testimonio: d.testimonio,
+    p_traspasar: d.traspasar,
+  });
+  if (error) throw new Error(error.message || "No se pudo cerrar la adopción.");
+  return data ?? null;
+};
+
+// Retirar de Adopta o volver a publicar (la RLS deja solo a quien publicó)
+export const cambiarEstadoPublicacion = async (adopcionId: number, estado: "publicada" | "retirada") => {
+  const { data, error } = await supabase.from("adopciones").update({ estado }).eq("id", adopcionId).select("id");
+  if (error) throw new Error(error.message || "No se pudo actualizar la publicación.");
+  if (!data?.length) throw new Error("No puedes cambiar esta publicación.");
+};
+
+export const cambiarAliadoSolidario = async (activo: boolean) => {
+  const { error } = await supabase.rpc("cambiar_aliado_solidario", { p_activo: activo });
+  if (error) throw new Error(error.message || "No se pudo actualizar.");
+};
+
+// Registrar una atención a un animal en adopción (la base además actualiza su ficha)
+export const registrarAtencionAdopcion = async (adopcionId: number, d: DatosAtencionAdopcion): Promise<number> => {
+  const { data, error } = await supabase.rpc("registrar_atencion_adopcion", {
+    p_adopcion_id: adopcionId,
+    p_centro_id: nulable(d.centroId),
+    p_fecha: d.fecha,
+    p_estado_general: d.estadoGeneral,
+    p_procedimientos: d.procedimientos,
+    p_peso_kg: nulable(d.pesoKg.trim() ? Number(d.pesoKg.replace(",", ".")) : null),
+    p_resumen: d.resumen.trim(),
+    p_solidario: d.solidario,
+    p_monto: nulable(!d.solidario && d.monto.trim() ? Number(d.monto.replace(/\D/g, "")) : null),
+  });
+  if (error) throw new Error(error.message || "No se pudo guardar la atención.");
+  return data;
+};
+
+// ---------- GESTIÓN DE REFUGIOS (migración 42) ----------
+
+// Sube el logo o la portada nueva a la carpeta de quien edita (bucket de adopciones).
+// Si la imagen no cambió, devuelve la ruta que ya tenía.
+const subirImagenRefugio = async (perfilId: string, imagen: ImagenRefugio, tipo: "logo" | "portada", subidas: string[]): Promise<string | null> => {
+  if (!imagen.archivo) return imagen.ruta;
+  const extension = imagen.archivo.name.split(".").pop()?.toLowerCase() || "jpg";
+  const ruta = `${perfilId}/refugios/${tipo}-${Date.now()}.${extension}`;
+  const { error } = await supabase.storage
+    .from(BUCKET_ADOPCIONES)
+    .upload(ruta, imagen.archivo, { contentType: imagen.archivo.type, upsert: false });
+  if (error) throw new Error("No se pudo subir la imagen.");
+  subidas.push(ruta);
+  return ruta;
+};
+
+// Crear (refugioId null) o editar un refugio con sus administradores (solo superadmin).
+export const guardarRefugio = async (perfilId: string, refugioId: number | null, d: DatosRefugio): Promise<number> => {
+  const subidas: string[] = [];
+  try {
+    const logo = await subirImagenRefugio(perfilId, d.logo, "logo", subidas);
+    const portada = await subirImagenRefugio(perfilId, d.portada, "portada", subidas);
+    const { data, error } = await supabase.rpc("guardar_refugio", {
+      p_id: nulable(refugioId),
+      p_nombre: d.nombre.trim(),
+      p_comuna: d.comuna.trim(),
+      p_region: d.region,
+      p_descripcion: d.descripcion.trim(),
+      p_logo_url: nulable(logo),
+      p_portada_url: nulable(portada),
+      p_telefono: nulable(telefonoParaGuardar(d.telefono)),
+      p_correo: d.correo.trim(),
+      p_cupos_totales: d.cuposTotales,
+      p_cupos_ocupados: d.cuposOcupados,
+      p_recibe: d.recibe,
+      p_especies: d.especies,
+      p_es_prueba: d.esPrueba,
+      p_admins: d.administradores.map((a) => a.id),
+    });
+    if (error) throw new Error(error.message || "No se pudo guardar el refugio.");
+    return data;
+  } catch (e) {
+    if (subidas.length) await supabase.storage.from(BUCKET_ADOPCIONES).remove(subidas);
+    throw e;
+  }
+};
+
+export const verificarRefugio = async (refugioId: number, aprobar: boolean) => {
+  const { error } = await supabase.rpc("verificar_refugio", { p_id: refugioId, p_aprobar: aprobar });
+  if (error) throw new Error(error.message || "No se pudo actualizar el refugio.");
+};
+
+// Cupos ocupados o recepción (lo hace quien administra; la base revisa los límites).
+export const actualizarCapacidadRefugio = async (refugioId: number, cambio: { cuposOcupados?: number; recibe?: RecepcionRefugio }) => {
+  const { data, error } = await supabase
+    .from("refugios")
+    .update({ cupos_ocupados: cambio.cuposOcupados, recibe_animales: cambio.recibe })
+    .eq("id", refugioId)
+    .select("id");
+  if (error) throw new Error(error.message || "No se pudo actualizar.");
+  if (!data?.length) throw new Error("No puedes cambiar este refugio.");
+};
+
+// Datos que edita quien administra (nombre, región y verificación quedan para AuraPet).
+export const editarMiRefugio = async (perfilId: string, refugioId: number, d: DatosEditarMiRefugio) => {
+  const subidas: string[] = [];
+  try {
+    const logo = await subirImagenRefugio(perfilId, d.logo, "logo", subidas);
+    const portada = await subirImagenRefugio(perfilId, d.portada, "portada", subidas);
+    const { data, error } = await supabase
+      .from("refugios")
+      .update({
+        descripcion: d.descripcion.trim() || null,
+        telefono: telefonoParaGuardar(d.telefono),
+        correo: d.correo.trim() || null,
+        especies: d.especies,
+        logo_url: logo,
+        portada_url: portada,
+      })
+      .eq("id", refugioId)
+      .select("id");
+    if (error) throw new Error(error.message || "No se pudo guardar.");
+    if (!data?.length) throw new Error("No puedes cambiar este refugio.");
+  } catch (e) {
+    if (subidas.length) await supabase.storage.from(BUCKET_ADOPCIONES).remove(subidas);
     throw e;
   }
 };

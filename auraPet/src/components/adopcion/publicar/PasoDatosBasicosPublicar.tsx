@@ -3,6 +3,7 @@ import {
   OPCIONES_ESPECIE_PUBLICAR,
   OPCIONES_SEXO_ADOPCION,
   OPCIONES_TAMANO_ADOPCION,
+  PUBLICAR_A_NOMBRE,
   TEXTOS_PUBLICAR as T,
 } from "../../../constants";
 import type { EspecieMascota, PasoPublicarProps, TamanoAdopcion } from "../../../interfaces";
@@ -15,8 +16,18 @@ import { ZonaFotosAdopcion } from "../formulario/ZonaFotosAdopcion";
 const COMUNAS = COMUNAS_SUGERIDAS.map((c) => ({ valor: c, label: c }));
 
 /** Paso 1 — fotos, nombre, especie, sexo, edad, tamaño, comuna y pedir revisión. */
-export const PasoDatosBasicosPublicar = ({ datos, errores, onCambiar }: PasoPublicarProps) => (
+export const PasoDatosBasicosPublicar = ({ datos, errores, onCambiar, refugios = [] }: PasoPublicarProps) => (
   <>
+    {refugios.length > 0 && (
+      <CampoSelectAdopcion
+        id="publica-refugio"
+        etiqueta={PUBLICAR_A_NOMBRE.etiqueta}
+        valor={datos.refugioId ? String(datos.refugioId) : ""}
+        opciones={refugios.map((r) => ({ valor: String(r.id), label: r.nombre }))}
+        placeholder={PUBLICAR_A_NOMBRE.personal}
+        onCambiar={(v) => onCambiar("refugioId", v ? Number(v) : null)}
+      />
+    )}
     <ZonaFotosAdopcion fotos={datos.fotos} onCambiar={(fotos) => onCambiar("fotos", fotos)} error={errores.fotos} />
     <CampoTextoAdopcion
       id="publica-nombre"

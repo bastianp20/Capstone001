@@ -31,13 +31,13 @@ export function BarraNavegacion({ state, emitter, navigateToTab, insets, pestana
               accessibilityRole="tab"
               accessibilityState={{ selected: activa }}
               accessibilityLabel={pestana.titulo}
-              style={styles.boton}>
+              style={({ pressed }) => [styles.boton, pressed && !activa && styles.botonPresionado]}>
               <View style={[styles.contenedorIcono, activa && styles.contenedorIconoActivo]}>
                 <Icono
                   nombre={pestana.icono}
                   tamano={22}
-                  color={activa ? COLORES.blanco : COLORES.texto}
-                  grosor={activa ? 2.2 : 1.9}
+                  color={activa ? COLORES.primario : COLORES.textoSecundario}
+                  grosor={activa ? 2.3 : 1.9}
                 />
               </View>
               <Text style={[styles.etiqueta, activa && styles.etiquetaActiva]}>{pestana.titulo}</Text>

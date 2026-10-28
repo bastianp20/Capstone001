@@ -143,3 +143,6 @@ export const formatFechaEmision = (fecha = new Date()): string => {
   const p = Object.fromEntries(partes.map((x) => [x.type, x.value]));
   return `${p.day} de ${p.month} de ${p.year}, ${p.hour}:${p.minute} h`;
 };
+
+// "2026-10" → "oct" (barras por mes de "Tu impacto").
+export const mesAbreviado = (anioMes: string): string => MESES_ABREV[Number(anioMes.slice(5, 7)) - 1] ?? "";

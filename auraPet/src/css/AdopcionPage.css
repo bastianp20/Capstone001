@@ -203,3 +203,5 @@
 @media (prefers-reduced-motion: reduce) {
   .adopta-tarjeta, .adopta-btn, .adopta-polaroid, .adopta-panel { transition: none; animation: none; }
 }
+
+.adopta-pestanas-fila { padding-top: 32px; }

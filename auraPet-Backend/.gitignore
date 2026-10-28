@@ -4,3 +4,9 @@ node_modules/
 
 # Copias temporales de trabajo (no se suben)
 _to_delete/
+
+# Datos de demo y de prueba (se usan en local, no se suben)
+pruebas/
+datos_prueba*
+*_demo.*
+*.demo.*

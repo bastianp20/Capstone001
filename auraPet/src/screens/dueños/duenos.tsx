@@ -10,6 +10,9 @@ import { useAuth } from '../../Auth/AuthContext';
 import type { HistorialDueno, ItemMenuDueno, SeccionDueno } from '../../interfaces';
 import { ConfiguracionModal } from '../../Modal/ConfiguracionModal';
 import { DarEnAdopcionModal } from '../../Modal/DarEnAdopcionModal';
+import { SeccionMisPublicaciones } from '../../components/adopcion/publicaciones/SeccionMisPublicaciones';
+import { SeccionMiRefugio } from '../../components/adopcion/refugios/miRefugio/SeccionMiRefugio';
+import { useAdministraRefugio } from '../../hooks/useAdministraRefugio';
 import { ModalCrearMascota } from '../../Modal/AgregarMascotaModal';
 import { ModalSolicitarCita } from '../../Modal/SolicitarCitaModal';
 import { MenuDueno } from '../../components/dueno/MenuDueno';
@@ -38,6 +41,9 @@ export const DuenoScreen = () => {
   // ---------- Navegación y modales ----------
   const [seccion, setSeccion] = useState<SeccionDueno>("inicio");
   const [modal, setModal] = useState<Modal>(null);
+  // Sube al publicar en adopción, para que "Mis publicaciones" se recargue
+  const [versionPublicaciones, setVersionPublicaciones] = useState(0);
+  const conRefugio = useAdministraRefugio();
   const [mascotaParaCita, setMascotaParaCita] = useState<number | undefined>(undefined);
 
   // ---------- Datos ----------
@@ -112,7 +118,7 @@ export const DuenoScreen = () => {
           <img src={LogoAuraPetSinFondo} alt="AuraPet" className="landing-logo-icono" />
           <span className="dueno-sidebar-brand-name">AuraPet</span>
         </div>
-        <MenuDueno seccion={seccion} onElegir={elegirMenu} />
+        <MenuDueno seccion={seccion} onElegir={elegirMenu} conRefugio={conRefugio} />
       </div>
 
       <div className="dueno-main">
@@ -186,12 +192,20 @@ export const DuenoScreen = () => {
               <HistorialMedico mascotas={mascotas} historial={historial} cargando={cargandoHistorial} />
             </>
           )}
+
+          {seccion === "publicaciones" && (
+            <SeccionMisPublicaciones version={versionPublicaciones} onDarEnAdopcion={() => setModal("adopcion")} />
+          )}
+
+          {seccion === "refugio" && <SeccionMiRefugio />}
         </div>
       </div>
 
       {/* ---------- Modales ---------- */}
       {modal === "configuracion" && <ConfiguracionModal onCerrar={() => setModal(null)} />}
-      {modal === "adopcion" && <DarEnAdopcionModal onCerrar={() => setModal(null)} />}
+      {modal === "adopcion" && (
+        <DarEnAdopcionModal onCerrar={() => setModal(null)} onPublicada={() => setVersionPublicaciones((n) => n + 1)} />
+      )}
       {modal === "mascota" && (
         <ModalCrearMascota
           duenoId={duenoId}

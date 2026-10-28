@@ -82,6 +82,36 @@ export type Database = {
           },
         ]
       }
+      admins_refugio: {
+        Row: {
+          perfil_id: string
+          refugio_id: number
+        }
+        Insert: {
+          perfil_id: string
+          refugio_id: number
+        }
+        Update: {
+          perfil_id?: string
+          refugio_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admins_refugio_perfil_id_fkey"
+            columns: ["perfil_id"]
+            isOneToOne: false
+            referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admins_refugio_refugio_id_fkey"
+            columns: ["refugio_id"]
+            isOneToOne: false
+            referencedRelation: "refugios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       adopciones: {
         Row: {
           actualizada_en: string
@@ -108,6 +138,7 @@ export type Database = {
           peso_kg: number | null
           publicado_por: string
           raza: string | null
+          refugio_id: number | null
           sexo: Database["public"]["Enums"]["sexo_mascota"]
           sociable_gatos: number | null
           sociable_ninos: number | null
@@ -143,6 +174,7 @@ export type Database = {
           peso_kg?: number | null
           publicado_por: string
           raza?: string | null
+          refugio_id?: number | null
           sexo: Database["public"]["Enums"]["sexo_mascota"]
           sociable_gatos?: number | null
           sociable_ninos?: number | null
@@ -178,6 +210,7 @@ export type Database = {
           peso_kg?: number | null
           publicado_por?: string
           raza?: string | null
+          refugio_id?: number | null
           sexo?: Database["public"]["Enums"]["sexo_mascota"]
           sociable_gatos?: number | null
           sociable_ninos?: number | null
@@ -201,6 +234,13 @@ export type Database = {
             columns: ["publicado_por"]
             isOneToOne: false
             referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "adopciones_refugio_id_fkey"
+            columns: ["refugio_id"]
+            isOneToOne: false
+            referencedRelation: "refugios"
             referencedColumns: ["id"]
           },
         ]
@@ -318,8 +358,12 @@ export type Database = {
           adopcion_id: number
           centro_id: number | null
           creado_en: string
+          estado_general: string | null
           fecha: string
           id: number
+          monto_aproximado: number | null
+          peso_kg: number | null
+          procedimientos: string[]
           resumen: string
           solidario: boolean
           veterinario_id: number
@@ -328,8 +372,12 @@ export type Database = {
           adopcion_id: number
           centro_id?: number | null
           creado_en?: string
+          estado_general?: string | null
           fecha?: string
           id?: never
+          monto_aproximado?: number | null
+          peso_kg?: number | null
+          procedimientos?: string[]
           resumen: string
           solidario?: boolean
           veterinario_id: number
@@ -338,8 +386,12 @@ export type Database = {
           adopcion_id?: number
           centro_id?: number | null
           creado_en?: string
+          estado_general?: string | null
           fecha?: string
           id?: never
+          monto_aproximado?: number | null
+          peso_kg?: number | null
+          procedimientos?: string[]
           resumen?: string
           solidario?: boolean
           veterinario_id?: number
@@ -990,6 +1042,66 @@ export type Database = {
           },
         ]
       }
+      refugios: {
+        Row: {
+          comuna: string
+          correo: string | null
+          creado_en: string
+          cupos_actualizados_en: string
+          cupos_ocupados: number
+          cupos_totales: number
+          descripcion: string | null
+          es_prueba: boolean
+          especies: string[]
+          estado_verificacion: Database["public"]["Enums"]["estado_verificacion"]
+          id: number
+          logo_url: string | null
+          nombre: string
+          portada_url: string | null
+          recibe_animales: string
+          region: string
+          telefono: number | null
+        }
+        Insert: {
+          comuna: string
+          correo?: string | null
+          creado_en?: string
+          cupos_actualizados_en?: string
+          cupos_ocupados?: number
+          cupos_totales?: number
+          descripcion?: string | null
+          es_prueba?: boolean
+          especies?: string[]
+          estado_verificacion?: Database["public"]["Enums"]["estado_verificacion"]
+          id?: never
+          logo_url?: string | null
+          nombre: string
+          portada_url?: string | null
+          recibe_animales?: string
+          region?: string
+          telefono?: number | null
+        }
+        Update: {
+          comuna?: string
+          correo?: string | null
+          creado_en?: string
+          cupos_actualizados_en?: string
+          cupos_ocupados?: number
+          cupos_totales?: number
+          descripcion?: string | null
+          es_prueba?: boolean
+          especies?: string[]
+          estado_verificacion?: Database["public"]["Enums"]["estado_verificacion"]
+          id?: never
+          logo_url?: string | null
+          nombre?: string
+          portada_url?: string | null
+          recibe_animales?: string
+          region?: string
+          telefono?: number | null
+        }
+        Relationships: []
+      }
       registros_medicos: {
         Row: {
           centro_id: number | null
@@ -1316,6 +1428,7 @@ export type Database = {
       }
       veterinarios: {
         Row: {
+          aliado_solidario: boolean
           centro_mencionado: string | null
           centro_mencionado_comuna: string | null
           centro_solicitado_id: number | null
@@ -1331,6 +1444,7 @@ export type Database = {
           revisado_por: string | null
         }
         Insert: {
+          aliado_solidario?: boolean
           centro_mencionado?: string | null
           centro_mencionado_comuna?: string | null
           centro_solicitado_id?: number | null
@@ -1346,6 +1460,7 @@ export type Database = {
           revisado_por?: string | null
         }
         Update: {
+          aliado_solidario?: boolean
           centro_mencionado?: string | null
           centro_mencionado_comuna?: string | null
           centro_solicitado_id?: number | null
@@ -1396,6 +1511,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      actividad_mis_publicaciones: {
+        Args: { p_limite?: number }
+        Returns: {
+          adopcion_id: number
+          animal: string
+          fecha: string
+          persona: string
+          tipo: string
+        }[]
+      }
       actualizar_datos_clinicos: {
         Args: {
           p_alergias?: string
@@ -1415,6 +1540,52 @@ export type Database = {
         }
         Returns: undefined
       }
+      admin_listar_refugios: {
+        Args: never
+        Returns: {
+          administradores: Json
+          animales: number
+          comuna: string
+          correo: string
+          creado_en: string
+          cupos_ocupados: number
+          cupos_totales: number
+          descripcion: string
+          es_prueba: boolean
+          especies: string[]
+          estado: string
+          fotos: string[]
+          id: number
+          logo_url: string
+          nombre: string
+          portada_url: string
+          recibe_animales: string
+          region: string
+          telefono: number
+        }[]
+      }
+      adopciones_para_veterinarios: {
+        Args: never
+        Returns: {
+          comuna: string
+          dias_esperando: number
+          en_mi_comuna: boolean
+          especie: string
+          estado: string
+          fecha_nacimiento: string
+          foto_url: string
+          id: number
+          nombre: string
+          publicador_nombre: string
+          raza: string
+          refugio_id: number
+          refugio_nombre: string
+          revisada: boolean
+          sexo: string
+          solicita_chequeo: boolean
+          ya_atendi: boolean
+        }[]
+      }
       agregar_registro_medico: {
         Args: {
           p_cita_id?: number
@@ -1427,9 +1598,55 @@ export type Database = {
         }
         Returns: number
       }
+      animales_de_mi_refugio: {
+        Args: { p_id: number }
+        Returns: {
+          adoptada_en: string
+          comuna: string
+          creada_en: string
+          elegido: string
+          especie: string
+          estado: string
+          fecha_nacimiento: string
+          foto_url: string
+          id: number
+          nombre: string
+          postulaciones: number
+          postulaciones_nuevas: number
+          raza: string
+          refugio_nombre: string
+          revisada_por: string
+          sexo: string
+          solicita_chequeo: boolean
+          testimonio: string
+        }[]
+      }
+      buscar_cuentas: {
+        Args: { p_texto: string }
+        Returns: {
+          correo: string
+          es_prueba: boolean
+          id: string
+          nombre: string
+          rol: string
+        }[]
+      }
+      cambiar_aliado_solidario: {
+        Args: { p_activo: boolean }
+        Returns: undefined
+      }
       cancelar_mi_cita: {
         Args: { p_cita_id: number; p_motivo?: string }
         Returns: undefined
+      }
+      concretar_adopcion: {
+        Args: {
+          p_adopcion_id: number
+          p_postulacion_id: number
+          p_testimonio: string
+          p_traspasar: boolean
+        }
+        Returns: number
       }
       crear_centro: {
         Args: {
@@ -1511,8 +1728,34 @@ export type Database = {
         }[]
       }
       detalle_centro: { Args: { p_centro_id: number }; Returns: Json }
+      detalle_mi_refugio: {
+        Args: { p_id: number }
+        Returns: {
+          adoptados_mes: number
+          comuna: string
+          correo: string
+          cupos_actualizados_en: string
+          cupos_ocupados: number
+          cupos_totales: number
+          descripcion: string
+          equipo: Json
+          especies: string[]
+          estado: string
+          id: number
+          logo_url: string
+          nombre: string
+          por_mes: Json
+          portada_url: string
+          postulaciones_mes: number
+          publicados_mes: number
+          recibe_animales: string
+          region: string
+          telefono: number
+        }[]
+      }
       detalle_usuario: { Args: { p_perfil_id: string }; Returns: Json }
       es_admin_de_centro: { Args: { p_centro_id: number }; Returns: boolean }
+      es_admin_de_refugio: { Args: { p_refugio_id: number }; Returns: boolean }
       es_cuenta_de_prueba: { Args: never; Returns: boolean }
       es_dueno_de_mis_derivados: {
         Args: { p_perfil_id: string }
@@ -1549,6 +1792,26 @@ export type Database = {
       fotos_de_quien_publica: {
         Args: { p_fotos: string[]; p_publicado_por: string }
         Returns: boolean
+      }
+      guardar_refugio: {
+        Args: {
+          p_admins: string[]
+          p_comuna: string
+          p_correo: string
+          p_cupos_ocupados: number
+          p_cupos_totales: number
+          p_descripcion: string
+          p_es_prueba: boolean
+          p_especies: string[]
+          p_id: number
+          p_logo_url: string
+          p_nombre: string
+          p_portada_url: string
+          p_recibe: string
+          p_region: string
+          p_telefono: number
+        }
+        Returns: number
       }
       historial_de_paciente: {
         Args: { p_mascota_id: number }
@@ -1597,6 +1860,8 @@ export type Database = {
           nombre: string
           personalidad: string[]
           raza: string
+          refugio_id: number
+          refugio_nombre: string
           sexo: string
           tamano: string
           vacunas_al_dia: boolean
@@ -1643,6 +1908,27 @@ export type Database = {
           puedo_cancelar: boolean
           puedo_responder: boolean
           resultado: string
+        }[]
+      }
+      listar_refugios: {
+        Args: never
+        Returns: {
+          aliados: number
+          comuna: string
+          correo: string
+          cupos_ocupados: number
+          cupos_totales: number
+          descripcion: string
+          en_adopcion: number
+          especies: string[]
+          fotos: string[]
+          id: number
+          logo_url: string
+          nombre: string
+          portada_url: string
+          recibe_animales: string
+          region: string
+          telefono: number
         }[]
       }
       listar_solicitudes_eliminacion: {
@@ -1696,6 +1982,29 @@ export type Database = {
       }
       me_derivaron: { Args: { p_mascota_id: number }; Returns: boolean }
       mi_veterinario_id: { Args: never; Returns: number }
+      mis_atenciones_adopcion: {
+        Args: never
+        Returns: {
+          adopcion_id: number
+          centro: string
+          especie: string
+          estado: string
+          fecha: string
+          foto_url: string
+          id: number
+          nombre: string
+          resumen: string
+          solidario: boolean
+        }[]
+      }
+      mis_centros_de_atencion: {
+        Args: never
+        Returns: {
+          comuna: string
+          id: number
+          nombre: string
+        }[]
+      }
       mis_datos: { Args: never; Returns: Json }
       mis_derivaciones: {
         Args: never
@@ -1714,9 +2023,62 @@ export type Database = {
           resultado: string
         }[]
       }
+      mis_publicaciones: {
+        Args: never
+        Returns: {
+          adoptada_en: string
+          comuna: string
+          creada_en: string
+          elegido: string
+          especie: string
+          estado: string
+          fecha_nacimiento: string
+          foto_url: string
+          id: number
+          nombre: string
+          postulaciones: number
+          postulaciones_nuevas: number
+          raza: string
+          refugio_nombre: string
+          revisada_por: string
+          sexo: string
+          solicita_chequeo: boolean
+          testimonio: string
+        }[]
+      }
+      mis_refugios: {
+        Args: never
+        Returns: {
+          id: number
+          nombre: string
+        }[]
+      }
       perfil_relacionado_con_mis_centros: {
         Args: { p_perfil_id: string }
         Returns: boolean
+      }
+      postulaciones_de_adopcion: {
+        Args: { p_adopcion_id: number }
+        Returns: {
+          correo: string
+          creada_en: string
+          cuales_mascotas: string
+          edades_ninos: string
+          estado: string
+          experiencia: string
+          hay_ninos: boolean
+          id: number
+          motivo: string
+          nombre: string
+          otras_mascotas: boolean
+          permiten_mascotas: boolean
+          postulante_id: string
+          telefono: number
+          tenencia: string
+          tiene_patio: boolean
+          todos_de_acuerdo: boolean
+          vivienda: string
+        }[]
       }
       postular_adopcion: {
         Args: {
@@ -1743,9 +2105,27 @@ export type Database = {
           respuesta: string
         }[]
       }
+      puedo_gestionar_adopcion: {
+        Args: { p_adopcion_id: number }
+        Returns: boolean
+      }
       rechazar_cita: {
         Args: { p_cita_id: number; p_motivo: string }
         Returns: undefined
+      }
+      registrar_atencion_adopcion: {
+        Args: {
+          p_adopcion_id: number
+          p_centro_id: number
+          p_estado_general: string
+          p_fecha: string
+          p_monto: number
+          p_peso_kg: number
+          p_procedimientos: string[]
+          p_resumen: string
+          p_solidario: boolean
+        }
+        Returns: number
       }
       resolver_solicitud_centro: {
         Args: {
@@ -1775,12 +2155,34 @@ export type Database = {
         }
         Returns: undefined
       }
+      responder_postulacion: {
+        Args: { p_aceptar: boolean; p_postulacion_id: number }
+        Returns: undefined
+      }
       resumen_adopciones: {
         Args: never
         Returns: {
           con_familia: number
           esperando: number
           revisados: number
+        }[]
+      }
+      resumen_refugios: {
+        Args: never
+        Returns: {
+          aliados: number
+          animales: number
+          refugios: number
+        }[]
+      }
+      resumen_solidario: {
+        Args: never
+        Returns: {
+          adoptados: number
+          aliado: boolean
+          atenciones: number
+          por_mes: Json
+          solidarias: number
         }[]
       }
       resumen_suscripcion: {
@@ -1839,6 +2241,10 @@ export type Database = {
       }
       solicitar_eliminacion_cuenta: {
         Args: { p_motivo?: string }
+        Returns: undefined
+      }
+      verificar_refugio: {
+        Args: { p_aprobar: boolean; p_id: number }
         Returns: undefined
       }
       veterinarios_de_centro: {

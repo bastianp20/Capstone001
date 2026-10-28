@@ -1,4 +1,5 @@
 import { PASOS_PUBLICAR_ADOPCION, TEXTOS_PUBLICAR as T } from "../../../constants";
+import { useMisRefugios } from "../../../hooks/useMisRefugios";
 import { usePublicarAdopcion } from "../../../hooks/usePublicarAdopcion";
 import type { FormularioPublicarAdopcionProps } from "../../../interfaces";
 import { IndicadorPasosAdopcion } from "../formulario/IndicadorPasosAdopcion";
@@ -14,8 +15,9 @@ const TITULOS_PASOS = PASOS_PUBLICAR_ADOPCION.map((p) => p.titulo);
  * "Dar en adopción" en 4 pasos (necesita sesión). Lo usan la página /adopta/publicar
  * y el modal que se abre desde el panel de cualquier rol.
  */
-export const FormularioPublicarAdopcion = ({ onVerPublicacion, enModal = false }: FormularioPublicarAdopcionProps) => {
-  const f = usePublicarAdopcion();
+export const FormularioPublicarAdopcion = ({ onVerPublicacion, onPublicada, enModal = false, refugioId }: FormularioPublicarAdopcionProps) => {
+  const f = usePublicarAdopcion(onPublicada, refugioId);
+  const refugios = useMisRefugios();
   const paso = { datos: f.datos, errores: f.errores, onCambiar: f.actualizar };
   const clase = `publica-tarjeta ${enModal ? "publica-en-modal" : ""}`;
 
@@ -42,7 +44,7 @@ export const FormularioPublicarAdopcion = ({ onVerPublicacion, enModal = false }
       <h2>{T.paso(f.paso + 1, f.pasoActual.titulo)}</h2>
 
       <div className="publica-campos">
-        {f.paso === 0 && <PasoDatosBasicosPublicar {...paso} />}
+        {f.paso === 0 && <PasoDatosBasicosPublicar {...paso} refugios={refugios} />}
         {f.paso === 1 && <PasoPersonalidadPublicar {...paso} />}
         {f.paso === 2 && <PasoSaludPublicar {...paso} />}
         {f.paso === 3 && <PasoRevisionPublicar datos={f.datos} />}

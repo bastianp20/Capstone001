@@ -5,6 +5,9 @@ import { useConsulta } from "../../hooks/useConsulta";
 import { getMisCentrosAdmin } from "../../Api/getInfo";
 import { ConfiguracionModal } from "../../Modal/ConfiguracionModal";
 import { DarEnAdopcionModal } from "../../Modal/DarEnAdopcionModal";
+import { SeccionMisPublicaciones } from "../../components/adopcion/publicaciones/SeccionMisPublicaciones";
+import { SeccionMiRefugio } from "../../components/adopcion/refugios/miRefugio/SeccionMiRefugio";
+import { useAdministraRefugio } from "../../hooks/useAdministraRefugio";
 import { MenuLateralCentro } from "../../components/centroAdmin/MenuLateralCentro";
 import type { CentroAdminScreenProps, SeccionCentroAdmin } from "../../interfaces";
 import { SeccionResumenCentro } from "./SeccionResumenCentro";
@@ -23,6 +26,8 @@ export const CentroAdminScreen = ({ centroInicialId, onVolver }: CentroAdminScre
   const [seccion, setSeccion] = useState<SeccionCentroAdmin>("resumen");
   const [mostrarConfiguracion, setMostrarConfiguracion] = useState(false);
   const [darEnAdopcion, setDarEnAdopcion] = useState(false);
+  const [versionPublicaciones, setVersionPublicaciones] = useState(0);
+  const conRefugio = useAdministraRefugio();
 
   // Centros que administra (puede ser más de uno)
   const { datos: misCentros = [], cargando: cargandoCentros } =
@@ -37,12 +42,14 @@ export const CentroAdminScreen = ({ centroInicialId, onVolver }: CentroAdminScre
     equipo: <SeccionEquipoCentro centroId={id} />,
     centro: <SeccionMiCentro centroId={id} />,
     suscripcion: <SeccionSuscripcion centroId={id} />,
+    publicaciones: <SeccionMisPublicaciones version={versionPublicaciones} onDarEnAdopcion={() => setDarEnAdopcion(true)} />,
+    refugio: <SeccionMiRefugio />,
   });
 
   return (
     <div className={layout.pagina}>
       <MenuLateralCentro seccion={seccion} onCambiar={setSeccion} onVolver={onVolver}
-        onConfiguracion={() => setMostrarConfiguracion(true)} onDarEnAdopcion={() => setDarEnAdopcion(true)} />
+        onConfiguracion={() => setMostrarConfiguracion(true)} onDarEnAdopcion={() => setDarEnAdopcion(true)} conRefugio={conRefugio} />
 
       <div className={layout.principal}>
         {/* Barra superior: selector de centro (si administra más de uno) y usuario */}
@@ -74,7 +81,9 @@ export const CentroAdminScreen = ({ centroInicialId, onVolver }: CentroAdminScre
       </div>
 
       {mostrarConfiguracion && <ConfiguracionModal onCerrar={() => setMostrarConfiguracion(false)} />}
-      {darEnAdopcion && <DarEnAdopcionModal onCerrar={() => setDarEnAdopcion(false)} />}
+      {darEnAdopcion && (
+        <DarEnAdopcionModal onCerrar={() => setDarEnAdopcion(false)} onPublicada={() => setVersionPublicaciones((n) => n + 1)} />
+      )}
     </div>
   );
 };

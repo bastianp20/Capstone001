@@ -686,7 +686,7 @@ export interface GraficoBarrasProps {
 export type TipoRegistro = "diagnostico" | "vacuna" | "cirugia" | "control" | "otro";
 
 // Secciones que se ven en el panel; "Solicitar cita" y "Configuración" abren modales
-export type SeccionDueno = "inicio" | "mascotas" | "historial";
+export type SeccionDueno = "inicio" | "mascotas" | "historial" | "publicaciones" | "refugio";
 export interface ItemMenuDueno {
   id: SeccionDueno | "solicitar" | "adopcion" | "configuracion";
   texto: string;
@@ -744,6 +744,7 @@ export interface DatosSolicitudCita {
 export interface MenuDuenoProps {
   seccion: SeccionDueno;
   onElegir: (id: ItemMenuDueno["id"]) => void;
+  conRefugio: boolean;   // muestra "Mi refugio" (solo si administra alguno)
 }
 
 export interface MascotaCardProps {
@@ -1190,7 +1191,7 @@ export interface DetalleSolicitudCentroModalProps {
 // =====================================================================
 // PANEL DEL SUPERADMIN
 // =====================================================================
-export type SeccionSuperAdmin = "resumen" | "usuarios" | "centros" | "asignaciones" | "aprobaciones" | "suscripciones" | "mensajes" | "eliminaciones" | "notas" | "citas";
+export type SeccionSuperAdmin = "resumen" | "usuarios" | "centros" | "asignaciones" | "aprobaciones" | "suscripciones" | "mensajes" | "eliminaciones" | "notas" | "citas" | "publicaciones" | "refugios" | "miRefugio";
 
 export interface ItemMenuSuperAdmin {
   seccion: SeccionSuperAdmin;
@@ -1253,6 +1254,7 @@ export interface MenuLateralSuperAdminProps {
   pendientes: number;                 // contador junto a "Aprobaciones"
   onCambiar: (seccion: SeccionSuperAdmin) => void;
   onDarEnAdopcion: () => void;
+  conRefugio: boolean;
 }
 
 export interface BarraSuperiorSuperAdminProps {
@@ -1812,7 +1814,7 @@ export interface OtraFormaContacto {
 // =====================================================================
 // PANEL DEL CENTRO (admin del centro)
 // =====================================================================
-export type SeccionCentroAdmin = "resumen" | "agenda" | "equipo" | "centro" | "suscripcion";
+export type SeccionCentroAdmin = "resumen" | "agenda" | "equipo" | "centro" | "suscripcion" | "publicaciones" | "refugio";
 
 export interface ItemMenuCentroAdmin {
   seccion: SeccionCentroAdmin;
@@ -1845,6 +1847,7 @@ export interface MenuLateralCentroProps {
   onVolver?: () => void;
   onConfiguracion: () => void;
   onDarEnAdopcion: () => void;
+  conRefugio: boolean;
 }
 
 // Números del resumen (lib/centroAdmin.ts los calcula a partir de las citas)
@@ -2169,6 +2172,8 @@ export interface AnimalAdopcionResumen {
   comuna: string;
   revisadoPorVet: boolean; // tiene al menos un chequeo de un veterinario de la red
   fotoUrl: string | null;
+  refugioId?: number | null; // si se publicó a nombre de un refugio
+  refugio?: string | null;
 }
 
 export type TamanoAdopcion = 'pequeno' | 'mediano' | 'grande';
@@ -2535,11 +2540,13 @@ export interface DatosPublicarAdopcion {
   conMicrochip: boolean;
   alergias: string;
   historia: string;
+  refugioId: number | null;
 }
 
 export type CampoPublicarAdopcion = keyof DatosPublicarAdopcion;
 
 export interface PasoPublicarProps {
+  refugios?: OpcionRefugio[]; // refugios que administra (para publicar a su nombre)
   datos: DatosPublicarAdopcion;
   errores: ErroresFormulario<CampoPublicarAdopcion>;
   onCambiar: <K extends CampoPublicarAdopcion>(campo: K, valor: DatosPublicarAdopcion[K]) => void;
@@ -2587,11 +2594,15 @@ export interface PublicacionListaAdopcionProps {
 
 export interface FormularioPublicarAdopcionProps {
   onVerPublicacion: (id: number) => void;
+  onPublicada?: (id: number) => void;
   enModal?: boolean; // sin sombra ni bordes, porque ya está dentro del modal
+  refugioId?: number; // publicar a nombre de este refugio (viene marcado)
 }
 
 export interface DarEnAdopcionModalProps {
   onCerrar: () => void;
+  onPublicada?: (id: number) => void;
+  refugioId?: number;
 }
 
 export interface ItemMenuDarEnAdopcionProps {
@@ -2613,4 +2624,689 @@ export interface CarruselAdopcionLoginProps {
 export interface FranjaAdopcionLoginProps {
   total: number;
   onVerTodos: () => void;
+}
+
+// =====================================================================
+// Mis publicaciones (migración 39)
+// =====================================================================
+export type EstadoPublicacion = 'publicada' | 'en_proceso' | 'adoptada' | 'retirada';
+export type FiltroPublicaciones = 'activos' | 'en_proceso' | 'adoptados' | 'retirados';
+export type HitoCaminoCasa = 'publicada' | 'revisada' | 'postulaciones' | 'elegida' | 'adoptada';
+
+export interface PublicacionPropia {
+  id: number;
+  nombre: string;
+  especie: EspecieAdopcion;
+  raza: string;
+  edad: string;
+  comuna: string;
+  fotoUrl: string | null;
+  estado: EstadoPublicacion;
+  creadaEn: string;
+  adoptadaEn: string | null;
+  testimonio: string | null;
+  solicitaChequeo: boolean;
+  revisadaPor: string | null;
+  postulaciones: number;
+  nuevas: number;
+  elegido: string | null;
+  refugio: string | null;
+}
+
+export type TipoActividadPublicacion = 'postulacion' | 'eleccion' | 'atencion' | 'adopcion';
+
+export interface ActividadPublicacion {
+  tipo: TipoActividadPublicacion;
+  adopcionId: number;
+  animal: string;
+  persona: string | null;
+  fecha: string;
+}
+
+export type EstadoPostulacion = 'pendiente' | 'aceptada' | 'rechazada';
+
+export interface PostulacionRecibida {
+  id: number;
+  nombre: string;
+  correo: string;
+  telefono: number | null;
+  vivienda: ViviendaAdopcion;
+  tienePatio: boolean;
+  tenencia: TenenciaAdopcion;
+  permitenMascotas: boolean | null;
+  hayNinos: boolean;
+  edadesNinos: string | null;
+  otrasMascotas: boolean;
+  cualesMascotas: string | null;
+  todosDeAcuerdo: boolean;
+  experiencia: string | null;
+  motivo: string;
+  estado: EstadoPostulacion;
+  creadaEn: string;
+}
+
+export interface RazonAfinidad {
+  tipo: 'ok' | 'alerta';
+  texto: string;
+}
+
+export interface AfinidadPostulacion {
+  porcentaje: number;
+  razones: RazonAfinidad[];
+}
+
+export interface DatosConcretarAdopcion {
+  testimonio: string;
+  traspasar: boolean;
+}
+
+export interface SeccionMisPublicacionesProps {
+  onDarEnAdopcion: () => void;
+  version: number; // sube al publicar algo nuevo, para recargar
+}
+
+export interface EncabezadoMisPublicacionesProps {
+  publicados: number;
+  nuevas: number;
+  adoptados: number;
+  onDarEnAdopcion: () => void;
+}
+
+export interface CaminoCasaProps {
+  publicacion: PublicacionPropia;
+  compacto?: boolean;
+}
+
+export interface TarjetaPublicacionDestacadaProps {
+  publicacion: PublicacionPropia;
+  onRevisar: (p: PublicacionPropia) => void;
+}
+
+export interface ActividadPublicacionesProps {
+  actividad: ActividadPublicacion[];
+}
+
+export interface TarjetaPublicacionProps {
+  publicacion: PublicacionPropia;
+  tono: string;
+  onRevisar: (p: PublicacionPropia) => void;
+  onVer: (p: PublicacionPropia) => void;
+  onRetirar: (p: PublicacionPropia) => void;
+  onReactivar: (p: PublicacionPropia) => void;
+}
+
+export interface PestanasSubrayadasProps<V extends string> {
+  opciones: readonly { valor: V; label: string; cantidad?: number }[];
+  valor: V;
+  onCambiar: (valor: V) => void;
+  etiqueta: string;
+}
+
+export interface ElegirFamiliaProps {
+  publicacion: PublicacionPropia;
+  onVolver: () => void;
+  onCambio: () => void; // algo cambió (aceptar/rechazar/adoptar): recargar la lista
+}
+
+export interface AnilloProgresoProps {
+  porcentaje: number;
+  tamano?: number;
+  grosor?: number;
+  etiqueta?: string;   // texto dentro del anillo (por defecto "NN %")
+  color?: string;
+}
+
+export interface TarjetaPostulanteProps {
+  postulacion: PostulacionRecibida;
+  afinidad: AfinidadPostulacion;
+  seleccionada: boolean;
+  onElegir: () => void;
+}
+
+export interface PerfilPostulanteProps {
+  postulacion: PostulacionRecibida;
+}
+
+export interface TarjetaAfinidadProps {
+  nombreAnimal: string;
+  afinidad: AfinidadPostulacion;
+  postulacion: PostulacionRecibida;
+}
+
+export interface PanelLateralAdopcionProps {
+  titulo: string;
+  onCerrar: () => void;
+  children: ReactNode;
+  pie?: ReactNode;
+  ancho?: 'mediano' | 'grande';
+}
+
+export interface PanelAdoptadaProps {
+  nombreAnimal: string;
+  fotoAnimal: string | null;
+  especie: EspecieAdopcion;
+  postulacion: PostulacionRecibida;
+  ocupado: boolean;
+  error: string | null;
+  onConfirmar: (datos: DatosConcretarAdopcion) => void;
+  onCerrar: () => void;
+}
+
+// =====================================================================
+// Adopción solidaria (veterinario)
+// =====================================================================
+export interface AnimalParaVeterinario {
+  id: number;
+  nombre: string;
+  especie: EspecieAdopcion;
+  raza: string;
+  edad: string;
+  comuna: string;
+  fotoUrl: string | null;
+  enProceso: boolean;
+  solicitaAtencion: boolean;
+  revisada: boolean;
+  yaAtendi: boolean;
+  diasEsperando: number;
+  publicador: string;
+  refugio: string | null;
+  enMiComuna: boolean;
+}
+
+export interface MesSolidario {
+  mes: string;   // "2026-10"
+  total: number;
+}
+
+export interface ResumenSolidario {
+  atenciones: number;
+  solidarias: number;
+  adoptados: number;
+  aliado: boolean;
+  porMes: MesSolidario[];
+}
+
+export interface AtencionPropia {
+  id: number;
+  adopcionId: number;
+  nombre: string;
+  especie: EspecieAdopcion;
+  fotoUrl: string | null;
+  fecha: string;
+  resumen: string;
+  solidario: boolean;
+  centro: string | null;
+  estado: string;
+}
+
+export interface CentroAtencion {
+  id: number;
+  nombre: string;
+  comuna: string;
+}
+
+export type EstadoGeneralAtencion = 'sano' | 'en_tratamiento' | 'en_observacion';
+export type ProcedimientoAtencion = 'vacunas' | 'desparasitacion' | 'esterilizacion' | 'microchip' | 'examen_general';
+export type PestanaSolidaria = 'esperando' | 'todos' | 'mias';
+export type OrdenSolidaria = 'antiguos' | 'recientes';
+
+export interface DatosAtencionAdopcion {
+  fecha: string;
+  centroId: number | null;
+  estadoGeneral: EstadoGeneralAtencion;
+  procedimientos: ProcedimientoAtencion[];
+  pesoKg: string;
+  resumen: string;
+  solidario: boolean;
+  monto: string;
+}
+
+export interface FiltrosSolidaria {
+  comuna: string | null;
+  especie: EspecieAdopcion | null;
+  soloRefugios: boolean;
+  orden: OrdenSolidaria;
+}
+
+// Lo que muestra el centro del panel del veterinario
+export type VistaVeterinario = 'inicio' | 'publicaciones' | 'solidaria' | 'refugio';
+
+export interface SeccionAdopcionSolidariaProps {
+  veterinario: string; // nombre para la vista previa del sello
+}
+
+export interface TarjetaImpactoProps {
+  resumen: ResumenSolidario;
+}
+
+export interface MiniBarrasProps {
+  datos: MesSolidario[];
+}
+
+export interface TarjetaAliadoSolidarioProps {
+  activo: boolean;
+  ocupado: boolean;
+  onCambiar: (activo: boolean) => void;
+}
+
+export interface TarjetaUrgenteProps {
+  animal: AnimalParaVeterinario;
+  onAtender: (a: AnimalParaVeterinario) => void;
+}
+
+export interface TarjetaAnimalVeterinarioProps {
+  animal: AnimalParaVeterinario;
+  tono: string;
+  onAtender: (a: AnimalParaVeterinario) => void;
+  onVerFicha: (a: AnimalParaVeterinario) => void;
+}
+
+export interface FiltrosSolidariaProps {
+  filtros: FiltrosSolidaria;
+  comunas: string[];
+  onCambiar: (cambios: Partial<FiltrosSolidaria>) => void;
+}
+
+export interface ListaMisAtencionesProps {
+  atenciones: AtencionPropia[];
+  onVerFicha: (adopcionId: number) => void;
+}
+
+export interface ControlSegmentadoProps<V extends string> {
+  etiqueta: string;
+  opciones: readonly { valor: V; label: string; icono?: LucideIcon }[];
+  valor: V;
+  onCambiar: (valor: V) => void;
+}
+
+export interface PanelRegistrarAtencionProps {
+  animal: AnimalParaVeterinario;
+  centros: CentroAtencion[];
+  veterinario: string;
+  onCerrar: () => void;
+  onGuardada: () => void;
+}
+
+export interface VistaPreviaAtencionProps {
+  animal: AnimalParaVeterinario;
+  veterinario: string;
+  centro: string | null;
+  datos: DatosAtencionAdopcion;
+}
+
+// =====================================================================
+// Refugios
+// =====================================================================
+export type RecepcionRefugio = 'abierto' | 'limitado' | 'sin_cupos';
+
+export interface Refugio {
+  id: number;
+  nombre: string;
+  comuna: string;
+  region: string;
+  descripcion: string | null;
+  logoUrl: string | null;
+  portadaUrl: string | null;
+  telefono: number | null;
+  correo: string | null;
+  cuposTotales: number;
+  cuposOcupados: number;
+  recibe: RecepcionRefugio;
+  especies: string[];
+  enAdopcion: number;
+  fotos: string[];
+  aliados: number;
+}
+
+export interface ResumenRefugios {
+  refugios: number;
+  animales: number;
+  aliados: number;
+}
+
+export interface OpcionRefugio {
+  id: number;
+  nombre: string;
+}
+
+export interface FiltrosRefugios {
+  region: string | null;
+  comuna: string | null;
+  soloAbiertos: boolean;
+  especie: 'perro' | 'gato' | null;
+}
+
+export interface TarjetaRefugioProps {
+  refugio: Refugio;
+  onVerAnimales: (r: Refugio) => void;
+}
+
+export interface FranjaNecesitanAyudaProps {
+  refugios: Refugio[];
+  onVer: (r: Refugio) => void;
+}
+
+export interface FiltrosRefugiosProps {
+  filtros: FiltrosRefugios;
+  regiones: string[];
+  comunas: string[];
+  onCambiar: (cambios: Partial<FiltrosRefugios>) => void;
+}
+
+export interface PestanasAdoptaProps {
+  actual: 'animales' | 'refugios';
+}
+
+// =====================================================================
+// Gestión de refugios: panel del superadmin y "Mi refugio" (migración 42)
+// =====================================================================
+export type EstadoRefugio = 'pendiente' | 'aprobado' | 'rechazado';
+export type EspecieRefugio = 'perro' | 'gato' | 'otro';
+export type FiltroEstadoRefugio = 'todos' | EstadoRefugio;
+
+export interface AdminDeRefugio {
+  id: string;
+  nombre: string;
+  correo: string;
+  esPrueba: boolean;
+}
+
+// Lo que ve el superadmin: el refugio público más su estado y su equipo
+export interface RefugioAdmin extends Refugio {
+  logoRuta: string | null;      // ruta en el bucket (para no perderla al editar)
+  portadaRuta: string | null;
+  estado: EstadoRefugio;
+  esPrueba: boolean;
+  creadoEn: string;
+  administradores: AdminDeRefugio[];
+}
+
+export interface FiltrosRefugiosAdmin {
+  texto: string;
+  estado: FiltroEstadoRefugio;
+  region: string | null;
+  incluirPrueba: boolean;
+}
+
+export interface KpisRefugiosAdmin {
+  verificados: number;
+  porRevisar: number;
+  animales: number;
+  ocupacion: number;   // 0–100, promedio de los verificados con cupos
+}
+
+export interface CuentaEncontrada {
+  id: string;
+  nombre: string;
+  correo: string;
+  rol: string;
+  esPrueba: boolean;
+}
+
+// Imagen del refugio: la que ya está guardada (ruta) o una nueva elegida (archivo)
+export interface ImagenRefugio {
+  ruta: string | null;
+  archivo: File | null;
+  vista: string | null;   // URL para mostrarla
+}
+
+export interface DatosRefugio {
+  nombre: string;
+  region: string;
+  comuna: string;
+  telefono: string;
+  correo: string;
+  descripcion: string;
+  logo: ImagenRefugio;
+  portada: ImagenRefugio;
+  cuposTotales: number;
+  cuposOcupados: number;
+  recibe: RecepcionRefugio;
+  especies: EspecieRefugio[];
+  esPrueba: boolean;
+  administradores: AdminDeRefugio[];
+}
+export type CampoRefugio = Extract<keyof DatosRefugio, string>;
+
+// Lo que puede editar quien administra el refugio
+export type DatosEditarMiRefugio = Pick<DatosRefugio, 'descripcion' | 'telefono' | 'correo' | 'especies' | 'logo' | 'portada'>;
+
+export interface MiembroRefugio {
+  id: string;
+  nombre: string;
+}
+
+export interface DetalleMiRefugio extends Omit<Refugio, 'enAdopcion' | 'fotos' | 'aliados'> {
+  logoRuta: string | null;
+  portadaRuta: string | null;
+  estado: EstadoRefugio;
+  cuposActualizadosEn: string;
+  publicadosMes: number;
+  postulacionesMes: number;
+  adoptadosMes: number;
+  porMes: MesSolidario[];
+  equipo: MiembroRefugio[];
+}
+
+export type PestanaMiRefugio = 'publicada' | 'en_proceso' | 'adoptada';
+
+// ---------- Props: piezas compartidas ----------
+export interface LogoRefugioProps {
+  nombre: string;
+  logoUrl: string | null;
+  tamano?: 'chico' | 'mediano' | 'grande';
+}
+
+export interface ChipEstadoRefugioProps {
+  estado: EstadoRefugio;
+}
+
+export interface ContadorNumeroProps {
+  etiqueta: string;
+  valor: number;
+  minimo?: number;
+  maximo?: number;
+  onCambiar: (valor: number) => void;
+  grande?: boolean;
+}
+
+export interface SelectorRecepcionProps {
+  valor: RecepcionRefugio;
+  onCambiar: (valor: RecepcionRefugio) => void;
+  compacto?: boolean;     // barra segmentada en vez de tarjetas
+  deshabilitado?: boolean;
+}
+
+export interface SelectorEspeciesProps {
+  valor: EspecieRefugio[];
+  onCambiar: (valor: EspecieRefugio[]) => void;
+  error?: string;
+}
+
+export interface CampoImagenesRefugioProps {
+  nombre: string;
+  logo: ImagenRefugio;
+  portada: ImagenRefugio;
+  onLogo: (archivo: File) => void;
+  onPortada: (archivo: File) => void;
+  error?: string;
+}
+
+export interface BuscadorCuentasProps {
+  excluir: string[];     // ids ya agregados
+  refugioDePrueba: boolean;
+  onAgregar: (cuenta: CuentaEncontrada) => void;
+}
+
+export interface ListaAdministradoresProps {
+  administradores: AdminDeRefugio[];
+  onQuitar?: (id: string) => void;
+}
+
+export interface BarraOcupacionProps {
+  ocupados: number;
+  totales: number;
+}
+
+export interface ToastProps {
+  mensaje: string | null;
+}
+
+// ---------- Props: superadmin ----------
+export interface BandaKpisRefugiosProps {
+  kpis: KpisRefugiosAdmin;
+  onRevisar: () => void;
+}
+
+export interface AvisoRefugiosPorRevisarProps {
+  refugios: RefugioAdmin[];
+  onRevisar: () => void;
+}
+
+export interface FiltrosRefugiosAdminProps {
+  filtros: FiltrosRefugiosAdmin;
+  regiones: string[];
+  onCambiar: (cambios: Partial<FiltrosRefugiosAdmin>) => void;
+}
+
+export interface TablaRefugiosAdminProps {
+  refugios: RefugioAdmin[];
+  seleccionadoId: number | null;
+  onVer: (r: RefugioAdmin) => void;
+  onEditar: (r: RefugioAdmin) => void;
+  onVerAnimales: (r: RefugioAdmin) => void;
+  onVerificar: (r: RefugioAdmin, aprobar: boolean) => void;
+}
+
+export interface FilaRefugioAdminProps extends Omit<TablaRefugiosAdminProps, 'refugios' | 'seleccionadoId'> {
+  refugio: RefugioAdmin;
+  seleccionado: boolean;
+}
+
+export interface MenuAccionesRefugioProps {
+  refugio: RefugioAdmin;
+  onVer: () => void;
+  onEditar: () => void;
+  onVerAnimales: () => void;
+  onVerificar: (aprobar: boolean) => void;
+}
+
+export interface PanelDetalleRefugioProps {
+  refugio: RefugioAdmin;
+  ocupado: boolean;
+  onCerrar: () => void;
+  onEditar: () => void;
+  onVerificar: (aprobar: boolean) => void;
+}
+
+export interface ModalRefugioProps {
+  refugio: RefugioAdmin | null;   // null = nuevo
+  onCerrar: () => void;
+  onGuardado: () => void;
+}
+
+export interface PasoRefugioProps {
+  datos: DatosRefugio;
+  errores: ErroresFormulario<CampoRefugio>;
+  onCambiar: <K extends CampoRefugio>(campo: K, valor: DatosRefugio[K]) => void;
+}
+
+export interface PasoDatosRefugioProps extends PasoRefugioProps {
+  onLogo: (archivo: File) => void;
+  onPortada: (archivo: File) => void;
+  errorImagen: string | null;
+}
+
+export interface PasoAdministradoresRefugioProps extends Omit<PasoRefugioProps, 'onCambiar'> {
+  onAgregar: (cuenta: CuentaEncontrada) => void;
+  onQuitar: (id: string) => void;
+}
+
+export interface VistaPreviaRefugioProps {
+  datos: DatosRefugio;
+}
+
+export interface StepperCirculosProps {
+  pasos: readonly string[];
+  actual: number;
+}
+
+// ---------- Props: Mi refugio ----------
+export interface SelectorMiRefugioProps {
+  refugios: OpcionRefugio[];
+  valor: number;
+  onCambiar: (id: number) => void;
+}
+
+export interface HeroMiRefugioProps {
+  refugio: DetalleMiRefugio;
+  onVerPublica: () => void;
+}
+
+export interface TarjetaCapacidadRefugioProps {
+  ocupados: number;
+  totales: number;
+  actualizadoEn: string;
+  onCambiar: (ocupados: number) => void;
+}
+
+export interface TarjetaRecepcionRefugioProps {
+  valor: RecepcionRefugio;
+  ocupado: boolean;
+  onCambiar: (valor: RecepcionRefugio) => void;
+}
+
+export interface TarjetaEsteMesRefugioProps {
+  publicados: number;
+  postulaciones: number;
+  adoptados: number;
+  porMes: MesSolidario[];
+}
+
+export interface AnimalesDelRefugioProps {
+  animales: PublicacionPropia[];
+  cargando: boolean;
+  pestanas: { valor: PestanaMiRefugio; label: string; cantidad: number }[];
+  pestana: PestanaMiRefugio;
+  onPestana: (p: PestanaMiRefugio) => void;
+  onPublicar: () => void;
+  onVerPostulaciones: (p: PublicacionPropia) => void;
+}
+
+export interface TarjetaAnimalRefugioProps {
+  animal: PublicacionPropia;
+  tono: string;
+  onVerPostulaciones: (p: PublicacionPropia) => void;
+}
+
+export interface TarjetaDatosRefugioProps {
+  refugio: DetalleMiRefugio;
+  onEditar: () => void;
+}
+
+export interface TarjetaEquipoRefugioProps {
+  equipo: MiembroRefugio[];
+}
+
+export interface PanelEditarRefugioProps {
+  refugio: DetalleMiRefugio;
+  onCerrar: () => void;
+  onGuardado: () => void;
+}
+
+export interface IconosEspeciesProps {
+  especies: string[];
+  conTexto?: boolean;
+}
+
+export interface CampoTelefonoProps {
+  id: string;
+  etiqueta: string;
+  valor: string;
+  onCambiar: (valor: string) => void;
+  error?: string;
+}
+
+export interface PanelMiRefugioProps {
+  refugioId: number;
 }

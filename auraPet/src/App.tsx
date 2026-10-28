@@ -14,9 +14,10 @@ import { SolicitarCentro } from './screens/Centros/SolicitarCentro';
 import { AdopcionScreen } from './screens/Adopciones/AdopcionScreen';
 import { FichaAdopcionScreen } from './screens/Adopciones/FichaAdopcionScreen';
 import { PublicarAdopcionScreen } from './screens/Adopciones/PublicarAdopcionScreen';
+import { RefugiosScreen } from './screens/Adopciones/RefugiosScreen';
 import { RutaProtegida } from './components/rutas/RutaProtegida';
 import { SoloSinSesion } from './components/rutas/SoloSinSesion';
-import { RUTA_ADOPTA, RUTA_PUBLICAR_ADOPCION, RUTA_NUEVA_PASSWORD, RUTA_PANEL, RUTA_SOLICITAR_CENTRO } from './constants';
+import { RUTA_ADOPTA, RUTA_PUBLICAR_ADOPCION, RUTA_REFUGIOS, RUTA_NUEVA_PASSWORD, RUTA_PANEL, RUTA_SOLICITAR_CENTRO } from './constants';
 
 export const App = () => {
   const { usuarioActual, cargando, enRecuperacion } = useAuth();
@@ -50,6 +51,7 @@ export const App = () => {
       <Route element={<Layout />}>
         <Route path={RUTA_ADOPTA} element={<AdopcionScreen />} />
         <Route path={RUTA_PUBLICAR_ADOPCION} element={<PublicarAdopcionScreen />} />
+        <Route path={RUTA_REFUGIOS} element={<RefugiosScreen />} />
         <Route path={`${RUTA_ADOPTA}/:id`} element={<FichaAdopcionScreen />} />
       </Route>
 

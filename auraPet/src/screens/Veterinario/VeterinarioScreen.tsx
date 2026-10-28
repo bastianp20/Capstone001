@@ -1,16 +1,20 @@
 import { useState } from 'react';
-import { ICONO_DAR_EN_ADOPCION as IconoAdopcion, Iconos, TEXTOS_CENTRO_VETERINARIO, TEXTOS_DAR_EN_ADOPCION_PANEL } from '../../constants';
+import { ICONO_ADOPCION_SOLIDARIA as IconoSolidaria, ICONO_DAR_EN_ADOPCION as IconoAdopcion, ICONO_MIS_PUBLICACIONES as IconoPublicaciones, ICONO_MI_REFUGIO as IconoMiRefugio, Iconos, TEXTOS_CENTRO_VETERINARIO, TEXTOS_DAR_EN_ADOPCION_PANEL, TEXTOS_MI_REFUGIO, TEXTOS_MIS_PUBLICACIONES, TEXTOS_SOLIDARIA } from '../../constants';
 import { getInfoVeterinario, getMisCentrosAdmin } from '../../Api/getInfo';
 import { useConsulta } from '../../hooks/useConsulta';
 import { ModalAgenda } from '../../Modal/AgendaModal';
 import {PacientesModal} from '../../Modal/PacientesModal'; 
-import type { PestanaAgenda, VeterinarioScreenProps } from '../../interfaces';
+import type { PestanaAgenda, VeterinarioScreenProps, VistaVeterinario } from '../../interfaces';
 import '../../css/VeterinariosPage.css';
 import { RecetaModal } from '../../Modal/RecetasModal';
 import { DerivacionesModal } from '../../Modal/DerivacionesModal';
 import { NotasModal } from '../../Modal/NotasModal';
 import { ConfiguracionModal } from '../../Modal/ConfiguracionModal';
 import { DarEnAdopcionModal } from '../../Modal/DarEnAdopcionModal';
+import { SeccionMisPublicaciones } from '../../components/adopcion/publicaciones/SeccionMisPublicaciones';
+import { SeccionAdopcionSolidaria } from '../../components/adopcion/solidaria/SeccionAdopcionSolidaria';
+import { SeccionMiRefugio } from '../../components/adopcion/refugios/miRefugio/SeccionMiRefugio';
+import { useAdministraRefugio } from '../../hooks/useAdministraRefugio';
 import { useAuth } from '../../Auth/AuthContext';
 import { InicioVeterinario } from '../../components/veterinario/InicioVeterinario';
 import { Aviso } from '../../components/ui/Aviso';
@@ -47,6 +51,11 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
   const [pacienteParaReceta, setPacienteParaReceta] = useState<number | null>(null);
   // En qué pestaña se abre la agenda ("Mi Agenda" o la tarjeta "Por confirmar")
   const [pestanaAgenda, setPestanaAgenda] = useState<PestanaAgenda>("agenda");
+  // Qué se ve en el centro de la pantalla: el inicio o una sección de adopción
+  const [vista, setVista] = useState<VistaVeterinario>("inicio");
+  const [versionPublicaciones, setVersionPublicaciones] = useState(0);
+  const conRefugio = useAdministraRefugio();
+  const claseItem = (v: VistaVeterinario) => `vet-nav-item ${vista === v ? "vet-nav-item--activo" : ""}`;
   // Sube cada vez que la agenda confirma/rechaza una cita, para que el inicio se recargue
   const [versionCitas, setVersionCitas] = useState(0);
 
@@ -74,7 +83,7 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
 
         <div className="vet-nav">
           {/* Menú lateral. "Inicio" es la pantalla principal; el resto abre modales */}
-          <div className="vet-nav-item vet-nav-item--activo">
+          <div className={claseItem("inicio")} onClick={() => setVista("inicio")}>
             <iconos.inicio size={18} />
             <span className="vet-nav-item-label">Inicio</span>
           </div>
@@ -98,6 +107,20 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
             <iconos.nota size={18} />
             <span className="vet-nav-item-label">Notas</span>
           </div>
+          <div className={claseItem("solidaria")} onClick={() => setVista("solidaria")}>
+            <IconoSolidaria size={18} />
+            <span className="vet-nav-item-label">{TEXTOS_SOLIDARIA.menu}</span>
+          </div>
+          <div className={claseItem("publicaciones")} onClick={() => setVista("publicaciones")}>
+            <IconoPublicaciones size={18} />
+            <span className="vet-nav-item-label">{TEXTOS_MIS_PUBLICACIONES.menu}</span>
+          </div>
+          {conRefugio && (
+            <div className={claseItem("refugio")} onClick={() => setVista("refugio")}>
+              <IconoMiRefugio size={18} />
+              <span className="vet-nav-item-label">{TEXTOS_MI_REFUGIO.menu}</span>
+            </div>
+          )}
           <div className="vet-nav-item" onClick={() => setModalAbierto("adopcion")}>
             <IconoAdopcion size={18} />
             <span className="vet-nav-item-label">{TEXTOS_DAR_EN_ADOPCION_PANEL.menu}</span>
@@ -135,16 +158,33 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
           </div>
         )}
 
-        <InicioVeterinario
-          veterinarioId={veterinarioIdActual}
-          nombre={usuarioActual!.nombre}
-          recargaExterna={versionCitas}
-          onVerPorConfirmar={() => abrirAgenda("por_confirmar")}
-          onRecetar={(mascotaId) => {
-            setPacienteParaReceta(mascotaId);
-            setModalAbierto("receta");
-          }}
-        />
+        {vista === "inicio" && (
+          <InicioVeterinario
+            veterinarioId={veterinarioIdActual}
+            nombre={usuarioActual!.nombre}
+            recargaExterna={versionCitas}
+            onVerPorConfirmar={() => abrirAgenda("por_confirmar")}
+            onRecetar={(mascotaId) => {
+              setPacienteParaReceta(mascotaId);
+              setModalAbierto("receta");
+            }}
+          />
+        )}
+        {vista === "solidaria" && (
+          <div className="vet-seccion-adopcion">
+            <SeccionAdopcionSolidaria veterinario={usuarioActual!.nombre} />
+          </div>
+        )}
+        {vista === "refugio" && (
+          <div className="vet-seccion-adopcion">
+            <SeccionMiRefugio />
+          </div>
+        )}
+        {vista === "publicaciones" && (
+          <div className="vet-seccion-adopcion">
+            <SeccionMisPublicaciones version={versionPublicaciones} onDarEnAdopcion={() => setModalAbierto("adopcion")} />
+          </div>
+        )}
       </div>
 
       {modalAbierto === "agenda" && (
@@ -184,7 +224,9 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
         />
       )}
       {modalAbierto === "notas" && <NotasModal onCerrar={() => setModalAbierto(null)} />}
-      {modalAbierto === "adopcion" && <DarEnAdopcionModal onCerrar={() => setModalAbierto(null)} />}
+      {modalAbierto === "adopcion" && (
+        <DarEnAdopcionModal onCerrar={() => setModalAbierto(null)} onPublicada={() => setVersionPublicaciones((n) => n + 1)} />
+      )}
       {modalAbierto === "configuracion" && (
         <ConfiguracionModal onCerrar={() => setModalAbierto(null)} />
       )}

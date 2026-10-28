@@ -9,6 +9,10 @@ import { RechazarModal } from "../../Modal/ReachazarModal";
 import { DetalleSolicitudCentroModal } from "../../Modal/DetalleSolicitudCentroModal";
 import { ConfiguracionModal } from "../../Modal/ConfiguracionModal";
 import { DarEnAdopcionModal } from "../../Modal/DarEnAdopcionModal";
+import { SeccionMisPublicaciones } from "../../components/adopcion/publicaciones/SeccionMisPublicaciones";
+import { SeccionRefugiosAdmin } from "../../components/adopcion/refugios/admin/SeccionRefugiosAdmin";
+import { SeccionMiRefugio } from "../../components/adopcion/refugios/miRefugio/SeccionMiRefugio";
+import { useAdministraRefugio } from "../../hooks/useAdministraRefugio";
 import { ModalCrearProfesional } from "../../Modal/CrearProfesionalModal";
 import { ModalCrearDueno } from "../../Modal/CrearDuenoModal";
 import { ModalCrearSuperadmin } from "../../Modal/CrearSuperadminModal";
@@ -35,6 +39,8 @@ export const SuperAdminScreen = () => {
   const [modalCrear, setModalCrear] = useState<TipoCrearSuperAdmin | null>(null);
   const [mostrarConfiguracion, setMostrarConfiguracion] = useState(false);
   const [darEnAdopcion, setDarEnAdopcion] = useState(false);
+  const [versionPublicaciones, setVersionPublicaciones] = useState(0);
+  const conRefugio = useAdministraRefugio();
 
   // Al crear algo se vuelven a pedir los datos (KPIs, listas, pendientes)
   const [recarga, setRecarga] = useState(0);
@@ -57,11 +63,14 @@ export const SuperAdminScreen = () => {
     eliminaciones: <EliminacionesSuperAdmin />,
     notas: <NotasSuperAdmin />,
     citas: <CitasSuperAdmin />,
+    publicaciones: <SeccionMisPublicaciones version={versionPublicaciones} onDarEnAdopcion={() => setDarEnAdopcion(true)} />,
+    refugios: <SeccionRefugiosAdmin />,
+    miRefugio: <SeccionMiRefugio />,
   };
 
   return (
     <div className={styles.pagina}>
-      <MenuLateralSuperAdmin seccion={seccion} pendientes={solicitudes.pendientes.length} onCambiar={setSeccion} onDarEnAdopcion={() => setDarEnAdopcion(true)} />
+      <MenuLateralSuperAdmin seccion={seccion} pendientes={solicitudes.pendientes.length} onCambiar={setSeccion} onDarEnAdopcion={() => setDarEnAdopcion(true)} conRefugio={conRefugio} />
 
       <div className={styles.principal}>
         <BarraSuperiorSuperAdmin
@@ -99,7 +108,9 @@ export const SuperAdminScreen = () => {
       )}
 
       {mostrarConfiguracion && <ConfiguracionModal onCerrar={() => setMostrarConfiguracion(false)} />}
-      {darEnAdopcion && <DarEnAdopcionModal onCerrar={() => setDarEnAdopcion(false)} />}
+      {darEnAdopcion && (
+        <DarEnAdopcionModal onCerrar={() => setDarEnAdopcion(false)} onPublicada={() => setVersionPublicaciones((n) => n + 1)} />
+      )}
       {modalCrear === "profesional" && <ModalCrearProfesional onClose={cerrarModalCrear} />}
       {modalCrear === "dueno" && <ModalCrearDueno onClose={cerrarModalCrear} />}
       {modalCrear === "administrativo" && <ModalCrearAdministrativo onClose={cerrarModalCrear} />}

@@ -3,7 +3,8 @@
 -- Ejecutar en Supabase → SQL Editor. Cambia los 2 correos de abajo.
 --
 -- · Quien publica: si es una cuenta DE PRUEBA, los animales solo los verán
---   las cuentas de prueba. Para verlos sin iniciar sesión, usa una cuenta normal.
+--   las cuentas de prueba; si es real, solo las cuentas reales y los visitantes
+--   sin sesión (migración 41). El veterinario debe ser del mismo tipo.
 -- · El veterinario (aprobado) firma los chequeos. Si lo dejas como está,
 --   los animales quedan sin chequeo.
 -- Todo queda marcado con microchip 'PRUEBA-ADOP-...' (para borrarlo, ver abajo).
@@ -23,6 +24,11 @@ begin
   where u.email = 'CORREO_DEL_VETERINARIO@ejemplo.cl' and v.estado_verificacion = 'aprobado';
 
   if v_publica is null then raise exception 'No encontré la cuenta de quien publica'; end if;
+  -- Mismo mundo (migración 41): los dos de prueba o los dos reales
+  if v_vet is not null and (select es_prueba from perfiles where id = v_publica)
+     is distinct from (select p.es_prueba from veterinarios v join perfiles p on p.id = v.perfil_id where v.id = v_vet) then
+    raise exception 'Quien publica y el veterinario deben ser los dos cuentas de prueba o los dos reales';
+  end if;
   select centro_id into v_centro from veterinario_centros where veterinario_id = v_vet limit 1;
 
   -- 2) Animales esperando hogar

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { publicarAdopcion } from "../Api/postInfo";
 import { useAuth } from "../Auth/AuthContext";
 import { DATOS_PUBLICAR_VACIOS, PASOS_PUBLICAR_ADOPCION, TEXTOS_PUBLICAR } from "../constants";
@@ -8,10 +8,12 @@ import { useAccion } from "./useAccion";
 import { useFormularioPasos } from "./useFormularioPasos";
 
 // "Dar en adopción": los pasos, la validación y la publicación (fotos + datos).
-export const usePublicarAdopcion = () => {
+// · refugioId: viene marcado "a nombre de" ese refugio (al publicar desde "Mi refugio").
+export const usePublicarAdopcion = (onPublicada?: (id: number) => void, refugioId?: number) => {
   const { usuarioActual } = useAuth();
+  const inicial = useMemo(() => ({ ...DATOS_PUBLICAR_VACIOS, refugioId: refugioId ?? null }), [refugioId]);
   const formulario = useFormularioPasos<DatosPublicarAdopcion, CampoPublicarAdopcion>({
-    inicial: DATOS_PUBLICAR_VACIOS,
+    inicial,
     pasos: PASOS_PUBLICAR_ADOPCION,
     validar: validarPublicacion,
   });
@@ -31,8 +33,11 @@ export const usePublicarAdopcion = () => {
     const ok = await ejecutar(async () => {
       id = await publicarAdopcion(usuarioActual.id, formulario.datos);
     }, TEXTOS_PUBLICAR.error);
-    if (ok) setPublicadaId(id);
-  }, [usuarioActual, formulario, ejecutar]);
+    if (ok) {
+      setPublicadaId(id);
+      onPublicada?.(id);
+    }
+  }, [usuarioActual, formulario, ejecutar, onPublicada]);
 
   const otraPublicacion = useCallback(() => {
     formulario.datos.fotos.forEach((f) => URL.revokeObjectURL(f.vista));
