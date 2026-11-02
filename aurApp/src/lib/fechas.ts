@@ -53,6 +53,15 @@ export const formatFechaHoraCita = (fechaIso: string): string => {
   return `${dia} ${numero} ${mes} · ${hora}`;
 };
 
+/** Momento pasado, corto: "hoy 22:30", "ayer 10:05" o "12 oct 09:00". */
+export const cuandoFue = (fechaIso: string): string => {
+  const { numero, mes, hora } = partesFechaCita(fechaIso);
+  const dias = diasEntre(aFechaDia(new Date(fechaIso)), hoy());
+  if (dias <= 0) return `hoy ${hora}`;
+  if (dias === 1) return `ayer ${hora}`;
+  return `${numero} ${mes.toLowerCase()} ${hora}`;
+};
+
 /** Día local de una cita: "2026-10-28". */
 export const diaDeCita = (fechaIso: string): string => aFechaDia(new Date(fechaIso));
 
@@ -109,14 +118,14 @@ export const edadDesde = (fechaNacimiento: string | null): string | null => {
   return anios === 1 ? '1 año' : `${anios} años`;
 };
 
-/** "15-03-2021" → "2021-03-15", o null si no es una fecha válida y pasada. */
-export const parsearFechaChilena = (texto: string): string | null => {
+/** "15-03-2021" → "2021-03-15", o null si no es una fecha válida (y pasada, salvo permitirFutura: próximos controles). */
+export const parsearFechaChilena = (texto: string, permitirFutura = false): string | null => {
   const m = texto.trim().match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/);
   if (!m) return null;
   const [, dia, mes, anio] = m.map(Number);
   const fecha = new Date(anio, mes - 1, dia);
   const valida = fecha.getFullYear() === anio && fecha.getMonth() === mes - 1 && fecha.getDate() === dia;
-  if (!valida || aFechaDia(fecha) > hoy()) return null;
+  if (!valida || (!permitirFutura && aFechaDia(fecha) > hoy())) return null;
   return aFechaDia(fecha);
 };
 

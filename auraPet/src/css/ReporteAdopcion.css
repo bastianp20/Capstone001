@@ -1,0 +1,110 @@
+@import './theme.css';
+
+/* =====================================================================
+   "Reportar publicación" (ficha de adopción). Prefijo rep-.
+   Usa los colores de theme.css, así funciona en modo claro y oscuro.
+   ===================================================================== */
+.rep-fondo {
+  position: fixed; inset: 0; z-index: 120; padding: 16px; display: flex; align-items: center; justify-content: center;
+  background: rgba(10, 14, 18, 0.55); backdrop-filter: blur(14px) saturate(0.9);
+  font-family: "Inter", system-ui, sans-serif;
+}
+.rep-modal {
+  position: relative; width: min(900px, 100%); max-height: calc(100vh - 32px); overflow: hidden;
+  display: grid; grid-template-columns: 300px minmax(0, 1fr);
+  border-radius: 32px; background: var(--color-superficie); color: var(--color-terciario-texto);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4); animation: rep-entrar 0.22s ease;
+}
+.rep-modal-gracias { width: min(500px, 100%); grid-template-columns: 1fr; }
+@keyframes rep-entrar { from { transform: translateY(14px) scale(0.98); opacity: 0; } to { transform: none; opacity: 1; } }
+.rep-cerrar {
+  position: absolute; top: 16px; right: 16px; z-index: 1; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
+  border: 1px solid var(--color-terciario-borde); background: var(--color-superficie); color: var(--color-terciario-texto-muted); cursor: pointer;
+}
+.rep-cerrar:hover:not(:disabled) { color: var(--color-terciario-texto); }
+
+/* Columna izquierda (menta) */
+.rep-lado {
+  display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 40px 28px 28px; text-align: center;
+  background: linear-gradient(180deg, #e3f4f0, #d5efe9); color: #12312d;
+}
+.rep-foto { width: 128px; height: 128px; border-radius: 50%; overflow: hidden; border: 6px solid #ffffff; box-shadow: 0 14px 34px rgba(15, 80, 70, 0.22); }
+.rep-lado h2 { margin: 6px 0 0; font-family: var(--fuente-marca); font-size: 28px; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; color: #12312d; }
+.rep-lado p { margin: 0; font-size: 15px; line-height: 1.5; color: #3d5a55; }
+.rep-sello { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #0b6b60; }
+
+/* Columna derecha */
+.rep-cuerpo { display: flex; flex-direction: column; gap: 16px; padding: 36px 36px 28px; overflow-y: auto; }
+.rep-cuerpo h3 { margin: 0; padding-right: 40px; font-family: var(--fuente-marca); font-size: 21px; font-weight: 800; }
+.rep-motivos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.rep-motivo {
+  position: relative; display: flex; align-items: center; gap: 12px; min-height: 66px; padding: 12px 14px; border-radius: 18px; text-align: left;
+  border: 1.5px solid var(--color-terciario-borde); background: var(--color-superficie); color: var(--color-terciario-texto);
+  font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; transition: transform 0.15s, border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.rep-motivo:hover { transform: translateY(-2px); border-color: var(--rep-color); }
+.rep-motivo-icono {
+  width: 40px; height: 40px; flex-shrink: 0; display: grid; place-items: center; border-radius: 12px;
+  background: var(--rep-color); color: #ffffff; box-shadow: 0 6px 14px color-mix(in srgb, var(--rep-color) 35%, transparent);
+}
+.rep-motivo-activo { border-color: var(--rep-color); border-width: 2px; background: var(--rep-fondo); box-shadow: 0 0 0 4px var(--rep-fondo); }
+.rep-motivo-check {
+  position: absolute; top: -7px; right: -7px; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%;
+  background: var(--rep-color); color: #ffffff; border: 2px solid var(--color-superficie);
+}
+.rep-motivo:focus-visible { outline: 3px solid rgba(15, 143, 128, 0.4); outline-offset: 2px; }
+
+.rep-emergencia {
+  display: flex; align-items: center; gap: 10px; margin: 0; padding: 12px 14px; border-radius: 14px;
+  background: rgba(214, 69, 69, 0.1); color: #8f2a2a; font-size: 14px; font-weight: 600; line-height: 1.4;
+}
+:root[data-tema="oscuro"] .rep-emergencia { color: #f3a6a6; }
+.rep-emergencia svg { flex-shrink: 0; }
+
+.rep-campo { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600; }
+.rep-campo textarea {
+  min-height: 88px; resize: vertical; padding: 12px 14px; border-radius: 14px; border: 1.5px solid var(--color-terciario-borde);
+  background: var(--color-superficie-suave); color: var(--color-terciario-texto); font: inherit; font-weight: 400; font-size: 14.5px;
+}
+.rep-campo textarea:focus { outline: none; border-color: #0f8f80; box-shadow: 0 0 0 4px rgba(15, 143, 128, 0.12); background: var(--color-superficie); }
+.rep-campo small { align-self: flex-end; font-weight: 400; color: var(--color-terciario-texto-muted); font-size: 12px; }
+.rep-error { margin: 0; color: #d0463b; font-size: 13.5px; font-weight: 600; }
+
+.rep-pie { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: auto; }
+.rep-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 24px; border-radius: 999px;
+  border: none; font-family: var(--fuente-marca); font-size: 15px; font-weight: 700; cursor: pointer;
+}
+.rep-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.rep-btn-primario { background: #0f8f80; color: #ffffff; box-shadow: 0 10px 24px rgba(15, 143, 128, 0.3); }
+.rep-btn-primario:hover:not(:disabled) { filter: brightness(1.07); }
+.rep-btn-texto { background: none; color: var(--color-terciario-texto); }
+.rep-btn-ancho { width: 100%; }
+.rep-btn:focus-visible, .rep-cerrar:focus-visible { outline: 3px solid rgba(15, 143, 128, 0.4); outline-offset: 2px; }
+
+/* Gracias */
+.rep-gracias { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 44px 36px 32px; text-align: center; }
+.rep-gracias-ilustracion {
+  position: relative; width: 150px; height: 150px; display: grid; place-items: center; border-radius: 50%;
+  background: #e3f4f0; color: #0f8f80;
+}
+.rep-gracias-corazon { position: absolute; top: 52px; fill: #5fc4b5; color: #0f8f80; }
+.rep-destello { position: absolute; color: #0f8f80; }
+.rep-destello-1 { top: 10px; right: 6px; }
+.rep-destello-2 { bottom: 20px; left: 4px; }
+.rep-gracias h2 { margin: 6px 0 0; font-family: var(--fuente-marca); font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+.rep-gracias p { margin: 0; max-width: 360px; color: var(--color-terciario-texto-muted); font-size: 15px; line-height: 1.5; }
+.rep-numero { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; background: #e3f4f0; color: #0b6b60; font-size: 13.5px; font-weight: 700; }
+
+@media (max-width: 760px) {
+  .rep-modal { grid-template-columns: 1fr; border-radius: 26px; overflow-y: auto; }
+  .rep-lado { flex-direction: row; text-align: left; padding: 20px 56px 20px 20px; gap: 14px; }
+  .rep-foto { width: 64px; height: 64px; border-width: 3px; flex-shrink: 0; }
+  .rep-lado h2 { font-size: 20px; margin: 0; }
+  .rep-lado p, .rep-sello { display: none; }
+  .rep-cuerpo { padding: 20px; overflow: visible; }
+  .rep-motivos { grid-template-columns: 1fr 1fr; }
+  .rep-motivo { min-height: 58px; font-size: 14px; padding: 10px; gap: 10px; }
+  .rep-motivo-icono { width: 34px; height: 34px; }
+}
+@media (prefers-reduced-motion: reduce) { .rep-modal, .rep-motivo { animation: none; transition: none; } }

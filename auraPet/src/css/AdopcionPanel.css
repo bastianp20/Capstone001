@@ -594,3 +594,21 @@
   .ap-stepper-actual .ap-stepper-texto { display: inline; }
   .ap-toast { left: 16px; right: 16px; bottom: 16px; }
 }
+
+/* ---------- Stepper vertical (StepperVertical) ----------
+   Hereda el color del contenedor; --sv-acento pinta el paso actual y los hechos. */
+.ap-stepper-vertical { --sv-acento: var(--ap-acento-solido); --sv-linea: var(--ap-borde); display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.ap-sv-paso { position: relative; display: flex; gap: 14px; padding-bottom: 22px; opacity: 0.6; }
+.ap-sv-paso:last-child { padding-bottom: 0; }
+.ap-sv-paso:not(:last-child)::after { content: ""; position: absolute; left: 15px; top: 34px; bottom: 4px; width: 2px; border-radius: 2px; background: var(--sv-linea); }
+.ap-sv-hecho:not(:last-child)::after { background: var(--sv-acento); }
+.ap-sv-actual, .ap-sv-hecho { opacity: 1; }
+.ap-sv-circulo {
+  width: 32px; height: 32px; flex: none; display: grid; place-items: center; border-radius: 50%;
+  border: 2px solid var(--sv-linea); font-weight: 800; font-size: 14px;
+}
+.ap-sv-hecho .ap-sv-circulo { border-color: var(--sv-acento); background: var(--sv-acento); color: #ffffff; }
+.ap-sv-actual .ap-sv-circulo { border-color: var(--sv-acento); background: var(--sv-acento); color: #ffffff; box-shadow: 0 0 0 5px color-mix(in srgb, var(--sv-acento) 25%, transparent); }
+.ap-sv-texto { display: flex; flex-direction: column; gap: 2px; padding-top: 5px; }
+.ap-sv-texto strong { font-size: 15px; }
+.ap-sv-texto small { font-size: 12.5px; opacity: 0.8; }

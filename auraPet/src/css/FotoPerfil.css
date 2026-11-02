@@ -1,0 +1,25 @@
+@import './theme.css';
+
+/* Foto de perfil (prefijos foto-perfil y campo-foto-perfil). El tamaño y los
+   colores del círculo los pone la clase de cada pantalla; aquí solo la foto. */
+.foto-perfil { overflow: hidden; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.foto-perfil img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block; }
+
+.campo-foto-perfil { display: flex; align-items: center; gap: 16px; padding: 4px 0 14px; margin-bottom: 4px; border-bottom: 1px solid var(--color-terciario-borde); }
+.campo-foto-perfil-circulo {
+  width: 72px; height: 72px; border-radius: 50%; background: var(--color-secundario); color: var(--color-primario-texto);
+  font-family: var(--fuente-marca); font-size: 24px; font-weight: 800; box-shadow: 0 0 0 3px var(--color-superficie), 0 0 0 5px var(--color-secundario);
+}
+.campo-foto-perfil-texto { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.campo-foto-perfil-texto strong { font-size: 14.5px; color: var(--color-terciario-texto); }
+.campo-foto-perfil-texto small { font-size: 12.5px; color: var(--color-terciario-texto-muted); }
+.campo-foto-perfil-botones { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.campo-foto-perfil-btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--color-terciario-borde); background: var(--color-superficie); color: var(--color-terciario-texto);
+  font: inherit; font-size: 13px; font-weight: 600;
+}
+.campo-foto-perfil-btn:hover:not(:disabled) { border-color: var(--color-primario-texto); color: var(--color-primario-texto); }
+.campo-foto-perfil-btn:disabled { opacity: 0.6; cursor: progress; }
+.campo-foto-perfil-quitar:hover:not(:disabled) { border-color: #d0463b; color: #d0463b; }
+.campo-foto-perfil-error { margin: 4px 0 0; font-size: 13px; color: #d0463b; }

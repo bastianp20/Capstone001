@@ -20,6 +20,7 @@ import { InicioVeterinario } from '../../components/veterinario/InicioVeterinari
 import { Aviso } from '../../components/ui/Aviso';
 import { textoCentroVeterinario } from '../../lib/centroVeterinario';
 import LogoAuraPetSinFondo from '../../assets/logo/LogoAuraPetSinFondo.png'; 
+import { FotoPerfil } from '../../components/perfil/FotoPerfil';
 
 const iconos = Iconos;
 
@@ -62,14 +63,6 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
   const abrirAgenda = (pestana: PestanaAgenda) => {
     setPestanaAgenda(pestana);
     setModalAbierto("agenda");
-  };
-
-  // esto es para el avatar, que ocupe las iniciales de la persona cuando no hay foto de perfil cargada. 
-  const getIniciales = (nombreCompleto: string): string => {
-    const partes = nombreCompleto.trim().split(" ");
-    const primera = partes[0]?.charAt(0) ?? "";
-    const ultima = partes.length > 1 ? partes[partes.length - 1].charAt(0) : "";
-    return (primera + ultima).toUpperCase();
   };
 
   return (
@@ -144,7 +137,7 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
       <div className="vet-main">
         {/* circulito con el nombre de la persona en cuestión */}
         <div className="vet-topbar">
-          <div className="vet-avatar">{getIniciales(usuarioActual!.nombre)}</div>
+          <FotoPerfil nombre={usuarioActual!.nombre} url={usuarioActual!.avatarUrl} className="vet-avatar" />
           <div className="vet-user-info">
             <span className="vet-user-name">{usuarioActual!.nombre}</span>
             <span className="vet-user-centro">{centroLabel}{usuarioActual!.esPrueba && " · Cuenta de prueba"}</span>

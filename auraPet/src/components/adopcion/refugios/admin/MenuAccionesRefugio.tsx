@@ -5,18 +5,18 @@ import type { MenuAccionesRefugioProps } from "../../../../interfaces";
 
 /** Botón "⋯" de cada fila con sus acciones. */
 export const MenuAccionesRefugio = ({ refugio, onVer, onEditar, onVerAnimales, onVerificar }: MenuAccionesRefugioProps) => {
-  const { abierto, contenedor, alternar, cerrar } = useMenuEmergente<HTMLDivElement>();
+  const { abierto, posicion, contenedor, alternar, cerrar } = useMenuEmergente<HTMLDivElement>();
   const elegir = (accion: () => void) => () => {
     cerrar();
     accion();
   };
   return (
     <div className="ra-menu" ref={contenedor} onClick={(e) => e.stopPropagation()}>
-      <button type="button" className="ap-icono-btn ra-menu-boton" aria-haspopup="menu" aria-expanded={abierto} aria-label={`${T.acciones}: ${refugio.nombre}`} onClick={alternar}>
+      <button type="button" className="ap-icono-btn ra-menu-boton" aria-haspopup="menu" aria-expanded={abierto} aria-label={`${T.acciones}: ${refugio.nombre}`} onClick={(e) => alternar(e.currentTarget)}>
         <Ellipsis size={18} />
       </button>
-      {abierto && (
-        <div className="ra-menu-lista" role="menu">
+      {posicion && (
+        <div className="ra-menu-lista" role="menu" style={posicion}>
           <button type="button" role="menuitem" onClick={elegir(onVer)}>
             <Eye size={16} aria-hidden /> {T.verDetalle}
           </button>

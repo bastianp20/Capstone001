@@ -11,7 +11,9 @@ export const validarDatosLaborales = (d: DatosLaboralesVeterinario): string | nu
 
 // Lo que se guarda en los metadatos del signUp (los lee la base, migración 23)
 export const metadatosVeterinario = (d: DatosLaboralesVeterinario) => ({
-  especialidad_id: d.especialidadId ?? undefined,
+  // La primera queda como principal; la base guarda todas (migración 45)
+  especialidad_id: d.especialidadIds[0] ?? undefined,
+  especialidad_ids: d.especialidadIds.length ? d.especialidadIds : undefined,
   especialidad_otra: d.especialidadOtra.trim() || undefined,
   centro_id: d.modoCentro === "centro_aurapet" ? d.centroId ?? undefined : undefined,
   centro_nombre: d.modoCentro === "centro_externo" ? d.centroNombre.trim() : undefined,

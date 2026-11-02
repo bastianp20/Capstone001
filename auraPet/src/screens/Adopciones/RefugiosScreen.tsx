@@ -6,7 +6,7 @@ import { PestanasAdopta } from "../../components/adopcion/PestanasAdopta";
 import { FiltrosRefugios } from "../../components/adopcion/refugios/FiltrosRefugios";
 import { FranjaNecesitanAyuda } from "../../components/adopcion/refugios/FranjaNecesitanAyuda";
 import { TarjetaRefugio } from "../../components/adopcion/refugios/TarjetaRefugio";
-import { FOTOS_HERO_ADOPCION, RUTA_CONTACTO_REPORTE, RUTA_PANEL, rutaAnimalesDeRefugio, TEXTOS_REFUGIOS as T } from "../../constants";
+import { FOTOS_HERO_ADOPCION, RUTA_SUMATE_REFUGIO, RUTA_PANEL, rutaAnimalesDeRefugio, TEXTOS_REFUGIOS as T } from "../../constants";
 import { useRefugios } from "../../hooks/useRefugios";
 import type { Refugio } from "../../interfaces";
 import { LoginScreen } from "../Login/LoginScreen";
@@ -76,7 +76,7 @@ export const RefugiosScreen = () => {
             <Home size={34} aria-hidden />
             <h2>{T.tienesRefugio}</h2>
             <p>{T.tienesRefugioTexto}</p>
-            <button type="button" className="ap-btn ap-btn-primario" onClick={() => navigate(RUTA_CONTACTO_REPORTE)}>
+            <button type="button" className="ap-btn ap-btn-primario" onClick={() => navigate(RUTA_SUMATE_REFUGIO)}>
               {T.sumate}
             </button>
           </div>

@@ -1,6 +1,8 @@
-import { MAX_MB_FOTO_ADOPCION, SECCIONES_SOLO_ADMIN_REFUGIO, TEXTOS_MODAL_REFUGIO as T, TIPOS_FOTO_ADOPCION } from "../constants";
+import { MAX_MB_FOTO_ADOPCION, MIN_FOTOS_LUGAR, SECCIONES_SOLO_ADMIN_REFUGIO, TEXTOS_MODAL_REFUGIO as T, TEXTOS_POSTULAR_REFUGIO as TP, TIPOS_FOTO_ADOPCION } from "../constants";
 import type {
+  CampoPostularRefugio,
   CampoRefugio,
+  DatosPostularRefugio,
   DatosEditarMiRefugio,
   DatosRefugio,
   DetalleMiRefugio,
@@ -142,3 +144,45 @@ export const telefonoParaMostrar = (telefono: number): string => {
   const d = String(telefono).replace(/^56/, "");
   return d.length === 9 ? `+56 ${d[0]} ${d.slice(1, 5)} ${d.slice(5)}` : `+${telefono}`;
 };
+
+// ---------- Postulación desde "Súmate a AuraPet" (migración 48) ----------
+
+const SITIO = /^(https?:\/\/)?[^\s.]+\.[^\s]{2,}$/i;
+
+/** Validación de la postulación. Sin sesión el correo es obligatorio (ahí llega el acceso). */
+export const validarPostulacionRefugio = (d: DatosPostularRefugio, conSesion: boolean): ErroresFormulario<CampoPostularRefugio> => {
+  const e: ErroresFormulario<CampoPostularRefugio> = {};
+  if (d.nombre.trim().length < 2) e.nombre = T.errorNombre;
+  if (!d.region) e.region = T.errorRegion;
+  if (!d.comuna.trim()) e.comuna = T.errorComuna;
+  if (d.cuposOcupados > d.cuposTotales) e.cuposOcupados = T.errorCupos;
+  if (!d.especies.length) e.especies = T.errorEspecies;
+  if (d.fotos.length < MIN_FOTOS_LUGAR) e.fotos = TP.errorFotos;
+  if (!d.responsable.trim()) e.responsable = TP.errorResponsable;
+  if (d.telefono.trim() && d.telefono.replace(/\D/g, "").length !== 9) e.telefono = T.errorTelefono;
+  if (d.correo.trim() && !CORREO.test(d.correo.trim())) e.correo = T.errorCorreo;
+  if (!conSesion && !d.correo.trim()) e.correo = TP.errorCorreoAcceso;
+  else if (!d.telefono.trim() && !d.correo.trim()) e.telefono = TP.errorContacto;
+  if (d.sitioWeb.trim() && !SITIO.test(d.sitioWeb.trim())) e.sitioWeb = TP.errorSitio;
+  return e;
+};
+
+/** La postulación → la tarjeta pública (vista previa en vivo; la portada es la primera foto). */
+export const refugioDePostulacion = (d: DatosPostularRefugio): Refugio => ({
+  id: 0,
+  nombre: d.nombre.trim() || TP.nombreEjemplo,
+  comuna: d.comuna.trim() || TP.comunaEjemplo,
+  region: d.region,
+  descripcion: d.descripcion,
+  logoUrl: d.logo.vista,
+  portadaUrl: d.fotos[0]?.vista ?? null,
+  telefono: telefonoParaGuardar(d.telefono),
+  correo: d.correo.trim() || null,
+  cuposTotales: d.cuposTotales,
+  cuposOcupados: d.cuposOcupados,
+  recibe: d.recibe,
+  especies: d.especies,
+  enAdopcion: 0,
+  fotos: [],
+  aliados: 0,
+});

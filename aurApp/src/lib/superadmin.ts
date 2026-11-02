@@ -7,6 +7,7 @@ export const FILTROS_SOLICITUD: Record<FiltroAprobaciones, (s: SolicitudPendient
   centro: (s) => s.tipo === 'centro',
   veterinario: (s) => s.tipo === 'veterinario',
   solicitud_centro: (s) => s.tipo === 'solicitud_centro',
+  refugio: (s) => s.tipo === 'refugio',
 };
 
 export const camposBusquedaSolicitud = (s: SolicitudPendiente) => [s.nombre, s.detalle];

@@ -62,7 +62,7 @@ export default function HoyScreen() {
             ocupado={a.ocupadoId === h.siguiente.id}
             onVerFicha={() => h.siguiente && abrirFicha(h.siguiente.mascotaId)}
             onIniciar={() => h.siguiente && a.iniciar(h.siguiente)}
-            onTerminar={() => h.siguiente && a.terminar(h.siguiente)}
+            onAbrirAtencion={() => h.siguiente && a.abrirAtencion(h.siguiente)}
           />
         ) : (
           <MensajeFormulario tipo="aviso" texto={T.sinSiguiente} />
@@ -90,7 +90,7 @@ export default function HoyScreen() {
                     onConfirmar={a.confirmar}
                     onRechazar={a.pedirRechazo}
                     onIniciar={a.iniciar}
-                    onTerminar={a.terminar}
+                    onAbrirAtencion={a.abrirAtencion}
                   />
                 }
               />

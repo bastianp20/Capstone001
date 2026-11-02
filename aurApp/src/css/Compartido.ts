@@ -100,12 +100,28 @@ export const botonPrincipalStyles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   inactivo: {
-    opacity: 0.7,
+    opacity: 0.55,
   },
   texto: {
     fontFamily: FUENTES.bold,
     fontSize: 17,
     color: COLORES.blanco,
+  },
+  primario: {},
+  primarioPresionado: {},
+  coral: {
+    backgroundColor: COLORES.coral,
+    boxShadow: '0 12px 24px rgba(255, 122, 89, 0.35)',
+  },
+  coralPresionado: {
+    backgroundColor: COLORES.coralOscuro,
+  },
+  peligro: {
+    backgroundColor: COLORES.peligro,
+    boxShadow: '0 12px 24px rgba(214, 69, 69, 0.28)',
+  },
+  peligroPresionado: {
+    backgroundColor: '#B83A3A',
   },
 });
 
@@ -163,6 +179,9 @@ export const botonSecundarioStyles = StyleSheet.create({
   },
   presionado: {
     backgroundColor: COLORES.fondo,
+  },
+  verde: {
+    borderColor: COLORES.primario,
   },
   texto: {
     fontFamily: FUENTES.bold,
@@ -411,6 +430,10 @@ export const botonPequenoStyles = StyleSheet.create({
   primario: {
     borderColor: COLORES.primario,
     backgroundColor: COLORES.primario,
+  },
+  coral: {
+    borderColor: COLORES.coral,
+    backgroundColor: COLORES.coral,
   },
   presionado: {
     opacity: 0.7,
@@ -695,6 +718,11 @@ export const etiquetaCampoStyles = StyleSheet.create({
     lineHeight: 17,
     color: COLORES.textoSecundario,
   },
+  error: {
+    fontFamily: FUENTES.semibold,
+    fontSize: 12.5,
+    color: COLORES.error,
+  },
 });
 
 // ─── ResultadoSolicitud ───
@@ -976,5 +1004,489 @@ export const indicadorPastelStyles = StyleSheet.create({
     fontFamily: FUENTES.medium,
     fontSize: 13,
     color: COLORES.textoSecundario,
+  },
+});
+
+// ─── AvatarPersona ───
+export const avatarPersonaStyles = StyleSheet.create({
+  foto: {
+    backgroundColor: COLORES.primarioSuave,
+  },
+  borde: {
+    borderWidth: 2,
+    borderColor: COLORES.blanco,
+  },
+});
+
+// ─── FilaAvatares ───
+export const filaAvataresStyles = StyleSheet.create({
+  fila: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  item: {
+    borderRadius: 999,
+  },
+  mas: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORES.primarioSuave,
+    borderWidth: 2,
+    borderColor: COLORES.blanco,
+  },
+  masTexto: {
+    fontFamily: FUENTES.bold,
+    fontSize: 11,
+    color: COLORES.primarioOscuro,
+  },
+});
+
+// ─── IndicadorPasos ───
+export const indicadorPasosStyles = StyleSheet.create({
+  contenedor: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  barras: {
+    flexDirection: 'row',
+    gap: 4,
+  },
+  barra: {
+    width: 56,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: COLORES.borde,
+  },
+  barraHecha: {
+    backgroundColor: COLORES.primario,
+  },
+  nombres: {
+    fontFamily: FUENTES.medium,
+    fontSize: 13,
+    color: COLORES.textoSecundario,
+    textAlign: 'center',
+  },
+  nombreActual: {
+    fontFamily: FUENTES.bold,
+    color: COLORES.texto,
+  },
+});
+
+// ─── ChipIcono ───
+export const chipIconoStyles = StyleSheet.create({
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: COLORES.bordeCampo,
+    backgroundColor: COLORES.blanco,
+  },
+  activo: {
+    borderColor: COLORES.primario,
+    backgroundColor: COLORES.primario,
+  },
+  presionado: {
+    opacity: 0.8,
+  },
+  texto: {
+    fontFamily: FUENTES.semibold,
+    fontSize: 13.5,
+  },
+});
+
+// ─── ControlSegmentado ───
+export const controlSegmentadoStyles = StyleSheet.create({
+  contenedor: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    padding: 4,
+    borderRadius: 26,
+    backgroundColor: COLORES.borde,
+  },
+  opcion: {
+    minWidth: 128,
+    alignItems: 'center',
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 22,
+  },
+  activa: {
+    backgroundColor: COLORES.segmentoActivo,
+  },
+  texto: {
+    fontFamily: FUENTES.semibold,
+    fontSize: 14.5,
+    color: COLORES.texto,
+  },
+  textoActivo: {
+    color: COLORES.blanco,
+  },
+});
+
+// ─── HojaInferior ───
+export const hojaInferiorStyles = StyleSheet.create({
+  fondo: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  velo: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    backgroundColor: COLORES.velo,
+  },
+  hoja: {
+    gap: 14,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    borderTopLeftRadius: RADIOS.xl,
+    borderTopRightRadius: RADIOS.xl,
+    backgroundColor: COLORES.blanco,
+  },
+  agarre: {
+    alignSelf: 'center',
+    width: 44,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: COLORES.borde,
+  },
+  titulo: {
+    fontFamily: FUENTES.bold,
+    fontSize: 17,
+    color: COLORES.texto,
+    textAlign: 'center',
+  },
+});
+
+// ─── OpcionHoja ───
+export const opcionHojaStyles = StyleSheet.create({
+  opcion: {
+    flex: 1,
+    minHeight: 64,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 14,
+    borderRadius: RADIOS.md,
+  },
+  presionada: {
+    opacity: 0.85,
+    transform: [{ scale: 0.98 }],
+  },
+  deshabilitada: {
+    opacity: 0.5,
+  },
+  cuadro: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.6)',
+  },
+  cuadroPeligro: {
+    backgroundColor: 'rgba(255,255,255,0.18)',
+  },
+  texto: {
+    flex: 1,
+    fontFamily: FUENTES.semibold,
+    fontSize: 15,
+    color: COLORES.texto,
+  },
+  textoPeligro: {
+    color: COLORES.blanco,
+  },
+});
+
+// ─── TarjetaListaIconos ───
+export const tarjetaListaIconosStyles = StyleSheet.create({
+  tarjeta: {
+    gap: 10,
+    padding: 16,
+    borderRadius: RADIOS.md,
+    backgroundColor: COLORES.blanco,
+    borderWidth: 1,
+    borderColor: COLORES.borde,
+  },
+  titulo: {
+    fontFamily: FUENTES.bold,
+    fontSize: 16,
+    color: COLORES.texto,
+  },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  texto: {
+    flex: 1,
+    fontFamily: FUENTES.medium,
+    fontSize: 14.5,
+    lineHeight: 20,
+    color: COLORES.texto,
+  },
+});
+
+// ─── TarjetaAviso ───
+export const tarjetaAvisoStyles = StyleSheet.create({
+  tarjeta: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    padding: 16,
+    borderRadius: RADIOS.md,
+    backgroundColor: COLORES.aviso,
+  },
+  centrada: {
+    justifyContent: 'center',
+  },
+  cuerpo: {
+    flex: 1,
+    gap: 4,
+  },
+  titulo: {
+    fontFamily: FUENTES.bold,
+    fontSize: 16,
+    color: COLORES.texto,
+  },
+  texto: {
+    fontFamily: FUENTES.medium,
+    fontSize: 14,
+    lineHeight: 20,
+    color: COLORES.texto,
+  },
+  textoCentrado: {
+    textAlign: 'center',
+  },
+});
+
+// ─── Casilla ───
+export const casillaStyles = StyleSheet.create({
+  fila: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 6,
+  },
+  caja: {
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 7,
+    borderWidth: 1.5,
+    borderColor: COLORES.textoSecundario,
+    backgroundColor: COLORES.blanco,
+  },
+  cajaMarcada: {
+    borderColor: COLORES.primario,
+    backgroundColor: COLORES.primario,
+  },
+  texto: {
+    flex: 1,
+    fontFamily: FUENTES.medium,
+    fontSize: 14.5,
+    lineHeight: 20,
+    color: COLORES.texto,
+  },
+});
+
+// ─── LineaEstados ───
+export const lineaEstadosStyles = StyleSheet.create({
+  paso: {
+    flexDirection: 'row',
+    gap: 14,
+  },
+  columna: {
+    alignItems: 'center',
+    width: 28,
+  },
+  punto: {
+    width: 28,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 14,
+  },
+  hecho: {
+    backgroundColor: COLORES.primario,
+  },
+  actual: {
+    borderWidth: 3,
+    borderColor: COLORES.primario,
+    backgroundColor: COLORES.blanco,
+  },
+  pendiente: {
+    backgroundColor: COLORES.borde,
+  },
+  centro: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: COLORES.primario,
+  },
+  linea: {
+    width: 2,
+    flex: 1,
+    minHeight: 22,
+    backgroundColor: COLORES.borde,
+  },
+  lineaHecha: {
+    backgroundColor: COLORES.primario,
+  },
+  texto: {
+    flex: 1,
+    paddingTop: 4,
+    paddingBottom: 18,
+    fontFamily: FUENTES.medium,
+    fontSize: 15,
+    color: COLORES.texto,
+  },
+  textoActual: {
+    fontFamily: FUENTES.bold,
+  },
+  textoPendiente: {
+    color: COLORES.textoSecundario,
+  },
+});
+
+// ─── AvisoSinConexion ───
+export const avisoSinConexionStyles = StyleSheet.create({
+  franja: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: RADIOS.sm,
+    backgroundColor: COLORES.aviso,
+  },
+  texto: {
+    flex: 1,
+    fontFamily: FUENTES.medium,
+    fontSize: 13.5,
+    lineHeight: 19,
+    color: COLORES.avisoTexto,
+  },
+  reintentar: {
+    fontFamily: FUENTES.bold,
+    fontSize: 14,
+    color: COLORES.primario,
+  },
+});
+
+// ─── EstadoBorrador ───
+export const estadoBorradorStyles = StyleSheet.create({
+  fila: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  texto: {
+    fontFamily: FUENTES.medium,
+    fontSize: 13,
+    color: COLORES.textoSecundario,
+  },
+});
+
+// ─── BotonAgregar ───
+export const botonAgregarStyles = StyleSheet.create({
+  boton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    height: 52,
+    borderRadius: RADIOS.md,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    borderColor: COLORES.primario,
+    backgroundColor: 'rgba(15, 143, 128, 0.04)',
+  },
+  presionado: {
+    backgroundColor: COLORES.primarioSuave,
+  },
+  texto: {
+    fontFamily: FUENTES.bold,
+    fontSize: 15,
+    color: COLORES.primario,
+  },
+});
+
+// ─── ChipsOpcion (una opción, con ícono opcional; usa el mismo chip que ChipIcono) ───
+export const chipsOpcionStyles = StyleSheet.create({
+  contenedor: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+});
+
+// ─── FilaChipsIcono ───
+export const filaChipsIconoStyles = StyleSheet.create({
+  contenido: {
+    gap: 8,
+    paddingRight: 4,
+  },
+});
+
+// ─── HojaContacto ───
+export const hojaContactoStyles = StyleSheet.create({
+  fila: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  sinDatos: {
+    fontFamily: FUENTES.medium,
+    fontSize: 14,
+    color: COLORES.textoSecundario,
+    textAlign: 'center',
+  },
+});
+
+// ─── HojaElegirFoto ───
+export const hojaElegirFotoStyles = StyleSheet.create({
+  fila: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+});
+
+// ─── ContadorNumero (peso de la atención, cupos del refugio) ───
+export const contadorNumeroStyles = StyleSheet.create({
+  fila: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  boton: {
+    width: 64,
+    height: 64,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: RADIOS.md,
+    borderWidth: 1.5,
+    borderColor: COLORES.bordeCampo,
+    backgroundColor: COLORES.blanco,
+  },
+  deshabilitado: {
+    opacity: 0.4,
+  },
+  signo: {
+    fontFamily: FUENTES.bold,
+    fontSize: 26,
+    color: COLORES.texto,
+  },
+  valor: {
+    fontFamily: FUENTES.extrabold,
+    fontSize: 30,
+    color: COLORES.texto,
   },
 });

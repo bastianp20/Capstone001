@@ -1,21 +1,20 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { View } from 'react-native';
 
 import { BotonPrincipal } from '@/components/formulario/BotonPrincipal';
-import { CampoTexto } from '@/components/formulario/CampoTexto';
 import { MensajeFormulario } from '@/components/formulario/MensajeFormulario';
-import { GrillaDias } from '@/components/pedirHora/GrillaDias';
-import { GrillaHoras } from '@/components/pedirHora/GrillaHoras';
-import { ResultadoSolicitud } from '@/components/ui/ResultadoSolicitud';
-import { SelectorDestino } from '@/components/pedirHora/SelectorDestino';
-import { ChipsMultiples } from '@/components/ui/ChipsMultiples';
-import { EstadoCarga } from '@/components/ui/EstadoCarga';
+import { PasoDiaHoraCita } from '@/components/pedirHora/PasoDiaHoraCita';
+import { PasoDondeCita } from '@/components/pedirHora/PasoDondeCita';
+import { PasoMascotaCita } from '@/components/pedirHora/PasoMascotaCita';
 import { EstadoVacio } from '@/components/ui/EstadoVacio';
-import { GrupoCampo } from '@/components/ui/GrupoCampo';
+import { IndicadorPasos } from '@/components/ui/IndicadorPasos';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
-import { SelectorPildoras } from '@/components/ui/SelectorPildoras';
-import { SINTOMAS_FRECUENTES, TEXTOS_CARGA, TEXTOS_INICIO, TEXTOS_PEDIR_HORA as T } from '@/constants/constants';
+import { ResultadoSolicitud } from '@/components/ui/ResultadoSolicitud';
+import { PASOS_PEDIR_HORA, TEXTOS_INICIO, TEXTOS_PEDIR_HORA as T } from '@/constants/constants';
+import { pasosPedirHoraStyles as styles } from '@/css/PedirHoraPage';
 import { usePedirHora } from '@/hooks/usePedirHora';
 
+/** Pedir hora en 3 pasos: Mascota · Dónde · Día y hora. */
 export default function PedirHoraScreen() {
   const params = useLocalSearchParams<{ mascotaId?: string }>();
   const p = usePedirHora(params.mascotaId ? Number(params.mascotaId) : null);
@@ -23,12 +22,7 @@ export default function PedirHoraScreen() {
   if (p.enviada) {
     return (
       <PantallaFormulario titulo={T.titulo}>
-        <ResultadoSolicitud
-          titulo={T.listoTitulo}
-          detalle={T.listoDetalle(p.lugarElegido)}
-          textoBoton={T.verMisCitas}
-          onPress={() => router.replace('/citas')}
-        />
+        <ResultadoSolicitud titulo={T.listoTitulo} detalle={T.listoDetalle(p.lugar)} textoBoton={T.verMisCitas} onPress={() => router.replace('/citas')} />
       </PantallaFormulario>
     );
   }
@@ -41,76 +35,69 @@ export default function PedirHoraScreen() {
     );
   }
 
+  const ultimo = p.paso === PASOS_PEDIR_HORA.length - 1;
+
   return (
     <PantallaFormulario
       titulo={T.titulo}
-      pie={<BotonPrincipal texto={T.enviar} textoCargando={T.enviando} cargando={p.enviando} onPress={p.enviar} />}>
-      <GrupoCampo titulo={T.mascota}>
-        <SelectorPildoras
-          opciones={p.mascotas.map((m) => ({ valor: String(m.id), texto: m.nombre }))}
-          seleccionado={p.mascotaId === null ? '' : String(p.mascotaId)}
-          onSeleccionar={(id) => p.setMascotaId(Number(id))}
-        />
-      </GrupoCampo>
-
-      <GrupoCampo titulo={T.donde}>
-        {p.cargandoCentros ? (
-          <EstadoCarga texto={T.cargando} />
-        ) : p.errorCentros ? (
-          <EstadoVacio icono="cancelar" titulo={T.errorCarga} textoAccion={TEXTOS_CARGA.reintentar} onAccion={p.recargarCentros} />
-        ) : (
-          <SelectorDestino centros={p.centros} destino={p.destino} onElegir={p.elegirDestino} />
-        )}
-      </GrupoCampo>
-
-      {p.destino !== null && (
-        <GrupoCampo
-          titulo={T.veterinario}
-          ayuda={
-            p.especialidad ??
-            (!p.cargandoVeterinarios && p.veterinarios.length === 0
-              ? p.esIndependiente
-                ? T.sinIndependientes
-                : T.sinVeterinarios
-              : undefined)
-          }>
-          {p.cargandoVeterinarios ? (
-            <EstadoCarga />
+      onVolver={p.paso === 0 ? router.back : p.volver}
+      pie={
+        <View style={styles.pie}>
+          <MensajeFormulario tipo="error" texto={p.error} />
+          {ultimo ? (
+            <BotonPrincipal texto={T.enviar} textoCargando={T.enviando} cargando={p.enviando} onPress={p.enviar} tono="coral" />
           ) : (
-            p.opcionesVeterinario.length > 0 && (
-              <SelectorPildoras opciones={p.opcionesVeterinario} seleccionado={p.veterinarioSeleccionado} onSeleccionar={p.elegirVeterinario} />
-            )
+            <BotonPrincipal texto={T.continuar} onPress={p.continuar} tono="coral" conFlecha />
           )}
-        </GrupoCampo>
+        </View>
+      }>
+      <IndicadorPasos pasos={PASOS_PEDIR_HORA} actual={p.paso} />
+
+      {p.paso === 0 && (
+        <PasoMascotaCita
+          mascotas={p.mascotas}
+          mascotaId={p.mascotaId}
+          onMascota={p.setMascotaId}
+          motivo={p.motivo}
+          onMotivo={p.setMotivo}
+          sintomas={p.sintomas}
+          onSintoma={p.alternarSintoma}
+        />
       )}
 
-      {p.destino !== null && (
-        <GrupoCampo titulo={T.dia} ayuda={p.textoHorario ?? undefined}>
-          <GrillaDias dias={p.dias} seleccionado={p.fecha} onElegir={p.elegirFecha} />
-        </GrupoCampo>
+      {p.paso === 1 && (
+        <PasoDondeCita
+          mascota={p.mascota}
+          onCambiarMascota={p.irAMascota}
+          filtro={p.filtro}
+          modo={p.modo}
+          onModo={p.setModo}
+          opciones={p.opciones}
+          elegida={p.claveElegida}
+          onElegir={p.elegirOpcion}
+          resumen={p.resumen}
+          cargando={p.cargandoDestinos}
+          error={p.errorDestinos}
+          onReintentar={p.recargarDestinos}
+        />
       )}
 
-      {p.fecha && (
-        <GrupoCampo titulo={T.hora} ayuda={p.horas.length === 0 ? T.sinHoras : undefined}>
-          <GrillaHoras horas={p.horas} seleccionada={p.hora} onElegir={p.setHora} />
-        </GrupoCampo>
+      {p.paso === 2 && (
+        <PasoDiaHoraCita
+          lugar={p.lugar}
+          opcionesVeterinario={p.opcionesVeterinario}
+          veterinario={p.veterinarioSeleccionado}
+          onVeterinario={p.elegirVeterinario}
+          ayudaVeterinario={p.ayudaVeterinario}
+          dias={p.dias}
+          fecha={p.fecha}
+          onFecha={p.elegirFecha}
+          ayudaDia={p.ayudaDia}
+          horas={p.horas}
+          hora={p.hora}
+          onHora={p.setHora}
+        />
       )}
-
-      <CampoTexto
-        etiqueta={T.motivo}
-        icono="estetoscopio"
-        value={p.motivo}
-        onChangeText={p.setMotivo}
-        placeholder={T.motivoPlaceholder}
-        multiline
-        maxLength={300}
-      />
-
-      <GrupoCampo titulo={T.sintomas}>
-        <ChipsMultiples opciones={SINTOMAS_FRECUENTES} seleccionadas={p.sintomas} onAlternar={p.alternarSintoma} />
-      </GrupoCampo>
-
-      <MensajeFormulario tipo="error" texto={p.error} />
     </PantallaFormulario>
   );
 }

@@ -36,7 +36,8 @@ export default function ResumenSuperadminScreen() {
 
     const mensajesPendientes = d.mensajes.filter((m) => m.estado === 'pendiente').length;
     const eliminacionesPendientes = d.eliminaciones.filter((e) => e.estado === 'pendiente').length;
-    const sinPendientes = !d.solicitudes.length && !mensajesPendientes && !eliminacionesPendientes && !d.solicitudesPlan.length;
+    const sinPendientes =
+      !d.solicitudes.length && !mensajesPendientes && !eliminacionesPendientes && !d.solicitudesPlan.length && !d.moderacion.porRevisar;
 
     return (
       <>
@@ -53,9 +54,20 @@ export default function ResumenSuperadminScreen() {
 
         <View style={styles.seccion}>
           <TituloSeccion texto={T.atencion} />
+          <MensajeFormulario tipo="aviso" texto={r.aviso} />
           {sinPendientes && <MensajeFormulario tipo="aviso" texto={T.todoAlDia} />}
           {d.solicitudes.length > 0 && (
             <TarjetaAccion icono="aprobaciones" tono="crema" titulo={T.aprobaciones} detalle={T.aprobacionesDetalle} cantidad={d.solicitudes.length} onPress={() => router.navigate('/admin/aprobaciones')} />
+          )}
+          {d.moderacion.porRevisar > 0 && (
+            <TarjetaAccion
+              icono="bandera"
+              tono="durazno"
+              titulo={T.moderacion}
+              detalle={T.moderacionDetalle(d.moderacion.urgentes)}
+              cantidad={d.moderacion.porRevisar}
+              onPress={() => router.push('/admin/moderacion')}
+            />
           )}
           {mensajesPendientes > 0 && (
             <TarjetaAccion icono="mensaje" tono="lavanda" titulo={T.mensajes} detalle={T.mensajesDetalle} cantidad={mensajesPendientes} onPress={() => router.navigate('/admin/mensajes')} />

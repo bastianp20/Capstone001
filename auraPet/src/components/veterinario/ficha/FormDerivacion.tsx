@@ -1,12 +1,12 @@
 import { useState, type FormEvent } from "react";
 import { MAX_CARACTERES_DERIVACION, TEXTOS_DERIVACION as T } from "../../../constants";
-import { getDestinosDerivacion } from "../../../Api/getInfo";
 import { crearDerivacion } from "../../../Api/postInfo";
-import { useConsulta } from "../../../hooks/useConsulta";
+import { useDestinosDerivacion } from "../../../hooks/useDestinosDerivacion";
 import { useAccion } from "../../../hooks/useAccion";
 import type { FormDerivacionProps, TipoDestinoDerivacion } from "../../../interfaces";
 import { Boton } from "../../ui/Boton";
 import { ContadorCaracteres } from "../../ui/ContadorCaracteres";
+import { FiltroEspecialidades } from "../../ui/FiltroEspecialidades";
 import styles from "../../../css/ficha/FormularioFicha.module.css";
 
 // El <select> guarda "tipo:id" (p. ej. "centro:3") para saber a qué tabla apunta
@@ -17,14 +17,19 @@ const separarDestino = (valor: string) => {
 
 // Deriva al paciente a otro veterinario o a un centro.
 export const FormDerivacion = ({ mascotaId, onGuardado, onCancelar }: FormDerivacionProps) => {
-  const { datos: destinos = [], cargando, error: errorDestinos } = useConsulta(() => getDestinosDerivacion(), []);
+  const d = useDestinosDerivacion();
+  const { veterinarios, centros, cargando, error: errorDestinos } = d;
   const [destino, setDestino] = useState("");
   const [motivo, setMotivo] = useState("");
   const { ejecutar, ocupado, error } = useAccion();
 
-  const veterinarios = destinos.filter((d) => d.tipo === "veterinario");
-  const centros = destinos.filter((d) => d.tipo === "centro");
   const puedeGuardar = destino !== "" && motivo.trim().length > 0 && !ocupado;
+
+  // Al cambiar el filtro se borra el destino elegido (podría ya no cumplirlo)
+  const cambiarFiltro = (seleccion: number[]) => {
+    d.setSeleccion(seleccion);
+    setDestino("");
+  };
 
   const guardar = async (e: FormEvent) => {
     e.preventDefault();
@@ -38,6 +43,8 @@ export const FormDerivacion = ({ mascotaId, onGuardado, onCancelar }: FormDeriva
 
   return (
     <form className={styles.formulario} onSubmit={guardar}>
+      <FiltroEspecialidades especialidades={d.especialidades} seleccion={d.seleccion} onCambiar={cambiarFiltro}
+        etiqueta={T.filtroEspecialidades} ayuda={T.filtroAyuda} tono="oscuro" />
       <div className={styles.campo}>
         <label htmlFor="derivacion-destino" className={styles.etiqueta}>
           {T.destino}<span className={styles.requerido} aria-hidden="true">*</span>
@@ -47,16 +54,17 @@ export const FormDerivacion = ({ mascotaId, onGuardado, onCancelar }: FormDeriva
           <option value="">{cargando ? "Cargando…" : T.elegirDestino}</option>
           {veterinarios.length > 0 && (
             <optgroup label={T.grupoVeterinarios}>
-              {veterinarios.map((d) => <option key={`v${d.id}`} value={`veterinario:${d.id}`}>{d.nombre} · {d.detalle}</option>)}
+              {veterinarios.map((v) => <option key={`v${v.id}`} value={`veterinario:${v.id}`}>{v.nombre} · {v.detalle}</option>)}
             </optgroup>
           )}
           {centros.length > 0 && (
             <optgroup label={T.grupoCentros}>
-              {centros.map((d) => <option key={`c${d.id}`} value={`centro:${d.id}`}>{d.nombre} · {d.detalle}</option>)}
+              {centros.map((c) => <option key={`c${c.id}`} value={`centro:${c.id}`}>{c.nombre} · {c.detalle}</option>)}
             </optgroup>
           )}
         </select>
         {errorDestinos && <p className={styles.ayuda}>{errorDestinos}</p>}
+        {d.sinCoincidencias && <p className={styles.ayuda} role="status">{T.sinCoincidencias}</p>}
       </div>
 
       <div className={styles.campo}>

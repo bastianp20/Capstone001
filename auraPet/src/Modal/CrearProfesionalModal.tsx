@@ -64,7 +64,8 @@ export const ModalCrearProfesional = ({ onClose }: CrearProfesionalModalProps) =
       telefono: soloNumeros ? `56${soloNumeros}` : "",
       password,
       numeroColegiado,
-      especialidadId: datosVet.especialidadId,
+      especialidadId: datosVet.especialidadIds[0] ?? null,
+      especialidadIds: datosVet.especialidadIds,
       especialidadOtra: datosVet.especialidadOtra,
       centroId: enCentroAuraPet ? datosVet.centroId : null,
       centroMencionado: datosVet.modoCentro === "centro_externo" ? datosVet.centroNombre : "",
@@ -173,7 +174,7 @@ export const ModalCrearProfesional = ({ onClose }: CrearProfesionalModalProps) =
             <div className={styles.completo}>
               <SelectorEspecialidad
                 especialidades={especialidades}
-                especialidadId={datosVet.especialidadId}
+                especialidadIds={datosVet.especialidadIds}
                 especialidadOtra={datosVet.especialidadOtra}
                 onCambiar={cambiarDatosVet}
               />

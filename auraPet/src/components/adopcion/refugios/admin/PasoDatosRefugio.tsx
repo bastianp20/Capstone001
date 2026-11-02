@@ -1,8 +1,9 @@
-import { COMUNAS_SUGERIDAS, MAX_DESCRIPCION_REFUGIO, REGIONES_CHILE, TEXTOS_MODAL_REFUGIO as T } from "../../../../constants";
+import { MAX_DESCRIPCION_REFUGIO, REGIONES_CHILE, TEXTOS_MODAL_REFUGIO as T } from "../../../../constants";
 import type { PasoDatosRefugioProps } from "../../../../interfaces";
 import { CampoSelectAdopcion } from "../../formulario/CampoSelectAdopcion";
 import { CampoTextoAdopcion } from "../../formulario/CampoTextoAdopcion";
 import { InterruptorAdopcion } from "../../formulario/InterruptorAdopcion";
+import { CampoComunaRefugio } from "../gestion/CampoComunaRefugio";
 import { CampoImagenesRefugio } from "../gestion/CampoImagenesRefugio";
 import { CampoTelefono } from "../gestion/CampoTelefono";
 
@@ -20,23 +21,7 @@ export const PasoDatosRefugio = ({ datos, errores, onCambiar, onLogo, onPortada,
         onCambiar={(v) => onCambiar("region", v)}
         error={errores.region}
       />
-      <div className="adopta-campo">
-        <label htmlFor="refugio-comuna">{T.comuna}</label>
-        <input
-          id="refugio-comuna"
-          className={`adopta-input ${errores.comuna ? "adopta-input-error" : ""}`}
-          list={datos.region === "Metropolitana" ? "refugio-comunas" : undefined}
-          value={datos.comuna}
-          maxLength={60}
-          onChange={(e) => onCambiar("comuna", e.target.value)}
-        />
-        <datalist id="refugio-comunas">
-          {COMUNAS_SUGERIDAS.map((c) => (
-            <option key={c} value={c} />
-          ))}
-        </datalist>
-        {errores.comuna && <p className="adopta-campo-error">{errores.comuna}</p>}
-      </div>
+      <CampoComunaRefugio id="refugio-comuna" etiqueta={T.comuna} region={datos.region} valor={datos.comuna} onCambiar={(v) => onCambiar("comuna", v)} error={errores.comuna} />
     </div>
     <div className="ra-fila-campos">
       <CampoTelefono id="refugio-telefono" etiqueta={T.telefono} valor={datos.telefono} onCambiar={(v) => onCambiar("telefono", v)} error={errores.telefono} />

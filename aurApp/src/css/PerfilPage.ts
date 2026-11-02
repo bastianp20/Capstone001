@@ -20,6 +20,28 @@ export const cabeceraPerfilStyles = StyleSheet.create({
     gap: 2,
     marginTop: -70, // el avatar se monta sobre la onda del encabezado
   },
+  foto: {
+    position: 'relative',
+  },
+  marco: {
+    borderRadius: 50,
+    padding: 3,
+    backgroundColor: COLORES.blanco,
+    boxShadow: '0 8px 20px rgba(11, 59, 53, 0.18)',
+  },
+  camara: {
+    position: 'absolute',
+    right: -2,
+    bottom: 2,
+    width: 34,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 17,
+    borderWidth: 3,
+    borderColor: COLORES.blanco,
+    backgroundColor: COLORES.coral,
+  },
   nombre: {
     fontFamily: FUENTES.extrabold,
     fontSize: 22,
@@ -99,5 +121,44 @@ export const menuPerfilStyles = StyleSheet.create({
     borderRadius: RADIOS.md,
     backgroundColor: COLORES.blanco,
     boxShadow: '0 6px 18px rgba(11, 59, 53, 0.08)',
+  },
+});
+
+// ─── HojaFotoPerfil ───
+export const hojaFotoPerfilStyles = StyleSheet.create({
+  vista: {
+    alignSelf: 'center',
+    marginBottom: 4,
+  },
+  cargando: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 44,
+    backgroundColor: 'rgba(15, 23, 32, 0.45)',
+  },
+  fila: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  ayuda: {
+    fontFamily: FUENTES.medium,
+    fontSize: 13,
+    color: COLORES.textoSecundario,
+    textAlign: 'center',
+  },
+  cancelar: {
+    alignSelf: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+  },
+  cancelarTexto: {
+    fontFamily: FUENTES.bold,
+    fontSize: 16,
+    color: COLORES.texto,
   },
 });

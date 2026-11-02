@@ -2,19 +2,21 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import {
   User, Lock, Palette, Bell, ShieldCheck, CircleHelp,
-  ChevronRight, ChevronDown, Eye, EyeOff, LogOut, X,
+  ChevronRight, ChevronDown, Eye, EyeOff, LogOut, Stethoscope, X,
 } from "lucide-react";
 import { useAuth } from "../Auth/AuthContext";
 import { supabase } from "../lib/supabase";
-import { getIniciales } from "../utils";
 import { aplicarTema, leerTema } from "../lib/tema";
-import { ESTILO_ROL, OPCIONES_TEMA } from "../constants";
+import { ESTILO_ROL, OPCIONES_TEMA, TEXTOS_MIS_ESPECIALIDADES } from "../constants";
 import type {
   CampoClaveProps, ConfiguracionModalProps, FilaConfiguracionProps, SeccionConfiguracion, SeccionPerfilProps,
   SeccionSeguridadProps, Tema,
 } from "../interfaces";
 import { SeccionPrivacidad } from "../components/configuracion/SeccionPrivacidad";
+import { SeccionEspecialidades } from "../components/configuracion/SeccionEspecialidades";
 import styles from "../css/modal/ConfiguracionModal.module.css";
+import { FotoPerfil } from "../components/perfil/FotoPerfil";
+import { CampoFotoPerfil } from "../components/perfil/CampoFotoPerfil";
 
 
 // =====================================================================
@@ -47,7 +49,7 @@ export const ConfiguracionModal = ({ onCerrar }: ConfiguracionModalProps) => {
 
         {/* ---------- Tarjeta de perfil ---------- */}
         <div className={styles.perfil}>
-          <div className={styles.avatar}>{getIniciales(usuarioActual.nombre)}</div>
+          <FotoPerfil nombre={usuarioActual.nombre} url={usuarioActual.avatarUrl} className={styles.avatar} />
           <div>
             <p className={styles.perfilNombre}>{usuarioActual.nombre}</p>
             <p className={styles.perfilCorreo}>{usuarioActual.email}</p>
@@ -57,10 +59,17 @@ export const ConfiguracionModal = ({ onCerrar }: ConfiguracionModalProps) => {
 
         {/* ---------- Acordeón ---------- */}
         <div className={styles.lista}>
-          <Fila icono={<User size={18} />} titulo="Editar perfil" descripcion="Nombre y teléfono"
+          <Fila icono={<User size={18} />} titulo="Editar perfil" descripcion="Foto, nombre y teléfono"
                 abierta={abierta === "perfil"} onClick={() => alternar("perfil")}>
             <SeccionPerfil onGuardado={() => setAbierta(null)} />
           </Fila>
+
+          {usuarioActual.rol === "veterinario" && (
+            <Fila icono={<Stethoscope size={18} />} titulo={TEXTOS_MIS_ESPECIALIDADES.fila} descripcion={TEXTOS_MIS_ESPECIALIDADES.filaDetalle}
+                  abierta={abierta === "especialidades"} onClick={() => alternar("especialidades")}>
+              <SeccionEspecialidades onGuardado={() => setAbierta(null)} />
+            </Fila>
+          )}
 
           <Fila icono={<Lock size={18} />} titulo="Seguridad" descripcion="Contraseña y sesiones"
                 abierta={abierta === "seguridad"} onClick={() => alternar("seguridad")}>
@@ -155,6 +164,7 @@ const SeccionPerfil = ({ onGuardado }: SeccionPerfilProps) => {
 
   return (
     <form className={styles.form} onSubmit={guardar}>
+      <CampoFotoPerfil nombre={usuarioActual?.nombre ?? ""} />
       <label className={styles.campo}>
         Nombre completo
         <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />

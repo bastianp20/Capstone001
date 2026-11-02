@@ -7,7 +7,7 @@ import LogoAuraPetSinFondo from "../../assets/logo/LogoAuraPetSinFondo.png";
 import styles from "../../css/superadmin/SuperAdminLayout.module.css";
 
 // Menú lateral del superadmin. "Aprobaciones" muestra cuántas hay pendientes.
-export const MenuLateralSuperAdmin = ({ seccion, pendientes, onCambiar, onDarEnAdopcion, conRefugio }: MenuLateralSuperAdminProps) => (
+export const MenuLateralSuperAdmin = ({ seccion, pendientes, onCambiar, onDarEnAdopcion, conRefugio, contadores = {} }: MenuLateralSuperAdminProps) => (
   <aside className={styles.sidebar}>
     <div className={styles.marca}>
       <img src={LogoAuraPetSinFondo} alt="" className={styles.logo} />
@@ -25,7 +25,9 @@ export const MenuLateralSuperAdmin = ({ seccion, pendientes, onCambiar, onDarEnA
         >
           <Icono size={17} aria-hidden="true" />
           <span className={styles.itemMenuTexto}>{texto}</span>
-          {s === "aprobaciones" && pendientes > 0 && <span className={styles.contador}>{pendientes}</span>}
+          {(s === "aprobaciones" ? pendientes : contadores[s] ?? 0) > 0 && (
+            <span className={styles.contador}>{s === "aprobaciones" ? pendientes : contadores[s]}</span>
+          )}
         </button>
       ))}
     </nav>

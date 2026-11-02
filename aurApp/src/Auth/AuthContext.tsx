@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { AVISOS_SESION } from '@/constants/constants';
 import type { AuthContextValue, AuthProviderProps, DatosRegistro, UsuarioActual } from '@/interfaces';
 import { traducirErrorAuth } from '@/lib/erroresAuth';
+import { urlFotoPerfil } from '@/lib/fotoPerfil';
 import { soloDigitos } from '@/lib/formularios';
 import { supabase } from '@/lib/supabase';
 
@@ -66,7 +67,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             nombre: data.nombre,
             rol: data.rol,
             telefono: data.telefono,
-            avatarUrl: data.avatar_url,
+            avatarUrl: urlFotoPerfil(data.avatar_url),
+            avatarRuta: data.avatar_url,
             esPrueba: data.es_prueba,
           },
         });

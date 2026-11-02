@@ -109,3 +109,35 @@ export const armarHtmlFicha = (f: FichaPdfCruda): string => {
     <footer>${T.pie} · ${aFechaDia(new Date())}</footer>
   </body></html>`;
 };
+
+/** Una sola receta (la que se acaba de crear) en PDF, con firma y N° de colegiado. */
+export const armarHtmlReceta = (f: FichaPdfCruda, recetaId: number): string | null => {
+  const r = f.recetas.find((x) => x.id === recetaId);
+  if (!r) return null;
+  const m = f.mascota;
+  return `<!doctype html><html><head><meta charset="utf-8"><style>${ESTILOS}
+    .firma { margin-top: 48px; text-align: center; }
+    .firma div { width: 220px; margin: 0 auto 6px; border-top: 1px solid #1A1F27; }
+  </style></head><body>
+    <header>
+      <div><div class="marca">AuraPet</div><h1>${T.receta}</h1></div>
+      <div class="gris">#${String(m.id).padStart(6, '0')}-R${r.id}<br>${formatFechaLarga(r.fecha.slice(0, 10))}</div>
+    </header>
+    <h2>${T.paciente}</h2>
+    <div class="grilla">
+      ${dato(T.paciente, m.nombre)}
+      ${dato(T.especie, capitalizar(m.especie))}
+      ${dato(T.peso, m.peso_kg !== null ? formatearPeso(m.peso_kg) : null)}
+      ${dato(T.tutor, f.tutor.nombre)}
+    </div>
+    ${m.alergias ? `<div class="alerta"><strong>${T.alergias}:</strong> ${escapar(m.alergias)}</div>` : ''}
+    <h2>${T.recetas}</h2>
+    <table><tr><th>${T.medicamento}</th><th>${T.dosis}</th><th>${T.frecuencia}</th><th>${T.duracion}</th></tr>${r.medicamentos
+      .map((md) => `<tr><td><strong>${escapar(md.nombre)}</strong></td><td>${escapar(md.dosis)}</td><td>${escapar(md.frecuencia)}</td><td>${escapar(md.duracion)}</td></tr>`)
+      .join('')}</table>
+    ${r.indicaciones ? `<h2>${T.indicaciones}</h2><p>${escapar(r.indicaciones)}</p>` : ''}
+    ${r.proximo_control ? `<p><span class="gris">${T.proximoControl}:</span> <strong>${formatFechaLarga(r.proximo_control)}</strong></p>` : ''}
+    <div class="firma"><div></div>${o(r.veterinario)}${r.colegiado ? ` · N° colegiado ${escapar(r.colegiado)}` : ''}${r.centro ? `<br><span class="gris">${escapar(r.centro)}</span>` : ''}</div>
+    <footer>${T.pie} · ${aFechaDia(new Date())}</footer>
+  </body></html>`;
+};

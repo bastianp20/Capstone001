@@ -321,7 +321,7 @@ export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) =
                     />
                     <SelectorEspecialidad
                       especialidades={especialidades}
-                      especialidadId={datosVet.especialidadId}
+                      especialidadIds={datosVet.especialidadIds}
                       especialidadOtra={datosVet.especialidadOtra}
                       onCambiar={cambiarDatosVet}
                     />

@@ -1,10 +1,11 @@
 import { Ban, BadgeCheck, Mail, MapPin, PawPrint, Pencil, Phone } from "lucide-react";
-import { COLOR_RECEPCION_REFUGIO, MAX_FOTOS_DETALLE_REFUGIO, RECEPCION_REFUGIO_OPCIONES, TEXTOS_REFUGIOS_ADMIN as T } from "../../../../constants";
+import { COLOR_RECEPCION_REFUGIO, MAX_FOTOS_DETALLE_REFUGIO, RECEPCION_REFUGIO_OPCIONES, TEXTOS_POSTULACION_ADMIN as TP, TEXTOS_REFUGIOS_ADMIN as T } from "../../../../constants";
 import { useChecklist } from "../../../../hooks/useChecklist";
 import type { PanelDetalleRefugioProps } from "../../../../interfaces";
 import { ocupacionRefugio } from "../../../../lib/publicacionesAdopcion";
 import { AnilloProgreso } from "../../comun/AnilloProgreso";
 import { PanelLateralAdopcion } from "../../comun/PanelLateralAdopcion";
+import { DatosPostulacionRefugio } from "./DatosPostulacionRefugio";
 import { ChipEstadoRefugio } from "../gestion/ChipEstadoRefugio";
 import { IconosEspecies } from "../gestion/IconosEspecies";
 import { ListaAdministradores } from "../gestion/ListaAdministradores";
@@ -15,6 +16,7 @@ import { telefonoParaMostrar } from "../../../../lib/refugios";
 export const PanelDetalleRefugio = ({ refugio: r, ocupado, onCerrar, onEditar, onVerificar }: PanelDetalleRefugioProps) => {
   const checklist = useChecklist(T.itemsChecklist.length);
   const porRevisar = r.estado === "pendiente";
+  const conInvitacion = !!r.correoAcceso && !r.administradores.length;
   const recepcion = RECEPCION_REFUGIO_OPCIONES.find((o) => o.valor === r.recibe);
 
   const pie = porRevisar ? (
@@ -23,7 +25,7 @@ export const PanelDetalleRefugio = ({ refugio: r, ocupado, onCerrar, onEditar, o
         <Ban size={16} aria-hidden /> {T.rechazar}
       </button>
       <button type="button" className="ap-btn ap-btn-primario" disabled={ocupado || !checklist.completa} onClick={() => onVerificar(true)}>
-        <BadgeCheck size={16} aria-hidden /> {T.aprobar}
+        <BadgeCheck size={16} aria-hidden /> {conInvitacion ? TP.aprobarInvitar : T.aprobar}
       </button>
     </>
   ) : (
@@ -59,6 +61,8 @@ export const PanelDetalleRefugio = ({ refugio: r, ocupado, onCerrar, onEditar, o
         </p>
         <p>{r.descripcion || <span className="ap-suave">{T.sinDescripcion}</span>}</p>
       </div>
+
+      <DatosPostulacionRefugio refugio={r} />
 
       <section className="ra-detalle-bloque ra-detalle-capacidad">
         <h3>{T.capacidad}</h3>

@@ -83,7 +83,7 @@
 .ra-menu { position: relative; display: flex; justify-content: flex-end; }
 .ra-menu-boton { width: 32px; height: 32px; border-radius: 10px; }
 .ra-menu-lista {
-  position: absolute; top: calc(100% + 6px); right: 0; z-index: 20; min-width: 210px; padding: 6px;
+  position: fixed; z-index: 80; min-width: 210px; padding: 6px;
   display: flex; flex-direction: column; border-radius: 14px; background: var(--ap-superficie);
   border: 1px solid var(--ap-borde); box-shadow: 0 18px 40px rgba(18, 24, 31, 0.16);
 }
@@ -184,3 +184,23 @@
 @media (prefers-reduced-motion: reduce) {
   .ra-punto-ambar, .ra-modal { animation: none; }
 }
+
+/* ---------- Datos de la postulación (Súmate a AuraPet, migración 48) ---------- */
+.ra-postulacion-fotos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.ra-postulacion-fotos a { display: block; border-radius: 12px; overflow: hidden; }
+.ra-postulacion-fotos img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; transition: transform 0.2s ease; }
+.ra-postulacion-fotos a:hover img { transform: scale(1.05); }
+.ra-postulacion-fotos a:focus-visible { outline: 3px solid var(--ap-acento); outline-offset: 2px; }
+.ra-postulacion-datos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; margin: 0; }
+.ra-postulacion-datos dt { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ap-suave); }
+.ra-postulacion-datos dd { margin: 2px 0 0; font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+.ra-postulacion-datos a { color: var(--ap-acento); }
+.ra-postulacion-mensaje { grid-column: 1 / -1; }
+.ra-postulacion-mensaje dd { font-weight: 400; padding: 10px 12px; border-radius: 12px; background: var(--ap-superficie-suave); line-height: 1.5; }
+.ra-postulacion-cuenta {
+  display: flex; gap: 8px; align-items: flex-start; margin: 0 !important; padding: 10px 12px; border-radius: 12px;
+  background: var(--ap-ambar-fondo); font-size: 13.5px; line-height: 1.45;
+}
+.ra-postulacion-cuenta svg { flex: none; margin-top: 1px; color: #b26b00; }
+.ra-postulacion-cuenta-con { background: var(--ap-menta); }
+.ra-postulacion-cuenta-con svg { color: var(--ap-acento); }

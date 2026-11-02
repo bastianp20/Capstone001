@@ -1,6 +1,6 @@
 // aquí van las acciones que CREAN o CAMBIAN datos en la base (los "POST").
-import type { DatosNuevaMascota, DatosNuevoCentro, DatosNuevoDueno, DatosNuevoProfesional, DatosNuevoSuperadmin, DatosEdicionCentro, DatosNuevoAdministrativo, CambioCita, DatosSolicitudCita, CambiosCuenta, NuevoRegistroMedico, CambiosDatosClinicos, DatosSolicitudCentro, NuevaReceta, NuevaDerivacion, DatosContacto, EstadoContacto, DatosNota, DatosPostulacionAdopcion, DatosPublicarAdopcion, DatosAtencionAdopcion, DatosConcretarAdopcion, DatosEditarMiRefugio, DatosRefugio, ImagenRefugio, RecepcionRefugio } from "../interfaces";
-import { BUCKET_ADOPCIONES } from "../constants";
+import type { DatosNuevaMascota, DatosNuevoCentro, DatosNuevoDueno, DatosNuevoProfesional, DatosNuevoSuperadmin, DatosEdicionCentro, DatosNuevoAdministrativo, CambioCita, DatosSolicitudCita, CambiosCuenta, NuevoRegistroMedico, CambiosDatosClinicos, DatosSolicitudCentro, NuevaReceta, NuevaDerivacion, DatosContacto, EstadoContacto, DatosNota, DatosPostulacionAdopcion, DatosPublicarAdopcion, DatosAtencionAdopcion, DatosConcretarAdopcion, DatosEditarMiRefugio, DatosPostularRefugio, DatosRefugio, DecisionModeracion, ImagenRefugio, MotivoReporte, RecepcionRefugio, ResultadoAprobarRefugio } from "../interfaces";
+import { BUCKET_ADOPCIONES, BUCKET_AVATARES, CARPETA_POSTULACIONES, RUTA_NUEVA_PASSWORD } from "../constants";
 import { fechaDesdeEdad } from "../lib/adopcion";
 import { telefonoParaGuardar } from "../lib/refugios";
 import { nulable } from "../lib/argumentosRpc";
@@ -401,7 +401,13 @@ export const solicitarEliminacionCuenta = async (motivo: string) => {
   if (error) throw new Error(error.message || "No se pudo enviar la solicitud.");
 };
 
-// SUPERADMIN: aprobar (desactiva la cuenta) o rechazar con una respuesta
+// Arrepentirse mientras está en revisión (migración 49)
+export const cancelarSolicitudEliminacion = async () => {
+  const { error } = await supabase.rpc("cancelar_solicitud_eliminacion");
+  if (error) throw new Error(error.message || "No se pudo cancelar la solicitud.");
+};
+
+// SUPERADMIN: aprobar (desactiva la cuenta y cancela sus citas futuras) o rechazar con una respuesta
 export const resolverSolicitudEliminacion = async (solicitudId: number, aprobar: boolean, respuesta?: string) => {
   const { error } = await supabase.rpc("resolver_solicitud_eliminacion", {
     p_solicitud_id: solicitudId,
@@ -562,12 +568,12 @@ export const registrarAtencionAdopcion = async (adopcionId: number, d: DatosAten
 
 // ---------- GESTIÓN DE REFUGIOS (migración 42) ----------
 
-// Sube el logo o la portada nueva a la carpeta de quien edita (bucket de adopciones).
-// Si la imagen no cambió, devuelve la ruta que ya tenía.
-const subirImagenRefugio = async (perfilId: string, imagen: ImagenRefugio, tipo: "logo" | "portada", subidas: string[]): Promise<string | null> => {
+// Sube el logo o la portada nueva a una carpeta del bucket de adopciones
+// (la de quien edita: "<perfil>/refugios"). Si la imagen no cambió, devuelve la ruta que ya tenía.
+const subirImagenRefugio = async (carpeta: string, imagen: ImagenRefugio, tipo: "logo" | "portada", subidas: string[]): Promise<string | null> => {
   if (!imagen.archivo) return imagen.ruta;
   const extension = imagen.archivo.name.split(".").pop()?.toLowerCase() || "jpg";
-  const ruta = `${perfilId}/refugios/${tipo}-${Date.now()}.${extension}`;
+  const ruta = `${carpeta}/${tipo}-${Date.now()}.${extension}`;
   const { error } = await supabase.storage
     .from(BUCKET_ADOPCIONES)
     .upload(ruta, imagen.archivo, { contentType: imagen.archivo.type, upsert: false });
@@ -580,8 +586,8 @@ const subirImagenRefugio = async (perfilId: string, imagen: ImagenRefugio, tipo:
 export const guardarRefugio = async (perfilId: string, refugioId: number | null, d: DatosRefugio): Promise<number> => {
   const subidas: string[] = [];
   try {
-    const logo = await subirImagenRefugio(perfilId, d.logo, "logo", subidas);
-    const portada = await subirImagenRefugio(perfilId, d.portada, "portada", subidas);
+    const logo = await subirImagenRefugio(`${perfilId}/refugios`, d.logo, "logo", subidas);
+    const portada = await subirImagenRefugio(`${perfilId}/refugios`, d.portada, "portada", subidas);
     const { data, error } = await supabase.rpc("guardar_refugio", {
       p_id: nulable(refugioId),
       p_nombre: d.nombre.trim(),
@@ -607,6 +613,62 @@ export const guardarRefugio = async (perfilId: string, refugioId: number | null,
   }
 };
 
+// "Súmate a AuraPet": sube logo y fotos del lugar y postula (migración 48).
+// Con sesión van a la carpeta propia; sin sesión, a "postulaciones/<código>"
+// (quien no tiene cuenta solo puede subir ahí). Si algo falla, intenta borrar lo subido.
+export const postularRefugio = async (perfilId: string | null, d: DatosPostularRefugio): Promise<number> => {
+  const subidas: string[] = [];
+  const bucket = supabase.storage.from(BUCKET_ADOPCIONES);
+  const carpeta = perfilId ? `${perfilId}/refugios` : `${CARPETA_POSTULACIONES}/${crypto.randomUUID()}`;
+  try {
+    const logo = await subirImagenRefugio(carpeta, d.logo, "logo", subidas);
+    const fotos: string[] = [];
+    for (const [i, foto] of d.fotos.entries()) {
+      const extension = foto.archivo.name.split(".").pop()?.toLowerCase() || "jpg";
+      const ruta = `${carpeta}/lugar-${Date.now()}-${i}.${extension}`;
+      const { error } = await bucket.upload(ruta, foto.archivo, { contentType: foto.archivo.type, upsert: false });
+      if (error) throw new Error("No se pudieron subir las fotos.");
+      subidas.push(ruta);
+      fotos.push(ruta);
+    }
+    const { data, error } = await supabase.rpc("postular_refugio", {
+      p_nombre: d.nombre.trim(),
+      p_region: d.region,
+      p_comuna: d.comuna.trim(),
+      p_descripcion: d.descripcion.trim(),
+      p_logo_url: nulable(logo),
+      p_cupos_totales: d.cuposTotales,
+      p_cupos_ocupados: d.cuposOcupados,
+      p_recibe: d.recibe,
+      p_especies: d.especies,
+      p_fotos: fotos,
+      p_responsable: d.responsable.trim(),
+      p_telefono: nulable(telefonoParaGuardar(d.telefono)),
+      p_correo: d.correo.trim(),
+      p_sitio_web: d.sitioWeb.trim(),
+      p_mensaje: d.mensaje.trim(),
+    });
+    if (error) throw new Error(error.message || "No se pudo enviar la postulación.");
+    return data;
+  } catch (e) {
+    if (subidas.length) await bucket.remove(subidas);
+    throw e;
+  }
+};
+
+// Aprueba una postulación hecha sin cuenta: la edge function invita al correo
+// (o la vincula a la cuenta que ya tenga) y deja el refugio aprobado.
+export const aprobarRefugioConInvitacion = async (refugioId: number): Promise<ResultadoAprobarRefugio> => {
+  const { data, error } = await supabase.functions.invoke<ResultadoAprobarRefugio>("aprobar-refugio", {
+    body: { refugioId, redirigir: `${window.location.origin}${RUTA_NUEVA_PASSWORD}` },
+  });
+  if (error) {
+    const detalle = await error.context?.json?.().catch(() => null);
+    throw new Error(detalle?.error ?? "No se pudo aprobar el refugio.");
+  }
+  return data!;
+};
+
 export const verificarRefugio = async (refugioId: number, aprobar: boolean) => {
   const { error } = await supabase.rpc("verificar_refugio", { p_id: refugioId, p_aprobar: aprobar });
   if (error) throw new Error(error.message || "No se pudo actualizar el refugio.");
@@ -627,8 +689,8 @@ export const actualizarCapacidadRefugio = async (refugioId: number, cambio: { cu
 export const editarMiRefugio = async (perfilId: string, refugioId: number, d: DatosEditarMiRefugio) => {
   const subidas: string[] = [];
   try {
-    const logo = await subirImagenRefugio(perfilId, d.logo, "logo", subidas);
-    const portada = await subirImagenRefugio(perfilId, d.portada, "portada", subidas);
+    const logo = await subirImagenRefugio(`${perfilId}/refugios`, d.logo, "logo", subidas);
+    const portada = await subirImagenRefugio(`${perfilId}/refugios`, d.portada, "portada", subidas);
     const { data, error } = await supabase
       .from("refugios")
       .update({
@@ -647,4 +709,59 @@ export const editarMiRefugio = async (perfilId: string, refugioId: number, d: Da
     if (subidas.length) await supabase.storage.from(BUCKET_ADOPCIONES).remove(subidas);
     throw e;
   }
+};
+
+// ---------- ELIMINAR (DESACTIVAR) CENTROS (migración 43) ----------
+// Devuelve cuántas citas futuras se cancelaron.
+export const desactivarCentro = async (centroId: number, motivo: string): Promise<number> => {
+  const { data, error } = await supabase.rpc("desactivar_centro", { p_centro_id: centroId, p_motivo: motivo });
+  if (error) throw new Error(error.message || "No se pudo eliminar el centro.");
+  return data ?? 0;
+};
+
+export const reactivarCentro = async (centroId: number) => {
+  const { error } = await supabase.rpc("reactivar_centro", { p_centro_id: centroId });
+  if (error) throw new Error(error.message || "No se pudo reactivar el centro.");
+};
+
+// ---------- FOTO DE PERFIL (migración 44) ----------
+// Sube la foto nueva a la carpeta de la persona, la deja en su perfil y borra la anterior.
+export const guardarFotoPerfil = async (perfilId: string, archivo: File, rutaAnterior: string | null): Promise<string> => {
+  const bucket = supabase.storage.from(BUCKET_AVATARES);
+  const ruta = `${perfilId}/avatar-${Date.now()}.jpg`;
+  const { error: errorSubida } = await bucket.upload(ruta, archivo, { contentType: archivo.type, upsert: false });
+  if (errorSubida) throw new Error("No se pudo subir la foto.");
+  const { error } = await supabase.from("perfiles").update({ avatar_url: ruta }).eq("id", perfilId);
+  if (error) {
+    await bucket.remove([ruta]);
+    throw new Error(error.message || "No se pudo guardar la foto.");
+  }
+  if (rutaAnterior) await bucket.remove([rutaAnterior]);
+  return ruta;
+};
+
+export const quitarFotoPerfil = async (perfilId: string, ruta: string | null) => {
+  const { error } = await supabase.from("perfiles").update({ avatar_url: null }).eq("id", perfilId);
+  if (error) throw new Error(error.message || "No se pudo quitar la foto.");
+  if (ruta) await supabase.storage.from(BUCKET_AVATARES).remove([ruta]);
+};
+
+// ---------- ESPECIALIDADES DEL VETERINARIO (migración 45) ----------
+// Deja exactamente las marcadas (sin límite). La primera queda como principal.
+export const guardarMisEspecialidades = async (ids: number[], otra: string) => {
+  const { error } = await supabase.rpc("guardar_especialidades_veterinario", { p_ids: ids, p_otra: otra.trim() });
+  if (error) throw new Error(error.message || "No se pudieron guardar las especialidades.");
+};
+
+// ---------- REPORTES Y MODERACIÓN (migración 47) ----------
+// Devuelve el id del reporte (para mostrar su número).
+export const reportarAdopcion = async (adopcionId: number, motivo: MotivoReporte, comentario: string): Promise<number> => {
+  const { data, error } = await supabase.rpc("reportar_adopcion", { p_adopcion_id: adopcionId, p_motivo: motivo, p_comentario: comentario.trim() });
+  if (error) throw new Error(error.message || "No se pudo enviar el reporte.");
+  return data;
+};
+
+export const resolverModeracion = async (adopcionId: number, decision: DecisionModeracion, mensaje = "") => {
+  const { error } = await supabase.rpc("resolver_moderacion", { p_adopcion_id: adopcionId, p_decision: decision, p_mensaje: mensaje.trim() });
+  if (error) throw new Error(error.message || "No se pudo guardar la decisión.");
 };

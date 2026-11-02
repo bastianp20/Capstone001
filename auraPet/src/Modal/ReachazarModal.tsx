@@ -16,8 +16,13 @@ export const RechazarModal = ({
   titulo = TEXTOS_RECHAZO.titulo,
   descripcion = TEXTOS_RECHAZO.descripcion,
   ocupado = false,
+  textoConfirmar = TEXTOS_RECHAZO.confirmar,
+  textoProcesando = TEXTOS_RECHAZO.procesando,
+  placeholder = TEXTOS_RECHAZO.placeholder,
+  valorInicial = "",
+  etiqueta = TEXTOS_RECHAZO.etiqueta,
 }: RechazarModalProps) => {
-  const [razon, setRazon] = useState("");
+  const [razon, setRazon] = useState(valorInicial);
   const id = useId(); // ids únicos para enlazar título, descripción y label (accesibilidad)
   const puedeConfirmar = razon.trim().length > 0 && !ocupado;
 
@@ -62,7 +67,7 @@ export const RechazarModal = ({
           <p id={`${id}-descripcion`} className={styles.descripcion}>{descripcion}</p>
 
           <label htmlFor={`${id}-razon`} className={styles.etiqueta}>
-            {TEXTOS_RECHAZO.etiqueta}
+            {etiqueta}
             <span className={styles.requerido} aria-hidden="true">*</span>
           </label>
           <textarea
@@ -72,7 +77,7 @@ export const RechazarModal = ({
             onChange={(e) => setRazon(e.target.value)}
             rows={4}
             maxLength={MAX_CARACTERES_RECHAZO}
-            placeholder={TEXTOS_RECHAZO.placeholder}
+            placeholder={placeholder}
             disabled={ocupado}
             required
             autoFocus
@@ -97,7 +102,7 @@ export const RechazarModal = ({
             aria-busy={ocupado}
           >
             {ocupado && <Spinner />}
-            {ocupado ? TEXTOS_RECHAZO.procesando : TEXTOS_RECHAZO.confirmar}
+            {ocupado ? textoProcesando : textoConfirmar}
           </button>
         </footer>
       </div>

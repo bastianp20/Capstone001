@@ -14,17 +14,9 @@ export const useFormularioRefugio = (refugio: RefugioAdmin | null, onGuardado: (
   const { usuarioActual } = useAuth();
   const inicial = useMemo(() => (refugio ? datosDesdeRefugio(refugio) : DATOS_REFUGIO_VACIOS), [refugio]);
   const f = useFormularioPasos<DatosRefugio, CampoRefugio>({ inicial, pasos: PASOS_REFUGIO, validar: validarRefugio });
-  const imagenes = useImagenesRefugio();
   const accion = useAccion();
   const { datos, actualizar } = f;
-
-  const elegirImagen = useCallback(
-    (campo: "logo" | "portada") => (archivo: File) => {
-      const nueva = imagenes.elegir(datos[campo], archivo);
-      if (nueva) actualizar(campo, nueva);
-    },
-    [imagenes, datos, actualizar],
-  );
+  const imagenes = useImagenesRefugio((campo, archivo, vista) => actualizar(campo, { ruta: datos[campo].ruta, archivo, vista }));
 
   const agregarAdmin = useCallback(
     (c: CuentaEncontrada) => {
@@ -47,9 +39,12 @@ export const useFormularioRefugio = (refugio: RefugioAdmin | null, onGuardado: (
   return {
     ...f,
     esNuevo: !refugio,
-    elegirLogo: elegirImagen("logo"),
-    elegirPortada: elegirImagen("portada"),
+    elegirLogo: imagenes.elegir("logo"),
+    elegirPortada: imagenes.elegir("portada"),
     errorImagen: imagenes.error,
+    porRecortar: imagenes.porRecortar,
+    recortada: imagenes.recortada,
+    cancelarRecorte: imagenes.cancelarRecorte,
     agregarAdmin,
     quitarAdmin,
     guardar,

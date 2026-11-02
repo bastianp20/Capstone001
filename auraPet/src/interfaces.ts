@@ -38,6 +38,11 @@ export interface RechazarModalProps {
   titulo?: string;                    // por defecto TEXTOS_RECHAZO.titulo
   descripcion?: string;               // por defecto TEXTOS_RECHAZO.descripcion
   ocupado?: boolean;                  // true mientras se guarda: bloquea el modal y muestra "Rechazando…"
+  textoConfirmar?: string;            // por defecto TEXTOS_RECHAZO.confirmar
+  textoProcesando?: string;           // por defecto TEXTOS_RECHAZO.procesando
+  placeholder?: string;               // por defecto TEXTOS_RECHAZO.placeholder
+  valorInicial?: string;              // texto sugerido con el que parte el campo
+  etiqueta?: string;                  // por defecto TEXTOS_RECHAZO.etiqueta ("Motivo")
 }
 
 export interface SpinnerProps {
@@ -222,7 +227,8 @@ export interface UsuarioActual {
   nombre: string;
   rol: RolCuenta;
   telefono: number | null;
-  avatarUrl: string | null;
+  avatarUrl: string | null;   // URL pública de la foto de perfil (migración 44)
+  avatarRuta: string | null;  // ruta en el bucket "avatares" (para cambiarla o quitarla)
   esPrueba: boolean;          // cuenta del equipo de desarrollo: usa solo centros de prueba
 }
 
@@ -343,7 +349,8 @@ export interface DatosNuevoProfesional {
   telefono: string;          // "56912345678" o "" si no hay
   password: string;           // la elige el superadmin (mín. 6 caracteres)
   numeroColegiado: string;
-  especialidadId: number | null;
+  especialidadId: number | null;   // la principal (la primera de especialidadIds)
+  especialidadIds: number[];        // todas las marcadas (migración 45)
   especialidadOtra: string;   // "" si no tiene o está en el catálogo
   centroId: number | null;    // null = independiente o centro que aún no está en AuraPet
   centroMencionado: string;   // centro que aún no está en AuraPet ("" si no aplica)
@@ -870,7 +877,7 @@ export interface BarraFiltrosProps<F extends string> {
 // =====================================================================
 export type FiltroUsuarios = "todos" | RolCuenta | "prueba";
 export type FiltroAsignaciones = "todos" | "sinCentro" | "pendientes" | "prueba";
-export type FiltroCentros = "todos" | "aprobado" | "pendiente" | "rechazado" | "prueba" | "real";
+export type FiltroCentros = "todos" | "aprobado" | "pendiente" | "rechazado" | "prueba" | "real" | "eliminados";
 export type EstadoVerificacion = "pendiente" | "aprobado" | "rechazado";
 
 // Un centro en la lista del superadmin
@@ -884,6 +891,8 @@ export interface CentroListado {
   esPrueba: boolean;
   veterinarios: number;              // cuántos veterinarios atienden ahí
   creadoEn: string;
+  eliminadoEn: string | null;        // "eliminado" = desactivado (migración 43); el historial se conserva
+  motivoEliminacion: string | null;
 }
 
 export interface EditarCentroModalProps {
@@ -1191,7 +1200,7 @@ export interface DetalleSolicitudCentroModalProps {
 // =====================================================================
 // PANEL DEL SUPERADMIN
 // =====================================================================
-export type SeccionSuperAdmin = "resumen" | "usuarios" | "centros" | "asignaciones" | "aprobaciones" | "suscripciones" | "mensajes" | "eliminaciones" | "notas" | "citas" | "publicaciones" | "refugios" | "miRefugio";
+export type SeccionSuperAdmin = "resumen" | "usuarios" | "centros" | "asignaciones" | "aprobaciones" | "suscripciones" | "mensajes" | "eliminaciones" | "notas" | "citas" | "publicaciones" | "refugios" | "miRefugio" | "moderacion";
 
 export interface ItemMenuSuperAdmin {
   seccion: SeccionSuperAdmin;
@@ -1255,9 +1264,11 @@ export interface MenuLateralSuperAdminProps {
   onCambiar: (seccion: SeccionSuperAdmin) => void;
   onDarEnAdopcion: () => void;
   conRefugio: boolean;
+  contadores?: Partial<Record<SeccionSuperAdmin, number>>; // número junto a otras secciones (p. ej. Moderación)
 }
 
 export interface BarraSuperiorSuperAdminProps {
+  avatarUrl: string | null;
   nombre: string;
   pendientes: number;
   onCrear: (tipo: TipoCrearSuperAdmin) => void;
@@ -1360,7 +1371,7 @@ export interface DatosLaboralesVeterinario {
   centroId: number | null;            // si modoCentro = "centro_aurapet"
   centroNombre: string;               // si modoCentro = "centro_externo"
   centroComuna: string;
-  especialidadId: number | null;      // del catálogo (además de medicina general)
+  especialidadIds: number[];          // del catálogo (además de medicina general), sin límite (migración 45)
   especialidadOtra: string;           // escrita a mano si no está en el catálogo
 }
 
@@ -1385,9 +1396,10 @@ export interface SelectorCentroVeterinarioProps {
 
 export interface SelectorEspecialidadProps {
   especialidades: EspecialidadOpcion[];
-  especialidadId: number | null;
+  especialidadIds: number[];
   especialidadOtra: string;
-  onCambiar: (cambios: Partial<DatosLaboralesVeterinario>) => void;
+  onCambiar: (cambios: Pick<Partial<DatosLaboralesVeterinario>, 'especialidadIds' | 'especialidadOtra'>) => void;
+  opcional?: boolean;                 // muestra "(opcional)" (registro); por defecto true
 }
 
 // Lo que necesita la barra superior del panel del veterinario
@@ -1732,7 +1744,8 @@ export interface DestinoDerivacion {
   tipo: TipoDestinoDerivacion;
   id: number;
   nombre: string;
-  detalle: string;                    // especialidad (veterinario) o comuna (centro)
+  detalle: string;                    // especialidades (veterinario) o comuna (centro)
+  especialidadIds: number[];          // para filtrar al derivar (migración 46)
 }
 
 export interface Derivacion {
@@ -2017,7 +2030,7 @@ export interface ConfiguracionModalProps {
   onCerrar: () => void;
 }
 
-export type SeccionConfiguracion = "perfil" | "seguridad" | "apariencia" | "notificaciones" | "privacidad" | "ayuda";
+export type SeccionConfiguracion = "perfil" | "especialidades" | "seguridad" | "apariencia" | "notificaciones" | "privacidad" | "ayuda";
 
 export interface FilaConfiguracionProps {
   icono: ReactNode;
@@ -2417,6 +2430,7 @@ export interface TarjetaOtroAdopcionProps {
 
 export interface AvisoConfianzaAdopcionProps {
   compacto?: boolean; // versión chica para la columna lateral de la ficha
+  onReportar?: () => void; // en la ficha abre "Reportar publicación"; sin esto, lleva a /contacto
 }
 
 // ---------- Formularios por pasos (postular y publicar) ----------
@@ -2651,6 +2665,7 @@ export interface PublicacionPropia {
   nuevas: number;
   elegido: string | null;
   refugio: string | null;
+  moderacion?: AvisoModeracion;   // oculta o advertida por el equipo AuraPet (migración 47)
 }
 
 export type TipoActividadPublicacion = 'postulacion' | 'eleccion' | 'atencion' | 'adopcion';
@@ -3019,6 +3034,12 @@ export interface RefugioAdmin extends Refugio {
   esPrueba: boolean;
   creadoEn: string;
   administradores: AdminDeRefugio[];
+  // Lo que mandó al postular desde "Súmate a AuraPet" (migración 48)
+  fotosLugar: string[];
+  responsable: string | null;
+  sitioWeb: string | null;
+  mensaje: string | null;
+  correoAcceso: string | null;   // postuló sin cuenta: al aprobar se invita a este correo
 }
 
 export interface FiltrosRefugiosAdmin {
@@ -3309,4 +3330,289 @@ export interface CampoTelefonoProps {
 
 export interface PanelMiRefugioProps {
   refugioId: number;
+}
+
+// Posición de un menú flotante (fixed), calculada desde su botón
+export interface PosicionMenu {
+  top?: number;
+  bottom?: number;
+  right: number;
+}
+
+// =====================================================================
+// Recortar una imagen antes de subirla (zoom y encuadre)
+// =====================================================================
+export interface FormatoRecorte {
+  aspecto: number;                 // ancho / alto del marco (1 = cuadrado)
+  forma: 'circulo' | 'rectangulo'; // cómo se ve el marco (el archivo siempre es rectangular)
+  salida: { ancho: number; alto: number }; // tamaño del archivo final, en px
+}
+
+export interface ModalRecorteImagenProps {
+  url: string;                     // vista previa del archivo elegido
+  formato: FormatoRecorte;
+  titulo: string;
+  onListo: (archivo: File) => void;
+  onCancelar: () => void;
+}
+
+export type CampoImagenRefugio = 'logo' | 'portada';
+
+export interface ImagenPorRecortar {
+  campo: CampoImagenRefugio;
+  url: string;
+}
+
+// =====================================================================
+// Foto de perfil (migración 44)
+// =====================================================================
+export interface FotoPerfilProps {
+  nombre: string;
+  url: string | null;
+  className?: string;   // la clase del círculo de cada pantalla (tamaño y colores)
+}
+
+export interface CampoFotoPerfilProps {
+  nombre: string;
+}
+
+// =====================================================================
+// Varias especialidades por veterinario y filtro al pedir hora (migración 45)
+// =====================================================================
+export interface ProfesionalParaCita {
+  veterinarioId: number;
+  nombre: string;
+  centroId: number | null;           // null = atiende de forma independiente
+  especialidadIds: number[];
+  especialidades: string | null;     // "Cirugía, Dermatología"
+}
+
+export interface MisEspecialidades {
+  ids: number[];
+  otra: string;
+}
+
+export interface FiltroEspecialidadesProps {
+  especialidades: EspecialidadOpcion[];
+  seleccion: number[];
+  onCambiar: (seleccion: number[]) => void;
+  etiqueta: string;
+  ayuda: string;
+  tono?: 'tema' | 'oscuro';          // 'oscuro' = dentro de la ficha (siempre oscura)
+}
+
+export interface SeccionEspecialidadesProps {
+  onGuardado: () => void;
+}
+
+// =====================================================================
+// Reportar publicaciones y moderación (migración 47)
+// =====================================================================
+export type MotivoReporte = 'dinero' | 'estafa' | 'riesgo' | 'inapropiado' | 'adoptado' | 'otro';
+export type EstadoCasoModeracion = 'pendiente' | 'resuelto' | 'descartado';
+export type DecisionModeracion = 'ocultar' | 'advertir' | 'descartar';
+
+export interface OpcionMotivoReporte {
+  valor: MotivoReporte;
+  label: string;
+  icono: LucideIcon;
+  color: string;      // del cuadrito del ícono y del borde al elegirlo
+  fondo: string;      // fondo suave al elegirlo
+}
+
+export interface ModalReportarAdopcionProps {
+  adopcionId: number;
+  nombre: string;
+  fotoUrl: string | null;
+  especie: EspecieAdopcion;
+  onCerrar: () => void;
+}
+
+export interface TarjetaMotivoReporteProps {
+  opcion: OpcionMotivoReporte;
+  activa: boolean;
+  onElegir: (motivo: MotivoReporte) => void;
+}
+
+export interface ReporteEnviadoProps {
+  nombre: string;
+  numero: string;
+  onCerrar: () => void;
+}
+
+export interface ChipMotivoReporteProps {
+  motivo: MotivoReporte;
+}
+
+export interface ReporteDeCaso {
+  motivo: MotivoReporte;
+  comentario: string | null;
+  creadaEn: string;
+}
+
+export interface CasoModeracion {
+  adopcionId: number;
+  nombre: string;
+  especie: EspecieAdopcion;
+  raza: string | null;
+  edad: string;
+  comuna: string;
+  fotoUrl: string | null;
+  estadoPublicacion: EstadoPublicacion;
+  publicadaEn: string;
+  publicador: string;
+  esPrueba: boolean;
+  reportes: number;
+  motivoPrincipal: MotivoReporte;
+  urgente: boolean;
+  ultimoReporte: string;
+  publicaciones: number;
+  reportesPrevios: number;
+  cuentaCreadaEn: string;
+  decision: DecisionModeracion | null;
+  detalle: ReporteDeCaso[];
+}
+
+export interface ResumenModeracion {
+  porRevisar: number;
+  urgentes: number;
+  horasRespuesta: number | null;
+  ocultas: number;
+}
+
+export interface AvisoModeracion {
+  tipo: 'oculta' | 'advertencia';
+  mensaje: string;
+}
+
+export interface FilaCasoModeracionProps {
+  caso: CasoModeracion;
+  activo: boolean;
+  onElegir: (caso: CasoModeracion) => void;
+}
+
+export interface DetalleCasoModeracionProps {
+  caso: CasoModeracion;
+  ocupado: boolean;
+  onDecidir: (decision: DecisionModeracion) => void;
+}
+
+export interface EncabezadoModeracionProps {
+  resumen: ResumenModeracion;
+  estado: EstadoCasoModeracion;
+  onEstado: (estado: EstadoCasoModeracion) => void;
+}
+
+export interface AvisoModeracionPublicacionProps {
+  aviso: AvisoModeracion;
+}
+
+export interface SeccionModeracionProps {
+  onCambio: () => void;   // se resolvió un caso (para actualizar el contador del menú)
+}
+
+// =====================================================================
+// "Súmate a AuraPet": landing y postulación de refugios (migración 48)
+// =====================================================================
+
+export interface DatosPostularRefugio {
+  nombre: string;
+  region: string;
+  comuna: string;
+  descripcion: string;
+  logo: ImagenRefugio;
+  cuposTotales: number;
+  cuposOcupados: number;
+  recibe: RecepcionRefugio;
+  especies: EspecieRefugio[];
+  fotos: FotoNuevaAdopcion[];   // del lugar: 2 a 6, la primera es la portada
+  responsable: string;
+  telefono: string;
+  correo: string;
+  sitioWeb: string;
+  mensaje: string;
+}
+export type CampoPostularRefugio = Extract<keyof DatosPostularRefugio, string>;
+
+export interface PasoPostularRefugioProps {
+  datos: DatosPostularRefugio;
+  errores: ErroresFormulario<CampoPostularRefugio>;
+  onCambiar: <K extends CampoPostularRefugio>(campo: K, valor: DatosPostularRefugio[K]) => void;
+}
+
+export interface PasoTuRefugioProps extends PasoPostularRefugioProps {
+  onLogo: (archivo: File) => void;
+  errorLogo: string | null;
+}
+
+export interface PasoConDetalle {
+  titulo: string;
+  detalle: string;
+}
+
+export interface StepperVerticalProps {
+  pasos: readonly PasoConDetalle[];
+  actual: number;
+}
+
+export interface PanelPostulacionProps {
+  datos: DatosPostularRefugio;
+  paso: number;
+}
+
+export interface PasoContactoRefugioProps extends PasoPostularRefugioProps {
+  conSesion: boolean;   // sin sesión el correo es obligatorio (ahí llega el acceso)
+}
+
+export interface AvisoCuentaPostulacionProps {
+  nombre: string | null;   // con sesión: a nombre de quién queda
+  onIngresar: () => void;
+}
+
+export interface PostulacionEnviadaProps {
+  nombre: string;
+  correoAcceso: string | null;   // postuló sin cuenta: a dónde llegará el acceso
+  onVolver: () => void;
+}
+
+export interface ResultadoAprobarRefugio {
+  invitada: boolean;   // true = se creó la cuenta y se mandó la invitación
+  correo: string;
+}
+
+export interface TarjetaSumate {
+  icono: LucideIcon;
+  titulo: string;
+  texto: string;
+}
+
+export interface HeroSumateProps {
+  resumen: ResumenRefugios | null;
+  onPostular: () => void;
+}
+
+export interface TestimonioSumateProps {
+  historia: HistoriaAdopcion;
+}
+
+export interface CierreSumateProps {
+  onPostular: () => void;
+}
+
+export interface GaleriaLugarRefugioProps {
+  fotos: string[];
+  nombre: string;
+}
+
+export interface CampoComunaRefugioProps {
+  id: string;
+  etiqueta: string;
+  region: string;      // en la Metropolitana sugiere comunas
+  valor: string;
+  onCambiar: (valor: string) => void;
+  error?: string;
+}
+
+export interface DatosPostulacionRefugioProps {
+  refugio: RefugioAdmin;
 }

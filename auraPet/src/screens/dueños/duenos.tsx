@@ -5,7 +5,6 @@ import { useConfirmar } from '../../hooks/useConfirmar';
 import { getMascotasPorDueno, getProximasCitasDueno, getHistorialRecienteDueno, getHistorialDueno, getDerivaciones } from '../../Api/getInfo';
 import { DerivacionesDueno } from '../../components/dueno/DerivacionesDueno';
 import { cancelarCita } from '../../Api/postInfo';
-import { getIniciales } from '../../utils';
 import { useAuth } from '../../Auth/AuthContext';
 import type { HistorialDueno, ItemMenuDueno, SeccionDueno } from '../../interfaces';
 import { ConfiguracionModal } from '../../Modal/ConfiguracionModal';
@@ -22,6 +21,7 @@ import { HistorialReciente } from '../../components/dueno/HistorialReciente';
 import { HistorialMedico } from '../../components/dueno/HistorialMedico';
 import '../../css/duenoPage.css';
 import LogoAuraPetSinFondo from '../../assets/logo/LogoAuraPetSinFondo.png';
+import { FotoPerfil } from '../../components/perfil/FotoPerfil';
 
 const iconos = Iconos;
 
@@ -127,7 +127,7 @@ export const DuenoScreen = () => {
           <div />
           <div className="dueno-topbar-right">
             <div className="dueno-usuario">
-              <div className="dueno-avatar">{getIniciales(nombreDueno)}</div>
+              <FotoPerfil nombre={nombreDueno} url={usuarioActual?.avatarUrl ?? null} className="dueno-avatar" />
               <div className="dueno-usuario-info">
                 <span className="dueno-usuario-nombre">{nombreDueno}</span>
                 <span className="dueno-usuario-rol">Dueñ@{usuarioActual!.esPrueba && " · Cuenta de prueba"}</span>

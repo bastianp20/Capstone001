@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 
 import { actualizarMiCita, rechazarCita } from '@/Api/postInfo';
@@ -7,7 +8,7 @@ import type { CitaVeterinario, EstadoCita } from '@/interfaces';
 
 import { useAccion } from './useAccion';
 
-/** Confirmar, rechazar (con motivo), iniciar y terminar citas. Lo usan "Hoy" y "Agenda". */
+/** Confirmar, rechazar (con motivo) e iniciar citas; una en curso se abre en "Atención en curso". Lo usan "Hoy" y "Agenda". */
 export function useAccionesCitaVeterinario() {
   const { recargar } = useVeterinario();
   const { ejecutar, error, setError } = useAccion();
@@ -20,7 +21,11 @@ export function useAccionesCitaVeterinario() {
     const ok = await ejecutar(() => actualizarMiCita(cita.id, estado), TEXTOS_VETERINARIO.errorAccion);
     if (ok) await recargar();
     setOcupadoId(null);
+    return ok;
   };
+
+  /** La atención (registro, receta, derivación y terminar) se hace en su propia pantalla. */
+  const abrirAtencion = (cita: CitaVeterinario) => router.push(`/veterinario/atencion/${cita.id}`);
 
   const pedirRechazo = (cita: CitaVeterinario) => {
     rechazo.limpiarError();
@@ -38,8 +43,10 @@ export function useAccionesCitaVeterinario() {
 
   return {
     confirmar: (c: CitaVeterinario) => cambiarEstado(c, 'confirmada'),
-    iniciar: (c: CitaVeterinario) => cambiarEstado(c, 'en_curso'),
-    terminar: (c: CitaVeterinario) => cambiarEstado(c, 'completada'),
+    iniciar: async (c: CitaVeterinario) => {
+      if (await cambiarEstado(c, 'en_curso')) abrirAtencion(c);
+    },
+    abrirAtencion,
     pedirRechazo,
     confirmarRechazo,
     cerrarRechazo: () => setRechazando(null),

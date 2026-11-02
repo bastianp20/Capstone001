@@ -11,6 +11,7 @@ import { TarjetaPersonalidadAdopcion } from "../../components/adopcion/ficha/Tar
 import { TarjetaPublicadorAdopcion } from "../../components/adopcion/ficha/TarjetaPublicadorAdopcion";
 import { TarjetaSaludAdopcion } from "../../components/adopcion/ficha/TarjetaSaludAdopcion";
 import { ModalPostulacionAdopcion } from "../../components/adopcion/postulacion/ModalPostulacionAdopcion";
+import { ModalReportarAdopcion } from "../../components/adopcion/reportes/ModalReportarAdopcion";
 import { RUTA_ADOPTA, rutaFichaAdopcion, TEXTOS_FICHA_ADOPCION as T } from "../../constants";
 import { useCompartir } from "../../hooks/useCompartir";
 import { useFichaAdopcion } from "../../hooks/useFichaAdopcion";
@@ -20,7 +21,7 @@ import { LoginScreen } from "../Login/LoginScreen";
 import "../../css/AdopcionCompartido.css";
 import "../../css/FichaAdopcionPage.css";
 
-/** Ficha /adopta/:id: pública. Postular pide sesión (se abre el login). */
+/** Ficha /adopta/:id: pública. Postular y reportar piden sesión (se abre el login). */
 export const FichaAdopcionScreen = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ export const FichaAdopcionScreen = () => {
   const guardados = useGuardadosAdopcion();
   const [postulando, setPostulando] = useState(false);
   const [login, setLogin] = useState(false);
+  const [reportando, setReportando] = useState(false);
 
   if (cargando) return <main className="adopta ficha-estado">{T.cargando}</main>;
 
@@ -46,6 +48,7 @@ export const FichaAdopcionScreen = () => {
   }
 
   const quieroAdoptar = () => (usuarioActual ? setPostulando(true) : setLogin(true));
+  const reportar = () => (usuarioActual ? setReportando(true) : setLogin(true));
 
   return (
     <main className="adopta ficha">
@@ -77,7 +80,7 @@ export const FichaAdopcionScreen = () => {
               onCompartir={() => compartir({ titulo: ficha.nombre, texto: T.compartirTexto(ficha.nombre), url: window.location.href })}
               onGuardar={() => guardados.alternar(ficha.id)}
             />
-            <AvisoConfianzaAdopcion compacto />
+            <AvisoConfianzaAdopcion compacto onReportar={ficha.esMia ? undefined : reportar} />
             <p className="ficha-ley">{T.ley}</p>
           </aside>
         </div>
@@ -92,6 +95,15 @@ export const FichaAdopcionScreen = () => {
           publicador={ficha.publicador.nombre}
           onCerrar={() => setPostulando(false)}
           onEnviada={marcarPostulado}
+        />
+      )}
+      {reportando && (
+        <ModalReportarAdopcion
+          adopcionId={ficha.id}
+          nombre={ficha.nombre}
+          fotoUrl={ficha.fotos[0] ?? null}
+          especie={ficha.especie}
+          onCerrar={() => setReportando(false)}
         />
       )}
       {login && <LoginScreen onCerrar={() => setLogin(false)} />}

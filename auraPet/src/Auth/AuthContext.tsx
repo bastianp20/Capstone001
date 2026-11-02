@@ -3,6 +3,7 @@ import type { AuthContextValue, DatosRegistro, UsuarioActual } from '../interfac
 import { supabase } from '../lib/supabase';
 import { metadatosVeterinario } from '../lib/validacionVeterinario';
 import { RUTA_NUEVA_PASSWORD } from '../constants';
+import { urlFotoPerfil } from '../lib/fotoPerfil';
 
 // Sesión real con Supabase Auth.
 // · Supabase guarda la sesión (token) por su cuenta: al recargar la página
@@ -80,7 +81,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             nombre: data.nombre,
             rol: data.rol,
             telefono: data.telefono,
-            avatarUrl: data.avatar_url,
+            avatarUrl: urlFotoPerfil(data.avatar_url),
+            avatarRuta: data.avatar_url,
             esPrueba: data.es_prueba,
           },
         });

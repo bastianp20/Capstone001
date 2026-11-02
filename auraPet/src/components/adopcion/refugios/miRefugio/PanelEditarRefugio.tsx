@@ -1,6 +1,7 @@
-import { MAX_DESCRIPCION_REFUGIO, TEXTOS_MI_REFUGIO as T, TEXTOS_MODAL_REFUGIO as M } from "../../../../constants";
+import { FORMATO_RECORTE_REFUGIO, MAX_DESCRIPCION_REFUGIO, TEXTOS_MI_REFUGIO as T, TEXTOS_MODAL_REFUGIO as M, TEXTOS_RECORTE } from "../../../../constants";
 import { useEditarMiRefugio } from "../../../../hooks/useEditarMiRefugio";
 import type { PanelEditarRefugioProps } from "../../../../interfaces";
+import { ModalRecorteImagen } from "../../../ui/ModalRecorteImagen";
 import { PanelLateralAdopcion } from "../../comun/PanelLateralAdopcion";
 import { CampoTextoAdopcion } from "../../formulario/CampoTextoAdopcion";
 import { CampoImagenesRefugio } from "../gestion/CampoImagenesRefugio";
@@ -46,6 +47,15 @@ export const PanelEditarRefugio = ({ refugio, onCerrar, onGuardado }: PanelEdita
         <legend>{M.especies}</legend>
         <SelectorEspecies valor={e.datos.especies} onCambiar={(v) => e.cambiar("especies", v)} error={e.errores.especies} />
       </fieldset>
+      {e.porRecortar && (
+        <ModalRecorteImagen
+          url={e.porRecortar.url}
+          formato={FORMATO_RECORTE_REFUGIO[e.porRecortar.campo]}
+          titulo={TEXTOS_RECORTE[e.porRecortar.campo]}
+          onListo={e.recortada}
+          onCancelar={e.cancelarRecorte}
+        />
+      )}
     </PanelLateralAdopcion>
   );
 };

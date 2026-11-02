@@ -12,18 +12,15 @@ export const useEditarMiRefugio = (refugio: DetalleMiRefugio, onGuardado: () => 
   const { usuarioActual } = useAuth();
   const [datos, setDatos] = useState<DatosEditarMiRefugio>(() => datosEdicionDesdeDetalle(refugio));
   const [intentado, setIntentado] = useState(false);
-  const imagenes = useImagenesRefugio();
   const accion = useAccion();
   const errores = validarEdicionRefugio(datos);
 
   const cambiar = useCallback(<K extends keyof DatosEditarMiRefugio>(campo: K, valor: DatosEditarMiRefugio[K]) => {
     setDatos((d) => ({ ...d, [campo]: valor }));
   }, []);
-
-  const elegirImagen = (campo: "logo" | "portada") => (archivo: File) => {
-    const nueva = imagenes.elegir(datos[campo], archivo);
-    if (nueva) cambiar(campo, nueva);
-  };
+  const imagenes = useImagenesRefugio((campo, archivo, vista) =>
+    setDatos((d) => ({ ...d, [campo]: { ruta: d[campo].ruta, archivo, vista } })),
+  );
 
   const guardar = async () => {
     setIntentado(true);
@@ -36,9 +33,12 @@ export const useEditarMiRefugio = (refugio: DetalleMiRefugio, onGuardado: () => 
     datos,
     cambiar,
     errores: intentado ? errores : {},
-    elegirLogo: elegirImagen("logo"),
-    elegirPortada: elegirImagen("portada"),
+    elegirLogo: imagenes.elegir("logo"),
+    elegirPortada: imagenes.elegir("portada"),
     errorImagen: imagenes.error,
+    porRecortar: imagenes.porRecortar,
+    recortada: imagenes.recortada,
+    cancelarRecorte: imagenes.cancelarRecorte,
     guardar,
     ocupado: accion.ocupado,
     error: accion.error,

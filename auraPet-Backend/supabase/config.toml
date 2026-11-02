@@ -447,3 +447,9 @@ enabled = true
 verify_jwt = false
 import_map = "./functions/crear-administrativo/deno.json"
 entrypoint = "./functions/crear-administrativo/index.ts"
+
+[functions.aprobar-refugio]
+enabled = true
+verify_jwt = false
+import_map = "./functions/aprobar-refugio/deno.json"
+entrypoint = "./functions/aprobar-refugio/index.ts"

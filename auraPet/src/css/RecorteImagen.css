@@ -1,0 +1,56 @@
+@import './theme.css';
+
+/* =====================================================================
+   Modal para recortar una imagen (logo, portada, foto de perfil).
+   Prefijo recorte-. Colores desde theme.css (modo claro y oscuro).
+   ===================================================================== */
+.recorte-fondo {
+  position: fixed; inset: 0; z-index: 140; padding: 16px; display: flex; align-items: center; justify-content: center;
+  background: rgba(8, 11, 15, 0.6); backdrop-filter: blur(4px);
+}
+.recorte-modal {
+  width: min(620px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; display: flex; flex-direction: column; gap: 16px;
+  padding: 22px; border-radius: 24px; background: var(--color-superficie); color: var(--color-terciario-texto);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35); font-family: "Inter", system-ui, sans-serif;
+}
+.recorte-cabecera { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.recorte-cabecera h2 { margin: 0; font-family: var(--fuente-marca); font-size: 20px; font-weight: 800; }
+.recorte-cabecera p { margin: 4px 0 0; color: var(--color-terciario-texto-muted); font-size: 13.5px; }
+
+.recorte-escenario { display: flex; justify-content: center; padding: 18px; border-radius: 18px; background: repeating-conic-gradient(var(--color-superficie-suave) 0 25%, var(--color-superficie) 0 50%) 0 0 / 18px 18px; }
+.recorte-marco {
+  position: relative; width: 100%; overflow: hidden; touch-action: none; cursor: grab; user-select: none;
+  background: #12181f; box-shadow: 0 0 0 3px #ffffff, 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+.recorte-marco:active { cursor: grabbing; }
+.recorte-marco-circulo { max-width: 320px; border-radius: 50%; }
+.recorte-marco-rectangulo { border-radius: 14px; }
+.recorte-marco img { position: absolute; max-width: none; pointer-events: none; }
+
+.recorte-controles { display: flex; align-items: center; gap: 10px; }
+.recorte-controles input[type="range"] { flex: 1; accent-color: #0f8f80; }
+.recorte-icono {
+  width: 34px; height: 34px; flex-shrink: 0; display: grid; place-items: center; border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--color-terciario-borde); background: var(--color-superficie); color: var(--color-terciario-texto);
+}
+.recorte-icono:hover:not(:disabled) { border-color: var(--color-primario-texto); color: var(--color-primario-texto); }
+.recorte-restablecer {
+  display: inline-flex; align-items: center; gap: 5px; padding: 6px 10px; border: none; border-radius: 8px; background: none;
+  color: var(--color-primario-texto); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.recorte-error { margin: 0; color: #d0463b; font-size: 13.5px; }
+.recorte-pie { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+.recorte-btn {
+  min-height: 42px; padding: 0 18px; border-radius: 999px; border: 1.5px solid transparent; cursor: pointer;
+  font-family: var(--fuente-marca); font-size: 14.5px; font-weight: 700;
+}
+.recorte-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.recorte-btn-primario { background: #0f8f80; color: #ffffff; }
+.recorte-btn-borde { background: var(--color-superficie); color: var(--color-terciario-texto); border-color: var(--color-terciario-borde); }
+.recorte-icono:focus-visible, .recorte-btn:focus-visible, .recorte-restablecer:focus-visible { outline: 3px solid rgba(15, 143, 128, 0.4); outline-offset: 2px; }
+
+@media (max-width: 600px) {
+  .recorte-modal { padding: 16px; }
+  .recorte-escenario { padding: 10px; }
+  .recorte-pie .recorte-btn { flex: 1; }
+}

@@ -17,6 +17,7 @@ import { useAuth } from '@/Auth/AuthContext';
 import { useCentro } from '@/context/CentroContext';
 import { miCentroStyles as styles } from '@/css/CentroPage';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
+import { useMisRefugios } from '@/hooks/useMisRefugios';
 import { formatearTelefono } from '@/lib/formatos';
 
 /** Datos y horarios del centro, accesos a editar y a planes, y la cuenta de quien administra. */
@@ -24,6 +25,7 @@ export default function MiCentroScreen() {
   useBarraEstadoClara();
   const { usuarioActual, logout } = useAuth();
   const c = useCentro();
+  const misRefugios = useMisRefugios();
   const d = c.datos?.detalle;
   const esVeterinario = usuarioActual?.rol === 'veterinario';
 
@@ -69,6 +71,10 @@ export default function MiCentroScreen() {
       <MenuPerfil
         onDatosPersonales={() => router.push('/cuenta/datos')}
         onAyuda={() => router.push('/cuenta/contacto')}
+        onAdopcion={() => router.push('/adopcion')}
+        onMisPublicaciones={() => router.push('/adopcion/mis-publicaciones')}
+        misRefugios={misRefugios}
+        onMiRefugio={(id) => router.push(`/refugio/${id}`)}
         opcionesExtra={
           <>
             <FilaOpcion icono="editar" tono="menta" texto={T.editar} onPress={() => router.push('/centro/editar')} />

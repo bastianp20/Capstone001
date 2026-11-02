@@ -8,6 +8,7 @@ import { FiltrosRefugiosAdmin } from "./FiltrosRefugiosAdmin";
 import { ModalRefugio } from "./ModalRefugio";
 import { PanelDetalleRefugio } from "./PanelDetalleRefugio";
 import { TablaRefugiosAdmin } from "./TablaRefugiosAdmin";
+import { Toast } from "../../comun/Toast";
 import "../../../../css/AdopcionCompartido.css";
 import "../../../../css/AdopcionPanel.css";
 import "../../../../css/RefugiosAdmin.css";
@@ -90,6 +91,7 @@ export const SeccionRefugiosAdmin = () => {
           }}
         />
       )}
+      <Toast mensaje={g.aviso} />
     </div>
   );
 };

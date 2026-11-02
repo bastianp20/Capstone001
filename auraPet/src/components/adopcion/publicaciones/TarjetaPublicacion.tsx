@@ -3,6 +3,7 @@ import { ESTADO_PUBLICACION_LABEL, TEXTOS_MIS_PUBLICACIONES as T } from "../../.
 import type { TarjetaPublicacionProps } from "../../../interfaces";
 import { haceCuanto } from "../../../lib/publicacionesAdopcion";
 import { AvatarAnimal } from "../AvatarAnimal";
+import { AvisoModeracionPublicacion } from "../moderacion/AvisoModeracionPublicacion";
 import { CaminoCasa } from "./CaminoCasa";
 
 /** Tarjeta vertical con foto: estado, camino a casa y la acción que corresponde. */
@@ -38,6 +39,7 @@ export const TarjetaPublicacion = ({ publicacion: p, tono, onRevisar, onVer, onR
         <span> · {haceCuanto(p.adoptadaEn ?? p.creadaEn)}</span>
       </p>
       {p.refugio && <p className="ap-publicacion-meta">{T.aNombreDe(p.refugio)}</p>}
+      {p.moderacion && <AvisoModeracionPublicacion aviso={p.moderacion} />}
       <div className="ap-publicacion-acciones">
         {(p.estado === "publicada" || p.estado === "en_proceso") && (
           <button type="button" className="ap-btn ap-btn-primario ap-btn-chico" onClick={() => onRevisar(p)}>
@@ -54,7 +56,7 @@ export const TarjetaPublicacion = ({ publicacion: p, tono, onRevisar, onVer, onR
             <XCircle size={16} />
           </button>
         )}
-        {p.estado === "retirada" && (
+        {p.estado === "retirada" && p.moderacion?.tipo !== "oculta" && (
           <button type="button" className="ap-btn ap-btn-borde ap-btn-chico" onClick={() => onReactivar(p)}>
             <RotateCcw size={14} aria-hidden /> {T.reactivar}
           </button>

@@ -9,7 +9,7 @@ import type { TarjetaSiguientePacienteProps } from '@/interfaces';
 import { edadDesde, partesFechaCita } from '@/lib/fechas';
 
 /** La cita que viene (o la que está en curso), con acceso a la ficha y al botón de atención. */
-export function TarjetaSiguientePaciente({ cita, ocupado, onVerFicha, onIniciar, onTerminar }: TarjetaSiguientePacienteProps) {
+export function TarjetaSiguientePaciente({ cita, ocupado, onVerFicha, onIniciar, onAbrirAtencion }: TarjetaSiguientePacienteProps) {
   const descripcion = [cita.raza || (cita.especie ? ESPECIE_LABEL[cita.especie] : null), edadDesde(cita.fechaNacimiento)]
     .filter(Boolean)
     .join(', ');
@@ -51,11 +51,11 @@ export function TarjetaSiguientePaciente({ cita, ocupado, onVerFicha, onIniciar,
           </View>
           <View style={styles.boton}>
             <BotonPequeno
-              texto={enCurso ? T.terminarAtencion : T.iniciarAtencion}
-              icono={enCurso ? 'completar' : 'iniciar'}
+              texto={enCurso ? T.abrirAtencion : T.iniciarAtencion}
+              icono={enCurso ? 'ficha' : 'iniciar'}
               variante="primario"
               cargando={ocupado}
-              onPress={enCurso ? onTerminar : onIniciar}
+              onPress={enCurso ? onAbrirAtencion : onIniciar}
             />
           </View>
         </View>

@@ -38,6 +38,7 @@ export default function AprobacionesScreen() {
         <BarraFiltros busqueda={a.busqueda} onBuscar={a.setBusqueda} placeholder={T.buscar} opciones={a.opciones} filtro={a.filtro} onFiltrar={a.setFiltro} />
       )}
       <MensajeFormulario tipo="error" texto={r.error} />
+      <MensajeFormulario tipo="aviso" texto={r.aviso} />
       {contenido()}
       <ModalTexto
         visible={!!r.rechazando}

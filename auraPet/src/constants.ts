@@ -13,8 +13,8 @@ import {
   CheckCircle2, XCircle, Clock3, Loader2, Dog, Cat, ShieldPlus, Scissors, Trash2, ChevronLeft, Pencil, Scale, CalendarCheck, Send, SearchCheck, BadgeCheck, Check, ArrowRight, ArrowLeft, LayoutDashboard, ClipboardCheck, CalendarDays, Link2, CreditCard, Sparkles, Lock, Camera, HeartHandshake, HandHeart, Smile, HeartPulse, Eye as IconoOjo, Syringe as IconoJeringa, Bug, Scissors as IconoTijeras, ScanSearch,
 } from 'lucide-react';
 
-import { Ban, CircleAlert, DoorOpen, House, HouseHeart, Rabbit } from "lucide-react";
-import type { CampoRefugio, DatosRefugio, EspecieRefugio, EstadoRefugio, FiltroEstadoRefugio, FiltrosRefugiosAdmin, PestanaMiRefugio } from "./interfaces";
+import { Ban, BadgeAlert, CalendarX, CircleAlert, DoorOpen, Gauge, HandCoins, HeartCrack, House, HouseHeart, ImageOff, MessageCircle, Rabbit, Rocket, ShieldAlert } from "lucide-react";
+import type { CampoImagenRefugio, CampoPostularRefugio, CampoRefugio, DatosPostularRefugio, DatosRefugio, PasoConDetalle, TarjetaSumate, DecisionModeracion, EstadoCasoModeracion, FormatoRecorte, MotivoReporte, OpcionMotivoReporte, EspecieRefugio, EstadoRefugio, FiltroEstadoRefugio, FiltrosRefugiosAdmin, PestanaMiRefugio } from "./interfaces";
 
 export const Colors = {
   bg: "rgb(31, 27, 27)",
@@ -437,6 +437,7 @@ export const FILTROS_CENTROS: OpcionFiltro<FiltroCentros>[] = [
   { valor: "rechazado", texto: "Rechazados" },
   { valor: "real", texto: "Reales" },
   { valor: "prueba", texto: "De prueba" },
+  { valor: "eliminados", texto: "Eliminados" },
 ];
 
 // Cómo se muestra cada rol en la lista de usuarios (texto y colores del chip)
@@ -625,6 +626,7 @@ export const MENU_SUPERADMIN: ItemMenuSuperAdmin[] = [
   { seccion: "notas", texto: "Notas", icono: StickyNote },
   { seccion: "citas", texto: "Citas", icono: CalendarDays },
   { seccion: "refugios", texto: "Refugios", icono: House },
+  { seccion: "moderacion", texto: "Moderación", icono: ShieldAlert },
   { seccion: "publicaciones", texto: "Mis publicaciones", icono: Megaphone },
   { seccion: "miRefugio", texto: "Mi refugio", icono: HouseHeart },
 ];
@@ -675,6 +677,7 @@ export const COLUMNAS_SUPERADMIN = {
 
 // Colores de las etiquetas que no salen de otra tabla de estilos
 export const ETIQUETA_PRUEBA = { texto: "Prueba", fondo: "#fdf3e1", color: "#8a5a00" };
+export const ETIQUETA_ELIMINADO = { texto: "Eliminado", fondo: "#fde8e6", color: "#b42318" };
 export const ETIQUETA_CUENTA = {
   activa: { texto: "Activa", fondo: "#e3f5f2", color: "#0f8f80" },
   desactivada: { texto: "Desactivada", fondo: "#fdecec", color: "#a4272a" },
@@ -695,12 +698,14 @@ export const PREDICADOS_FILTRO_USUARIOS: Record<FiltroUsuarios, (u: CuentaUsuari
 };
 
 export const PREDICADOS_FILTRO_CENTROS: Record<FiltroCentros, (c: CentroListado) => boolean> = {
-  todos: () => true,
-  aprobado: (c) => c.estado === "aprobado",
-  pendiente: (c) => c.estado === "pendiente",
-  rechazado: (c) => c.estado === "rechazado",
-  real: (c) => !c.esPrueba,
-  prueba: (c) => c.esPrueba,
+  // Los eliminados solo aparecen en su propio filtro
+  todos: (c) => !c.eliminadoEn,
+  aprobado: (c) => !c.eliminadoEn && c.estado === "aprobado",
+  pendiente: (c) => !c.eliminadoEn && c.estado === "pendiente",
+  rechazado: (c) => !c.eliminadoEn && c.estado === "rechazado",
+  real: (c) => !c.eliminadoEn && !c.esPrueba,
+  prueba: (c) => !c.eliminadoEn && c.esPrueba,
+  eliminados: (c) => !!c.eliminadoEn,
 };
 
 export const PREDICADOS_FILTRO_ASIGNACIONES: Record<FiltroAsignaciones, (v: VeterinarioAsignaciones) => boolean> = {
@@ -770,7 +775,7 @@ export const DATOS_LABORALES_VACIOS: DatosLaboralesVeterinario = {
   centroId: null,
   centroNombre: "",
   centroComuna: "",
-  especialidadId: null,
+  especialidadIds: [],
   especialidadOtra: "",
 };
 
@@ -788,8 +793,8 @@ export const TEXTOS_REGISTRO_VETERINARIO = {
   comunaCentro: "Comuna",
   ayudaExterno: "¡Gracias! Así podremos invitar a tu centro a sumarse a AuraPet.",
   ayudaCentroPublico: "Quedarás asignado a este centro cuando aprobemos tu cuenta.",
-  especialidad: "Especialidad",
-  ayudaEspecialidad: "Además de medicina general. Elige una o escribe otra.",
+  especialidad: "Especialidades",
+  ayudaEspecialidad: "Además de medicina general. Marca todas las que tengas o escribe otra.",
   otra: "Otra",
   especialidadOtraPlaceholder: "Ej: Etología",
   centroRequerido: "Elige el centro donde trabajas.",
@@ -1027,6 +1032,9 @@ export const TEXTOS_DERIVACION = {
   tituloForm: "Derivar paciente",
   destino: "Derivar a",
   elegirDestino: "Elige un veterinario o un centro…",
+  filtroEspecialidades: "Filtrar por especialidad",
+  filtroAyuda: "Opcional. Solo quedan veterinarios y centros que tengan todas las que marques.",
+  sinCoincidencias: "Nadie tiene todas esas especialidades. Prueba marcando menos.",
   grupoVeterinarios: "Veterinarios",
   grupoCentros: "Centros",
   motivo: "Motivo de la derivación",
@@ -1205,12 +1213,14 @@ export const ESTADO_SOLICITUD_ELIMINACION: Record<EstadoSolicitudEliminacion, { 
 export const TEXTOS_ELIMINACION = {
   // Configuración (la persona)
   titulo: "Eliminar mi cuenta",
-  ayuda: "Tu cuenta se desactiva y ya no podrás ingresar. El historial médico de tus mascotas se conserva, como exige la ley.",
+  ayuda: "Tu cuenta se desactiva, ya no podrás ingresar y tus citas futuras se cancelan. El historial médico de tus mascotas se conserva.",
   placeholderMotivo: "¿Por qué quieres eliminar tu cuenta? (opcional)",
   pedir: "Pedir eliminación",
   pidiendo: "Enviando…",
   enRevision: (fecha: string) => `Pediste la eliminación el ${fecha}. Está en revisión.`,
   rechazada: "Tu solicitud anterior fue rechazada.",
+  cancelar: "Cancelar solicitud",
+  cancelando: "Cancelando…",
   // Superadmin
   tituloSeccion: "Solicitudes de eliminación",
   subtituloSeccion: "Cuentas que pidieron ser eliminadas. Desactivar impide que vuelvan a ingresar; el historial médico se conserva.",
@@ -1408,10 +1418,15 @@ export const TEXTOS_SOLICITAR_CITA = {
   sinPreferencia: "Sin preferencia",
   elegirVeterinario: "Elige un veterinario",
   sinIndependientes: "No hay veterinarios independientes disponibles",
-  especialidad: (e: string) => `Especialidad: ${e}`,
+  especialidad: (e: string) => `Especialidades: ${e}`,
+  filtroEspecialidades: "¿Qué necesita tu mascota?",
+  filtroAyuda: "Opcional. Te mostramos solo centros y profesionales que tengan todas las que marques.",
+  sinCoincidencias: "Ningún centro ni profesional tiene todas esas especialidades. Prueba marcando menos.",
+  coincidencias: (n: number) => (n === 1 ? "1 profesional disponible" : `${n} profesionales disponibles`),
   ayudaIndependiente: "Atiende de forma independiente: al confirmar tu hora te indicará dónde será la atención.",
   faltanDatos: "Completa mascota, dónde atenderte, fecha, hora y motivo.",
   faltaVeterinario: "Elige el veterinario independiente que te atenderá.",
+  faltaVeterinarioFiltro: "Elige al profesional que te atenderá (tiene las especialidades que marcaste).",
   enviadaA: (destino: string) => `Tu solicitud fue enviada a ${destino}.`,
 };
 
@@ -1472,6 +1487,12 @@ export const CONFIRMACIONES = {
     mensaje: "Si el equipo de AuraPet la aprueba, tu cuenta se desactivará y ya no podrás ingresar.",
     textoConfirmar: "Sí, pedir eliminación",
   }),
+  cancelarEliminacionCuenta: (): OpcionesConfirmacion => ({
+    tipo: "advertencia",
+    titulo: "¿Cancelar la solicitud?",
+    mensaje: "Tu cuenta seguirá activa como siempre.",
+    textoConfirmar: "Sí, cancelar",
+  }),
   rechazarPlan: (centro: string, plan: string): OpcionesConfirmacion => ({
     tipo: "advertencia",
     titulo: "¿Rechazar el cambio de plan?",
@@ -1485,6 +1506,20 @@ export const CONFIRMACIONES = {
     mensaje: "Ya no se verá en la página de adopción, pero podrás volver a publicarlo cuando quieras.",
     detalle: nombre,
     textoConfirmar: "Sí, retirar",
+  }),
+  reactivarCentro: (nombre: string): OpcionesConfirmacion => ({
+    tipo: "advertencia",
+    titulo: "¿Reactivar este centro?",
+    mensaje: "Volverá a aparecer para dueños y veterinarios, y podrá recibir citas otra vez.",
+    detalle: nombre,
+    textoConfirmar: "Sí, reactivar",
+  }),
+  descartarReporte: (nombre: string): OpcionesConfirmacion => ({
+    tipo: "advertencia",
+    titulo: "¿Descartar los reportes?",
+    mensaje: "La publicación sigue igual y los reportes pasan a \"Descartados\".",
+    detalle: nombre,
+    textoConfirmar: "Sí, descartar",
   }),
   rechazarRefugio: (nombre: string): OpcionesConfirmacion => ({
     tipo: "advertencia",
@@ -2160,6 +2195,8 @@ export const TEXTOS_REGISTRAR_ATENCION = {
 // Refugios
 // =====================================================================
 export const RUTA_REFUGIOS = "/adopta/refugios";
+export const RUTA_SUMATE_REFUGIO = "/adopta/refugios/sumate";     // landing para refugios
+export const RUTA_POSTULAR_REFUGIO = "/adopta/refugios/postular"; // formulario de postulación
 export const rutaAnimalesDeRefugio = (id: number) => `/adopta?refugio=${id}`;
 
 export const TEXTOS_REFUGIOS = {
@@ -2425,3 +2462,316 @@ export const TEXTOS_MI_REFUGIO = {
   refugio: "Refugio",
 } as const;
 export const ESPECIE_ADOPCION_LABEL: Record<EspecieAdopcion, string> = { perro: "Perro", gato: "Gato", otro: "Otro" };
+
+// =====================================================================
+// Eliminar (desactivar) centros — superadmin (migración 43)
+// =====================================================================
+export const TEXTOS_ELIMINAR_CENTRO = {
+  eliminar: "Eliminar",
+  reactivar: "Reactivar",
+  titulo: "Eliminar centro",
+  descripcion:
+    "El centro deja de aparecer y no recibe nuevas citas. Sus citas futuras se cancelan y cada dueño verá el aviso. El historial (citas, fichas y derivaciones) se conserva y puedes reactivarlo después.",
+  placeholder: "Ej: El centro cerró, pidió darse de baja…",
+  confirmar: "Eliminar centro",
+  procesando: "Eliminando…",
+  eliminado: "Eliminado",
+  listo: (nombre: string, canceladas: number) =>
+    `${nombre} fue eliminado.${canceladas ? ` Se cancelaron ${canceladas} ${canceladas === 1 ? "cita futura" : "citas futuras"}.` : ""}`,
+  reactivado: (nombre: string) => `${nombre} vuelve a estar activo.`,
+  error: "No se pudo actualizar el centro.",
+} as const;
+
+// =====================================================================
+// Recorte de imágenes (logo y portada de refugios, foto de perfil)
+// =====================================================================
+export const FORMATO_RECORTE_LOGO: FormatoRecorte = { aspecto: 1, forma: "circulo", salida: { ancho: 512, alto: 512 } };
+export const FORMATO_RECORTE_PORTADA: FormatoRecorte = { aspecto: 3, forma: "rectangulo", salida: { ancho: 1500, alto: 500 } };
+export const FORMATO_RECORTE_REFUGIO: Record<CampoImagenRefugio, FormatoRecorte> = {
+  logo: FORMATO_RECORTE_LOGO,
+  portada: FORMATO_RECORTE_PORTADA,
+};
+export const ZOOM_RECORTE = { minimo: 1, maximo: 3, paso: 0.01, rueda: 0.0015 } as const;
+export const CALIDAD_RECORTE = 0.9; // JPEG
+export const TEXTOS_RECORTE = {
+  logo: "Ajusta el logo",
+  portada: "Ajusta la portada",
+  ayuda: "Arrastra la imagen para encuadrarla y usa el zoom para acercarla.",
+  zoom: "Zoom",
+  alejar: "Alejar",
+  acercar: "Acercar",
+  restablecer: "Restablecer",
+  cancelar: "Cancelar",
+  usar: "Usar esta imagen",
+  procesando: "Preparando…",
+} as const;
+
+// =====================================================================
+// Foto de perfil (todos los roles, opcional) — migración 44
+// =====================================================================
+export const BUCKET_AVATARES = "avatares";
+export const MAX_MB_FOTO_ORIGINAL = 10; // la foto recortada pesa mucho menos (512×512)
+export const TEXTOS_FOTO_PERFIL = {
+  titulo: "Foto de perfil",
+  opcional: "Opcional · se ve en tu panel y en tu cuenta",
+  subir: "Subir foto",
+  cambiar: "Cambiar foto",
+  quitar: "Quitar",
+  subiendo: "Guardando…",
+  ajustar: "Ajusta tu foto",
+  errorTipo: "Usa una imagen JPG, PNG o WebP",
+  errorPeso: `La imagen puede pesar hasta ${MAX_MB_FOTO_ORIGINAL} MB`,
+  error: "No se pudo guardar la foto.",
+} as const;
+
+// =====================================================================
+// Especialidades del veterinario (Configuración) — migración 45
+// =====================================================================
+export const NOMBRE_MEDICINA_GENERAL = "medicina general"; // la tienen todos: no se marca ni filtra
+export const TEXTOS_MIS_ESPECIALIDADES = {
+  fila: "Mis especialidades",
+  filaDetalle: "Lo que ven los dueños al pedir hora",
+  guardar: "Guardar especialidades",
+  guardando: "Guardando…",
+  error: "No se pudieron guardar las especialidades.",
+  cargando: "Cargando…",
+} as const;
+export const TEXTO_QUITAR_FILTRO = "Quitar filtro";
+
+// =====================================================================
+// Reportar publicaciones y moderación (migración 47)
+// =====================================================================
+export const MAX_COMENTARIO_REPORTE = 500;
+export const numeroReporte = (id: number) => `#A-${id}`;
+
+export const MOTIVOS_REPORTE: readonly OpcionMotivoReporte[] = [
+  { valor: "dinero", label: "Piden dinero", icono: HandCoins, color: "#E86F5C", fondo: "rgba(232, 111, 92, 0.12)" },
+  { valor: "estafa", label: "Posible estafa", icono: BadgeAlert, color: "#E2972B", fondo: "rgba(242, 169, 59, 0.14)" },
+  { valor: "riesgo", label: "Animal en riesgo", icono: HeartCrack, color: "#D64545", fondo: "rgba(214, 69, 69, 0.1)" },
+  { valor: "inapropiado", label: "Fotos inapropiadas", icono: ImageOff, color: "#8B6CF0", fondo: "rgba(139, 108, 240, 0.12)" },
+  { valor: "adoptado", label: "Ya fue adoptado", icono: CalendarX, color: "#6B7A8F", fondo: "rgba(107, 122, 143, 0.12)" },
+  { valor: "otro", label: "Otro motivo", icono: MessageCircle, color: "#0F8F80", fondo: "rgba(15, 143, 128, 0.1)" },
+];
+export const MOTIVO_REPORTE: Record<MotivoReporte, OpcionMotivoReporte> = Object.fromEntries(
+  MOTIVOS_REPORTE.map((m) => [m.valor, m]),
+) as Record<MotivoReporte, OpcionMotivoReporte>;
+
+export const TEXTOS_REPORTE = {
+  boton: "Reportar publicación",
+  titulo: (nombre: string) => `Reportar a ${nombre}`,
+  bajada: "Tu reporte es anónimo para quien publicó. El equipo AuraPet lo revisa en menos de 24 horas.",
+  proteccion: "Protegemos a los animales y a quienes adoptan",
+  pregunta: "¿Qué está pasando?",
+  emergencia: "Si hay maltrato ahora mismo, llama a Carabineros 133 o a la PDI 134.",
+  comentario: "Cuéntanos más (opcional)",
+  comentarioPlaceholder: "Lo que viste en la publicación o en la conversación",
+  cancelar: "Cancelar",
+  enviar: "Enviar reporte",
+  enviando: "Enviando…",
+  faltaMotivo: "Elige qué está pasando",
+  error: "No se pudo enviar el reporte.",
+  graciasTitulo: (nombre: string) => `¡Gracias por cuidar a ${nombre}!`,
+  graciasTexto: "Revisaremos tu reporte en menos de 24 horas. Si hace falta, actuaremos sobre la publicación.",
+  numero: (n: string) => `N.º de reporte ${n}`,
+  volver: "Volver a la ficha",
+} as const;
+
+export const PESTANAS_MODERACION: readonly { valor: EstadoCasoModeracion; label: string }[] = [
+  { valor: "pendiente", label: "Por revisar" },
+  { valor: "resuelto", label: "Resueltos" },
+  { valor: "descartado", label: "Descartados" },
+];
+
+export const TEXTOS_MODERACION = {
+  menu: "Moderación",
+  titulo: "Moderación",
+  porRevisar: (n: number) => `${n} por revisar`,
+  urgentes: (n: number) => (n === 1 ? "1 urgente" : `${n} urgentes`),
+  respuesta: (h: number | null) => (h === null ? "sin casos resueltos este mes" : `respuesta promedio ${h} h`),
+  ocultas: (n: number) => (n === 1 ? "1 publicación oculta" : `${n} publicaciones ocultas`),
+  por: (quien: string, comuna: string) => `por ${quien} · ${comuna}`,
+  urgente: "Urgente",
+  reportes: (n: number) => (n === 1 ? "1 reporte" : `${n} reportes`),
+  publicado: (quien: string, hace: string) => `publicado ${hace} por ${quien}`,
+  verPublicacion: "Ver publicación",
+  publicaciones: "publicaciones",
+  reportesPrevios: "reportes previos",
+  cuenta: "cuenta creada",
+  loQueReportaron: "Lo que reportaron",
+  sinComentario: "Sin comentario",
+  descartar: "Descartar",
+  advertir: "Advertir y mantener",
+  ocultar: "Ocultar publicación",
+  decision: { ocultar: "Publicación ocultada", advertir: "Se advirtió a quien publicó", descartar: "Reporte descartado" } as Record<DecisionModeracion, string>,
+  prueba: "Prueba",
+  vacio: {
+    pendiente: "No hay reportes por revisar. ¡Todo en orden!",
+    resuelto: "Todavía no hay casos resueltos.",
+    descartado: "No hay reportes descartados.",
+  } as Record<EstadoCasoModeracion, string>,
+  elegir: "Elige un caso de la lista para revisarlo.",
+  cargando: "Cargando reportes…",
+  error: "No pudimos cargar los reportes.",
+  errorAccion: "No se pudo guardar la decisión.",
+  // Diálogos
+  tituloOcultar: "Ocultar publicación",
+  descripcionOcultar: "Deja de verse en Adopta y quien publicó no podrá volver a publicarla. Verá este mensaje.",
+  tituloAdvertir: "Advertir y mantener",
+  descripcionAdvertir: "La publicación sigue visible. Quien publicó verá este mensaje en sus publicaciones.",
+  etiquetaMensaje: "Mensaje para quien publicó",
+  placeholderMensaje: "Escribe lo que verá en sus publicaciones",
+  mensajeSugerido: {
+    dinero: "En AuraPet la adopción es gratuita. No se puede pedir dinero por los animales.",
+    estafa: "Recibimos reportes de posibles cobros o datos falsos en esta publicación.",
+    riesgo: "Recibimos reportes sobre el bienestar del animal. Escríbenos para revisarlo.",
+    inapropiado: "La publicación tiene fotos o textos que no cumplen las normas de AuraPet.",
+    adoptado: "Nos avisaron que el animal ya fue adoptado. Recuerda marcarlo como adoptado.",
+    otro: "Recibimos reportes sobre esta publicación.",
+  } as Record<MotivoReporte, string>,
+  confirmarOcultar: "Ocultar",
+  confirmarAdvertir: "Enviar advertencia",
+  procesando: "Guardando…",
+} as const;
+
+export const TEXTOS_AVISO_MODERACION = {
+  oculta: "Oculta por el equipo AuraPet",
+  advertencia: "Aviso del equipo AuraPet",
+} as const;
+export const ICONO_MODERACION = ShieldAlert;
+
+// =====================================================================
+// "Súmate a AuraPet": landing para refugios y postulación (migración 48)
+// =====================================================================
+
+export const TEXTOS_SUMATE = {
+  etiqueta: "Para refugios y rescatistas",
+  titulo: "Tu refugio, visible para miles de familias",
+  bajada: "Publica a tus animales, muestra tus cupos y recibe atención veterinaria solidaria. Sin costo.",
+  postular: "Postular mi refugio",
+  verRefugios: "Ver refugios",
+  gratis: "Gratis · revisamos tu postulación en 48 h",
+  refugios: (n: number) => (n === 1 ? "refugio ya está" : "refugios ya están"),
+  animales: "animales buscando hogar",
+  aliados: "veterinarios aliados",
+  beneficiosTitulo: "Todo lo que tu refugio necesita, en un solo lugar",
+  pasosTitulo: "Así de simple",
+  testimonioTitulo: "Historias que ya terminaron en casa",
+  cierreTitulo: "¿Listo para que te encuentren?",
+  cierreTexto: "Postula en 5 minutos. Te escribimos apenas revisemos tu refugio.",
+} as const;
+
+export const BENEFICIOS_SUMATE: readonly TarjetaSumate[] = [
+  { icono: Megaphone, titulo: "Más familias te encuentran", texto: "Tus animales aparecen en Adopta, con filtros por comuna, especie y tamaño." },
+  { icono: Stethoscope, titulo: "Veterinarios aliados", texto: "Profesionales que atienden gratis o a costo solidario y revisan a tus animales." },
+  { icono: Gauge, titulo: "Cupos a la vista", texto: "Muestra cuánto espacio tienes y pide ayuda cuando estés lleno." },
+  { icono: HeartHandshake, titulo: "Postulaciones ordenadas", texto: "Recibe a las familias con su perfil y elige con calma quién adopta." },
+  { icono: BadgeCheck, titulo: "Sello verificado", texto: "Las familias confían más en un refugio revisado por AuraPet." },
+];
+
+export const PASOS_SUMATE: readonly TarjetaSumate[] = [
+  { icono: ClipboardList, titulo: "Postula", texto: "Cuéntanos de tu refugio y sube fotos del lugar." },
+  { icono: SearchCheck, titulo: "Revisamos", texto: "El equipo AuraPet verifica tus datos (48 h aprox.)." },
+  { icono: Rocket, titulo: "Publica", texto: "Sube a tus animales y empieza a recibir familias." },
+];
+
+export const MIN_FOTOS_LUGAR = 2;
+export const MAX_MENSAJE_POSTULACION = 600;
+export const CARPETA_POSTULACIONES = "postulaciones";   // fotos de quien postula sin cuenta (bucket adopciones)
+
+export const PASOS_POSTULAR_REFUGIO: readonly (PasoFormulario<CampoPostularRefugio> & PasoConDetalle)[] = [
+  { titulo: "Tu refugio", detalle: "Nombre, lugar y logo", campos: ["nombre", "region", "comuna", "descripcion", "logo"] },
+  { titulo: "Capacidad y fotos", detalle: "Cupos, especies y el lugar", campos: ["cuposTotales", "cuposOcupados", "especies", "fotos"] },
+  { titulo: "Contacto", detalle: "Quién responde por el refugio", campos: ["responsable", "telefono", "correo", "sitioWeb", "mensaje"] },
+];
+
+export const DATOS_POSTULAR_REFUGIO_VACIOS: DatosPostularRefugio = {
+  nombre: "",
+  region: "Metropolitana",
+  comuna: "",
+  descripcion: "",
+  logo: imagenRefugioVacia,
+  cuposTotales: 20,
+  cuposOcupados: 0,
+  recibe: "abierto",
+  especies: ["perro", "gato"],
+  fotos: [],
+  responsable: "",
+  telefono: "",
+  correo: "",
+  sitioWeb: "",
+  mensaje: "",
+};
+
+export const TEXTOS_POSTULAR_REFUGIO = {
+  volver: "Volver",
+  panelTitulo: "Súmate a AuraPet",
+  panelBajada: "Postular es gratis. Revisamos cada refugio antes de publicarlo.",
+  vistaPrevia: "Así te verán las familias",
+  nombreEjemplo: "Tu refugio",
+  comunaEjemplo: "Tu comuna",
+  pasoDe: (actual: number, total: number) => `Paso ${actual} de ${total}`,
+  // Paso 1
+  tituloPaso1: "Cuéntanos de tu refugio",
+  logo: "Logo del refugio",
+  logoAyuda: "Opcional. Si no tienes, usamos tus iniciales.",
+  cambiarLogo: "Cambiar logo",
+  subirLogo: "Subir logo",
+  // Paso 2
+  tituloPaso2: "Capacidad y fotos del lugar",
+  fotosLugar: "Fotos del lugar",
+  fotosAyuda: `Sube entre ${MIN_FOTOS_LUGAR} y 6 fotos: patios, caniles, la casa. La primera será tu portada.`,
+  recibeCompacto: "¿Estás recibiendo animales?",
+  // Paso 3
+  tituloPaso3: "¿Cómo te contactamos?",
+  responsable: "Persona responsable",
+  responsablePlaceholder: "Nombre y apellido",
+  telefono: "Celular",
+  correo: "Correo",
+  sitioWeb: "Sitio web o red social",
+  sitioWebPlaceholder: "instagram.com/turefugio",
+  mensaje: "¿Algo más que debamos saber?",
+  mensajePlaceholder: "Por ejemplo: cuántos años llevan, cómo se financian, qué necesitan…",
+  contactoAyuda: "Deja al menos un celular o un correo. Solo lo verá el equipo AuraPet hasta que te aprobemos.",
+  correoAcceso: "Correo (aquí te enviaremos el acceso)",
+  correoAccesoAyuda: "Cuando aprobemos tu refugio te llegará un correo para crear tu contraseña. Si ya tienes cuenta con ese correo, quedará en ella.",
+  // Botones
+  siguiente: "Siguiente",
+  atras: "Atrás",
+  enviar: "Enviar postulación",
+  enviando: "Enviando…",
+  // Errores
+  error: "No se pudo enviar la postulación.",
+  errorFotos: `Sube al menos ${MIN_FOTOS_LUGAR} fotos del lugar`,
+  errorResponsable: "Escribe el nombre de la persona responsable",
+  errorContacto: "Deja un celular o un correo",
+  errorSitio: "Escribe una dirección válida",
+  errorCorreoAcceso: "Escribe tu correo: ahí te enviaremos el acceso",
+  // Con o sin cuenta
+  sinCuentaTitulo: "¿Ya tienes cuenta en AuraPet?",
+  sinCuentaTexto: "Ingresa y el refugio quedará en tu cuenta. Si no tienes, sigue: te crearemos el acceso al aprobarlo.",
+  ingresar: "Ingresar",
+  conCuenta: (nombre: string) => `Postulas como ${nombre}. El refugio quedará en tu cuenta.`,
+  // Enviada
+  enviadaTitulo: (nombre: string) => `¡Recibimos la postulación de ${nombre}!`,
+  enviadaTexto: "Te escribiremos en las próximas 48 horas. Mientras, ya puedes ver tu refugio en tu panel.",
+  enviadaTextoSinCuenta: (correo: string) => `Te escribiremos en las próximas 48 horas. Cuando lo aprobemos, te llegará a ${correo} el acceso para administrarlo.`,
+  enRevision: "En revisión · respuesta en 48 h",
+  irAlPanel: "Ir a mi panel",
+  verRefugios: "Ver refugios",
+} as const;
+
+export const ICONO_REFUGIO_POSTULAR = Building2;
+
+export const TEXTOS_POSTULACION_ADMIN = {
+  titulo: "Lo que mandó al postular",
+  fotosLugar: "Fotos del lugar",
+  responsable: "Responsable",
+  sitioWeb: "Sitio web",
+  mensaje: "Mensaje",
+  verFoto: (n: number) => `Ver foto ${n}`,
+  sinCuenta: (correo: string) => `Postuló sin cuenta: al aprobar enviaremos el acceso a ${correo}.`,
+  conCuenta: "Postuló con su cuenta de AuraPet.",
+  aprobarInvitar: "Aprobar e invitar",
+  aprobadoInvitado: (correo: string) => `Refugio aprobado. Enviamos la invitación a ${correo}.`,
+  aprobadoVinculado: (correo: string) => `Refugio aprobado y vinculado a la cuenta ${correo}.`,
+} as const;

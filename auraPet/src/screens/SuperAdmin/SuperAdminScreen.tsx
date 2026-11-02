@@ -11,6 +11,8 @@ import { ConfiguracionModal } from "../../Modal/ConfiguracionModal";
 import { DarEnAdopcionModal } from "../../Modal/DarEnAdopcionModal";
 import { SeccionMisPublicaciones } from "../../components/adopcion/publicaciones/SeccionMisPublicaciones";
 import { SeccionRefugiosAdmin } from "../../components/adopcion/refugios/admin/SeccionRefugiosAdmin";
+import { SeccionModeracion } from "../../components/adopcion/moderacion/SeccionModeracion";
+import { usePendientesModeracion } from "../../hooks/usePendientesModeracion";
 import { SeccionMiRefugio } from "../../components/adopcion/refugios/miRefugio/SeccionMiRefugio";
 import { useAdministraRefugio } from "../../hooks/useAdministraRefugio";
 import { ModalCrearProfesional } from "../../Modal/CrearProfesionalModal";
@@ -41,6 +43,8 @@ export const SuperAdminScreen = () => {
   const [darEnAdopcion, setDarEnAdopcion] = useState(false);
   const [versionPublicaciones, setVersionPublicaciones] = useState(0);
   const conRefugio = useAdministraRefugio();
+  const [versionModeracion, setVersionModeracion] = useState(0);
+  const porModerar = usePendientesModeracion(versionModeracion);
 
   // Al crear algo se vuelven a pedir los datos (KPIs, listas, pendientes)
   const [recarga, setRecarga] = useState(0);
@@ -65,16 +69,18 @@ export const SuperAdminScreen = () => {
     citas: <CitasSuperAdmin />,
     publicaciones: <SeccionMisPublicaciones version={versionPublicaciones} onDarEnAdopcion={() => setDarEnAdopcion(true)} />,
     refugios: <SeccionRefugiosAdmin />,
+    moderacion: <SeccionModeracion onCambio={() => setVersionModeracion((n) => n + 1)} />,
     miRefugio: <SeccionMiRefugio />,
   };
 
   return (
     <div className={styles.pagina}>
-      <MenuLateralSuperAdmin seccion={seccion} pendientes={solicitudes.pendientes.length} onCambiar={setSeccion} onDarEnAdopcion={() => setDarEnAdopcion(true)} conRefugio={conRefugio} />
+      <MenuLateralSuperAdmin seccion={seccion} pendientes={solicitudes.pendientes.length} onCambiar={setSeccion} onDarEnAdopcion={() => setDarEnAdopcion(true)} conRefugio={conRefugio} contadores={{ moderacion: porModerar }} />
 
       <div className={styles.principal}>
         <BarraSuperiorSuperAdmin
           nombre={usuarioActual?.nombre ?? "SuperAdmin"}
+          avatarUrl={usuarioActual?.avatarUrl ?? null}
           pendientes={solicitudes.pendientes.length}
           onCrear={setModalCrear}
           onNotificaciones={() => setSeccion("aprobaciones")}

@@ -13,6 +13,8 @@ import type {
   ActividadPublicacion, AnimalParaVeterinario, AtencionPropia, CentroAtencion, EstadoPostulacion, EstadoPublicacion,
   MesSolidario, OpcionRefugio, PostulacionRecibida, PublicacionPropia, RecepcionRefugio, Refugio, ResumenRefugios,
   CuentaEncontrada, DetalleMiRefugio, EstadoRefugio, MiembroRefugio, RefugioAdmin,
+  MisEspecialidades, ProfesionalParaCita,
+  AvisoModeracion, CasoModeracion, DecisionModeracion, EstadoCasoModeracion, MotivoReporte, ResumenModeracion,
   ResumenSolidario, TenenciaAdopcion, TipoActividadPublicacion, ViviendaAdopcion,
   ChequeoAdopcion,         // último chequeo de un veterinario
   FichaAdopcion,           // ficha /adopta/:id
@@ -373,7 +375,7 @@ export const getAsignacionesVeterinarios = async (): Promise<VeterinarioAsignaci
     .select(`
       id, numero_colegiado, estado_verificacion, centro_solicitado_id, centro_mencionado, centro_mencionado_comuna,
       perfiles!veterinarios_perfil_id_fkey ( nombre, es_prueba ),
-      especialidades ( nombre ),
+      especialidades!veterinarios_especialidad_id_fkey ( nombre ),
       veterinario_centros ( centros ( id, nombre, es_prueba ) )
     `);
   if (error) throw error;
@@ -459,7 +461,7 @@ export const getSolicitudesPendientes = async (): Promise<SolicitudPendiente[]> 
       .eq("estado_verificacion", "pendiente"),
     supabase
       .from("veterinarios")
-      .select("id, creado_en, especialidad_otra, centro_solicitado_id, centro_mencionado, centro_mencionado_comuna, perfiles!veterinarios_perfil_id_fkey ( nombre ), especialidades ( nombre )")
+      .select("id, creado_en, especialidad_otra, centro_solicitado_id, centro_mencionado, centro_mencionado_comuna, perfiles!veterinarios_perfil_id_fkey ( nombre ), especialidades!veterinarios_especialidad_id_fkey ( nombre )")
       .eq("estado_verificacion", "pendiente"),
     // Centros que pidieron unirse desde /solicitar-centro (migración 20)
     supabase
@@ -667,12 +669,14 @@ export const getAllUsers = async () => {
 export const getMisCentrosAdmin = async (perfilId: string): Promise<CentroAdministrado[]> => {
   const { data, error } = await supabase
     .from("admins_centro")
-    .select("centros ( id, nombre )")
+    .select("centros ( id, nombre, desactivado_en )")
     .eq("perfil_id", perfilId);
   if (error) throw error;
+  // Un centro eliminado (desactivado) ya no se administra
   return (data ?? [])
     .map((fila) => fila.centros)
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c) && !c?.desactivado_en)
+    .map(({ id, nombre }) => ({ id, nombre }))
     .sort((a, b) => a.nombre.localeCompare(b.nombre));
 };
 
@@ -716,7 +720,7 @@ export const getEquipoCentro = async (centroId: number): Promise<MiembroEquipo[]
   const [vets, admins] = await Promise.all([
     supabase
       .from("veterinario_centros")
-      .select("veterinarios ( perfil_id, perfiles!veterinarios_perfil_id_fkey ( nombre ), especialidades ( nombre ) )")
+      .select("veterinarios ( perfil_id, perfiles!veterinarios_perfil_id_fkey ( nombre ), especialidades!veterinarios_especialidad_id_fkey ( nombre ) )")
       .eq("centro_id", centroId),
     supabase
       .from("admins_centro")
@@ -980,7 +984,7 @@ export const getVeterinariosIndependientes = async (): Promise<VeterinarioParaCi
 export const getCentrosSuperadmin = async (): Promise<CentroListado[]> => {
   const { data, error } = await supabase
     .from("centros")
-    .select("id, nombre, direccion, comuna, telefono, estado_verificacion, es_prueba, creado_en, veterinario_centros ( count )")
+    .select("id, nombre, direccion, comuna, telefono, estado_verificacion, es_prueba, creado_en, desactivado_en, motivo_desactivacion, veterinario_centros ( count )")
     .order("nombre");
   if (error) throw error;
   return (data ?? []).map((c) => ({
@@ -993,6 +997,8 @@ export const getCentrosSuperadmin = async (): Promise<CentroListado[]> => {
     esPrueba: c.es_prueba,
     veterinarios: c.veterinario_centros?.[0]?.count ?? 0, // "( count )" llega como [{ count: 3 }]
     creadoEn: c.creado_en,
+    eliminadoEn: c.desactivado_en,
+    motivoEliminacion: c.motivo_desactivacion,
   }));
 };
 
@@ -1207,7 +1213,9 @@ export const getSuscripcionesSuperadmin = async (): Promise<SuscripcionListada[]
 export const getDestinosDerivacion = async (): Promise<DestinoDerivacion[]> => {
   const { data, error } = await supabase.rpc("destinos_derivacion");
   if (error) throw error;
-  return (data ?? []).map((d) => ({ tipo: d.tipo as TipoDestinoDerivacion, id: d.id, nombre: d.nombre, detalle: d.detalle }));
+  return (data ?? []).map((d) => ({
+    tipo: d.tipo as TipoDestinoDerivacion, id: d.id, nombre: d.nombre, detalle: d.detalle, especialidadIds: d.especialidad_ids ?? [],
+  }));
 };
 
 // Derivaciones de un paciente (ficha) o, sin mascotaId, de todas las mascotas del dueño
@@ -1548,10 +1556,17 @@ const publicacionDesdeFila = (a: FilaPublicacion): PublicacionPropia => {
 };
 
 // Mis animales publicados, con sus postulaciones y su avance.
+// Suma a cada publicación el aviso de moderación que tenga (oculta o advertida)
+const conModeracion = async (lista: PublicacionPropia[]): Promise<PublicacionPropia[]> => {
+  if (!lista.length) return lista;
+  const avisos = await getAvisosModeracion();
+  return lista.map((p) => (avisos.has(p.id) ? { ...p, moderacion: avisos.get(p.id) } : p));
+};
+
 export const getMisPublicaciones = async (): Promise<PublicacionPropia[]> => {
   const { data, error } = await supabase.rpc("mis_publicaciones");
   if (error) throw error;
-  return (data ?? []).map(publicacionDesdeFila);
+  return conModeracion((data ?? []).map(publicacionDesdeFila));
 };
 
 export const getActividadPublicaciones = async (limite: number): Promise<ActividadPublicacion[]> => {
@@ -1726,6 +1741,11 @@ export const getRefugiosAdmin = async (): Promise<RefugioAdmin[]> => {
     administradores: ((r.administradores ?? []) as unknown as { id: string; nombre: string; correo: string; es_prueba: boolean }[]).map(
       (a) => ({ id: a.id, nombre: a.nombre, correo: a.correo, esPrueba: a.es_prueba }),
     ),
+    fotosLugar: (r.fotos_lugar ?? []).map(urlFotoAdopcion).filter((f): f is string => !!f),
+    responsable: r.responsable,
+    sitioWeb: r.sitio_web,
+    mensaje: r.mensaje,
+    correoAcceso: r.correo_acceso,
   }));
 };
 
@@ -1772,5 +1792,83 @@ export const getDetalleMiRefugio = async (refugioId: number): Promise<DetalleMiR
 export const getAnimalesMiRefugio = async (refugioId: number): Promise<PublicacionPropia[]> => {
   const { data, error } = await supabase.rpc("animales_de_mi_refugio", { p_id: refugioId });
   if (error) throw error;
-  return (data ?? []).map(publicacionDesdeFila);
+  return conModeracion((data ?? []).map(publicacionDesdeFila));
+};
+
+// =====================================================================
+// Especialidades de veterinarios y filtro al pedir hora (migración 45)
+// =====================================================================
+
+// Profesionales que se pueden agendar (por centro o independientes), con sus especialidades
+export const getProfesionalesParaCita = async (): Promise<ProfesionalParaCita[]> => {
+  const { data, error } = await supabase.rpc("profesionales_para_cita");
+  if (error) throw error;
+  return (data ?? []).map((p) => ({
+    veterinarioId: p.veterinario_id,
+    nombre: p.nombre,
+    centroId: p.centro_id,
+    especialidadIds: p.especialidad_ids ?? [],
+    especialidades: p.especialidades,
+  }));
+};
+
+// Las especialidades del veterinario conectado (Configuración)
+export const getMisEspecialidades = async (): Promise<MisEspecialidades> => {
+  const { data, error } = await supabase.rpc("mis_especialidades");
+  if (error) throw error;
+  const fila = data?.[0];
+  return { ids: fila?.ids ?? [], otra: fila?.otra ?? "" };
+};
+
+// =====================================================================
+// Moderación de publicaciones (migración 47)
+// =====================================================================
+export const getCasosModeracion = async (estado: EstadoCasoModeracion): Promise<CasoModeracion[]> => {
+  const { data, error } = await supabase.rpc("casos_moderacion", { p_estado: estado });
+  if (error) throw error;
+  return (data ?? []).map((c) => ({
+    adopcionId: c.adopcion_id,
+    nombre: c.nombre,
+    especie: especieAdopcion(c.especie),
+    raza: c.raza,
+    edad: edadAdopcion(c.fecha_nacimiento),
+    comuna: c.comuna,
+    fotoUrl: urlFotoAdopcion(c.foto_url),
+    estadoPublicacion: c.estado_publicacion as EstadoPublicacion,
+    publicadaEn: c.publicada_en,
+    publicador: c.publicador,
+    esPrueba: c.es_prueba,
+    reportes: Number(c.reportes),
+    motivoPrincipal: c.motivo_principal as MotivoReporte,
+    urgente: c.urgente,
+    ultimoReporte: c.ultimo_reporte,
+    publicaciones: Number(c.publicaciones),
+    reportesPrevios: Number(c.reportes_previos),
+    cuentaCreadaEn: c.cuenta_creada_en,
+    decision: (c.decision as DecisionModeracion) ?? null,
+    detalle: ((c.detalle ?? []) as unknown as { motivo: MotivoReporte; comentario: string | null; creada_en: string }[]).map((r) => ({
+      motivo: r.motivo,
+      comentario: r.comentario,
+      creadaEn: r.creada_en,
+    })),
+  }));
+};
+
+export const getResumenModeracion = async (): Promise<ResumenModeracion> => {
+  const { data, error } = await supabase.rpc("resumen_moderacion");
+  if (error) throw error;
+  const r = data?.[0];
+  return {
+    porRevisar: Number(r?.por_revisar ?? 0),
+    urgentes: Number(r?.urgentes ?? 0),
+    horasRespuesta: r?.horas_respuesta == null ? null : Number(r.horas_respuesta),
+    ocultas: Number(r?.ocultas ?? 0),
+  };
+};
+
+// Avisos del equipo sobre mis publicaciones (ocultas o advertidas), por id
+export const getAvisosModeracion = async (): Promise<Map<number, AvisoModeracion>> => {
+  const { data, error } = await supabase.rpc("avisos_moderacion_mias");
+  if (error) throw error;
+  return new Map((data ?? []).map((a) => [a.adopcion_id, { tipo: a.tipo as AvisoModeracion["tipo"], mensaje: a.mensaje }]));
 };

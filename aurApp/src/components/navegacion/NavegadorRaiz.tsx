@@ -10,6 +10,7 @@ import { DatosDuenoProvider } from '@/context/DatosDuenoContext';
 import { SuperadminProvider } from '@/context/SuperadminContext';
 import { VeterinarioProvider } from '@/context/VeterinarioContext';
 import { useArranqueApp } from '@/hooks/useArranqueApp';
+import { useRutasCompartidasListas } from '@/hooks/useRutasCompartidasListas';
 
 import { PantallaSinCentro } from './PantallaSinCentro';
 import { PantallaCargaInicial } from './PantallaCargaInicial';
@@ -43,6 +44,8 @@ function Rutas() {
     modoAnterior.current = centro.modoCentro;
   }, [rol, centro.modoCentro]);
 
+  const compartidasListas = useRutasCompartidasListas(rol);
+
   if (rol === 'administrativo') {
     if (centro.cargando && !administraCentro) return <PantallaCargaInicial />;
     if (!administraCentro) return <PantallaSinCentro />;
@@ -68,6 +71,10 @@ function Rutas() {
       <Stack.Protected guard={conSesion}>
         <Stack.Screen name="cuenta/datos" />
         <Stack.Screen name="cuenta/contacto" />
+      </Stack.Protected>
+      <Stack.Protected guard={conSesion && compartidasListas}>
+        <Stack.Screen name="adopcion" />
+        <Stack.Screen name="refugio/[id]" />
       </Stack.Protected>
       <Stack.Protected guard={!conSesion}>
         <Stack.Screen name="login" options={{ animation: 'fade' }} />

@@ -1,75 +1,94 @@
 import { useMemo, useState } from 'react';
 
-import { getCentrosParaCita, getVeterinariosDeCentro, getVeterinariosIndependientes } from '@/Api/getInfo';
+import { getCentrosParaCita } from '@/Api/getInfo';
 import { solicitarCita } from '@/Api/postInfo';
 import { useAuth } from '@/Auth/AuthContext';
-import { ESPECIALIDAD_POR_DEFECTO, SIN_PREFERENCIA_VETERINARIO, TEXTOS_PEDIR_HORA } from '@/constants/constants';
+import { SIN_PREFERENCIA_VETERINARIO, TEXTOS_PEDIR_HORA as T } from '@/constants/constants';
 import { useDatosDueno } from '@/context/DatosDuenoContext';
-import type { DestinoCita } from '@/interfaces';
+import type { DestinoCita, ModoDestinoCita, OpcionDestinoCita, PasoPedirHora } from '@/interfaces';
 import { diasDisponibles, horarioDelDia, horasDisponibles } from '@/lib/agenda';
+import { opcionesCentros, opcionesIndependientes } from '@/lib/especialidades';
 import { aFechaHoraIso } from '@/lib/fechas';
 
 import { useAccion } from './useAccion';
 import { useConsulta } from './useConsulta';
+import { useFiltroEspecialidadesCita } from './useFiltroEspecialidadesCita';
 
-/** Formulario "Pedir hora": mascota, dónde, veterinario, día, hora, motivo y síntomas (igual que la web). */
+/**
+ * "Pedir hora" en 3 pasos (igual que la web, más el filtro de especialidades):
+ *   0 · Mascota: para quién, motivo y síntomas.
+ *   1 · Dónde: centros o independientes, filtrados por lo que necesita la mascota.
+ *   2 · Día y hora: con quién (en un centro), el día y la hora.
+ */
 export function usePedirHora(mascotaIdInicial: number | null) {
   const { usuarioActual } = useAuth();
   const { mascotas, recargar } = useDatosDueno();
+  const filtro = useFiltroEspecialidadesCita();
 
   // Cuenta de prueba → solo centros de prueba; cuenta real → solo reales (la base lo vuelve a revisar)
   const consultaCentros = useConsulta(() => getCentrosParaCita(), []);
-  const centros = (consultaCentros.datos ?? []).filter((c) => c.esPrueba === (usuarioActual?.esPrueba ?? false));
+  const centros = useMemo(
+    () => (consultaCentros.datos ?? []).filter((c) => c.esPrueba === (usuarioActual?.esPrueba ?? false)),
+    [consultaCentros.datos, usuarioActual?.esPrueba],
+  );
 
+  const [paso, setPaso] = useState<PasoPedirHora>(0);
   const [mascotaId, setMascotaId] = useState<number | null>(mascotaIdInicial ?? (mascotas.length === 1 ? mascotas[0].id : null));
+  const [motivo, setMotivo] = useState('');
+  const [sintomas, setSintomas] = useState<string[]>([]);
+  const [modo, setModo] = useState<ModoDestinoCita>('centros');
   const [destino, setDestino] = useState<DestinoCita>(null);
   const [veterinarioId, setVeterinarioId] = useState<number | null>(null);
   const [fecha, setFecha] = useState<string | null>(null);
   const [hora, setHora] = useState<string | null>(null);
-  const [motivo, setMotivo] = useState('');
-  const [sintomas, setSintomas] = useState<string[]>([]);
   const [enviada, setEnviada] = useState(false);
-  const { ejecutar, ocupado, error, setError } = useAccion();
+  const { ejecutar, ocupado, error, setError, limpiarError } = useAccion();
 
-  const esIndependiente = destino === 'independiente';
-  const centro = typeof destino === 'number' ? (centros.find((c) => c.id === destino) ?? null) : null;
-
-  const consultaVeterinarios = useConsulta(
+  // ---- Paso 2: las tarjetas ----
+  const opciones = useMemo(
     () =>
-      esIndependiente
-        ? getVeterinariosIndependientes()
-        : centro
-          ? getVeterinariosDeCentro(centro.id)
-          : Promise.resolve([]),
-    [destino],
+      modo === 'centros'
+        ? opcionesCentros(centros, filtro.queCumplen, filtro.nombresElegidos)
+        : opcionesIndependientes(filtro.queCumplen, filtro.nombresElegidos),
+    [modo, centros, filtro.queCumplen, filtro.nombresElegidos],
   );
-  const veterinarios = consultaVeterinarios.datos ?? [];
-  const veterinario = veterinarios.find((v) => v.id === veterinarioId) ?? null;
+  const claveElegida = destino === null ? null : destino === 'independiente' ? `v-${veterinarioId}` : `c-${destino}`;
+  // Si el filtro o la pestaña la dejan fuera, cuenta como no elegida
+  const opcionElegida = opciones.find((o) => o.clave === claveElegida) ?? null;
 
-  const horarios = centro?.horarios ?? null; // independiente o sin elegir → horario general
+  const centro = typeof destino === 'number' ? (centros.find((c) => c.id === destino) ?? null) : null;
+  const esIndependiente = destino === 'independiente';
+
+  // ---- Paso 3: con quién, día y hora ----
+  const conFiltro = filtro.seleccion.length > 0;
+  const veterinariosCentro = centro ? filtro.queCumplen.filter((p) => p.centroId === centro.id) : [];
+  const opcionesVeterinario = centro
+    ? [
+        ...(conFiltro ? [] : [{ valor: SIN_PREFERENCIA_VETERINARIO, texto: T.sinPreferencia }]),
+        ...veterinariosCentro.map((v) => ({ valor: String(v.veterinarioId), texto: v.nombre })),
+      ]
+    : [];
+  const veterinarioValido = esIndependiente || veterinariosCentro.some((v) => v.veterinarioId === veterinarioId) ? veterinarioId : null;
+
+  const horarios = centro?.horarios ?? null; // independiente → horario general
   const dias = useMemo(() => (destino === null ? [] : diasDisponibles(horarios)), [destino, horarios]);
   const horas = useMemo(() => (fecha ? horasDisponibles(fecha, horarios) : []), [fecha, horarios]);
 
-  const textoHorario = (() => {
-    if (!centro || !fecha) return null;
-    if (centro.horarios.length === 0) return TEXTOS_PEDIR_HORA.sinHorarioRegistrado;
+  const ayudaDia = (() => {
+    if (!centro || !fecha) return undefined;
+    if (centro.horarios.length === 0) return T.sinHorarioRegistrado;
     const h = horarioDelDia(fecha, centro.horarios);
-    if (!h) return TEXTOS_PEDIR_HORA.centroCerrado;
-    const colacion = h.inicioColacion ? `${h.inicioColacion} a ${h.finColacion}` : null;
-    return TEXTOS_PEDIR_HORA.horarioDelDia(h.abre, h.cierra, colacion);
+    if (!h) return T.centroCerrado;
+    return T.horarioDelDia(h.abre, h.cierra, h.inicioColacion ? `${h.inicioColacion} a ${h.finColacion}` : null);
   })();
 
-  const opcionesVeterinario = [
-    ...(esIndependiente ? [] : [{ valor: SIN_PREFERENCIA_VETERINARIO, texto: TEXTOS_PEDIR_HORA.sinPreferencia }]),
-    ...veterinarios.map((v) => ({ valor: String(v.id), texto: v.nombre })),
-  ];
-
-  const elegirDestino = (nuevo: DestinoCita) => {
-    setDestino(nuevo);
-    setVeterinarioId(null); // el veterinario elegido podría no atender en el nuevo lugar
+  // ---- Acciones ----
+  const elegirOpcion = (o: OpcionDestinoCita) => {
+    setDestino(o.destino);
+    setVeterinarioId(o.veterinarioId);
     setFecha(null);
     setHora(null);
-    setError('');
+    limpiarError();
   };
 
   const elegirFecha = (nueva: string) => {
@@ -77,26 +96,29 @@ export function usePedirHora(mascotaIdInicial: number | null) {
     setHora(null);
   };
 
-  const elegirVeterinario = (valor: string) =>
-    setVeterinarioId(valor === SIN_PREFERENCIA_VETERINARIO ? null : Number(valor));
+  const irA = (nuevo: PasoPedirHora) => {
+    limpiarError();
+    setPaso(nuevo);
+  };
 
-  const alternarSintoma = (s: string) => setSintomas((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));
+  /** Valida el paso actual; si está bien, pasa al siguiente. */
+  const continuar = () => {
+    if (paso === 0) {
+      if (!mascotaId || !motivo.trim()) return setError(T.faltaMascota);
+      return irA(1);
+    }
+    if (!opcionElegida) return setError(T.faltaDestino);
+    irA(2);
+  };
 
   const enviar = async () => {
-    if (!mascotaId || destino === null || !fecha || !hora || !motivo.trim()) return setError(TEXTOS_PEDIR_HORA.faltanDatos);
-    if (esIndependiente && veterinarioId === null) return setError(TEXTOS_PEDIR_HORA.faltaVeterinario);
+    if (!mascotaId || destino === null || !fecha || !hora) return setError(T.faltaDiaHora);
+    if (esIndependiente && veterinarioValido === null) return setError(T.faltaVeterinario);
+    if (centro && conFiltro && veterinarioValido === null) return setError(T.faltaVeterinarioFiltro);
 
     const ok = await ejecutar(
-      () =>
-        solicitarCita({
-          mascotaId,
-          centroId: centro?.id ?? null,
-          veterinarioId,
-          fechaHora: aFechaHoraIso(fecha, hora),
-          motivo,
-          sintomas,
-        }),
-      TEXTOS_PEDIR_HORA.error,
+      () => solicitarCita({ mascotaId, centroId: centro?.id ?? null, veterinarioId: veterinarioValido, fechaHora: aFechaHoraIso(fecha, hora), motivo, sintomas }),
+      T.error,
     );
     if (ok) {
       setEnviada(true);
@@ -105,37 +127,55 @@ export function usePedirHora(mascotaIdInicial: number | null) {
   };
 
   return {
+    paso,
+    continuar,
+    volver: () => irA(Math.max(0, paso - 1) as PasoPedirHora),
+    irAMascota: () => irA(0),
+    // Paso 1
     mascotas,
+    mascota: mascotas.find((m) => m.id === mascotaId) ?? null,
     mascotaId,
     setMascotaId,
-    centros,
-    cargandoCentros: consultaCentros.cargando,
-    errorCentros: consultaCentros.error,
-    recargarCentros: consultaCentros.recargar,
-    destino,
-    elegirDestino,
-    esIndependiente,
-    veterinarios,
-    cargandoVeterinarios: consultaVeterinarios.cargando,
-    opcionesVeterinario,
-    veterinarioSeleccionado: veterinarioId === null ? SIN_PREFERENCIA_VETERINARIO : String(veterinarioId),
-    elegirVeterinario,
-    especialidad: veterinario ? (veterinario.especialidad ?? ESPECIALIDAD_POR_DEFECTO) : null,
-    dias,
-    fecha,
-    elegirFecha,
-    horas,
-    hora,
-    setHora,
-    textoHorario,
     motivo,
     setMotivo,
     sintomas,
-    alternarSintoma,
+    alternarSintoma: (s: string) => setSintomas((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s])),
+    // Paso 2
+    filtro: {
+      especialidades: filtro.especialidades,
+      seleccion: filtro.seleccion,
+      onAlternar: filtro.alternar,
+      onQuitar: filtro.quitar,
+    },
+    modo,
+    setModo,
+    opciones,
+    claveElegida: opcionElegida?.clave ?? null,
+    elegirOpcion,
+    resumen: modo === 'centros' ? T.resumenLugares(opciones.length, filtro.nombresElegidos) : T.resumenProfesionales(opciones.length, filtro.nombresElegidos),
+    cargandoDestinos: consultaCentros.cargando || filtro.cargando,
+    errorDestinos: !!consultaCentros.error || filtro.error,
+    recargarDestinos: () => {
+      consultaCentros.recargar();
+      filtro.recargar();
+    },
+    // Paso 3
+    lugar: opcionElegida?.titulo ?? '',
+    opcionesVeterinario,
+    veterinarioSeleccionado: veterinarioValido === null ? SIN_PREFERENCIA_VETERINARIO : String(veterinarioValido),
+    elegirVeterinario: (valor: string) => setVeterinarioId(valor === SIN_PREFERENCIA_VETERINARIO ? null : Number(valor)),
+    ayudaVeterinario: centro && conFiltro ? T.conEspecialidad : undefined,
+    dias,
+    fecha,
+    elegirFecha,
+    ayudaDia,
+    horas,
+    hora,
+    setHora,
+    // Envío
     enviar,
     enviando: ocupado,
     error,
     enviada,
-    lugarElegido: esIndependiente ? (veterinario?.nombre ?? TEXTOS_PEDIR_HORA.independiente) : (centro?.nombre ?? ''),
   };
 }

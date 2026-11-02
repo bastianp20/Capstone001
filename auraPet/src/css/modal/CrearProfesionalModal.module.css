@@ -291,3 +291,6 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Filtro por especialidades (Solicitar cita): el contador de coincidencias */
+.coincidencias { color: var(--color-primario-texto); font-weight: 600; }

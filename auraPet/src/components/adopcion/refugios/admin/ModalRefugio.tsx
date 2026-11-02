@@ -1,9 +1,10 @@
 import { ArrowRight, Check, X } from "lucide-react";
 import { useId } from "react";
-import { PASOS_REFUGIO, TEXTOS_MODAL_REFUGIO as T } from "../../../../constants";
+import { FORMATO_RECORTE_REFUGIO, PASOS_REFUGIO, TEXTOS_MODAL_REFUGIO as T, TEXTOS_RECORTE } from "../../../../constants";
 import { useFormularioRefugio } from "../../../../hooks/useFormularioRefugio";
 import { useTeclaEscape } from "../../../../hooks/useTeclaEscape";
 import type { ModalRefugioProps } from "../../../../interfaces";
+import { ModalRecorteImagen } from "../../../ui/ModalRecorteImagen";
 import { StepperCirculos } from "../../comun/StepperCirculos";
 import { PasoAdministradoresRefugio } from "./PasoAdministradoresRefugio";
 import { PasoCapacidadRefugio } from "./PasoCapacidadRefugio";
@@ -16,7 +17,7 @@ const NOMBRES_PASOS = PASOS_REFUGIO.map((p) => p.titulo);
 export const ModalRefugio = ({ refugio, onCerrar, onGuardado }: ModalRefugioProps) => {
   const idTitulo = useId();
   const f = useFormularioRefugio(refugio, onGuardado);
-  useTeclaEscape(onCerrar, !f.ocupado);
+  useTeclaEscape(onCerrar, !f.ocupado && !f.porRecortar);
   const comunes = { datos: f.datos, errores: f.errores, onCambiar: f.actualizar };
 
   return (
@@ -74,6 +75,15 @@ export const ModalRefugio = ({ refugio, onCerrar, onGuardado }: ModalRefugioProp
           </div>
         </footer>
       </div>
+      {f.porRecortar && (
+        <ModalRecorteImagen
+          url={f.porRecortar.url}
+          formato={FORMATO_RECORTE_REFUGIO[f.porRecortar.campo]}
+          titulo={TEXTOS_RECORTE[f.porRecortar.campo]}
+          onListo={f.recortada}
+          onCancelar={f.cancelarRecorte}
+        />
+      )}
     </div>
   );
 };

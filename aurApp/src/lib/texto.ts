@@ -6,8 +6,12 @@ export const normalizar = (texto: string): string =>
 export const capitalizar = (texto: string): string =>
   texto ? texto.charAt(0).toLocaleUpperCase('es-CL') + texto.slice(1) : texto;
 
-/** "bastian palavecino" → "Bastian". */
-export const primerNombre = (nombreCompleto: string): string => capitalizar(nombreCompleto.trim().split(/\s+/)[0] ?? '');
+/** "bastian palavecino" → "Bastian"; "Dra. Paula Fuentes" → "Paula" (salta el Dr./Dra.). */
+export const primerNombre = (nombreCompleto: string): string => {
+  const palabras = nombreCompleto.trim().split(/\s+/);
+  const nombre = /^dra?\.?$/i.test(palabras[0] ?? '') && palabras.length > 1 ? palabras[1] : palabras[0];
+  return capitalizar(nombre ?? '');
+};
 
 /** "bastian palavecino" → "Bastian Palavecino". */
 export const nombrePropio = (nombreCompleto: string): string =>

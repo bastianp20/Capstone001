@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CONFIRMACIONES, MAX_CARACTERES_MOTIVO_ELIMINACION, TEXTOS_ELIMINACION as T } from "../../constants";
 import { getMiSolicitudEliminacion } from "../../Api/getInfo";
-import { solicitarEliminacionCuenta } from "../../Api/postInfo";
+import { cancelarSolicitudEliminacion, solicitarEliminacionCuenta } from "../../Api/postInfo";
 import { useAccion } from "../../hooks/useAccion";
 import { useConsulta } from "../../hooks/useConsulta";
 import { useConfirmar } from "../../hooks/useConfirmar";
@@ -16,6 +16,11 @@ export const SolicitarEliminacion = ({ perfilId }: SolicitarEliminacionProps) =>
   const { ejecutar, ocupado, error } = useAccion();
   const confirmar = useConfirmar();
   const { datos: solicitud } = useConsulta(() => getMiSolicitudEliminacion(perfilId), [perfilId, recarga]);
+
+  const cancelar = async () => {
+    if (!(await confirmar(CONFIRMACIONES.cancelarEliminacionCuenta()))) return;
+    if (await ejecutar(cancelarSolicitudEliminacion, "No se pudo cancelar la solicitud.")) setRecarga((n) => n + 1);
+  };
 
   const pedir = async () => {
     if (!(await confirmar(CONFIRMACIONES.pedirEliminacionCuenta()))) return;
@@ -32,7 +37,15 @@ export const SolicitarEliminacion = ({ perfilId }: SolicitarEliminacionProps) =>
       <small className={styles.ayudaTexto}>{T.ayuda}</small>
 
       {solicitud?.estado === "pendiente" ? (
-        <p className={styles.exito}>{T.enRevision(solicitud.fecha)}</p>
+        <>
+          <p className={styles.exito}>{T.enRevision(solicitud.fecha)}</p>
+          {error && <p className={styles.error}>{error}</p>}
+          <div className={styles.acciones}>
+            <button type="button" className={styles.btnSecundario} onClick={cancelar} disabled={ocupado}>
+              {ocupado ? T.cancelando : T.cancelar}
+            </button>
+          </div>
+        </>
       ) : (
         <>
           {solicitud?.estado === "rechazada" && (

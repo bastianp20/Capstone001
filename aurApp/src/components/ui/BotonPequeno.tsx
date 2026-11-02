@@ -6,7 +6,7 @@ import type { BotonPequenoProps } from '@/interfaces';
 
 import { Icono } from './Icono';
 
-const COLOR_TEXTO = { blanco: COLORES.texto, peligro: COLORES.error, sobrePrimario: COLORES.primarioOscuro, primario: COLORES.blanco } as const;
+const COLOR_TEXTO = { blanco: COLORES.texto, peligro: COLORES.error, sobrePrimario: COLORES.primarioOscuro, primario: COLORES.blanco, coral: COLORES.blanco } as const;
 
 /** Botón chico en forma de píldora: "Cómo llegar", "Cancelar cita", "Ficha PDF". */
 export function BotonPequeno({ texto, onPress, icono, variante = 'blanco', cargando, deshabilitado }: BotonPequenoProps) {
@@ -21,6 +21,7 @@ export function BotonPequeno({ texto, onPress, icono, variante = 'blanco', carga
         styles.boton,
         variante === 'peligro' && styles.peligro,
         variante === 'primario' && styles.primario,
+        variante === 'coral' && styles.coral,
         pressed && styles.presionado,
         deshabilitado && styles.deshabilitado,
       ]}>

@@ -53,7 +53,7 @@ export default function AgendaVeterinarioScreen() {
                     onConfirmar={a.confirmar}
                     onRechazar={a.pedirRechazo}
                     onIniciar={a.iniciar}
-                    onTerminar={a.terminar}
+                    onAbrirAtencion={a.abrirAtencion}
                   />
                 }
               />

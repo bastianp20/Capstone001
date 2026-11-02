@@ -1,16 +1,18 @@
 import { useCallback, useMemo, useState } from "react";
 import { getRefugiosAdmin } from "../Api/getInfo";
-import { verificarRefugio } from "../Api/postInfo";
-import { CONFIRMACIONES, FILTROS_REFUGIOS_ADMIN_VACIOS, TEXTOS_REFUGIOS_ADMIN as T } from "../constants";
+import { aprobarRefugioConInvitacion, verificarRefugio } from "../Api/postInfo";
+import { CONFIRMACIONES, FILTROS_REFUGIOS_ADMIN_VACIOS, TEXTOS_POSTULACION_ADMIN as TP, TEXTOS_REFUGIOS_ADMIN as T } from "../constants";
 import type { FiltrosRefugiosAdmin, RefugioAdmin } from "../interfaces";
 import { valoresUnicos } from "../lib/publicacionesAdopcion";
 import { filtrarRefugiosAdmin, kpisRefugios } from "../lib/refugios";
 import { useAccion } from "./useAccion";
 import { useConfirmar } from "./useConfirmar";
 import { useConsulta } from "./useConsulta";
+import { useToast } from "./useToast";
 
 // "Refugios" del superadmin: la lista, los filtros, los números, el refugio
 // abierto en el panel lateral, el modal de crear/editar y aprobar/rechazar.
+// Una postulación hecha sin cuenta se aprueba con la invitación (edge function).
 export const useRefugiosAdmin = () => {
   const [recarga, setRecarga] = useState(0);
   const recargar = useCallback(() => setRecarga((n) => n + 1), []);
@@ -26,13 +28,23 @@ export const useRefugiosAdmin = () => {
 
   const confirmar = useConfirmar();
   const accion = useAccion();
+  const toast = useToast();
 
   const verificar = useCallback(
     async (r: RefugioAdmin, aprobar: boolean) => {
       if (!aprobar && !(await confirmar(CONFIRMACIONES.rechazarRefugio(r.nombre)))) return;
-      if (await accion.ejecutar(() => verificarRefugio(r.id, aprobar), T.errorAccion)) recargar();
+      const conInvitacion = aprobar && !!r.correoAcceso && !r.administradores.length;
+      let aviso = "";
+      const ok = await accion.ejecutar(async () => {
+        if (!conInvitacion) return verificarRefugio(r.id, aprobar);
+        const res = await aprobarRefugioConInvitacion(r.id);
+        aviso = res.invitada ? TP.aprobadoInvitado(res.correo) : TP.aprobadoVinculado(res.correo);
+      }, T.errorAccion);
+      if (!ok) return;
+      if (aviso) toast.mostrar(aviso);
+      recargar();
     },
-    [confirmar, accion, recargar],
+    [confirmar, accion, toast, recargar],
   );
 
   const porRevisar = useMemo(
@@ -58,6 +70,7 @@ export const useRefugiosAdmin = () => {
     verificar,
     ocupado: accion.ocupado,
     errorAccion: accion.error,
+    aviso: toast.mensaje,
     cargando: consulta.cargando,
     error: consulta.error,
     recargar,

@@ -115,8 +115,9 @@
 }
 .adopta-confianza svg { color: var(--adopta-primario); }
 .adopta-confianza p { margin: 0; font-size: 17px; }
-.adopta-confianza a { color: var(--adopta-suave); font-size: 14px; }
-.adopta-confianza a:hover { color: var(--adopta-primario); }
+.adopta-confianza a, .adopta-confianza-reportar { color: var(--adopta-suave); font-size: 14px; }
+.adopta-confianza a:hover, .adopta-confianza-reportar:hover { color: var(--adopta-primario); }
+.adopta-confianza-reportar { padding: 0; border: none; background: none; font: inherit; font-size: 14px; text-decoration: underline; cursor: pointer; }
 
 .adopta-confianza-compacta {
   padding: 16px; border: 1px solid var(--adopta-borde); border-radius: 16px; background: #ffffff; gap: 6px;
