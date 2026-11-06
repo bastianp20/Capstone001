@@ -57,6 +57,13 @@
   transition: background 0.12s, opacity 0.15s;
 }
 
+/* Cada celda puede achicarse bajo su contenido: así un correo largo se corta
+   con "…" en vez de pasar por encima de la columna siguiente */
+.encabezados > *,
+.fila > * {
+  min-width: 0;
+}
+
 .fila:hover {
   background: var(--color-superficie-suave);
 }

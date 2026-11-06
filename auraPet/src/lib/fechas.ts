@@ -143,3 +143,31 @@ export const formatFechaEmision = (fecha = new Date()): string => {
   const p = Object.fromEntries(partes.map((x) => [x.type, x.value]));
   return `${p.day} de ${p.month} de ${p.year}, ${p.hour}:${p.minute} h`;
 };
+
+// "2026-10" → "oct" (barras por mes de "Tu impacto").
+export const mesAbreviado = (anioMes: string): string => MESES_ABREV[Number(anioMes.slice(5, 7)) - 1] ?? "";
+
+
+// ---- Mi horario del veterinario ----
+
+const DIAS_SEMANA = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+
+// "2026-11-06" — el día (en Chile) en que cae un timestamptz.
+export const fechaEnChile = (iso: string): string => {
+  const { anio, mes, dia } = partesEnChile(iso);
+  return `${anio}-${d2(mes)}-${d2(dia)}`;
+};
+
+// "Jueves 6 nov" — para fechas date (los días de "Mi horario").
+export const formatDiaConNombre = (fecha: string): string => {
+  const { anio, mes, dia } = partesFecha(fecha);
+  const nombre = DIAS_SEMANA[new Date(anio, mes - 1, dia).getDay()];
+  return `${nombre.charAt(0).toUpperCase()}${nombre.slice(1)} ${dia} ${MESES_ABREV[mes - 1]}`;
+};
+
+// "Jueves 6 nov, 16:00" — un momento exacto con el nombre del día.
+export const formatDiaHora = (iso: string): string => `${formatDiaConNombre(fechaEnChile(iso))}, ${formatHora24(iso)}`;
+
+// Fecha ("2026-11-06") + hora ("16:00") del formulario -> ISO en UTC para la base.
+// Igual que Solicitar cita: el computador está en hora de Chile.
+export const isoDesdeFechaHora = (fecha: string, hora: string): string => new Date(`${fecha}T${hora}:00`).toISOString();

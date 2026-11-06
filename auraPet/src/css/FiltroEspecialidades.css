@@ -1,0 +1,34 @@
+@import './theme.css';
+
+/* Filtro por especialidades (components/ui/FiltroEspecialidades). Prefijo filtro-esp-.
+   tono "tema" sigue claro/oscuro de theme.css; "oscuro" es para la ficha (siempre oscura). */
+.filtro-esp {
+  --fe-fondo: var(--color-superficie-suave);
+  --fe-borde: var(--color-borde-fuerte);
+  --fe-texto: var(--color-terciario-texto);
+  --fe-suave: var(--color-terciario-texto-muted);
+  --fe-chip: var(--color-superficie);
+  --fe-activo-fondo: var(--color-secundario);
+  --fe-activo-texto: var(--color-primario-texto);
+  grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; margin: 0; min-width: 0;
+  padding: 12px 14px; border: 1px dashed var(--fe-borde); border-radius: 14px; background: var(--fe-fondo); color: var(--fe-texto);
+}
+.filtro-esp-oscuro {
+  --fe-fondo: rgba(255, 255, 255, 0.03);
+  --fe-borde: rgba(255, 255, 255, 0.16);
+  --fe-texto: #f1f3f6;
+  --fe-suave: #9aa3b2;
+  --fe-chip: rgba(255, 255, 255, 0.05);
+  --fe-activo-fondo: rgba(60, 196, 180, 0.18);
+  --fe-activo-texto: #5fd6c6;
+}
+.filtro-esp legend { padding: 0 4px; font-size: 0.9rem; font-weight: 600; }
+.filtro-esp small { font-size: 0.78rem; color: var(--fe-suave); }
+.filtro-esp-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.filtro-esp-chip {
+  padding: 6px 12px; border-radius: 999px; border: 1px solid var(--fe-borde); background: var(--fe-chip);
+  color: var(--fe-texto); font: inherit; font-size: 0.85rem; cursor: pointer;
+}
+.filtro-esp-chip-activo { background: var(--fe-activo-fondo); border-color: var(--fe-activo-texto); color: var(--fe-activo-texto); font-weight: 600; }
+.filtro-esp-limpiar { padding: 6px 10px; border: none; background: none; color: var(--fe-activo-texto); font: inherit; font-size: 0.82rem; font-weight: 600; text-decoration: underline; cursor: pointer; }
+.filtro-esp-chip:focus-visible, .filtro-esp-limpiar:focus-visible { outline: 3px solid rgba(15, 143, 128, 0.4); outline-offset: 2px; }

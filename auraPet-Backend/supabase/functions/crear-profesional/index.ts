@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
   // centroId: centro de AuraPet (opcional). Si no hay, puede venir centroMencionado
   // (un centro que aún no está en AuraPet) o nada (independiente).
   const {
-    nombre, correo, telefono, password, numeroColegiado, especialidadId, especialidadOtra,
+    nombre, correo, telefono, password, numeroColegiado, especialidadId, especialidadIds, especialidadOtra,
     centroId, centroMencionado, centroMencionadoComuna, esAdminCentro, esPrueba,
   } = await req.json();
   if (!nombre?.trim() || !correo?.trim()) {
@@ -86,6 +86,15 @@ Deno.serve(async (req) => {
       .select("id")
       .single();
     if (e1) throw e1;
+
+    // Todas las especialidades marcadas (migración 45; la principal ya la copia la base)
+    const ids = Array.isArray(especialidadIds) ? especialidadIds.filter((n: unknown) => Number.isInteger(n)) : [];
+    if (ids.length) {
+      const { error: eEsp } = await admin
+        .from("veterinario_especialidades")
+        .upsert(ids.map((id: number) => ({ veterinario_id: vet.id, especialidad_id: id })), { ignoreDuplicates: true });
+      if (eEsp) throw eEsp;
+    }
 
     // Sin centro de AuraPet = independiente (o centro aún no registrado): no se asigna nada
     if (centroId) {

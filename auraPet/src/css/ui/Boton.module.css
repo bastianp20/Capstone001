@@ -45,6 +45,22 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
+/* Secundario sobre paneles claros (usa los tokens del tema) */
+.secundarioClaro {
+  background: var(--color-superficie, #ffffff);
+  border-color: var(--color-terciario-borde, #e4e6ea);
+  color: var(--color-terciario-texto, #1a1f27);
+}
+
+.secundarioClaro:hover:not(:disabled) {
+  border-color: var(--color-primario, #0f8f80);
+  color: var(--color-primario-texto, #0f8f80);
+}
+
+.secundarioClaro:focus-visible {
+  outline-color: var(--color-primario, #0f8f80);
+}
+
 .peligro {
   background: #dc2626;
   color: #ffffff;

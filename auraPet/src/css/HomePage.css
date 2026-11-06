@@ -265,23 +265,35 @@
 .landing-footer {
   background: var(--landing-sidebar-oscuro);
   color: var(--landing-texto-sidebar);
-  padding: 48px;
+  padding: 56px 48px 28px;
   display: flex;
   gap: 48px;
   flex-wrap: wrap;
   position: relative;
+  font-family: var(--fuente-marca);
 }
-.landing-footer-col { flex: 1; min-width: 160px; font-size: 13px; display: flex; flex-direction: column; gap: 8px; }
-.landing-footer-col h4 { color: #ffffff; font-size: 14px; margin-bottom: 4px; }
-.landing-footer-col a { color: var(--landing-texto-sidebar); text-decoration: none; transition: color 0.15s; }
-.landing-footer-col a:hover { color: #ffffff; }
-.landing-footer-col a.landing-footer-link-activo { color: var(--landing-primario); font-weight: 600; }
+.landing-footer-col { flex: 1; min-width: 160px; font-size: 13.5px; display: flex; flex-direction: column; gap: 10px; }
+.landing-footer-col p { line-height: 1.55; max-width: 260px; }
+.landing-footer-col h4 {
+  margin: 0 0 4px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.landing-footer-col a { width: fit-content; color: var(--landing-texto-sidebar); text-decoration: none; transition: color 0.15s, transform 0.15s; }
+.landing-footer-col a:hover { color: #ffffff; transform: translateX(2px); }
+.landing-footer-col a.landing-footer-link-activo { color: var(--landing-primario); font-weight: 700; }
+/* El logo del footer va en blanco (el de la barra es oscuro) */
+.landing-footer .landing-navbar-logo { color: #ffffff; }
 .landing-footer-bottom {
   width: 100%;
   border-top: 1px solid #2a323d;
   margin-top: 24px;
   padding-top: 16px;
   font-size: 12px;
+  letter-spacing: 0.02em;
   text-align: center;
 }
 

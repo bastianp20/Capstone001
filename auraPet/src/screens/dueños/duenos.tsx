@@ -1,13 +1,17 @@
 import { useState } from 'react';
-import { Iconos, MAX_CITAS_INICIO_DUENO, MAX_HISTORIAL_INICIO_DUENO } from '../../constants';
+import { CONFIRMACIONES, Iconos, MAX_CITAS_INICIO_DUENO, MAX_HISTORIAL_INICIO_DUENO } from '../../constants';
 import { useConsulta } from '../../hooks/useConsulta';
+import { useConfirmar } from '../../hooks/useConfirmar';
 import { getMascotasPorDueno, getProximasCitasDueno, getHistorialRecienteDueno, getHistorialDueno, getDerivaciones } from '../../Api/getInfo';
 import { DerivacionesDueno } from '../../components/dueno/DerivacionesDueno';
 import { cancelarCita } from '../../Api/postInfo';
-import { getIniciales } from '../../utils';
 import { useAuth } from '../../Auth/AuthContext';
 import type { HistorialDueno, ItemMenuDueno, SeccionDueno } from '../../interfaces';
 import { ConfiguracionModal } from '../../Modal/ConfiguracionModal';
+import { DarEnAdopcionModal } from '../../Modal/DarEnAdopcionModal';
+import { SeccionMisPublicaciones } from '../../components/adopcion/publicaciones/SeccionMisPublicaciones';
+import { SeccionMiRefugio } from '../../components/adopcion/refugios/miRefugio/SeccionMiRefugio';
+import { useAdministraRefugio } from '../../hooks/useAdministraRefugio';
 import { ModalCrearMascota } from '../../Modal/AgregarMascotaModal';
 import { ModalSolicitarCita } from '../../Modal/SolicitarCitaModal';
 import { MenuDueno } from '../../components/dueno/MenuDueno';
@@ -17,6 +21,8 @@ import { HistorialReciente } from '../../components/dueno/HistorialReciente';
 import { HistorialMedico } from '../../components/dueno/HistorialMedico';
 import '../../css/duenoPage.css';
 import LogoAuraPetSinFondo from '../../assets/logo/LogoAuraPetSinFondo.png';
+import { FotoPerfil } from '../../components/perfil/FotoPerfil';
+import { AvisosCitas } from '../../components/avisos/AvisosCitas';
 
 const iconos = Iconos;
 
@@ -24,7 +30,7 @@ const iconos = Iconos;
 
 const HISTORIAL_VACIO: HistorialDueno = { registros: [], recetas: [] };
 
-type Modal = "configuracion" | "mascota" | "cita" | null;
+type Modal = "configuracion" | "mascota" | "cita" | "adopcion" | null;
 
 // Panel del dueño. Esta pantalla maneja la navegación, los datos y los modales;
 // cada parte visual vive en components/dueno/.
@@ -36,6 +42,9 @@ export const DuenoScreen = () => {
   // ---------- Navegación y modales ----------
   const [seccion, setSeccion] = useState<SeccionDueno>("inicio");
   const [modal, setModal] = useState<Modal>(null);
+  // Sube al publicar en adopción, para que "Mis publicaciones" se recargue
+  const [versionPublicaciones, setVersionPublicaciones] = useState(0);
+  const conRefugio = useAdministraRefugio();
   const [mascotaParaCita, setMascotaParaCita] = useState<number | undefined>(undefined);
 
   // ---------- Datos ----------
@@ -62,6 +71,7 @@ export const DuenoScreen = () => {
   const elegirMenu = (id: ItemMenuDueno["id"]) => {
     if (id === "solicitar") abrirSolicitarCita();
     else if (id === "configuracion") setModal("configuracion");
+    else if (id === "adopcion") setModal("adopcion");
     else setSeccion(id);
   };
 
@@ -70,10 +80,13 @@ export const DuenoScreen = () => {
     setModal("cita");
   };
 
+  const confirmar = useConfirmar();
   const [cancelandoId, setCancelandoId] = useState<number | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const cancelar = async (citaId: number) => {
-    if (!window.confirm("¿Seguro que quieres cancelar esta cita?")) return;
+    const cita = proximasCitas.find((c) => c.id === citaId);
+    const detalle = cita && `${cita.mascota} · ${cita.dia} ${cita.mes} · ${cita.hora} · ${cita.centro}`;
+    if (!(await confirmar(CONFIRMACIONES.cancelarCita(detalle)))) return;
     setCancelandoId(citaId);
     setAviso(null);
     try {
@@ -106,7 +119,7 @@ export const DuenoScreen = () => {
           <img src={LogoAuraPetSinFondo} alt="AuraPet" className="landing-logo-icono" />
           <span className="dueno-sidebar-brand-name">AuraPet</span>
         </div>
-        <MenuDueno seccion={seccion} onElegir={elegirMenu} />
+        <MenuDueno seccion={seccion} onElegir={elegirMenu} conRefugio={conRefugio} />
       </div>
 
       <div className="dueno-main">
@@ -115,7 +128,7 @@ export const DuenoScreen = () => {
           <div />
           <div className="dueno-topbar-right">
             <div className="dueno-usuario">
-              <div className="dueno-avatar">{getIniciales(nombreDueno)}</div>
+              <FotoPerfil nombre={nombreDueno} url={usuarioActual?.avatarUrl ?? null} className="dueno-avatar" />
               <div className="dueno-usuario-info">
                 <span className="dueno-usuario-nombre">{nombreDueno}</span>
                 <span className="dueno-usuario-rol">Dueñ@{usuarioActual!.esPrueba && " · Cuenta de prueba"}</span>
@@ -137,6 +150,9 @@ export const DuenoScreen = () => {
                 </div>
                 {accionesRapidas}
               </div>
+
+              {/* Cambios de hora que hizo un veterinario (reagendó o canceló) */}
+              <AvisosCitas />
 
               <section className="dueno-seccion">
                 <div className="dueno-seccion-header">
@@ -180,11 +196,20 @@ export const DuenoScreen = () => {
               <HistorialMedico mascotas={mascotas} historial={historial} cargando={cargandoHistorial} />
             </>
           )}
+
+          {seccion === "publicaciones" && (
+            <SeccionMisPublicaciones version={versionPublicaciones} onDarEnAdopcion={() => setModal("adopcion")} />
+          )}
+
+          {seccion === "refugio" && <SeccionMiRefugio />}
         </div>
       </div>
 
       {/* ---------- Modales ---------- */}
       {modal === "configuracion" && <ConfiguracionModal onCerrar={() => setModal(null)} />}
+      {modal === "adopcion" && (
+        <DarEnAdopcionModal onCerrar={() => setModal(null)} onPublicada={() => setVersionPublicaciones((n) => n + 1)} />
+      )}
       {modal === "mascota" && (
         <ModalCrearMascota
           duenoId={duenoId}

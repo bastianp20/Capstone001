@@ -9,6 +9,22 @@
 
 // Tipos que ya usaban las pantallas (formato "listo para mostrar").
 import type {
+  ListaUrgencias, TelefonoEnUrgencias,
+  EstadoUciCentro, ProgresoPerfilCentro,
+  HorarioAtencion, ProgresoPerfilVeterinario,
+  AvisoCita, BloqueoHorario, TipoAvisoCita,
+  AnimalAdopcion,          // animal publicado en /adopta
+  ActividadPublicacion, AnimalParaVeterinario, AtencionPropia, CentroAtencion, EstadoPostulacion, EstadoPublicacion,
+  MesSolidario, OpcionRefugio, PostulacionRecibida, PublicacionPropia, RecepcionRefugio, Refugio, ResumenRefugios,
+  CuentaEncontrada, DetalleMiRefugio, EstadoRefugio, MiembroRefugio, RefugioAdmin,
+  MisEspecialidades, ProfesionalParaCita,
+  AvisoModeracion, CasoModeracion, DecisionModeracion, EstadoCasoModeracion, MotivoReporte, ResumenModeracion,
+  ResumenSolidario, TenenciaAdopcion, TipoActividadPublicacion, ViviendaAdopcion,
+  ChequeoAdopcion,         // último chequeo de un veterinario
+  FichaAdopcion,           // ficha /adopta/:id
+  EstadisticasAdopcion,    // números del hero de /adopta
+  HistoriaAdopcion,        // "Ya tienen familia"
+  SexoAdopcion, TamanoAdopcion,
   CitaProximaDueno,        // cita para el cuadradito del panel del dueño
   HistorialRecienteItem,   // ítem de "historial reciente" del dueño
   Mascota,                 // mascota con los campos que muestra la app
@@ -58,11 +74,13 @@ import type {
 } from "../interfaces";
 // auí importamos supabase para poder hacer las consutas a la base de datos. 
 import { supabase } from "../lib/supabase";
+import type { Database } from "../lib/database.types";
 // Funciones para mostrar las fechas que vienen de la base.
 import { nombreConComuna } from "../lib/centroVeterinario";
 import { formatEdad, resumirVacunas } from "../lib/fichaPaciente";
+import { edadAdopcion, especieAdopcion, etapaAdopcion, urlFotoAdopcion } from "../lib/adopcion";
 import { calcularEdad, formatFechaEmision, formatHorario, formatFechaCaja, formatFechaCorta, formatFechaHora, formatFechaLarga, formatHora12h, formatHora24, diaDelMesEnChile, fechaDentroDe, rangosDeFecha } from "../lib/fechas";
-import { CARGOS_RESPONSABLE, DIAS_CONTROLES_PROXIMOS, ESTADO_VERIFICACION, ESTILO_ROL, MAX_ITEMS_PENDIENTES, MOTIVO_RECHAZO_SIN_DETALLE, MS_CREADO_YA_APROBADO, URGENCIAS_ALTAS, SEXO_LABEL, TEXTO_SIN_REGISTRAR } from "../constants";
+import { CARGOS_RESPONSABLE, DIAS_CONTROLES_PROXIMOS, ESTADO_VERIFICACION, ESTILO_ROL, MAX_ITEMS_PENDIENTES, MOTIVO_RECHAZO_SIN_DETALLE, MS_CREADO_YA_APROBADO, URGENCIAS_ALTAS, SEXO_LABEL, MAX_HISTORIAS_ADOPCION, RAZA_SIN_INDICAR, TEXTO_ATENCION_INDEPENDIENTE, TEXTO_SIN_REGISTRAR } from "../constants";
 
 // Pone la primera letra en mayúscula: "perro" -> "Perro".
 const capitalize = (s: string): string => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
@@ -117,7 +135,7 @@ export const getProximasCitasDueno = async (duenoId: string, limite = 3): Promis
     id: c.id,
     mascotaId: c.mascota_id,
     mascota: c.mascotas?.nombre ?? "Mascota desconocida",   // "?." por si viniera vacío
-    centro: c.centros?.nombre ?? "Centro desconocido",
+    centro: c.centros?.nombre ?? TEXTO_ATENCION_INDEPENDIENTE,   // sin centro = veterinario independiente
     ...formatFechaCaja(c.fecha_hora),             // agrega { dia: "10", mes: "SEP" }
     hora: formatHora24(c.fecha_hora),             // "10:30"
     puedeCancelar: c.estado === "pendiente" || c.estado === "confirmada",
@@ -190,7 +208,8 @@ export const getAgendaVeterinario = async (veterinarioId: number): Promise<CitaA
   const { data, error } = await supabase
     .from("citas")
     .select(`
-      id, fecha_hora, motivo, estado, urgencia,
+      id, fecha_hora, motivo, estado, urgencia, centro_id, reagendada_en,
+      centros ( nombre ),
       mascotas ( nombre, especie, raza, perfiles ( nombre ) )
     `)                                            // mascota y, a través de ella, el nombre del dueño
     .eq("veterinario_id", veterinarioId)          // solo las de este veterinario
@@ -208,6 +227,46 @@ export const getAgendaVeterinario = async (veterinarioId: number): Promise<CitaA
     motivo: c.motivo,
     estado: c.estado,
     urgencia: c.urgencia ?? "baja",              // sin urgencia aún -> se muestra como baja
+    fechaHora: c.fecha_hora,
+    centroId: c.centro_id,
+    centro: c.centros?.nombre ?? null,           // null = atención independiente
+    reagendada: c.reagendada_en !== null,
+  }));
+};
+
+// Los bloqueos de horario del veterinario conectado que todavía no terminan
+// (RLS: cada veterinario ve solo los suyos). Migración 52.
+export const getMisBloqueos = async (): Promise<BloqueoHorario[]> => {
+  const { data, error } = await supabase
+    .from("bloqueos_veterinario")
+    .select("id, desde, hasta, motivo")
+    .gt("hasta", new Date().toISOString())
+    .order("desde");
+  if (error) throw error;
+  return (data ?? []).map((b) => ({ id: b.id, desde: b.desde, hasta: b.hasta, motivo: b.motivo }));
+};
+
+// Avisos sin leer de la persona conectada (cambios de hora que hizo un
+// veterinario). Con centroId, solo los de ese centro (panel del centro);
+// sin él, los que no son de un centro (los del dueño). RLS: cada uno ve los suyos.
+export const getAvisosCitas = async (centroId?: number): Promise<AvisoCita[]> => {
+  let consulta = supabase
+    .from("notificaciones")
+    .select("id, tipo, titulo, mensaje, fecha_anterior, fecha_nueva, creada_en")
+    .is("leida_en", null)
+    .order("creada_en", { ascending: false })
+    .limit(20);
+  consulta = centroId === undefined ? consulta.is("centro_id", null) : consulta.eq("centro_id", centroId);
+  const { data, error } = await consulta;
+  if (error) throw error;
+  return (data ?? []).map((a) => ({
+    id: a.id,
+    tipo: a.tipo as TipoAvisoCita,
+    titulo: a.titulo,
+    mensaje: a.mensaje,
+    fechaAnterior: a.fecha_anterior,
+    fechaNueva: a.fecha_nueva,
+    creadaEn: a.creada_en,
   }));
 };
 
@@ -361,7 +420,7 @@ export const getAsignacionesVeterinarios = async (): Promise<VeterinarioAsignaci
     .select(`
       id, numero_colegiado, estado_verificacion, centro_solicitado_id, centro_mencionado, centro_mencionado_comuna,
       perfiles!veterinarios_perfil_id_fkey ( nombre, es_prueba ),
-      especialidades ( nombre ),
+      especialidades!veterinarios_especialidad_id_fkey ( nombre ),
       veterinario_centros ( centros ( id, nombre, es_prueba ) )
     `);
   if (error) throw error;
@@ -447,7 +506,7 @@ export const getSolicitudesPendientes = async (): Promise<SolicitudPendiente[]> 
       .eq("estado_verificacion", "pendiente"),
     supabase
       .from("veterinarios")
-      .select("id, creado_en, especialidad_otra, centro_solicitado_id, centro_mencionado, centro_mencionado_comuna, perfiles!veterinarios_perfil_id_fkey ( nombre ), especialidades ( nombre )")
+      .select("id, creado_en, especialidad_otra, centro_solicitado_id, centro_mencionado, centro_mencionado_comuna, perfiles!veterinarios_perfil_id_fkey ( nombre ), especialidades!veterinarios_especialidad_id_fkey ( nombre )")
       .eq("estado_verificacion", "pendiente"),
     // Centros que pidieron unirse desde /solicitar-centro (migración 20)
     supabase
@@ -655,12 +714,14 @@ export const getAllUsers = async () => {
 export const getMisCentrosAdmin = async (perfilId: string): Promise<CentroAdministrado[]> => {
   const { data, error } = await supabase
     .from("admins_centro")
-    .select("centros ( id, nombre )")
+    .select("centros ( id, nombre, desactivado_en )")
     .eq("perfil_id", perfilId);
   if (error) throw error;
+  // Un centro eliminado (desactivado) ya no se administra
   return (data ?? [])
     .map((fila) => fila.centros)
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c) && !c?.desactivado_en)
+    .map(({ id, nombre }) => ({ id, nombre }))
     .sort((a, b) => a.nombre.localeCompare(b.nombre));
 };
 
@@ -669,9 +730,9 @@ export const getCentroDetalle = async (centroId: number): Promise<CentroDetalle>
   const { data, error } = await supabase
     .from("centros")
     .select(`
-      id, nombre, direccion, comuna, telefono, es_prueba,
+      id, nombre, direccion, comuna, telefono, es_prueba, tiene_uci, urgencias_24_7, urgencias_revisado_en,
       horarios_centro ( dia_semana, abre, cierra, inicio_colacion, fin_colacion ),
-      centro_especialidades ( especialidades ( nombre ) )
+      centro_especialidades ( especialidad_id, especialidades ( nombre ) )
     `)
     .eq("id", centroId)
     .single();
@@ -687,6 +748,10 @@ export const getCentroDetalle = async (centroId: number): Promise<CentroDetalle>
       .map((ce) => ce.especialidades?.nombre)
       .filter((n): n is string => Boolean(n))
       .sort(),
+    especialidadIds: (data.centro_especialidades ?? []).map((ce) => ce.especialidad_id),
+    tieneUci: data.tiene_uci,
+    urgencias247: data.urgencias_24_7,
+    urgenciasRevisadas: data.urgencias_revisado_en !== null,
     horarios: (data.horarios_centro ?? [])
       .map((h) => ({
         diaSemana: h.dia_semana,
@@ -704,7 +769,7 @@ export const getEquipoCentro = async (centroId: number): Promise<MiembroEquipo[]
   const [vets, admins] = await Promise.all([
     supabase
       .from("veterinario_centros")
-      .select("veterinarios ( perfil_id, perfiles!veterinarios_perfil_id_fkey ( nombre ), especialidades ( nombre ) )")
+      .select("veterinarios ( perfil_id, perfiles!veterinarios_perfil_id_fkey ( nombre ), especialidades!veterinarios_especialidad_id_fkey ( nombre ) )")
       .eq("centro_id", centroId),
     supabase
       .from("admins_centro")
@@ -926,7 +991,7 @@ export const getHistorialDueno = async (): Promise<HistorialDueno> => {
 };
 
 // Centros donde se puede pedir hora, con su horario de atención.
-// (La base solo muestra los aprobados y no de pruebas.)
+// (La base solo muestra los aprobados del mismo tipo de cuenta: de prueba o reales.)
 export const getCentrosParaCita = async (): Promise<CentroParaCita[]> => {
   const { data, error } = await supabase
     .from("centros")
@@ -956,12 +1021,19 @@ export const getVeterinariosDeCentro = async (centroId: number): Promise<Veterin
   return data ?? [];
 };
 
+// Veterinarios aprobados SIN centro, del mismo "mundo" (real/prueba) que la cuenta (migración 35)
+export const getVeterinariosIndependientes = async (): Promise<VeterinarioParaCita[]> => {
+  const { data, error } = await supabase.rpc("veterinarios_independientes");
+  if (error) throw error;
+  return data ?? [];
+};
+
 // Todos los centros (aprobados, pendientes, rechazados, reales y de prueba)
 // para la sección "Centros" del superadmin, con cuántos veterinarios tiene cada uno.
 export const getCentrosSuperadmin = async (): Promise<CentroListado[]> => {
   const { data, error } = await supabase
     .from("centros")
-    .select("id, nombre, direccion, comuna, telefono, estado_verificacion, es_prueba, creado_en, veterinario_centros ( count )")
+    .select("id, nombre, direccion, comuna, telefono, estado_verificacion, es_prueba, creado_en, desactivado_en, motivo_desactivacion, veterinario_centros ( count )")
     .order("nombre");
   if (error) throw error;
   return (data ?? []).map((c) => ({
@@ -974,6 +1046,8 @@ export const getCentrosSuperadmin = async (): Promise<CentroListado[]> => {
     esPrueba: c.es_prueba,
     veterinarios: c.veterinario_centros?.[0]?.count ?? 0, // "( count )" llega como [{ count: 3 }]
     creadoEn: c.creado_en,
+    eliminadoEn: c.desactivado_en,
+    motivoEliminacion: c.motivo_desactivacion,
   }));
 };
 
@@ -1188,7 +1262,9 @@ export const getSuscripcionesSuperadmin = async (): Promise<SuscripcionListada[]
 export const getDestinosDerivacion = async (): Promise<DestinoDerivacion[]> => {
   const { data, error } = await supabase.rpc("destinos_derivacion");
   if (error) throw error;
-  return (data ?? []).map((d) => ({ tipo: d.tipo as TipoDestinoDerivacion, id: d.id, nombre: d.nombre, detalle: d.detalle }));
+  return (data ?? []).map((d) => ({
+    tipo: d.tipo as TipoDestinoDerivacion, id: d.id, nombre: d.nombre, detalle: d.detalle, especialidadIds: d.especialidad_ids ?? [],
+  }));
 };
 
 // Derivaciones de un paciente (ficha) o, sin mascotaId, de todas las mascotas del dueño
@@ -1382,4 +1458,580 @@ export const getFichaPdf = async (mascotaId: number): Promise<FichaPdf> => {
       resultado: d.resultado,
     })),
   };
+};
+
+// =====================================================================
+// Adopción (/adopta) — migración 36
+// =====================================================================
+// Son funciones de la base (security definer): las puede llamar un visitante
+// sin cuenta, y traen el nombre del veterinario que hizo el chequeo.
+
+// Columnas que comparten listar_adopciones y detalle_adopcion
+type FilaAnimalAdopcion = {
+  id: number; nombre: string; especie: string; raza: string | null; sexo: string; tamano: string;
+  fecha_nacimiento: string | null; comuna: string; personalidad: string[] | null; frase: string | null;
+  estado: string; chequeo_veterinario: string | null; chequeo_centro: string | null;
+  chequeo_fecha: string | null; chequeo_resumen: string | null; chequeo_solidario: boolean | null;
+  refugio_id?: number | null; refugio_nombre?: string | null;
+};
+
+const chequeoDesdeFila = (a: FilaAnimalAdopcion): ChequeoAdopcion | null =>
+  a.chequeo_veterinario && a.chequeo_resumen
+    ? {
+        veterinario: a.chequeo_veterinario,
+        centro: a.chequeo_centro,
+        fecha: a.chequeo_fecha?.slice(0, 10) ?? "", // "AAAA-MM-DD"
+        resumen: a.chequeo_resumen,
+        solidario: !!a.chequeo_solidario,
+      }
+    : null;
+
+const animalDesdeFila = (a: FilaAnimalAdopcion, foto: string | null): AnimalAdopcion => {
+  const especie = especieAdopcion(a.especie);
+  const sexo = a.sexo as SexoAdopcion;
+  const chequeo = chequeoDesdeFila(a);
+  return {
+    id: a.id,
+    nombre: a.nombre,
+    especie,
+    raza: a.raza?.trim() || RAZA_SIN_INDICAR[sexo],
+    sexo,
+    tamano: a.tamano as TamanoAdopcion,
+    edad: edadAdopcion(a.fecha_nacimiento),
+    etapa: etapaAdopcion(especie, a.fecha_nacimiento),
+    comuna: a.comuna,
+    personalidad: a.personalidad ?? [],
+    frase: a.frase,
+    chequeo,
+    revisadoPorVet: !!chequeo,
+    estado: a.estado === "en_proceso" ? "en_proceso" : "disponible",
+    fotoUrl: urlFotoAdopcion(foto),
+    refugioId: a.refugio_id ?? null,
+    refugio: a.refugio_nombre ?? null,
+  };
+};
+
+// Animales esperando hogar (primero los disponibles), con su último chequeo.
+export const getAnimalesAdopcion = async (): Promise<AnimalAdopcion[]> => {
+  const { data, error } = await supabase.rpc("listar_adopciones");
+  if (error) throw error;
+  return (data ?? []).map((a) => animalDesdeFila(a, a.foto_url));
+};
+
+// Ficha /adopta/:id (migración 37). null si no existe o no se puede ver.
+export const getDetalleAdopcion = async (id: number): Promise<FichaAdopcion | null> => {
+  const { data, error } = await supabase.rpc("detalle_adopcion", { p_id: id });
+  if (error) throw error;
+  const a = data?.[0];
+  if (!a) return null;
+  const fotos = (a.fotos ?? []).map(urlFotoAdopcion).filter((f): f is string => !!f);
+  return {
+    ...animalDesdeFila(a, a.fotos?.[0] ?? null),
+    historia: a.historia,
+    fotos,
+    rasgos: {
+      energia: a.energia,
+      sociablePerros: a.sociable_perros,
+      sociableGatos: a.sociable_gatos,
+      sociableNinos: a.sociable_ninos,
+    },
+    vacunasAlDia: a.vacunas_al_dia,
+    esterilizado: a.esterilizado,
+    conMicrochip: a.con_microchip,
+    pesoKg: a.peso_kg === null ? null : Number(a.peso_kg),
+    alergias: a.alergias,
+    solicitaChequeo: a.solicita_chequeo,
+    adoptado: a.estado === "adoptada",
+    publicador: {
+      nombre: a.publicador_nombre,
+      tipo: a.publicador_tipo,
+      adopciones: Number(a.publicador_adopciones ?? 0),
+    },
+    esMia: !!a.es_mia,
+    yaPostule: !!a.ya_postule,
+  };
+};
+
+// "Ya tienen familia": adopciones concretadas con testimonio.
+export const getHistoriasAdopcion = async (): Promise<HistoriaAdopcion[]> => {
+  const { data, error } = await supabase.rpc("historias_adopcion", { p_limite: MAX_HISTORIAS_ADOPCION });
+  if (error) throw error;
+  return (data ?? []).map((h) => ({
+    id: h.id,
+    nombre: h.nombre,
+    especie: especieAdopcion(h.especie),
+    frase: h.testimonio,
+    adoptante: h.testimonio_autor ?? "",
+    fotoUrl: h.foto_url,
+  }));
+};
+
+// Números del hero: esperando hogar · revisados por veterinarios · ya tienen familia.
+export const getResumenAdopciones = async (): Promise<EstadisticasAdopcion> => {
+  const { data, error } = await supabase.rpc("resumen_adopciones");
+  if (error) throw error;
+  const fila = data?.[0];
+  return { esperando: Number(fila?.esperando ?? 0), revisados: Number(fila?.revisados ?? 0), conFamilia: Number(fila?.con_familia ?? 0) };
+};
+
+// =====================================================================
+// Mis publicaciones, Adopción solidaria y Refugios (migración 39)
+// =====================================================================
+
+// Una fila de mis_publicaciones / animales_de_mi_refugio → PublicacionPropia
+type FilaPublicacion = Database["public"]["Functions"]["mis_publicaciones"]["Returns"][number];
+const publicacionDesdeFila = (a: FilaPublicacion): PublicacionPropia => {
+  const especie = especieAdopcion(a.especie);
+  const sexo = a.sexo as SexoAdopcion;
+  return {
+    id: a.id,
+    nombre: a.nombre,
+    especie,
+    raza: a.raza?.trim() || RAZA_SIN_INDICAR[sexo],
+    edad: edadAdopcion(a.fecha_nacimiento),
+    comuna: a.comuna,
+    fotoUrl: urlFotoAdopcion(a.foto_url),
+    estado: a.estado as EstadoPublicacion,
+    creadaEn: a.creada_en,
+    adoptadaEn: a.adoptada_en,
+    testimonio: a.testimonio,
+    solicitaChequeo: a.solicita_chequeo,
+    revisadaPor: a.revisada_por,
+    postulaciones: Number(a.postulaciones),
+    nuevas: Number(a.postulaciones_nuevas),
+    elegido: a.elegido,
+    refugio: a.refugio_nombre,
+  };
+};
+
+// Mis animales publicados, con sus postulaciones y su avance.
+// Suma a cada publicación el aviso de moderación que tenga (oculta o advertida)
+const conModeracion = async (lista: PublicacionPropia[]): Promise<PublicacionPropia[]> => {
+  if (!lista.length) return lista;
+  const avisos = await getAvisosModeracion();
+  return lista.map((p) => (avisos.has(p.id) ? { ...p, moderacion: avisos.get(p.id) } : p));
+};
+
+export const getMisPublicaciones = async (): Promise<PublicacionPropia[]> => {
+  const { data, error } = await supabase.rpc("mis_publicaciones");
+  if (error) throw error;
+  return conModeracion((data ?? []).map(publicacionDesdeFila));
+};
+
+export const getActividadPublicaciones = async (limite: number): Promise<ActividadPublicacion[]> => {
+  const { data, error } = await supabase.rpc("actividad_mis_publicaciones", { p_limite: limite });
+  if (error) throw error;
+  return (data ?? []).map((x) => ({
+    tipo: x.tipo as TipoActividadPublicacion,
+    adopcionId: x.adopcion_id,
+    animal: x.animal,
+    persona: x.persona,
+    fecha: x.fecha,
+  }));
+};
+
+// Postulaciones de un animal mío (con el contacto de cada persona).
+export const getPostulacionesAdopcion = async (adopcionId: number): Promise<PostulacionRecibida[]> => {
+  const { data, error } = await supabase.rpc("postulaciones_de_adopcion", { p_adopcion_id: adopcionId });
+  if (error) throw error;
+  return (data ?? []).map((x) => ({
+    id: x.id,
+    nombre: x.nombre,
+    correo: x.correo,
+    telefono: x.telefono,
+    vivienda: x.vivienda as ViviendaAdopcion,
+    tienePatio: x.tiene_patio,
+    tenencia: x.tenencia as TenenciaAdopcion,
+    permitenMascotas: x.permiten_mascotas,
+    hayNinos: x.hay_ninos,
+    edadesNinos: x.edades_ninos,
+    otrasMascotas: x.otras_mascotas,
+    cualesMascotas: x.cuales_mascotas,
+    todosDeAcuerdo: x.todos_de_acuerdo,
+    experiencia: x.experiencia,
+    motivo: x.motivo,
+    estado: x.estado as EstadoPostulacion,
+    creadaEn: x.creada_en,
+  }));
+};
+
+// Animales en adopción vistos por un veterinario (Adopción solidaria).
+export const getAnimalesParaVeterinarios = async (): Promise<AnimalParaVeterinario[]> => {
+  const { data, error } = await supabase.rpc("adopciones_para_veterinarios");
+  if (error) throw error;
+  return (data ?? []).map((a) => {
+    const especie = especieAdopcion(a.especie);
+    const sexo = a.sexo as SexoAdopcion;
+    return {
+      id: a.id,
+      nombre: a.nombre,
+      especie,
+      raza: a.raza?.trim() || RAZA_SIN_INDICAR[sexo],
+      edad: edadAdopcion(a.fecha_nacimiento),
+      comuna: a.comuna,
+      fotoUrl: urlFotoAdopcion(a.foto_url),
+      enProceso: a.estado === "en_proceso",
+      solicitaAtencion: a.solicita_chequeo,
+      revisada: a.revisada,
+      yaAtendi: a.ya_atendi,
+      diasEsperando: Number(a.dias_esperando),
+      publicador: a.publicador_nombre,
+      refugio: a.refugio_nombre,
+      enMiComuna: a.en_mi_comuna,
+    };
+  });
+};
+
+export const getResumenSolidario = async (): Promise<ResumenSolidario> => {
+  const { data, error } = await supabase.rpc("resumen_solidario");
+  if (error) throw error;
+  const r = data?.[0];
+  const meses = Array.isArray(r?.por_mes) ? (r.por_mes as unknown as MesSolidario[]) : [];
+  return {
+    atenciones: Number(r?.atenciones ?? 0),
+    solidarias: Number(r?.solidarias ?? 0),
+    adoptados: Number(r?.adoptados ?? 0),
+    aliado: !!r?.aliado,
+    porMes: meses.map((m) => ({ mes: m.mes, total: Number(m.total) })),
+  };
+};
+
+export const getMisAtencionesAdopcion = async (): Promise<AtencionPropia[]> => {
+  const { data, error } = await supabase.rpc("mis_atenciones_adopcion");
+  if (error) throw error;
+  return (data ?? []).map((q) => ({
+    id: q.id,
+    adopcionId: q.adopcion_id,
+    nombre: q.nombre,
+    especie: especieAdopcion(q.especie),
+    fotoUrl: urlFotoAdopcion(q.foto_url),
+    fecha: q.fecha.slice(0, 10),
+    resumen: q.resumen,
+    solidario: q.solidario,
+    centro: q.centro,
+    estado: q.estado,
+  }));
+};
+
+export const getMisCentrosAtencion = async (): Promise<CentroAtencion[]> => {
+  const { data, error } = await supabase.rpc("mis_centros_de_atencion");
+  if (error) throw error;
+  return data ?? [];
+};
+
+// Refugios (página pública)
+export const getRefugios = async (): Promise<Refugio[]> => {
+  const { data, error } = await supabase.rpc("listar_refugios");
+  if (error) throw error;
+  return (data ?? []).map((r) => ({
+    id: r.id,
+    nombre: r.nombre,
+    comuna: r.comuna,
+    region: r.region,
+    descripcion: r.descripcion,
+    logoUrl: urlFotoAdopcion(r.logo_url),
+    portadaUrl: urlFotoAdopcion(r.portada_url),
+    telefono: r.telefono,
+    correo: r.correo,
+    cuposTotales: r.cupos_totales,
+    cuposOcupados: r.cupos_ocupados,
+    recibe: r.recibe_animales as RecepcionRefugio,
+    especies: r.especies ?? [],
+    enAdopcion: Number(r.en_adopcion),
+    fotos: (r.fotos ?? []).map(urlFotoAdopcion).filter((f): f is string => !!f),
+    aliados: Number(r.aliados),
+  }));
+};
+
+export const getResumenRefugios = async (): Promise<ResumenRefugios> => {
+  const { data, error } = await supabase.rpc("resumen_refugios");
+  if (error) throw error;
+  const r = data?.[0];
+  return { refugios: Number(r?.refugios ?? 0), animales: Number(r?.animales ?? 0), aliados: Number(r?.aliados ?? 0) };
+};
+
+// Refugios que administro (para publicar a su nombre)
+export const getMisRefugios = async (): Promise<OpcionRefugio[]> => {
+  const { data, error } = await supabase.rpc("mis_refugios");
+  if (error) throw error;
+  return data ?? [];
+};
+
+// =====================================================================
+// Gestión de refugios (migración 42)
+// =====================================================================
+
+// Todos los refugios, con su estado y su equipo (solo superadmin).
+export const getRefugiosAdmin = async (): Promise<RefugioAdmin[]> => {
+  const { data, error } = await supabase.rpc("admin_listar_refugios");
+  if (error) throw error;
+  return (data ?? []).map((r) => ({
+    id: r.id,
+    nombre: r.nombre,
+    comuna: r.comuna,
+    region: r.region,
+    descripcion: r.descripcion,
+    logoUrl: urlFotoAdopcion(r.logo_url),
+    portadaUrl: urlFotoAdopcion(r.portada_url),
+    logoRuta: r.logo_url,
+    portadaRuta: r.portada_url,
+    telefono: r.telefono,
+    correo: r.correo,
+    cuposTotales: r.cupos_totales,
+    cuposOcupados: r.cupos_ocupados,
+    recibe: r.recibe_animales as RecepcionRefugio,
+    especies: r.especies ?? [],
+    enAdopcion: Number(r.animales),
+    fotos: (r.fotos ?? []).map(urlFotoAdopcion).filter((f): f is string => !!f),
+    aliados: 0,
+    estado: r.estado as EstadoRefugio,
+    esPrueba: r.es_prueba,
+    creadoEn: r.creado_en,
+    administradores: ((r.administradores ?? []) as unknown as { id: string; nombre: string; correo: string; es_prueba: boolean }[]).map(
+      (a) => ({ id: a.id, nombre: a.nombre, correo: a.correo, esPrueba: a.es_prueba }),
+    ),
+    fotosLugar: (r.fotos_lugar ?? []).map(urlFotoAdopcion).filter((f): f is string => !!f),
+    responsable: r.responsable,
+    sitioWeb: r.sitio_web,
+    mensaje: r.mensaje,
+    correoAcceso: r.correo_acceso,
+  }));
+};
+
+// Buscar cuentas por correo o nombre (para asignar administradores de un refugio).
+export const buscarCuentas = async (texto: string): Promise<CuentaEncontrada[]> => {
+  const { data, error } = await supabase.rpc("buscar_cuentas", { p_texto: texto });
+  if (error) throw error;
+  return (data ?? []).map((c) => ({ id: c.id, nombre: c.nombre, correo: c.correo, rol: c.rol, esPrueba: c.es_prueba }));
+};
+
+// "Mi refugio": datos, números del mes y equipo.
+export const getDetalleMiRefugio = async (refugioId: number): Promise<DetalleMiRefugio | null> => {
+  const { data, error } = await supabase.rpc("detalle_mi_refugio", { p_id: refugioId });
+  if (error) throw error;
+  const r = data?.[0];
+  if (!r) return null;
+  return {
+    id: r.id,
+    nombre: r.nombre,
+    comuna: r.comuna,
+    region: r.region,
+    descripcion: r.descripcion,
+    logoUrl: urlFotoAdopcion(r.logo_url),
+    portadaUrl: urlFotoAdopcion(r.portada_url),
+    logoRuta: r.logo_url,
+    portadaRuta: r.portada_url,
+    telefono: r.telefono,
+    correo: r.correo,
+    cuposTotales: r.cupos_totales,
+    cuposOcupados: r.cupos_ocupados,
+    recibe: r.recibe_animales as RecepcionRefugio,
+    especies: r.especies ?? [],
+    estado: r.estado as EstadoRefugio,
+    cuposActualizadosEn: r.cupos_actualizados_en,
+    publicadosMes: Number(r.publicados_mes),
+    postulacionesMes: Number(r.postulaciones_mes),
+    adoptadosMes: Number(r.adoptados_mes),
+    porMes: ((r.por_mes ?? []) as unknown as MesSolidario[]).map((m) => ({ mes: m.mes, total: Number(m.total) })),
+    equipo: (r.equipo ?? []) as unknown as MiembroRefugio[],
+  };
+};
+
+// Animales publicados a nombre del refugio (mismas tarjetas que "Mis publicaciones").
+export const getAnimalesMiRefugio = async (refugioId: number): Promise<PublicacionPropia[]> => {
+  const { data, error } = await supabase.rpc("animales_de_mi_refugio", { p_id: refugioId });
+  if (error) throw error;
+  return conModeracion((data ?? []).map(publicacionDesdeFila));
+};
+
+// =====================================================================
+// Especialidades de veterinarios y filtro al pedir hora (migración 45)
+// =====================================================================
+
+// Profesionales que se pueden agendar (por centro o independientes), con sus especialidades
+export const getProfesionalesParaCita = async (): Promise<ProfesionalParaCita[]> => {
+  const { data, error } = await supabase.rpc("profesionales_para_cita");
+  if (error) throw error;
+  return (data ?? []).map((p) => ({
+    veterinarioId: p.veterinario_id,
+    nombre: p.nombre,
+    centroId: p.centro_id,
+    especialidadIds: p.especialidad_ids ?? [],
+    especialidades: p.especialidades,
+  }));
+};
+
+// Las especialidades del veterinario conectado (Configuración)
+export const getMisEspecialidades = async (): Promise<MisEspecialidades> => {
+  const { data, error } = await supabase.rpc("mis_especialidades");
+  if (error) throw error;
+  const fila = data?.[0];
+  return { ids: fila?.ids ?? [], otra: fila?.otra ?? "" };
+};
+
+// =====================================================================
+// Moderación de publicaciones (migración 47)
+// =====================================================================
+export const getCasosModeracion = async (estado: EstadoCasoModeracion): Promise<CasoModeracion[]> => {
+  const { data, error } = await supabase.rpc("casos_moderacion", { p_estado: estado });
+  if (error) throw error;
+  return (data ?? []).map((c) => ({
+    adopcionId: c.adopcion_id,
+    nombre: c.nombre,
+    especie: especieAdopcion(c.especie),
+    raza: c.raza,
+    edad: edadAdopcion(c.fecha_nacimiento),
+    comuna: c.comuna,
+    fotoUrl: urlFotoAdopcion(c.foto_url),
+    estadoPublicacion: c.estado_publicacion as EstadoPublicacion,
+    publicadaEn: c.publicada_en,
+    publicador: c.publicador,
+    esPrueba: c.es_prueba,
+    reportes: Number(c.reportes),
+    motivoPrincipal: c.motivo_principal as MotivoReporte,
+    urgente: c.urgente,
+    ultimoReporte: c.ultimo_reporte,
+    publicaciones: Number(c.publicaciones),
+    reportesPrevios: Number(c.reportes_previos),
+    cuentaCreadaEn: c.cuenta_creada_en,
+    decision: (c.decision as DecisionModeracion) ?? null,
+    detalle: ((c.detalle ?? []) as unknown as { motivo: MotivoReporte; comentario: string | null; creada_en: string }[]).map((r) => ({
+      motivo: r.motivo,
+      comentario: r.comentario,
+      creadaEn: r.creada_en,
+    })),
+  }));
+};
+
+export const getResumenModeracion = async (): Promise<ResumenModeracion> => {
+  const { data, error } = await supabase.rpc("resumen_moderacion");
+  if (error) throw error;
+  const r = data?.[0];
+  return {
+    porRevisar: Number(r?.por_revisar ?? 0),
+    urgentes: Number(r?.urgentes ?? 0),
+    horasRespuesta: r?.horas_respuesta == null ? null : Number(r.horas_respuesta),
+    ocultas: Number(r?.ocultas ?? 0),
+  };
+};
+
+// Avisos del equipo sobre mis publicaciones (ocultas o advertidas), por id
+export const getAvisosModeracion = async (): Promise<Map<number, AvisoModeracion>> => {
+  const { data, error } = await supabase.rpc("avisos_moderacion_mias");
+  if (error) throw error;
+  return new Map((data ?? []).map((a) => [a.adopcion_id, { tipo: a.tipo as AvisoModeracion["tipo"], mensaje: a.mensaje }]));
+};
+
+
+// ---- Horario de atención y perfil del veterinario conectado (migración 53) ----
+interface HorarioAtencionBase {
+  independiente: boolean; urgencias_24_7: boolean; a_domicilio: boolean; comunas: string[]; duracion: number;
+  lugares: { centro_id: number | null; nombre: string | null; horario_centro: { dia_semana: number; abre: string; cierra: string }[] }[];
+  tramos: { centro_id: number | null; dia_semana: number; desde: string; hasta: string }[];
+}
+
+export const getMiHorarioAtencion = async (): Promise<HorarioAtencion> => {
+  const { data, error } = await supabase.rpc("mi_horario_atencion");
+  if (error) throw error;
+  const h = data as unknown as HorarioAtencionBase;
+  return {
+    independiente: h.independiente,
+    urgencias247: h.urgencias_24_7,
+    aDomicilio: h.a_domicilio,
+    comunas: h.comunas ?? [],
+    duracion: h.duracion,
+    lugares: (h.lugares ?? []).map((l) => ({
+      centroId: l.centro_id,
+      nombre: l.nombre,
+      horarioCentro: (l.horario_centro ?? []).map((x) => ({ diaSemana: x.dia_semana, abre: x.abre, cierra: x.cierra })),
+    })),
+    tramos: (h.tramos ?? []).map((t) => ({ centroId: t.centro_id, diaSemana: t.dia_semana, desde: t.desde, hasta: t.hasta })),
+  };
+};
+
+// null si la cuenta todavía no tiene ficha de veterinario
+export const getProgresoPerfilVeterinario = async (): Promise<ProgresoPerfilVeterinario | null> => {
+  const { data, error } = await supabase.rpc("progreso_perfil_veterinario");
+  if (error) throw error;
+  if (!data) return null;
+  const p = data as unknown as { independiente: boolean; pasos: Record<string, boolean | null> };
+  return {
+    independiente: p.independiente,
+    // "zona" viene null si no es independiente: ese paso no cuenta
+    pasos: Object.fromEntries(Object.entries(p.pasos).filter(([, v]) => v !== null)),
+  };
+};
+
+
+// ---- Centros: estado de la UCI y progreso del perfil (migración 54) ----
+// null si el centro todavía no indica su estado
+export const getEstadoUci = async (centroId: number): Promise<EstadoUciCentro | null> => {
+  const { data, error } = await supabase
+    .from("estado_uci_centros")
+    .select("centro_id, estado, motivo, detalle, actualizado_en")
+    .eq("centro_id", centroId)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? estadoUciDesdeFila(data) : null;
+};
+
+// Fila de estado_uci_centros (de una consulta o de Realtime) -> formato del front
+export const estadoUciDesdeFila = (f: { centro_id: number; estado: string; motivo: string | null; detalle: string | null; actualizado_en: string }): EstadoUciCentro => ({
+  centroId: f.centro_id,
+  estado: f.estado as EstadoUciCentro["estado"],
+  motivo: f.motivo as EstadoUciCentro["motivo"],
+  detalle: f.detalle,
+  actualizadoEn: f.actualizado_en,
+});
+
+// null si la cuenta no gestiona ese centro
+export const getProgresoPerfilCentro = async (centroId: number): Promise<ProgresoPerfilCentro | null> => {
+  const { data, error } = await supabase.rpc("progreso_perfil_centro", { p_centro_id: centroId });
+  if (error) throw error;
+  return (data as unknown as ProgresoPerfilCentro) ?? null;
+};
+
+
+// ---- Urgencias sin cuenta (migración 55) ----
+interface ListaUrgenciasBase {
+  centros: {
+    id: number; nombre: string; direccion: string; comuna: string; telefono: number | null;
+    urgencias_24_7: boolean; tiene_uci: boolean;
+    estado_uci: Parameters<typeof estadoUciDesdeFila>[0] | null;
+    horarios: { dia_semana: number; abre: string; cierra: string; inicio_colacion: string | null; fin_colacion: string | null }[];
+  }[];
+  veterinarios: { id: number; nombre: string; telefono: number; avatar_url: string | null; a_domicilio: boolean; comunas: string[] }[];
+}
+
+// Funciona sin sesión (visitantes = mundo real)
+export const getUrgencias = async (): Promise<ListaUrgencias> => {
+  const { data, error } = await supabase.rpc("listar_urgencias");
+  if (error) throw error;
+  const l = data as unknown as ListaUrgenciasBase;
+  return {
+    centros: (l.centros ?? []).map((c) => ({
+      id: c.id,
+      nombre: c.nombre,
+      direccion: c.direccion,
+      comuna: c.comuna,
+      telefono: c.telefono,
+      urgencias247: c.urgencias_24_7,
+      tieneUci: c.tiene_uci,
+      estadoUci: c.estado_uci ? estadoUciDesdeFila(c.estado_uci) : null,
+      horarios: (c.horarios ?? []).map((h) => ({
+        diaSemana: h.dia_semana, abre: h.abre, cierra: h.cierra,
+        inicioColacion: h.inicio_colacion, finColacion: h.fin_colacion,
+      })),
+    })),
+    veterinarios: (l.veterinarios ?? []).map((v) => ({
+      id: v.id, nombre: v.nombre, telefono: v.telefono, avatarUrl: v.avatar_url, aDomicilio: v.a_domicilio, comunas: v.comunas ?? [],
+    })),
+  };
+};
+
+export const getMiTelefonoEnUrgencias = async (): Promise<TelefonoEnUrgencias> => {
+  const { data, error } = await supabase.rpc("mi_telefono_en_urgencias");
+  if (error) throw error;
+  const t = data as unknown as { mostrar: boolean; tiene_telefono: boolean } | null;
+  return { mostrar: t?.mostrar ?? false, tieneTelefono: t?.tiene_telefono ?? false };
 };

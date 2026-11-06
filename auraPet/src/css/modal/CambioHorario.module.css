@@ -1,0 +1,390 @@
+/* Modales "Modificar cita" y "Bloquear horario" (Mi Agenda del veterinario).
+   La base (fondo, encabezado, pie, botones) viene de RechazarModal.module.css;
+   aquí van solo las piezas nuevas, con los mismos colores oscuros. */
+@import '../theme.css';
+
+.modalAncho {
+  max-width: 560px;
+  max-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
+}
+
+.cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px 22px 20px;
+  overflow-y: auto;
+}
+
+.iconoCalendario {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #3cc4b4;
+}
+
+/* ---- control Reagendar / Cancelar ---- */
+.segmentado {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.segmento {
+  flex: 1;
+  min-height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #c3c9d3;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.segmento:hover:not(:disabled) {
+  color: #ffffff;
+}
+
+.segmentoActivo {
+  background: var(--color-primario);
+  color: #ffffff;
+}
+
+.segmentoPeligro.segmentoActivo {
+  background: #a4272a;
+}
+
+/* ---- campos ---- */
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.etiqueta {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #e6e9ee;
+}
+
+.fila {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12.5px;
+  color: #a3abb8;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #f1f3f6;
+  font-family: inherit;
+  font-size: 14px;
+  box-sizing: border-box;
+  color-scheme: dark;
+}
+
+.textarea {
+  min-height: 92px;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: rgba(60, 196, 180, 0.7);
+  box-shadow: 0 0 0 3px rgba(60, 196, 180, 0.15);
+}
+
+.input:disabled,
+.textarea:disabled {
+  opacity: 0.6;
+}
+
+/* "jue 16:00 → vie 10:30" */
+.antesAhora {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #143a35;
+  color: #7fe0d3;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+/* ---- chips de motivo ---- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  min-height: 34px;
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: transparent;
+  color: #e6e9ee;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chip:hover:not(:disabled) {
+  border-color: #3cc4b4;
+}
+
+.chipActivo {
+  border-color: var(--color-primario);
+  background: var(--color-primario);
+  color: #ffffff;
+}
+
+/* ---- avisos ---- */
+.avisoPeligro,
+.avisoAmbar {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 9px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.avisoPeligro {
+  background: rgba(220, 38, 38, 0.15);
+  color: #fca5a5;
+}
+
+.avisoAmbar {
+  border: 1px solid rgba(244, 201, 138, 0.45);
+  background: rgba(244, 161, 58, 0.1);
+  color: #f4c98a;
+}
+
+.error {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(220, 38, 38, 0.15);
+  color: #fca5a5;
+  font-size: 13px;
+}
+
+/* ---- ¿a quién avisamos? ---- */
+.destinatario {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 13.5px;
+  color: #e6e9ee;
+  cursor: pointer;
+}
+
+.destinatarioFijo {
+  cursor: default;
+}
+
+.destinatario input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primario);
+}
+
+.inicial {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: #143a35;
+  color: #7fe0d3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.destinatarioTexto {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.nota {
+  font-size: 12px;
+  color: #a3abb8;
+}
+
+/* ---- citas afectadas (Bloquear horario) ---- */
+.citasAfectadas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.citaAfectada {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 13px;
+  color: #e6e9ee;
+}
+
+.citaAfectada span:last-child {
+  color: #a3abb8;
+}
+
+.casilla {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: #e6e9ee;
+  cursor: pointer;
+}
+
+.casilla input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primario);
+}
+
+/* ---- botón principal verde (el rojo viene de RechazarModal) ---- */
+.botonPrincipal {
+  border: 1px solid transparent;
+  background: var(--color-primario);
+  color: #ffffff;
+}
+
+.botonPrincipal:hover:not(:disabled) {
+  background: #0c7569;
+}
+
+.botonPrincipal:disabled {
+  background: rgba(15, 143, 128, 0.35);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ---- listo ---- */
+.listo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 32px 26px 26px;
+  text-align: center;
+}
+
+.listoIcono {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: #143a35;
+  color: #3cc4b4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.listoTitulo {
+  margin: 4px 0 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.listoDetalle {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  color: #c3c9d3;
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  .fila {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* fieldset de los chips sin el borde del navegador */
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.leyenda {
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+.etiquetaMensaje {
+  margin-top: 6px;
+}
+
+/* ---- reagendar eligiendo entre horas libres ---- */
+.listaHoras {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.grupoDia {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tituloDia {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #a3abb8;
+}
+
+.enlace {
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #3cc4b4;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}

@@ -6,7 +6,8 @@
   "scripts": {
     "gen:types": "supabase gen types typescript --linked > ../auraPet/src/lib/database.types.ts",
     "db:push": "supabase db push",
-    "functions:deploy": "supabase functions deploy"
+    "functions:deploy": "supabase functions deploy",
+    "secrets:set": "supabase secrets set --env-file supabase/functions/.env"
   },
   "keywords": [],
   "author": "",

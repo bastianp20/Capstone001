@@ -8,6 +8,10 @@
   --color-terciario-borde: #e4e6ea;
   --color-terciario-sidebar: #12181f;
 
+  /* Tipografías (se cargan en index.html) */
+  --fuente-marca: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  --fuente-texto: "Inter", system-ui, sans-serif;
+
   --color-superficie: #ffffff;          /* tarjetas, modales, inputs */
   --color-superficie-suave: #f5f7f8;    /* filas alternas, cajitas grises */
   --color-fondo-app: #f6f8f8;           /* fondo de los paneles */

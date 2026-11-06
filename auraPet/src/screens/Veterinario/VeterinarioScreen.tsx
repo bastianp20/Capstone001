@@ -1,20 +1,28 @@
 import { useState } from 'react';
-import { Iconos, TEXTOS_CENTRO_VETERINARIO } from '../../constants';
+import { TEXTOS_HORARIO_ATENCION, ICONO_ADOPCION_SOLIDARIA as IconoSolidaria, ICONO_DAR_EN_ADOPCION as IconoAdopcion, ICONO_MIS_PUBLICACIONES as IconoPublicaciones, ICONO_MI_REFUGIO as IconoMiRefugio, Iconos, TEXTOS_CENTRO_VETERINARIO, TEXTOS_DAR_EN_ADOPCION_PANEL, TEXTOS_MI_REFUGIO, TEXTOS_MIS_PUBLICACIONES, TEXTOS_SOLIDARIA } from '../../constants';
 import { getInfoVeterinario, getMisCentrosAdmin } from '../../Api/getInfo';
 import { useConsulta } from '../../hooks/useConsulta';
 import { ModalAgenda } from '../../Modal/AgendaModal';
 import {PacientesModal} from '../../Modal/PacientesModal'; 
-import type { PestanaAgenda, VeterinarioScreenProps } from '../../interfaces';
+import type { PasoPerfilVeterinario, PestanaAgenda, SeccionConfiguracion, VeterinarioScreenProps, VistaVeterinario } from '../../interfaces';
+import { SeccionHorarioAtencion } from '../../components/veterinario/horarioAtencion/SeccionHorarioAtencion';
+import { SeccionMiAgenda } from '../../components/veterinario/agenda/SeccionMiAgenda';
 import '../../css/VeterinariosPage.css';
 import { RecetaModal } from '../../Modal/RecetasModal';
 import { DerivacionesModal } from '../../Modal/DerivacionesModal';
 import { NotasModal } from '../../Modal/NotasModal';
 import { ConfiguracionModal } from '../../Modal/ConfiguracionModal';
+import { DarEnAdopcionModal } from '../../Modal/DarEnAdopcionModal';
+import { SeccionMisPublicaciones } from '../../components/adopcion/publicaciones/SeccionMisPublicaciones';
+import { SeccionAdopcionSolidaria } from '../../components/adopcion/solidaria/SeccionAdopcionSolidaria';
+import { SeccionMiRefugio } from '../../components/adopcion/refugios/miRefugio/SeccionMiRefugio';
+import { useAdministraRefugio } from '../../hooks/useAdministraRefugio';
 import { useAuth } from '../../Auth/AuthContext';
 import { InicioVeterinario } from '../../components/veterinario/InicioVeterinario';
 import { Aviso } from '../../components/ui/Aviso';
 import { textoCentroVeterinario } from '../../lib/centroVeterinario';
 import LogoAuraPetSinFondo from '../../assets/logo/LogoAuraPetSinFondo.png'; 
+import { FotoPerfil } from '../../components/perfil/FotoPerfil';
 
 const iconos = Iconos;
 
@@ -41,11 +49,16 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
   // Controla qué modal está abierto. Por ahora solo existe el de agenda;
   // cuando armemos Historial/Recetas se suman como más valores posibles
   // ("historial" | "recetas" | ...) en vez de un booleano por modal.
-  const [modalAbierto, setModalAbierto] = useState<"agenda" | "pacientes" | "receta" | "derivaciones" | "notas" | "configuracion" | null>(null);
+  const [modalAbierto, setModalAbierto] = useState<"agenda" | "pacientes" | "receta" | "derivaciones" | "notas" | "adopcion" | "configuracion" | null>(null);
   // Si la receta se abre desde "Recetar" en una cita, guarda qué mascota viene elegida
   const [pacienteParaReceta, setPacienteParaReceta] = useState<number | null>(null);
   // En qué pestaña se abre la agenda ("Mi Agenda" o la tarjeta "Por confirmar")
   const [pestanaAgenda, setPestanaAgenda] = useState<PestanaAgenda>("agenda");
+  // Qué se ve en el centro de la pantalla: el inicio o una sección de adopción
+  const [vista, setVista] = useState<VistaVeterinario>("inicio");
+  const [versionPublicaciones, setVersionPublicaciones] = useState(0);
+  const conRefugio = useAdministraRefugio();
+  const claseItem = (v: VistaVeterinario) => `vet-nav-item ${vista === v ? "vet-nav-item--activo" : ""}`;
   // Sube cada vez que la agenda confirma/rechaza una cita, para que el inicio se recargue
   const [versionCitas, setVersionCitas] = useState(0);
 
@@ -54,12 +67,17 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
     setModalAbierto("agenda");
   };
 
-  // esto es para el avatar, que ocupe las iniciales de la persona cuando no hay foto de perfil cargada. 
-  const getIniciales = (nombreCompleto: string): string => {
-    const partes = nombreCompleto.trim().split(" ");
-    const primera = partes[0]?.charAt(0) ?? "";
-    const ultima = partes.length > 1 ? partes[partes.length - 1].charAt(0) : "";
-    return (primera + ultima).toUpperCase();
+  // "Completa tu perfil": foto, teléfono y especialidades están en Configuración;
+  // horario, dónde atiende y N° de colegiado, en "Mi horario".
+  const [seccionConfiguracion, setSeccionConfiguracion] = useState<SeccionConfiguracion | undefined>(undefined);
+  const [versionPerfil, setVersionPerfil] = useState(0);
+  const completarPerfil = (paso: PasoPerfilVeterinario) => {
+    if (paso === "foto" || paso === "telefono" || paso === "especialidades") {
+      setSeccionConfiguracion(paso === "especialidades" ? "especialidades" : "perfil");
+      setModalAbierto("configuracion");
+    } else {
+      setVista("horario");
+    }
   };
 
   return (
@@ -73,13 +91,17 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
 
         <div className="vet-nav">
           {/* Menú lateral. "Inicio" es la pantalla principal; el resto abre modales */}
-          <div className="vet-nav-item vet-nav-item--activo">
+          <div className={claseItem("inicio")} onClick={() => setVista("inicio")}>
             <iconos.inicio size={18} />
             <span className="vet-nav-item-label">Inicio</span>
           </div>
-          <div className="vet-nav-item" onClick={() => abrirAgenda("agenda")}>
+          <div className={claseItem("agenda")} onClick={() => setVista("agenda")}>
             <iconos.calendario size={18} />
             <span className="vet-nav-item-label">Mi Agenda</span>
+          </div>
+          <div className={claseItem("horario")} onClick={() => setVista("horario")}>
+            <iconos.horario size={18} />
+            <span className="vet-nav-item-label">{TEXTOS_HORARIO_ATENCION.menu}</span>
           </div>
           <div className="vet-nav-item" onClick={() => setModalAbierto("pacientes")}>
             <iconos.fichaMedica size={18} />
@@ -96,6 +118,24 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
           <div className="vet-nav-item" onClick={() => setModalAbierto("notas")}>
             <iconos.nota size={18} />
             <span className="vet-nav-item-label">Notas</span>
+          </div>
+          <div className={claseItem("solidaria")} onClick={() => setVista("solidaria")}>
+            <IconoSolidaria size={18} />
+            <span className="vet-nav-item-label">{TEXTOS_SOLIDARIA.menu}</span>
+          </div>
+          <div className={claseItem("publicaciones")} onClick={() => setVista("publicaciones")}>
+            <IconoPublicaciones size={18} />
+            <span className="vet-nav-item-label">{TEXTOS_MIS_PUBLICACIONES.menu}</span>
+          </div>
+          {conRefugio && (
+            <div className={claseItem("refugio")} onClick={() => setVista("refugio")}>
+              <IconoMiRefugio size={18} />
+              <span className="vet-nav-item-label">{TEXTOS_MI_REFUGIO.menu}</span>
+            </div>
+          )}
+          <div className="vet-nav-item" onClick={() => setModalAbierto("adopcion")}>
+            <IconoAdopcion size={18} />
+            <span className="vet-nav-item-label">{TEXTOS_DAR_EN_ADOPCION_PANEL.menu}</span>
           </div>
           <div className="vet-nav-item" onClick={() => setModalAbierto("configuracion")}>
             <iconos.configuracion size={18} />
@@ -116,7 +156,7 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
       <div className="vet-main">
         {/* circulito con el nombre de la persona en cuestión */}
         <div className="vet-topbar">
-          <div className="vet-avatar">{getIniciales(usuarioActual!.nombre)}</div>
+          <FotoPerfil nombre={usuarioActual!.nombre} url={usuarioActual!.avatarUrl} className="vet-avatar" />
           <div className="vet-user-info">
             <span className="vet-user-name">{usuarioActual!.nombre}</span>
             <span className="vet-user-centro">{centroLabel}{usuarioActual!.esPrueba && " · Cuenta de prueba"}</span>
@@ -130,16 +170,45 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
           </div>
         )}
 
-        <InicioVeterinario
-          veterinarioId={veterinarioIdActual}
-          nombre={usuarioActual!.nombre}
-          recargaExterna={versionCitas}
-          onVerPorConfirmar={() => abrirAgenda("por_confirmar")}
-          onRecetar={(mascotaId) => {
-            setPacienteParaReceta(mascotaId);
-            setModalAbierto("receta");
-          }}
-        />
+        {vista === "inicio" && (
+          <InicioVeterinario
+            veterinarioId={veterinarioIdActual}
+            nombre={usuarioActual!.nombre}
+            recargaExterna={versionCitas}
+            recargaPerfil={versionPerfil}
+            onCompletarPerfil={completarPerfil}
+            onVerPorConfirmar={() => abrirAgenda("por_confirmar")}
+            onRecetar={(mascotaId) => {
+              setPacienteParaReceta(mascotaId);
+              setModalAbierto("receta");
+            }}
+          />
+        )}
+        {vista === "agenda" && (
+          <SeccionMiAgenda
+            veterinarioId={veterinarioIdActual}
+            recarga={versionCitas}
+            onCambio={() => setVersionCitas((n) => n + 1)}
+            onConfigurarHorario={() => setVista("horario")}
+            onVerPorConfirmar={() => abrirAgenda("por_confirmar")}
+          />
+        )}
+        {vista === "horario" && <SeccionHorarioAtencion />}
+        {vista === "solidaria" && (
+          <div className="vet-seccion-adopcion">
+            <SeccionAdopcionSolidaria veterinario={usuarioActual!.nombre} />
+          </div>
+        )}
+        {vista === "refugio" && (
+          <div className="vet-seccion-adopcion">
+            <SeccionMiRefugio />
+          </div>
+        )}
+        {vista === "publicaciones" && (
+          <div className="vet-seccion-adopcion">
+            <SeccionMisPublicaciones version={versionPublicaciones} onDarEnAdopcion={() => setModalAbierto("adopcion")} />
+          </div>
+        )}
       </div>
 
       {modalAbierto === "agenda" && (
@@ -179,8 +248,18 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
         />
       )}
       {modalAbierto === "notas" && <NotasModal onCerrar={() => setModalAbierto(null)} />}
+      {modalAbierto === "adopcion" && (
+        <DarEnAdopcionModal onCerrar={() => setModalAbierto(null)} onPublicada={() => setVersionPublicaciones((n) => n + 1)} />
+      )}
       {modalAbierto === "configuracion" && (
-        <ConfiguracionModal onCerrar={() => setModalAbierto(null)} />
+        <ConfiguracionModal
+          seccionInicial={seccionConfiguracion}
+          onCerrar={() => {
+            setModalAbierto(null);
+            setSeccionConfiguracion(undefined);
+            setVersionPerfil((n) => n + 1); // pudo cambiar la foto, el teléfono o las especialidades
+          }}
+        />
       )}
     </div>
   );

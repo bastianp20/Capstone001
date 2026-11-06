@@ -47,6 +47,17 @@
   color-scheme: dark;               /* calendario y flechas del input en oscuro */
 }
 
+/* Opciones y grupos del desplegable: en Windows/Chrome quedaban blancos sobre el modal oscuro */
+.control option,
+.control optgroup {
+  background: #1b2027;
+  color: #f1f3f6;
+}
+.control optgroup {
+  color: #9aa3b2;
+  font-weight: 700;
+}
+
 .control::placeholder {
   color: #7d8593;
 }

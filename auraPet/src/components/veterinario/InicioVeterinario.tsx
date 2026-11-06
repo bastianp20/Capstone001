@@ -11,6 +11,7 @@ import { ProximaCita } from "./ProximaCita";
 import { AgendaHoy } from "./AgendaHoy";
 import { PendientesVeterinario } from "./PendientesVeterinario";
 import { AtencionesMes } from "./AtencionesMes";
+import { ProgresoPerfil } from "./ProgresoPerfil";
 
 // Datos vacíos mientras carga o si el veterinario aún no tiene ficha
 const SIN_DATOS: InicioVeterinarioDatos = {
@@ -24,7 +25,7 @@ const SIN_DATOS: InicioVeterinarioDatos = {
 
 // Pantalla de inicio del veterinario: pide los datos y arma las piezas.
 // Cada pieza (ProximaCita, AgendaHoy, ...) solo recibe props y dibuja.
-export const InicioVeterinario = ({ veterinarioId, nombre, onRecetar, onVerPorConfirmar, recargaExterna = 0 }: InicioVeterinarioProps) => {
+export const InicioVeterinario = ({ veterinarioId, nombre, onRecetar, onVerPorConfirmar, recargaExterna = 0, onCompletarPerfil, recargaPerfil = 0 }: InicioVeterinarioProps) => {
   const [recarga, setRecarga] = useState(0);
   const { datos = SIN_DATOS, error } = useConsulta(
     // -1 = todavía no se sabe el id de veterinario: no se consulta nada
@@ -70,6 +71,9 @@ export const InicioVeterinario = ({ veterinarioId, nombre, onRecetar, onVerPorCo
       </header>
 
       {(error || errorAccion) && <div className={styles.error}>{errorAccion ?? error}</div>}
+
+      {/* "Completa tu perfil": desaparece al llegar al 100% */}
+      <ProgresoPerfil recarga={recargaPerfil} onCompletar={onCompletarPerfil} />
 
       <div className={styles.indicadores}>
         <Indicador etiqueta="Citas hoy" valor={citasHoy.length} />

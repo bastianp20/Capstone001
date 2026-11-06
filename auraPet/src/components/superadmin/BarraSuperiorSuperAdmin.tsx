@@ -1,12 +1,12 @@
 import { Iconos, TEXTOS_SUPERADMIN } from "../../constants";
-import { getIniciales } from "../../utils";
 import type { BarraSuperiorSuperAdminProps } from "../../interfaces";
 import { MenuCrear } from "./MenuCrear";
 import styles from "../../css/superadmin/SuperAdminLayout.module.css";
+import { FotoPerfil } from "../perfil/FotoPerfil";
 
 // Barra de arriba: "+ Crear", campana (con las solicitudes pendientes),
 // configuración y la persona conectada.
-export const BarraSuperiorSuperAdmin = ({ nombre, pendientes, onCrear, onNotificaciones, onConfiguracion }: BarraSuperiorSuperAdminProps) => (
+export const BarraSuperiorSuperAdmin = ({ nombre, avatarUrl, pendientes, onCrear, onNotificaciones, onConfiguracion }: BarraSuperiorSuperAdminProps) => (
   <header className={styles.topbar}>
     <MenuCrear onElegir={onCrear} />
 
@@ -27,7 +27,7 @@ export const BarraSuperiorSuperAdmin = ({ nombre, pendientes, onCrear, onNotific
     </button>
 
     <div className={styles.usuario}>
-      <span className={styles.avatar}>{getIniciales(nombre)}</span>
+      <FotoPerfil nombre={nombre} url={avatarUrl} className={styles.avatar} />
       <span className={styles.nombreUsuario}>{nombre}</span>
     </div>
   </header>

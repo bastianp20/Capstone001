@@ -1,11 +1,12 @@
 import { useState } from "react";
 import {
-  COLUMNAS_SUPERADMIN, DIAS_EXTENSION_SUSCRIPCION, ESTADO_SUSCRIPCION, ETIQUETA_PRUEBA, FILTROS_SUSCRIPCIONES,
+  COLUMNAS_SUPERADMIN, CONFIRMACIONES, DIAS_EXTENSION_SUSCRIPCION, ESTADO_SUSCRIPCION, ETIQUETA_PRUEBA, FILTROS_SUSCRIPCIONES,
   MESES_ACTIVACION_PLAN, PREDICADOS_FILTRO_SUSCRIPCIONES, TEXTOS_SUSCRIPCIONES as T,
 } from "../../constants";
 import { useConsulta } from "../../hooks/useConsulta";
 import { useFiltro } from "../../hooks/useFiltro";
 import { useAccion } from "../../hooks/useAccion";
+import { useConfirmar } from "../../hooks/useConfirmar";
 import { getSuscripcionesSuperadmin } from "../../Api/getInfo";
 import { extenderSuscripcion, resolverSolicitudPlan } from "../../Api/postInfo";
 import { BarraFiltros } from "../../components/ui/BarraFiltros";
@@ -26,6 +27,7 @@ export const SuscripcionesSuperAdmin = () => {
   const [recarga, setRecarga] = useState(0);
   const { datos: suscripciones = [], cargando, error } = useConsulta(() => getSuscripcionesSuperadmin(), [recarga]);
   const { ejecutar, ocupado, error: errorAccion } = useAccion();
+  const confirmar = useConfirmar();
   const [enCurso, setEnCurso] = useState<number | null>(null);   // centro con una acción en curso
   const [aviso, setAviso] = useState<AvisoEstado | null>(null);
 
@@ -53,9 +55,9 @@ export const SuscripcionesSuperAdmin = () => {
     correr(s, () => resolverSolicitudPlan(sol.id, true, MESES_ACTIVACION_PLAN), T.activado(s.centro, sol.plan));
   };
 
-  const rechazar = (s: SuscripcionListada) => {
+  const rechazar = async (s: SuscripcionListada) => {
     const sol = s.solicitud;
-    if (!sol || !window.confirm(T.confirmarRechazo(s.centro, sol.plan))) return;
+    if (!sol || !(await confirmar(CONFIRMACIONES.rechazarPlan(s.centro, sol.plan)))) return;
     correr(s, () => resolverSolicitudPlan(sol.id, false), T.rechazado(s.centro));
   };
 

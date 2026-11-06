@@ -1,0 +1,63 @@
+import { ALTURA_BARRA_NAVEGACION, FUENTES, MARGEN_PANTALLA } from '@/constants/constants';
+
+import { crearEstilos } from './crearEstilos';
+
+// ─── BarraNavegacion ───
+export const useBarraNavegacionStyles = crearEstilos((COLORES) => ({
+  contenedor: {
+    position: 'absolute',
+    left: 16,
+    right: 16,
+  },
+  barra: {
+    height: ALTURA_BARRA_NAVEGACION,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    paddingHorizontal: 8,
+    backgroundColor: COLORES.superficie,
+    borderRadius: ALTURA_BARRA_NAVEGACION / 2,
+    boxShadow: '0 10px 30px rgba(11, 59, 53, 0.14)',
+  },
+  boton: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 3,
+  },
+  botonPresionado: {
+    opacity: 0.6,
+  },
+  // Android no redondea bien cuando el radio es exactamente la mitad del alto:
+  // por eso el radio (14) queda un poco por debajo de la mitad (34 / 2 = 17).
+  contenedorIcono: {
+    width: 60,
+    height: 34,
+    borderRadius: 14,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  contenedorIconoActivo: {
+    backgroundColor: COLORES.primarioSuave,
+  },
+  etiqueta: {
+    fontFamily: FUENTES.semibold,
+    fontSize: 11.5,
+    color: COLORES.textoSecundario,
+  },
+  etiquetaActiva: {
+    fontFamily: FUENTES.bold,
+    color: COLORES.primario,
+  },
+}));
+
+// ─── PantallaCargaInicial / PantallaSinCentro ───
+export const usePantallaCentradaStyles = crearEstilos((COLORES) => ({
+  pantalla: {
+    flex: 1,
+    justifyContent: 'center',
+    gap: 12,
+    paddingHorizontal: MARGEN_PANTALLA,
+    backgroundColor: COLORES.fondo,
+  },
+}));

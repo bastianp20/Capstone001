@@ -1,0 +1,245 @@
+/* Mi centro: horario editable, especialidades, urgencias y estado de la UCI.
+   Panel claro; el modo oscuro llega por los tokens de theme.css. */
+@import '../theme.css';
+
+.ayuda {
+  margin: 0 0 12px;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--color-terciario-texto-muted);
+}
+
+.pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.casilla {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.casilla input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--color-primario);
+}
+
+.casillas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ---- filas del horario ---- */
+.dias {
+  display: flex;
+  flex-direction: column;
+}
+
+.dia {
+  display: grid;
+  grid-template-columns: 130px repeat(2, 120px) max-content repeat(2, 120px);
+  justify-content: start;
+  align-items: end;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.dia + .dia {
+  border-top: 1px solid var(--color-terciario-borde);
+}
+
+.campoHora {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.74rem;
+  color: var(--color-terciario-texto-muted);
+}
+
+.input {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--color-borde-fuerte);
+  border-radius: 8px;
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
+  font-family: inherit;
+  font-size: 0.88rem;
+  box-sizing: border-box;
+}
+
+.input:disabled {
+  opacity: 0.45;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 3px var(--color-secundario);
+}
+
+.casillaColacion {
+  padding-bottom: 8px;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+/* ---- estado de la UCI ---- */
+.estadoCabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.enVivo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #177a4f;
+}
+
+.enVivo::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #22a06b;
+  box-shadow: 0 0 0 3px rgba(34, 160, 107, 0.2);
+}
+
+.estados {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.estado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 64px;
+  padding: 10px 12px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.15s;
+}
+
+.estado small {
+  font-size: 0.74rem;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.estado:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.estado:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.disponible { background: #dff3ea; color: #135e3d; }
+.pocos_cupos { background: #fdf3e1; color: #6b4600; }
+.sin_cupos { background: #fbe4e4; color: #8c1f22; }
+.no_operativa { background: #eceef1; color: #374151; }
+
+.estadoActivo {
+  border-color: currentColor;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.actualizado {
+  margin: 10px 0 0;
+  font-size: 0.82rem;
+  color: var(--color-terciario-texto-muted);
+}
+
+.desactualizado {
+  margin: 10px 0 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #fdf3e1;
+  color: #6b4600;
+  font-size: 0.82rem;
+}
+
+.motivo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-terciario-borde);
+}
+
+.etiqueta {
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  min-height: 34px;
+  padding: 6px 14px;
+  border: 1px solid var(--color-borde-fuerte);
+  border-radius: 999px;
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chipActivo {
+  border-color: var(--color-primario);
+  background: var(--color-primario);
+  color: #ffffff;
+}
+
+.filaDetalle {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 860px) {
+  .dia {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dia > :first-child,
+  .casillaColacion {
+    grid-column: 1 / -1;
+  }
+
+  .estados {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

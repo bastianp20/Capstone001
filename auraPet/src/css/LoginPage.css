@@ -16,7 +16,7 @@
 .login-card {
   display: flex;
   width: 100%;
-  max-width: 760px;
+  max-width: 880px;
   max-height: calc(100vh - 48px);   /* nunca más alto que la pantalla */
   background: #ffffff;
   border-radius: 20px;
@@ -27,24 +27,28 @@
 /* Panel izquierdo */
 .login-panel-imagen {
   position: relative;
-  flex: 0 0 42%;
+  flex: 0 0 46%;
+  min-width: 0;                     /* el carrusel no puede ensanchar el panel */
   background-size: cover;
   background-position: center top;  /* prioriza la cara del perro */
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  justify-content: space-between;   /* mensaje arriba, adopción abajo */
+  gap: 20px;
+  padding-bottom: 22px;
 }
 .login-panel-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(18, 24, 31, 0) 30%, rgba(15, 143, 128, 0.85) 100%);
+  background: linear-gradient(180deg, rgba(18, 24, 31, 0.6) 0%, rgba(18, 24, 31, 0.05) 38%, rgba(18, 24, 31, 0.15) 60%, rgba(15, 143, 128, 0.85) 100%);
 }
 .login-panel-texto {
   position: relative;
   padding: 28px;
   color: #ffffff;
 }
-.login-panel-texto h2 { font-size: 22px; line-height: 1.2; margin: 0 0 6px; }
-.login-panel-texto p  { font-size: 13px; margin: 0; opacity: 0.9; }
+.login-panel-texto h2 { font-family: var(--fuente-marca); font-size: 28px; font-weight: 800; line-height: 1.15; margin: 0 0 8px; }
+.login-panel-texto p  { font-size: 14px; margin: 0; opacity: 0.92; }
 
 /* Panel derecho */
 .login-panel-form {
@@ -271,4 +275,151 @@
 
 .login-campo-error {
   color: #c9302c;
+}
+
+/* =====================================================================
+   Apartado de adopción (panel izquierdo y franja en celular)
+   ===================================================================== */
+.adopcion-login {
+  position: relative;
+  margin: 0 22px;
+  padding: 16px 16px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #ffffff;
+}
+.adopcion-login-titulo {
+  margin: 0 0 12px;
+  font-family: var(--fuente-marca);
+  font-size: 15px;
+  font-weight: 700;
+}
+.adopcion-login-ventana { position: relative; overflow: hidden; border-radius: 14px; }
+.adopcion-login-pista {
+  --gap: 10px;
+  display: flex;
+  gap: var(--gap);
+  transform: translateX(calc(-1 * var(--indice, 0) * (50% + var(--gap) / 2)));
+  transition: transform 0.45s ease;
+}
+.adopcion-mini {
+  position: relative;
+  flex: 0 0 calc(50% - var(--gap) / 2);
+  box-sizing: border-box;
+  padding: 26px 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--color-terciario-texto);
+  text-align: center;
+}
+.adopcion-mini-sello {
+  position: absolute;
+  top: 7px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-secundario);
+  color: #0f8f80;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.adopcion-mini-avatar {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: #0f8f80;
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(18, 24, 31, 0.12);
+}
+.adopcion-mini-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.adopcion-mini-nombre { margin: 0; font-family: var(--fuente-marca); font-size: 14px; font-weight: 700; }
+.adopcion-mini-detalle { margin: 2px 0 0; font-size: 12px; color: var(--color-terciario-texto-muted); }
+
+.adopcion-login-flecha {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--color-terciario-texto);
+  box-shadow: 0 2px 8px rgba(18, 24, 31, 0.2);
+  cursor: pointer;
+}
+.adopcion-login-flecha-izq { left: 4px; }
+.adopcion-login-flecha-der { right: 4px; }
+.adopcion-login-flecha:focus-visible,
+.adopcion-login-punto:focus-visible,
+.adopcion-login-ver:focus-visible { outline: 2px solid #ffffff; outline-offset: 2px; }
+.adopcion-franja:focus-visible { outline: 2px solid var(--color-primario); outline-offset: -2px; }
+
+.adopcion-login-puntos { display: flex; justify-content: center; gap: 6px; margin: 12px 0 6px; }
+.adopcion-login-punto {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: width 0.25s ease, background 0.25s ease;
+}
+.adopcion-login-punto-activo { width: 20px; background: #ffffff; }
+
+.adopcion-login-ver {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px;
+  border: none;
+  background: none;
+  color: #ffffff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.adopcion-login-ver:hover { text-decoration: underline; }
+
+/* Celular: franja chica sobre el formulario (solo se muestra bajo 768 px) */
+.adopcion-franja {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 12px 52px 12px 20px;   /* deja espacio a la X de cerrar */
+  border: none;
+  background: #fff3d1;
+  color: #5a4b00;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.adopcion-franja-ver { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; color: #0f8f80; }
+@media (max-width: 768px) {
+  .adopcion-franja { display: flex; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adopcion-login-pista, .adopcion-login-punto { transition: none; }
 }

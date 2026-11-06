@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { badgeStyles, Badge, ESTADO_LABEL, URGENCIA_LABEL } from "../constants";
+import { badgeStyles, Badge, ESTADO_LABEL, URGENCIA_LABEL, TEXTOS_MI_HORARIO } from "../constants";
 import { getAgendaVeterinario } from "../Api/getInfo";
 import { actualizarMiCita, rechazarCita } from "../Api/postInfo";
 import { useConsulta } from "../hooks/useConsulta";
 import { useAccion } from "../hooks/useAccion";
 import { RechazarModal } from "./ReachazarModal";
+import { ModificarCitaModal } from "./ModificarCitaModal";
+import { citaModificable } from "../lib/miHorario";
 import type { ModalAgendaProps, PestanaAgenda, CitaAgendaItem } from "../interfaces";
 import styles from "../css/Modal.module.css";
 
@@ -13,6 +15,8 @@ import styles from "../css/Modal.module.css";
 //  · "Por confirmar": solicitudes pendientes que pidieron los dueños, con
 //    botones para confirmarlas o rechazarlas (el rechazo pide una razón).
 //  · "Agenda": el resto de sus citas (confirmadas, en curso, completadas...).
+//  En "Agenda", "Modificar" reagenda o cancela una cita avisando al dueño y al
+//  centro. La semana completa con horas libres está en la pantalla Mi Agenda.
 export const ModalAgenda = ({ veterinarioId, pestanaInicial = "agenda", onCerrar, onCambio }: ModalAgendaProps) => {
   const [pestana, setPestana] = useState<PestanaAgenda>(pestanaInicial);
   const [recarga, setRecarga] = useState(0);
@@ -24,6 +28,8 @@ export const ModalAgenda = ({ veterinarioId, pestanaInicial = "agenda", onCerrar
   const { ejecutar: ejecutarAccion, ocupado, error: errorAccion } = useAccion();
   // La cita que se está rechazando (abre RechazarModal encima de la agenda)
   const [citaARechazar, setCitaARechazar] = useState<CitaAgendaItem | null>(null);
+  // La cita que se está modificando (reagendar o cancelar)
+  const [citaAModificar, setCitaAModificar] = useState<CitaAgendaItem | null>(null);
 
   const porConfirmar = agenda.filter((c) => c.estado === "pendiente");
   const resto = agenda.filter((c) => c.estado !== "pendiente");
@@ -35,6 +41,12 @@ export const ModalAgenda = ({ veterinarioId, pestanaInicial = "agenda", onCerrar
       setRecarga((n) => n + 1);
       onCambio?.();
     }
+  };
+
+  // Después de reagendar, cancelar o bloquear: recarga la agenda y avisa al inicio
+  const alCambiarHorario = () => {
+    setRecarga((n) => n + 1);
+    onCambio?.();
   };
 
   const confirmar = (citaId: number) =>
@@ -111,13 +123,25 @@ export const ModalAgenda = ({ veterinarioId, pestanaInicial = "agenda", onCerrar
                     </button>
                   </div>
                 ) : (
-                  <span style={Badge(badgeStyles[c.estado])}>{ESTADO_LABEL[c.estado]}</span>
+                  <div className={styles.itemAcciones}>
+                    <span style={Badge(badgeStyles[c.estado])}>{ESTADO_LABEL[c.estado]}</span>
+                    {c.reagendada && <span style={Badge(badgeStyles.reagendada)}>{TEXTOS_MI_HORARIO.reagendada}</span>}
+                    {citaModificable(c) && (
+                      <button className={`${styles.btnChico} ${styles.btnChicoRechazar}`} onClick={() => setCitaAModificar(c)}>
+                        {TEXTOS_MI_HORARIO.modificar}
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             ))}
           </div>
         </div>
       </div>
+
+      {citaAModificar && (
+        <ModificarCitaModal cita={citaAModificar} onCerrar={() => setCitaAModificar(null)} onListo={alCambiarHorario} />
+      )}
 
       {/* Modal de rechazo (el mismo que usa el superadmin), encima de la agenda */}
       {citaARechazar && (

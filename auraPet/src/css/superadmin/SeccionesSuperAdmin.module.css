@@ -42,6 +42,8 @@
 }
 
 .recortado {
+  display: block;
+  max-width: 100%;            /* sin esto, dentro de .celdaDoble el texto no se corta y se sale de la columna */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -53,6 +55,10 @@
   align-items: flex-start;
   gap: 2px;
   min-width: 0;
+}
+
+.celdaDoble > * {
+  max-width: 100%;
 }
 
 .motivo {

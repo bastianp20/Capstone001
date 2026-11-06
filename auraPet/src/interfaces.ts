@@ -38,6 +38,11 @@ export interface RechazarModalProps {
   titulo?: string;                    // por defecto TEXTOS_RECHAZO.titulo
   descripcion?: string;               // por defecto TEXTOS_RECHAZO.descripcion
   ocupado?: boolean;                  // true mientras se guarda: bloquea el modal y muestra "Rechazando…"
+  textoConfirmar?: string;            // por defecto TEXTOS_RECHAZO.confirmar
+  textoProcesando?: string;           // por defecto TEXTOS_RECHAZO.procesando
+  placeholder?: string;               // por defecto TEXTOS_RECHAZO.placeholder
+  valorInicial?: string;              // texto sugerido con el que parte el campo
+  etiqueta?: string;                  // por defecto TEXTOS_RECHAZO.etiqueta ("Motivo")
 }
 
 export interface SpinnerProps {
@@ -222,7 +227,8 @@ export interface UsuarioActual {
   nombre: string;
   rol: RolCuenta;
   telefono: number | null;
-  avatarUrl: string | null;
+  avatarUrl: string | null;   // URL pública de la foto de perfil (migración 44)
+  avatarRuta: string | null;  // ruta en el bucket "avatares" (para cambiarla o quitarla)
   esPrueba: boolean;          // cuenta del equipo de desarrollo: usa solo centros de prueba
 }
 
@@ -343,7 +349,8 @@ export interface DatosNuevoProfesional {
   telefono: string;          // "56912345678" o "" si no hay
   password: string;           // la elige el superadmin (mín. 6 caracteres)
   numeroColegiado: string;
-  especialidadId: number | null;
+  especialidadId: number | null;   // la principal (la primera de especialidadIds)
+  especialidadIds: number[];        // todas las marcadas (migración 45)
   especialidadOtra: string;   // "" si no tiene o está en el catálogo
   centroId: number | null;    // null = independiente o centro que aún no está en AuraPet
   centroMencionado: string;   // centro que aún no está en AuraPet ("" si no aplica)
@@ -450,7 +457,11 @@ export interface CentroDetalle {
   telefono: number | null;
   esPrueba: boolean;
   especialidades: string[];
+  especialidadIds: number[];
   horarios: HorarioCentro[];
+  tieneUci: boolean;
+  urgencias247: boolean;
+  urgenciasRevisadas: boolean;     // ya respondió las preguntas de urgencias/UCI
 }
 
 export interface MiembroEquipo {
@@ -619,6 +630,8 @@ export interface InicioVeterinarioProps {
   onRecetar: (mascotaId: number) => void;
   onVerPorConfirmar?: () => void;     // abre la agenda en las solicitudes por confirmar
   recargaExterna?: number;            // cambia cuando otra pantalla (la agenda) modificó citas
+  onCompletarPerfil: (paso: PasoPerfilVeterinario) => void; // un paso de "Completa tu perfil"
+  recargaPerfil?: number;             // cambia al cerrar Configuración (foto, teléfono, especialidades)
 }
 
 export interface ProximaCitaProps {
@@ -686,9 +699,9 @@ export interface GraficoBarrasProps {
 export type TipoRegistro = "diagnostico" | "vacuna" | "cirugia" | "control" | "otro";
 
 // Secciones que se ven en el panel; "Solicitar cita" y "Configuración" abren modales
-export type SeccionDueno = "inicio" | "mascotas" | "historial";
+export type SeccionDueno = "inicio" | "mascotas" | "historial" | "publicaciones" | "refugio";
 export interface ItemMenuDueno {
-  id: SeccionDueno | "solicitar" | "configuracion";
+  id: SeccionDueno | "solicitar" | "adopcion" | "configuracion";
   texto: string;
   icono: LucideIcon;
 }
@@ -733,8 +746,8 @@ export interface VeterinarioParaCita {
 }
 export interface DatosSolicitudCita {
   mascotaId: number;
-  centroId: number;
-  veterinarioId: number | null;    // null = sin preferencia
+  centroId: number | null;         // null = atención independiente (sin centro, migración 35)
+  veterinarioId: number | null;    // null = sin preferencia (obligatorio si es independiente)
   fechaHora: string;               // ISO (timestamptz)
   motivo: string;
   sintomas: string[];
@@ -744,6 +757,7 @@ export interface DatosSolicitudCita {
 export interface MenuDuenoProps {
   seccion: SeccionDueno;
   onElegir: (id: ItemMenuDueno["id"]) => void;
+  conRefugio: boolean;   // muestra "Mi refugio" (solo si administra alguno)
 }
 
 export interface MascotaCardProps {
@@ -869,7 +883,7 @@ export interface BarraFiltrosProps<F extends string> {
 // =====================================================================
 export type FiltroUsuarios = "todos" | RolCuenta | "prueba";
 export type FiltroAsignaciones = "todos" | "sinCentro" | "pendientes" | "prueba";
-export type FiltroCentros = "todos" | "aprobado" | "pendiente" | "rechazado" | "prueba" | "real";
+export type FiltroCentros = "todos" | "aprobado" | "pendiente" | "rechazado" | "prueba" | "real" | "eliminados";
 export type EstadoVerificacion = "pendiente" | "aprobado" | "rechazado";
 
 // Un centro en la lista del superadmin
@@ -883,6 +897,8 @@ export interface CentroListado {
   esPrueba: boolean;
   veterinarios: number;              // cuántos veterinarios atienden ahí
   creadoEn: string;
+  eliminadoEn: string | null;        // "eliminado" = desactivado (migración 43); el historial se conserva
+  motivoEliminacion: string | null;
 }
 
 export interface EditarCentroModalProps {
@@ -1012,7 +1028,7 @@ export interface FormDatosClinicosProps {
   onCancelar: () => void;
 }
 
-export type VarianteBoton = "primario" | "secundario" | "peligro";
+export type VarianteBoton = "primario" | "secundario" | "peligro" | "secundarioClaro"; // secundarioClaro: sobre paneles claros
 
 export interface BotonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variante?: VarianteBoton;           // por defecto "primario"
@@ -1190,7 +1206,7 @@ export interface DetalleSolicitudCentroModalProps {
 // =====================================================================
 // PANEL DEL SUPERADMIN
 // =====================================================================
-export type SeccionSuperAdmin = "resumen" | "usuarios" | "centros" | "asignaciones" | "aprobaciones" | "suscripciones" | "mensajes" | "eliminaciones" | "notas" | "citas";
+export type SeccionSuperAdmin = "resumen" | "usuarios" | "centros" | "asignaciones" | "aprobaciones" | "suscripciones" | "mensajes" | "eliminaciones" | "notas" | "citas" | "publicaciones" | "refugios" | "miRefugio" | "moderacion";
 
 export interface ItemMenuSuperAdmin {
   seccion: SeccionSuperAdmin;
@@ -1252,9 +1268,13 @@ export interface MenuLateralSuperAdminProps {
   seccion: SeccionSuperAdmin;
   pendientes: number;                 // contador junto a "Aprobaciones"
   onCambiar: (seccion: SeccionSuperAdmin) => void;
+  onDarEnAdopcion: () => void;
+  conRefugio: boolean;
+  contadores?: Partial<Record<SeccionSuperAdmin, number>>; // número junto a otras secciones (p. ej. Moderación)
 }
 
 export interface BarraSuperiorSuperAdminProps {
+  avatarUrl: string | null;
   nombre: string;
   pendientes: number;
   onCrear: (tipo: TipoCrearSuperAdmin) => void;
@@ -1357,7 +1377,7 @@ export interface DatosLaboralesVeterinario {
   centroId: number | null;            // si modoCentro = "centro_aurapet"
   centroNombre: string;               // si modoCentro = "centro_externo"
   centroComuna: string;
-  especialidadId: number | null;      // del catálogo (además de medicina general)
+  especialidadIds: number[];          // del catálogo (además de medicina general), sin límite (migración 45)
   especialidadOtra: string;           // escrita a mano si no está en el catálogo
 }
 
@@ -1382,9 +1402,10 @@ export interface SelectorCentroVeterinarioProps {
 
 export interface SelectorEspecialidadProps {
   especialidades: EspecialidadOpcion[];
-  especialidadId: number | null;
+  especialidadIds: number[];
   especialidadOtra: string;
-  onCambiar: (cambios: Partial<DatosLaboralesVeterinario>) => void;
+  onCambiar: (cambios: Pick<Partial<DatosLaboralesVeterinario>, 'especialidadIds' | 'especialidadOtra'>) => void;
+  opcional?: boolean;                 // muestra "(opcional)" (registro); por defecto true
 }
 
 // Lo que necesita la barra superior del panel del veterinario
@@ -1729,7 +1750,8 @@ export interface DestinoDerivacion {
   tipo: TipoDestinoDerivacion;
   id: number;
   nombre: string;
-  detalle: string;                    // especialidad (veterinario) o comuna (centro)
+  detalle: string;                    // especialidades (veterinario) o comuna (centro)
+  especialidadIds: number[];          // para filtrar al derivar (migración 46)
 }
 
 export interface Derivacion {
@@ -1811,7 +1833,7 @@ export interface OtraFormaContacto {
 // =====================================================================
 // PANEL DEL CENTRO (admin del centro)
 // =====================================================================
-export type SeccionCentroAdmin = "resumen" | "agenda" | "equipo" | "centro" | "suscripcion";
+export type SeccionCentroAdmin = "resumen" | "agenda" | "equipo" | "centro" | "suscripcion" | "publicaciones" | "refugio";
 
 export interface ItemMenuCentroAdmin {
   seccion: SeccionCentroAdmin;
@@ -1843,6 +1865,8 @@ export interface MenuLateralCentroProps {
   onCambiar: (seccion: SeccionCentroAdmin) => void;
   onVolver?: () => void;
   onConfiguracion: () => void;
+  onDarEnAdopcion: () => void;
+  conRefugio: boolean;
 }
 
 // Números del resumen (lib/centroAdmin.ts los calcula a partir de las citas)
@@ -2010,9 +2034,10 @@ export interface OpcionTema {
 // ---- Configuración (Modal/ConfiguracionModal.tsx) ----
 export interface ConfiguracionModalProps {
   onCerrar: () => void;
+  seccionInicial?: SeccionConfiguracion; // abre esa sección (p. ej. desde "Completa tu perfil")
 }
 
-export type SeccionConfiguracion = "perfil" | "seguridad" | "apariencia" | "notificaciones" | "privacidad" | "ayuda";
+export type SeccionConfiguracion = "perfil" | "especialidades" | "seguridad" | "apariencia" | "notificaciones" | "privacidad" | "ayuda";
 
 export interface FilaConfiguracionProps {
   icono: ReactNode;
@@ -2051,6 +2076,10 @@ export interface CitaAgendaItem {
   motivo: string;
   estado: EstadoCita;
   urgencia: UrgenciaCita;
+  fechaHora: string;      // ISO de la base (para reagendar y agrupar por día)
+  centroId: number | null;
+  centro: string | null;  // null = atención independiente
+  reagendada: boolean;    // el veterinario le cambió la hora
 }
 
 // ---- Crear centro (Modal/CrearCentroModal.tsx): un día del formulario de horarios ----
@@ -2123,4 +2152,1874 @@ export interface FichaPdfCruda {
     fecha: string; origen: string | null; destino: string | null; motivo: string;
     estado: EstadoDerivacion; resultado: string | null;
   }[];
+}
+
+// =====================================================================
+// MODAL DE CONFIRMACIÓN (reemplaza window.confirm en toda la app)
+// =====================================================================
+// peligro = borra o deshace algo (rojo); advertencia = cambio importante (ámbar)
+export type TipoConfirmacion = "peligro" | "advertencia";
+
+export interface OpcionesConfirmacion {
+  tipo: TipoConfirmacion;
+  titulo: string;
+  mensaje: string;
+  detalle?: string;                    // qué se afecta, p. ej. el título de la nota
+  permanente?: boolean;                // muestra "Atención: se eliminará de forma permanente…"
+  textoConfirmar: string;
+  textoCancelar?: string;
+}
+
+// confirmar(...) abre el modal y responde true (Confirmar) o false (Cancelar)
+export type FuncionConfirmar = (opciones: OpcionesConfirmacion) => Promise<boolean>;
+
+export interface ConfirmacionProviderProps {
+  children: ReactNode;
+}
+
+export interface ConfirmarModalProps {
+  opciones: OpcionesConfirmacion;
+  onResponder: (aceptado: boolean) => void;
+}
+
+// =====================================================================
+// Adopción
+// =====================================================================
+export type EspecieAdopcion = 'perro' | 'gato' | 'otro';
+
+/** Lo mínimo de un animal en adopción para mostrarlo en una tarjeta chica (login, carruseles). */
+export interface AnimalAdopcionResumen {
+  id: number;
+  nombre: string;
+  especie: EspecieAdopcion;
+  edad: string;            // "2 años", "4 meses"
+  comuna: string;
+  revisadoPorVet: boolean; // tiene al menos un chequeo de un veterinario de la red
+  fotoUrl: string | null;
+  refugioId?: number | null; // si se publicó a nombre de un refugio
+  refugio?: string | null;
+}
+
+export type TamanoAdopcion = 'pequeno' | 'mediano' | 'grande';
+export type EtapaAdopcion = 'cachorro' | 'adulto' | 'senior';
+export type SexoAdopcion = 'macho' | 'hembra';
+export type EstadoAdopcion = 'disponible' | 'en_proceso';
+export type FiltroEspecieAdopcion = 'todos' | EspecieAdopcion;
+
+/** Chequeo que le hizo un veterinario de la red al animal (el sello de confianza). */
+export interface ChequeoAdopcion {
+  veterinario: string;
+  centro: string | null;
+  fecha: string;        // "2026-10-12"
+  resumen: string;      // "Vacunas al día, esterilizada"
+  solidario: boolean;   // el veterinario no lo cobró
+}
+
+/** Animal publicado en /adopta (todo lo que muestra la página). */
+export interface AnimalAdopcion extends AnimalAdopcionResumen {
+  raza: string;
+  sexo: SexoAdopcion;
+  tamano: TamanoAdopcion;
+  etapa: EtapaAdopcion;
+  personalidad: string[];
+  frase: string | null;   // en primera persona: "Me encanta dormir al sol"
+  chequeo: ChequeoAdopcion | null;
+  estado: EstadoAdopcion;
+}
+
+/** Animal que ya encontró familia ("Ya tienen familia"). */
+export interface HistoriaAdopcion {
+  id: number;
+  nombre: string;
+  especie: EspecieAdopcion;
+  frase: string;          // lo que cuenta quien lo adoptó
+  adoptante: string;
+  fotoUrl: string | null;
+}
+
+export interface EstadisticasAdopcion {
+  esperando: number;
+  revisados: number;
+  conFamilia: number;
+}
+
+/** Filtros del panel lateral "Más filtros" (null = cualquiera). */
+export interface FiltrosExtraAdopcion {
+  soloRevisados: boolean;
+  tamano: TamanoAdopcion | null;
+  etapa: EtapaAdopcion | null;
+  sexo: SexoAdopcion | null;
+  comuna: string | null;
+}
+
+export interface OpcionAdopcion<V extends string> {
+  valor: V;
+  label: string;
+}
+
+export interface FotoMosaico {
+  src: string;
+  alt: string;
+}
+
+export interface AvatarAnimalProps {
+  especie: EspecieAdopcion;
+  fotoUrl: string | null;
+  nombre: string;
+  tono: string;
+  tamanoIcono?: number;
+  className?: string;
+}
+
+export interface SelloRevisadoProps {
+  chequeo: ChequeoAdopcion;
+  completo?: boolean; // true: muestra quién lo revisó y el resumen
+}
+
+export interface MosaicoHeroAdopcionProps {
+  fotos: FotoMosaico[];
+  etiqueta: string | null;
+}
+
+export interface HeroAdopcionProps {
+  estadisticas: EstadisticasAdopcion;
+  fotos: FotoMosaico[];
+  etiquetaFlotante: string | null;
+  onConocerlos: () => void;
+  onDarEnAdopcion: () => void;
+}
+
+export interface TarjetaDestacadaAdopcionProps {
+  animal: AnimalAdopcion;
+  onConocer?: (animal: AnimalAdopcion) => void;
+}
+
+export interface FiltrosAdopcionProps {
+  especie: FiltroEspecieAdopcion;
+  onEspecie: (especie: FiltroEspecieAdopcion) => void;
+  soloRevisados: boolean;
+  onSoloRevisados: (activo: boolean) => void;
+  filtrosActivos: number;
+  onMasFiltros: () => void;
+}
+
+export interface PanelFiltrosAdopcionProps {
+  abierto: boolean;
+  busqueda: string;
+  onBusqueda: (texto: string) => void;
+  filtros: FiltrosExtraAdopcion;
+  onCambiar: (cambios: Partial<FiltrosExtraAdopcion>) => void;
+  comunas: string[];
+  resultados: number;
+  onLimpiar: () => void;
+  onCerrar: () => void;
+}
+
+export interface GrupoOpcionesAdopcionProps<V extends string> {
+  titulo: string;
+  opciones: readonly OpcionAdopcion<V>[];
+  valor: V | null;
+  onElegir: (valor: V | null) => void;
+}
+
+export interface TarjetaAdopcionProps {
+  animal: AnimalAdopcion;
+  alto: number;
+  tono: string;
+  onConocer?: (animal: AnimalAdopcion) => void;
+}
+
+export interface GrillaAdopcionProps {
+  animales: AnimalAdopcion[];
+  cargando: boolean;
+  hayPublicaciones: boolean; // false = la base no tiene ninguno (no es culpa de los filtros)
+  error?: string;
+  onLimpiarFiltros: () => void;
+  onConocer?: (animal: AnimalAdopcion) => void;
+}
+
+export interface BandaDarEnAdopcionProps {
+  onPublicar: () => void;
+}
+
+export interface HistoriasExitoProps {
+  historias: HistoriaAdopcion[];
+}
+
+export interface PolaroidHistoriaProps {
+  historia: HistoriaAdopcion;
+  giro: number;   // grados
+  tono: string;
+}
+
+// ---------- Ficha del animal (/adopta/:id) ----------
+export type RasgoAdopcion = 'energia' | 'sociablePerros' | 'sociableGatos' | 'sociableNinos';
+export type RasgosAdopcion = Record<RasgoAdopcion, number | null>; // 1 a 5
+
+export interface PublicadorAdopcion {
+  nombre: string;
+  tipo: string;        // "Rescatista particular", nombre del centro…
+  adopciones: number;  // adopciones concretadas
+}
+
+export interface FichaAdopcion extends AnimalAdopcion {
+  historia: string | null;
+  fotos: string[];     // URLs públicas
+  rasgos: RasgosAdopcion;
+  vacunasAlDia: boolean;
+  esterilizado: boolean;
+  conMicrochip: boolean;
+  pesoKg: number | null;
+  alergias: string | null;
+  solicitaChequeo: boolean;
+  adoptado: boolean;
+  publicador: PublicadorAdopcion;
+  esMia: boolean;
+  yaPostule: boolean;
+}
+
+export interface GaleriaAdopcionProps {
+  fotos: string[];
+  nombre: string;
+  especie: EspecieAdopcion;
+}
+
+export interface CabeceraFichaAdopcionProps {
+  ficha: FichaAdopcion;
+}
+
+export interface BarraRasgoAdopcionProps {
+  etiqueta: string;
+  valor: number | null;
+}
+
+export interface TarjetaPersonalidadAdopcionProps {
+  personalidad: string[];
+  rasgos: RasgosAdopcion;
+}
+
+export interface ItemSaludAdopcionProps {
+  icono: ReactNode;
+  etiqueta: string;
+  valor?: string;
+  pendiente?: boolean; // se muestra atenuado ("Vacunas pendientes")
+}
+
+export interface TarjetaSaludAdopcionProps {
+  ficha: FichaAdopcion;
+}
+
+export interface ChequeoDestacadoAdopcionProps {
+  chequeo: ChequeoAdopcion | null;
+  solicitado: boolean;
+}
+
+export type EstadoBotonAdoptar = 'disponible' | 'mia' | 'postulado' | 'en_proceso' | 'adoptado';
+
+export interface TarjetaPublicadorAdopcionProps {
+  publicador: PublicadorAdopcion;
+  nombreAnimal: string;
+  sexo: SexoAdopcion;
+  estadoBoton: EstadoBotonAdoptar;
+  guardado: boolean;
+  textoCompartir: string;
+  onAdoptar: () => void;
+  onCompartir: () => void;
+  onGuardar: () => void;
+}
+
+export interface FilaOtrosAdopcionProps {
+  animales: AnimalAdopcion[];
+  onConocer: (animal: AnimalAdopcion) => void;
+}
+
+export interface TarjetaOtroAdopcionProps {
+  animal: AnimalAdopcion;
+  tono: string;
+  onConocer: (animal: AnimalAdopcion) => void;
+}
+
+export interface AvisoConfianzaAdopcionProps {
+  compacto?: boolean; // versión chica para la columna lateral de la ficha
+  onReportar?: () => void; // en la ficha abre "Reportar publicación"; sin esto, lleva a /contacto
+}
+
+// ---------- Formularios por pasos (postular y publicar) ----------
+/** Un paso del formulario: su título y qué campos valida al avanzar. */
+export interface PasoFormulario<C extends string> {
+  titulo: string;
+  campos: readonly C[];
+}
+
+export type ErroresFormulario<C extends string> = Partial<Record<C, string>>;
+
+export interface OpcionesFormularioPasos<D, C extends string> {
+  inicial: D;
+  pasos: readonly PasoFormulario<C>[];
+  validar: (datos: D) => ErroresFormulario<C>;
+}
+
+export interface IndicadorPasosAdopcionProps {
+  pasos: readonly string[];
+  actual: number;
+}
+
+export interface CampoSiNoAdopcionProps {
+  etiqueta: string;
+  valor: boolean | null;
+  onCambiar: (valor: boolean) => void;
+  error?: string;
+}
+
+export interface CampoTextoAdopcionProps {
+  id: string;
+  etiqueta: string;
+  valor: string;
+  onCambiar: (valor: string) => void;
+  error?: string;
+  placeholder?: string;
+  multilinea?: boolean;
+  maximo?: number;
+  tipo?: 'text' | 'number';
+  ayuda?: string;
+}
+
+export interface CampoSelectAdopcionProps {
+  id: string;
+  etiqueta: string;
+  valor: string;
+  opciones: readonly { valor: string; label: string }[];
+  onCambiar: (valor: string) => void;
+  error?: string;
+  placeholder?: string;
+}
+
+// ---------- Postular ("Quiero adoptarlo") ----------
+export type ViviendaAdopcion = 'casa' | 'departamento' | 'parcela';
+export type TenenciaAdopcion = 'propia' | 'arrendada' | 'familiar';
+
+export interface DatosPostulacionAdopcion {
+  vivienda: ViviendaAdopcion | null;
+  tienePatio: boolean | null;
+  tenencia: TenenciaAdopcion | null;
+  permitenMascotas: boolean | null;
+  hayNinos: boolean | null;
+  edadesNinos: string;
+  otrasMascotas: boolean | null;
+  cualesMascotas: string;
+  todosDeAcuerdo: boolean | null;
+  experiencia: string;
+  motivo: string;
+  aceptaCompromiso: boolean;
+}
+
+export type CampoPostulacionAdopcion = keyof DatosPostulacionAdopcion;
+
+export interface PasoPostulacionProps {
+  datos: DatosPostulacionAdopcion;
+  errores: ErroresFormulario<CampoPostulacionAdopcion>;
+  onCambiar: <K extends CampoPostulacionAdopcion>(campo: K, valor: DatosPostulacionAdopcion[K]) => void;
+}
+
+export interface PasoConfirmacionPostulacionProps extends PasoPostulacionProps {
+  nombreAnimal: string;
+}
+
+export interface ModalPostulacionAdopcionProps {
+  adopcionId: number;
+  nombreAnimal: string;
+  publicador: string;
+  onCerrar: () => void;
+  onEnviada: () => void;
+}
+
+export interface PostulacionEnviadaAdopcionProps {
+  publicador: string;
+  onVerMas: () => void;
+}
+
+// ---------- Publicar ("Dar en adopción") ----------
+export interface FotoNuevaAdopcion {
+  id: string;
+  archivo: File;
+  vista: string; // URL local para la vista previa
+}
+
+export interface DatosPublicarAdopcion {
+  fotos: FotoNuevaAdopcion[];
+  nombre: string;
+  especie: EspecieMascota | null;
+  sexo: SexoAdopcion | null;
+  anios: string;
+  meses: string;
+  tamano: TamanoAdopcion | null;
+  comuna: string;
+  solicitaChequeo: boolean;
+  personalidad: string[];
+  rasgos: RasgosAdopcion;
+  frase: string;
+  raza: string;
+  pesoKg: string;
+  vacunasAlDia: boolean;
+  esterilizado: boolean;
+  conMicrochip: boolean;
+  alergias: string;
+  historia: string;
+  refugioId: number | null;
+}
+
+export type CampoPublicarAdopcion = keyof DatosPublicarAdopcion;
+
+export interface PasoPublicarProps {
+  refugios?: OpcionRefugio[]; // refugios que administra (para publicar a su nombre)
+  datos: DatosPublicarAdopcion;
+  errores: ErroresFormulario<CampoPublicarAdopcion>;
+  onCambiar: <K extends CampoPublicarAdopcion>(campo: K, valor: DatosPublicarAdopcion[K]) => void;
+}
+
+export interface ZonaFotosAdopcionProps {
+  fotos: FotoNuevaAdopcion[];
+  onCambiar: (fotos: FotoNuevaAdopcion[]) => void;
+  error?: string;
+}
+
+export interface SelectorNivelAdopcionProps {
+  etiqueta: string;
+  valor: number | null;
+  onCambiar: (valor: number | null) => void;
+}
+
+export interface SelectorEtiquetasAdopcionProps {
+  opciones: readonly string[];
+  elegidas: string[];
+  maximo: number;
+  onCambiar: (elegidas: string[]) => void;
+  error?: string;
+}
+
+export interface InterruptorAdopcionProps {
+  etiqueta: string;
+  activo: boolean;
+  onCambiar: (activo: boolean) => void;
+}
+
+export interface BandaPasosPublicarProps {
+  pasos: readonly { icono: LucideIcon; texto: string; detalle: string }[];
+}
+
+export interface InvitacionSesionAdopcionProps {
+  onIngresar: () => void;
+}
+
+export interface PublicacionListaAdopcionProps {
+  nombre: string;
+  onVer: () => void;
+  onOtra: () => void;
+}
+
+export interface FormularioPublicarAdopcionProps {
+  onVerPublicacion: (id: number) => void;
+  onPublicada?: (id: number) => void;
+  enModal?: boolean; // sin sombra ni bordes, porque ya está dentro del modal
+  refugioId?: number; // publicar a nombre de este refugio (viene marcado)
+}
+
+export interface DarEnAdopcionModalProps {
+  onCerrar: () => void;
+  onPublicada?: (id: number) => void;
+  refugioId?: number;
+}
+
+export interface ItemMenuDarEnAdopcionProps {
+  className: string;
+  claseTexto: string;
+  onClick: () => void;
+}
+
+export interface MiniTarjetaAdopcionProps {
+  animal: AnimalAdopcionResumen;
+  tono: string; // fondo del avatar si no hay foto
+}
+
+export interface CarruselAdopcionLoginProps {
+  animales: AnimalAdopcionResumen[];
+  onVerTodos: () => void;
+}
+
+export interface FranjaAdopcionLoginProps {
+  total: number;
+  onVerTodos: () => void;
+}
+
+// =====================================================================
+// Mis publicaciones (migración 39)
+// =====================================================================
+export type EstadoPublicacion = 'publicada' | 'en_proceso' | 'adoptada' | 'retirada';
+export type FiltroPublicaciones = 'activos' | 'en_proceso' | 'adoptados' | 'retirados';
+export type HitoCaminoCasa = 'publicada' | 'revisada' | 'postulaciones' | 'elegida' | 'adoptada';
+
+export interface PublicacionPropia {
+  id: number;
+  nombre: string;
+  especie: EspecieAdopcion;
+  raza: string;
+  edad: string;
+  comuna: string;
+  fotoUrl: string | null;
+  estado: EstadoPublicacion;
+  creadaEn: string;
+  adoptadaEn: string | null;
+  testimonio: string | null;
+  solicitaChequeo: boolean;
+  revisadaPor: string | null;
+  postulaciones: number;
+  nuevas: number;
+  elegido: string | null;
+  refugio: string | null;
+  moderacion?: AvisoModeracion;   // oculta o advertida por el equipo AuraPet (migración 47)
+}
+
+export type TipoActividadPublicacion = 'postulacion' | 'eleccion' | 'atencion' | 'adopcion';
+
+export interface ActividadPublicacion {
+  tipo: TipoActividadPublicacion;
+  adopcionId: number;
+  animal: string;
+  persona: string | null;
+  fecha: string;
+}
+
+export type EstadoPostulacion = 'pendiente' | 'aceptada' | 'rechazada';
+
+export interface PostulacionRecibida {
+  id: number;
+  nombre: string;
+  correo: string;
+  telefono: number | null;
+  vivienda: ViviendaAdopcion;
+  tienePatio: boolean;
+  tenencia: TenenciaAdopcion;
+  permitenMascotas: boolean | null;
+  hayNinos: boolean;
+  edadesNinos: string | null;
+  otrasMascotas: boolean;
+  cualesMascotas: string | null;
+  todosDeAcuerdo: boolean;
+  experiencia: string | null;
+  motivo: string;
+  estado: EstadoPostulacion;
+  creadaEn: string;
+}
+
+export interface RazonAfinidad {
+  tipo: 'ok' | 'alerta';
+  texto: string;
+}
+
+export interface AfinidadPostulacion {
+  porcentaje: number;
+  razones: RazonAfinidad[];
+}
+
+export interface DatosConcretarAdopcion {
+  testimonio: string;
+  traspasar: boolean;
+}
+
+export interface SeccionMisPublicacionesProps {
+  onDarEnAdopcion: () => void;
+  version: number; // sube al publicar algo nuevo, para recargar
+}
+
+export interface EncabezadoMisPublicacionesProps {
+  publicados: number;
+  nuevas: number;
+  adoptados: number;
+  onDarEnAdopcion: () => void;
+}
+
+export interface CaminoCasaProps {
+  publicacion: PublicacionPropia;
+  compacto?: boolean;
+}
+
+export interface TarjetaPublicacionDestacadaProps {
+  publicacion: PublicacionPropia;
+  onRevisar: (p: PublicacionPropia) => void;
+}
+
+export interface ActividadPublicacionesProps {
+  actividad: ActividadPublicacion[];
+}
+
+export interface TarjetaPublicacionProps {
+  publicacion: PublicacionPropia;
+  tono: string;
+  onRevisar: (p: PublicacionPropia) => void;
+  onVer: (p: PublicacionPropia) => void;
+  onRetirar: (p: PublicacionPropia) => void;
+  onReactivar: (p: PublicacionPropia) => void;
+}
+
+export interface PestanasSubrayadasProps<V extends string> {
+  opciones: readonly { valor: V; label: string; cantidad?: number }[];
+  valor: V;
+  onCambiar: (valor: V) => void;
+  etiqueta: string;
+}
+
+export interface ElegirFamiliaProps {
+  publicacion: PublicacionPropia;
+  onVolver: () => void;
+  onCambio: () => void; // algo cambió (aceptar/rechazar/adoptar): recargar la lista
+}
+
+export interface AnilloProgresoProps {
+  porcentaje: number;
+  tamano?: number;
+  grosor?: number;
+  etiqueta?: string;   // texto dentro del anillo (por defecto "NN %")
+  color?: string;
+}
+
+export interface TarjetaPostulanteProps {
+  postulacion: PostulacionRecibida;
+  afinidad: AfinidadPostulacion;
+  seleccionada: boolean;
+  onElegir: () => void;
+}
+
+export interface PerfilPostulanteProps {
+  postulacion: PostulacionRecibida;
+}
+
+export interface TarjetaAfinidadProps {
+  nombreAnimal: string;
+  afinidad: AfinidadPostulacion;
+  postulacion: PostulacionRecibida;
+}
+
+export interface PanelLateralAdopcionProps {
+  titulo: string;
+  onCerrar: () => void;
+  children: ReactNode;
+  pie?: ReactNode;
+  ancho?: 'mediano' | 'grande';
+}
+
+export interface PanelAdoptadaProps {
+  nombreAnimal: string;
+  fotoAnimal: string | null;
+  especie: EspecieAdopcion;
+  postulacion: PostulacionRecibida;
+  ocupado: boolean;
+  error: string | null;
+  onConfirmar: (datos: DatosConcretarAdopcion) => void;
+  onCerrar: () => void;
+}
+
+// =====================================================================
+// Adopción solidaria (veterinario)
+// =====================================================================
+export interface AnimalParaVeterinario {
+  id: number;
+  nombre: string;
+  especie: EspecieAdopcion;
+  raza: string;
+  edad: string;
+  comuna: string;
+  fotoUrl: string | null;
+  enProceso: boolean;
+  solicitaAtencion: boolean;
+  revisada: boolean;
+  yaAtendi: boolean;
+  diasEsperando: number;
+  publicador: string;
+  refugio: string | null;
+  enMiComuna: boolean;
+}
+
+export interface MesSolidario {
+  mes: string;   // "2026-10"
+  total: number;
+}
+
+export interface ResumenSolidario {
+  atenciones: number;
+  solidarias: number;
+  adoptados: number;
+  aliado: boolean;
+  porMes: MesSolidario[];
+}
+
+export interface AtencionPropia {
+  id: number;
+  adopcionId: number;
+  nombre: string;
+  especie: EspecieAdopcion;
+  fotoUrl: string | null;
+  fecha: string;
+  resumen: string;
+  solidario: boolean;
+  centro: string | null;
+  estado: string;
+}
+
+export interface CentroAtencion {
+  id: number;
+  nombre: string;
+  comuna: string;
+}
+
+export type EstadoGeneralAtencion = 'sano' | 'en_tratamiento' | 'en_observacion';
+export type ProcedimientoAtencion = 'vacunas' | 'desparasitacion' | 'esterilizacion' | 'microchip' | 'examen_general';
+export type PestanaSolidaria = 'esperando' | 'todos' | 'mias';
+export type OrdenSolidaria = 'antiguos' | 'recientes';
+
+export interface DatosAtencionAdopcion {
+  fecha: string;
+  centroId: number | null;
+  estadoGeneral: EstadoGeneralAtencion;
+  procedimientos: ProcedimientoAtencion[];
+  pesoKg: string;
+  resumen: string;
+  solidario: boolean;
+  monto: string;
+}
+
+export interface FiltrosSolidaria {
+  comuna: string | null;
+  especie: EspecieAdopcion | null;
+  soloRefugios: boolean;
+  orden: OrdenSolidaria;
+}
+
+// Lo que muestra el centro del panel del veterinario
+export type VistaVeterinario = 'inicio' | 'agenda' | 'publicaciones' | 'solidaria' | 'refugio' | 'horario';
+
+export interface SeccionAdopcionSolidariaProps {
+  veterinario: string; // nombre para la vista previa del sello
+}
+
+export interface TarjetaImpactoProps {
+  resumen: ResumenSolidario;
+}
+
+export interface MiniBarrasProps {
+  datos: MesSolidario[];
+}
+
+export interface TarjetaAliadoSolidarioProps {
+  activo: boolean;
+  ocupado: boolean;
+  onCambiar: (activo: boolean) => void;
+}
+
+export interface TarjetaUrgenteProps {
+  animal: AnimalParaVeterinario;
+  onAtender: (a: AnimalParaVeterinario) => void;
+}
+
+export interface TarjetaAnimalVeterinarioProps {
+  animal: AnimalParaVeterinario;
+  tono: string;
+  onAtender: (a: AnimalParaVeterinario) => void;
+  onVerFicha: (a: AnimalParaVeterinario) => void;
+}
+
+export interface FiltrosSolidariaProps {
+  filtros: FiltrosSolidaria;
+  comunas: string[];
+  onCambiar: (cambios: Partial<FiltrosSolidaria>) => void;
+}
+
+export interface ListaMisAtencionesProps {
+  atenciones: AtencionPropia[];
+  onVerFicha: (adopcionId: number) => void;
+}
+
+export interface ControlSegmentadoProps<V extends string> {
+  etiqueta: string;
+  opciones: readonly { valor: V; label: string; icono?: LucideIcon }[];
+  valor: V;
+  onCambiar: (valor: V) => void;
+}
+
+export interface PanelRegistrarAtencionProps {
+  animal: AnimalParaVeterinario;
+  centros: CentroAtencion[];
+  veterinario: string;
+  onCerrar: () => void;
+  onGuardada: () => void;
+}
+
+export interface VistaPreviaAtencionProps {
+  animal: AnimalParaVeterinario;
+  veterinario: string;
+  centro: string | null;
+  datos: DatosAtencionAdopcion;
+}
+
+// =====================================================================
+// Refugios
+// =====================================================================
+export type RecepcionRefugio = 'abierto' | 'limitado' | 'sin_cupos';
+
+export interface Refugio {
+  id: number;
+  nombre: string;
+  comuna: string;
+  region: string;
+  descripcion: string | null;
+  logoUrl: string | null;
+  portadaUrl: string | null;
+  telefono: number | null;
+  correo: string | null;
+  cuposTotales: number;
+  cuposOcupados: number;
+  recibe: RecepcionRefugio;
+  especies: string[];
+  enAdopcion: number;
+  fotos: string[];
+  aliados: number;
+}
+
+export interface ResumenRefugios {
+  refugios: number;
+  animales: number;
+  aliados: number;
+}
+
+export interface OpcionRefugio {
+  id: number;
+  nombre: string;
+}
+
+export interface FiltrosRefugios {
+  region: string | null;
+  comuna: string | null;
+  soloAbiertos: boolean;
+  especie: 'perro' | 'gato' | null;
+}
+
+export interface TarjetaRefugioProps {
+  refugio: Refugio;
+  onVerAnimales: (r: Refugio) => void;
+}
+
+export interface FranjaNecesitanAyudaProps {
+  refugios: Refugio[];
+  onVer: (r: Refugio) => void;
+}
+
+export interface FiltrosRefugiosProps {
+  filtros: FiltrosRefugios;
+  regiones: string[];
+  comunas: string[];
+  onCambiar: (cambios: Partial<FiltrosRefugios>) => void;
+}
+
+export interface PestanasAdoptaProps {
+  actual: 'animales' | 'refugios';
+}
+
+// =====================================================================
+// Gestión de refugios: panel del superadmin y "Mi refugio" (migración 42)
+// =====================================================================
+export type EstadoRefugio = 'pendiente' | 'aprobado' | 'rechazado';
+export type EspecieRefugio = 'perro' | 'gato' | 'otro';
+export type FiltroEstadoRefugio = 'todos' | EstadoRefugio;
+
+export interface AdminDeRefugio {
+  id: string;
+  nombre: string;
+  correo: string;
+  esPrueba: boolean;
+}
+
+// Lo que ve el superadmin: el refugio público más su estado y su equipo
+export interface RefugioAdmin extends Refugio {
+  logoRuta: string | null;      // ruta en el bucket (para no perderla al editar)
+  portadaRuta: string | null;
+  estado: EstadoRefugio;
+  esPrueba: boolean;
+  creadoEn: string;
+  administradores: AdminDeRefugio[];
+  // Lo que mandó al postular desde "Súmate a AuraPet" (migración 48)
+  fotosLugar: string[];
+  responsable: string | null;
+  sitioWeb: string | null;
+  mensaje: string | null;
+  correoAcceso: string | null;   // postuló sin cuenta: al aprobar se invita a este correo
+}
+
+export interface FiltrosRefugiosAdmin {
+  texto: string;
+  estado: FiltroEstadoRefugio;
+  region: string | null;
+  incluirPrueba: boolean;
+}
+
+export interface KpisRefugiosAdmin {
+  verificados: number;
+  porRevisar: number;
+  animales: number;
+  ocupacion: number;   // 0–100, promedio de los verificados con cupos
+}
+
+export interface CuentaEncontrada {
+  id: string;
+  nombre: string;
+  correo: string;
+  rol: string;
+  esPrueba: boolean;
+}
+
+// Imagen del refugio: la que ya está guardada (ruta) o una nueva elegida (archivo)
+export interface ImagenRefugio {
+  ruta: string | null;
+  archivo: File | null;
+  vista: string | null;   // URL para mostrarla
+}
+
+export interface DatosRefugio {
+  nombre: string;
+  region: string;
+  comuna: string;
+  telefono: string;
+  correo: string;
+  descripcion: string;
+  logo: ImagenRefugio;
+  portada: ImagenRefugio;
+  cuposTotales: number;
+  cuposOcupados: number;
+  recibe: RecepcionRefugio;
+  especies: EspecieRefugio[];
+  esPrueba: boolean;
+  administradores: AdminDeRefugio[];
+}
+export type CampoRefugio = Extract<keyof DatosRefugio, string>;
+
+// Lo que puede editar quien administra el refugio
+export type DatosEditarMiRefugio = Pick<DatosRefugio, 'descripcion' | 'telefono' | 'correo' | 'especies' | 'logo' | 'portada'>;
+
+export interface MiembroRefugio {
+  id: string;
+  nombre: string;
+}
+
+export interface DetalleMiRefugio extends Omit<Refugio, 'enAdopcion' | 'fotos' | 'aliados'> {
+  logoRuta: string | null;
+  portadaRuta: string | null;
+  estado: EstadoRefugio;
+  cuposActualizadosEn: string;
+  publicadosMes: number;
+  postulacionesMes: number;
+  adoptadosMes: number;
+  porMes: MesSolidario[];
+  equipo: MiembroRefugio[];
+}
+
+export type PestanaMiRefugio = 'publicada' | 'en_proceso' | 'adoptada';
+
+// ---------- Props: piezas compartidas ----------
+export interface LogoRefugioProps {
+  nombre: string;
+  logoUrl: string | null;
+  tamano?: 'chico' | 'mediano' | 'grande';
+}
+
+export interface ChipEstadoRefugioProps {
+  estado: EstadoRefugio;
+}
+
+export interface ContadorNumeroProps {
+  etiqueta: string;
+  valor: number;
+  minimo?: number;
+  maximo?: number;
+  onCambiar: (valor: number) => void;
+  grande?: boolean;
+}
+
+export interface SelectorRecepcionProps {
+  valor: RecepcionRefugio;
+  onCambiar: (valor: RecepcionRefugio) => void;
+  compacto?: boolean;     // barra segmentada en vez de tarjetas
+  deshabilitado?: boolean;
+}
+
+export interface SelectorEspeciesProps {
+  valor: EspecieRefugio[];
+  onCambiar: (valor: EspecieRefugio[]) => void;
+  error?: string;
+}
+
+export interface CampoImagenesRefugioProps {
+  nombre: string;
+  logo: ImagenRefugio;
+  portada: ImagenRefugio;
+  onLogo: (archivo: File) => void;
+  onPortada: (archivo: File) => void;
+  error?: string;
+}
+
+export interface BuscadorCuentasProps {
+  excluir: string[];     // ids ya agregados
+  refugioDePrueba: boolean;
+  onAgregar: (cuenta: CuentaEncontrada) => void;
+}
+
+export interface ListaAdministradoresProps {
+  administradores: AdminDeRefugio[];
+  onQuitar?: (id: string) => void;
+}
+
+export interface BarraOcupacionProps {
+  ocupados: number;
+  totales: number;
+}
+
+export interface ToastProps {
+  mensaje: string | null;
+}
+
+// ---------- Props: superadmin ----------
+export interface BandaKpisRefugiosProps {
+  kpis: KpisRefugiosAdmin;
+  onRevisar: () => void;
+}
+
+export interface AvisoRefugiosPorRevisarProps {
+  refugios: RefugioAdmin[];
+  onRevisar: () => void;
+}
+
+export interface FiltrosRefugiosAdminProps {
+  filtros: FiltrosRefugiosAdmin;
+  regiones: string[];
+  onCambiar: (cambios: Partial<FiltrosRefugiosAdmin>) => void;
+}
+
+export interface TablaRefugiosAdminProps {
+  refugios: RefugioAdmin[];
+  seleccionadoId: number | null;
+  onVer: (r: RefugioAdmin) => void;
+  onEditar: (r: RefugioAdmin) => void;
+  onVerAnimales: (r: RefugioAdmin) => void;
+  onVerificar: (r: RefugioAdmin, aprobar: boolean) => void;
+}
+
+export interface FilaRefugioAdminProps extends Omit<TablaRefugiosAdminProps, 'refugios' | 'seleccionadoId'> {
+  refugio: RefugioAdmin;
+  seleccionado: boolean;
+}
+
+export interface MenuAccionesRefugioProps {
+  refugio: RefugioAdmin;
+  onVer: () => void;
+  onEditar: () => void;
+  onVerAnimales: () => void;
+  onVerificar: (aprobar: boolean) => void;
+}
+
+export interface PanelDetalleRefugioProps {
+  refugio: RefugioAdmin;
+  ocupado: boolean;
+  onCerrar: () => void;
+  onEditar: () => void;
+  onVerificar: (aprobar: boolean) => void;
+}
+
+export interface ModalRefugioProps {
+  refugio: RefugioAdmin | null;   // null = nuevo
+  onCerrar: () => void;
+  onGuardado: () => void;
+}
+
+export interface PasoRefugioProps {
+  datos: DatosRefugio;
+  errores: ErroresFormulario<CampoRefugio>;
+  onCambiar: <K extends CampoRefugio>(campo: K, valor: DatosRefugio[K]) => void;
+}
+
+export interface PasoDatosRefugioProps extends PasoRefugioProps {
+  onLogo: (archivo: File) => void;
+  onPortada: (archivo: File) => void;
+  errorImagen: string | null;
+}
+
+export interface PasoAdministradoresRefugioProps extends Omit<PasoRefugioProps, 'onCambiar'> {
+  onAgregar: (cuenta: CuentaEncontrada) => void;
+  onQuitar: (id: string) => void;
+}
+
+export interface VistaPreviaRefugioProps {
+  datos: DatosRefugio;
+}
+
+export interface StepperCirculosProps {
+  pasos: readonly string[];
+  actual: number;
+}
+
+// ---------- Props: Mi refugio ----------
+export interface SelectorMiRefugioProps {
+  refugios: OpcionRefugio[];
+  valor: number;
+  onCambiar: (id: number) => void;
+}
+
+export interface HeroMiRefugioProps {
+  refugio: DetalleMiRefugio;
+  onVerPublica: () => void;
+}
+
+export interface TarjetaCapacidadRefugioProps {
+  ocupados: number;
+  totales: number;
+  actualizadoEn: string;
+  onCambiar: (ocupados: number) => void;
+}
+
+export interface TarjetaRecepcionRefugioProps {
+  valor: RecepcionRefugio;
+  ocupado: boolean;
+  onCambiar: (valor: RecepcionRefugio) => void;
+}
+
+export interface TarjetaEsteMesRefugioProps {
+  publicados: number;
+  postulaciones: number;
+  adoptados: number;
+  porMes: MesSolidario[];
+}
+
+export interface AnimalesDelRefugioProps {
+  animales: PublicacionPropia[];
+  cargando: boolean;
+  pestanas: { valor: PestanaMiRefugio; label: string; cantidad: number }[];
+  pestana: PestanaMiRefugio;
+  onPestana: (p: PestanaMiRefugio) => void;
+  onPublicar: () => void;
+  onVerPostulaciones: (p: PublicacionPropia) => void;
+}
+
+export interface TarjetaAnimalRefugioProps {
+  animal: PublicacionPropia;
+  tono: string;
+  onVerPostulaciones: (p: PublicacionPropia) => void;
+}
+
+export interface TarjetaDatosRefugioProps {
+  refugio: DetalleMiRefugio;
+  onEditar: () => void;
+}
+
+export interface TarjetaEquipoRefugioProps {
+  equipo: MiembroRefugio[];
+}
+
+export interface PanelEditarRefugioProps {
+  refugio: DetalleMiRefugio;
+  onCerrar: () => void;
+  onGuardado: () => void;
+}
+
+export interface IconosEspeciesProps {
+  especies: string[];
+  conTexto?: boolean;
+}
+
+export interface CampoTelefonoProps {
+  id: string;
+  etiqueta: string;
+  valor: string;
+  onCambiar: (valor: string) => void;
+  error?: string;
+}
+
+export interface PanelMiRefugioProps {
+  refugioId: number;
+}
+
+// Posición de un menú flotante (fixed), calculada desde su botón
+export interface PosicionMenu {
+  top?: number;
+  bottom?: number;
+  right: number;
+}
+
+// =====================================================================
+// Recortar una imagen antes de subirla (zoom y encuadre)
+// =====================================================================
+export interface FormatoRecorte {
+  aspecto: number;                 // ancho / alto del marco (1 = cuadrado)
+  forma: 'circulo' | 'rectangulo'; // cómo se ve el marco (el archivo siempre es rectangular)
+  salida: { ancho: number; alto: number }; // tamaño del archivo final, en px
+}
+
+export interface ModalRecorteImagenProps {
+  url: string;                     // vista previa del archivo elegido
+  formato: FormatoRecorte;
+  titulo: string;
+  onListo: (archivo: File) => void;
+  onCancelar: () => void;
+}
+
+export type CampoImagenRefugio = 'logo' | 'portada';
+
+export interface ImagenPorRecortar {
+  campo: CampoImagenRefugio;
+  url: string;
+}
+
+// =====================================================================
+// Foto de perfil (migración 44)
+// =====================================================================
+export interface FotoPerfilProps {
+  nombre: string;
+  url: string | null;
+  className?: string;   // la clase del círculo de cada pantalla (tamaño y colores)
+}
+
+export interface CampoFotoPerfilProps {
+  nombre: string;
+}
+
+// =====================================================================
+// Varias especialidades por veterinario y filtro al pedir hora (migración 45)
+// =====================================================================
+export interface ProfesionalParaCita {
+  veterinarioId: number;
+  nombre: string;
+  centroId: number | null;           // null = atiende de forma independiente
+  especialidadIds: number[];
+  especialidades: string | null;     // "Cirugía, Dermatología"
+}
+
+export interface MisEspecialidades {
+  ids: number[];
+  otra: string;
+}
+
+export interface FiltroEspecialidadesProps {
+  especialidades: EspecialidadOpcion[];
+  seleccion: number[];
+  onCambiar: (seleccion: number[]) => void;
+  etiqueta: string;
+  ayuda: string;
+  tono?: 'tema' | 'oscuro';          // 'oscuro' = dentro de la ficha (siempre oscura)
+}
+
+export interface SeccionEspecialidadesProps {
+  onGuardado: () => void;
+}
+
+// =====================================================================
+// Reportar publicaciones y moderación (migración 47)
+// =====================================================================
+export type MotivoReporte = 'dinero' | 'estafa' | 'riesgo' | 'inapropiado' | 'adoptado' | 'otro';
+export type EstadoCasoModeracion = 'pendiente' | 'resuelto' | 'descartado';
+export type DecisionModeracion = 'ocultar' | 'advertir' | 'descartar';
+
+export interface OpcionMotivoReporte {
+  valor: MotivoReporte;
+  label: string;
+  icono: LucideIcon;
+  color: string;      // del cuadrito del ícono y del borde al elegirlo
+  fondo: string;      // fondo suave al elegirlo
+}
+
+export interface ModalReportarAdopcionProps {
+  adopcionId: number;
+  nombre: string;
+  fotoUrl: string | null;
+  especie: EspecieAdopcion;
+  onCerrar: () => void;
+}
+
+export interface TarjetaMotivoReporteProps {
+  opcion: OpcionMotivoReporte;
+  activa: boolean;
+  onElegir: (motivo: MotivoReporte) => void;
+}
+
+export interface ReporteEnviadoProps {
+  nombre: string;
+  numero: string;
+  onCerrar: () => void;
+}
+
+export interface ChipMotivoReporteProps {
+  motivo: MotivoReporte;
+}
+
+export interface ReporteDeCaso {
+  motivo: MotivoReporte;
+  comentario: string | null;
+  creadaEn: string;
+}
+
+export interface CasoModeracion {
+  adopcionId: number;
+  nombre: string;
+  especie: EspecieAdopcion;
+  raza: string | null;
+  edad: string;
+  comuna: string;
+  fotoUrl: string | null;
+  estadoPublicacion: EstadoPublicacion;
+  publicadaEn: string;
+  publicador: string;
+  esPrueba: boolean;
+  reportes: number;
+  motivoPrincipal: MotivoReporte;
+  urgente: boolean;
+  ultimoReporte: string;
+  publicaciones: number;
+  reportesPrevios: number;
+  cuentaCreadaEn: string;
+  decision: DecisionModeracion | null;
+  detalle: ReporteDeCaso[];
+}
+
+export interface ResumenModeracion {
+  porRevisar: number;
+  urgentes: number;
+  horasRespuesta: number | null;
+  ocultas: number;
+}
+
+export interface AvisoModeracion {
+  tipo: 'oculta' | 'advertencia';
+  mensaje: string;
+}
+
+export interface FilaCasoModeracionProps {
+  caso: CasoModeracion;
+  activo: boolean;
+  onElegir: (caso: CasoModeracion) => void;
+}
+
+export interface DetalleCasoModeracionProps {
+  caso: CasoModeracion;
+  ocupado: boolean;
+  onDecidir: (decision: DecisionModeracion) => void;
+}
+
+export interface EncabezadoModeracionProps {
+  resumen: ResumenModeracion;
+  estado: EstadoCasoModeracion;
+  onEstado: (estado: EstadoCasoModeracion) => void;
+}
+
+export interface AvisoModeracionPublicacionProps {
+  aviso: AvisoModeracion;
+}
+
+export interface SeccionModeracionProps {
+  onCambio: () => void;   // se resolvió un caso (para actualizar el contador del menú)
+}
+
+// =====================================================================
+// "Súmate a AuraPet": landing y postulación de refugios (migración 48)
+// =====================================================================
+
+export interface DatosPostularRefugio {
+  nombre: string;
+  region: string;
+  comuna: string;
+  descripcion: string;
+  logo: ImagenRefugio;
+  cuposTotales: number;
+  cuposOcupados: number;
+  recibe: RecepcionRefugio;
+  especies: EspecieRefugio[];
+  fotos: FotoNuevaAdopcion[];   // del lugar: 2 a 6, la primera es la portada
+  responsable: string;
+  telefono: string;
+  correo: string;
+  sitioWeb: string;
+  mensaje: string;
+}
+export type CampoPostularRefugio = Extract<keyof DatosPostularRefugio, string>;
+
+export interface PasoPostularRefugioProps {
+  datos: DatosPostularRefugio;
+  errores: ErroresFormulario<CampoPostularRefugio>;
+  onCambiar: <K extends CampoPostularRefugio>(campo: K, valor: DatosPostularRefugio[K]) => void;
+}
+
+export interface PasoTuRefugioProps extends PasoPostularRefugioProps {
+  onLogo: (archivo: File) => void;
+  errorLogo: string | null;
+}
+
+export interface PasoConDetalle {
+  titulo: string;
+  detalle: string;
+}
+
+export interface StepperVerticalProps {
+  pasos: readonly PasoConDetalle[];
+  actual: number;
+}
+
+export interface PanelPostulacionProps {
+  datos: DatosPostularRefugio;
+  paso: number;
+}
+
+export interface PasoContactoRefugioProps extends PasoPostularRefugioProps {
+  conSesion: boolean;   // sin sesión el correo es obligatorio (ahí llega el acceso)
+}
+
+export interface AvisoCuentaPostulacionProps {
+  nombre: string | null;   // con sesión: a nombre de quién queda
+  onIngresar: () => void;
+}
+
+export interface PostulacionEnviadaProps {
+  nombre: string;
+  correoAcceso: string | null;   // postuló sin cuenta: a dónde llegará el acceso
+  onVolver: () => void;
+}
+
+export interface ResultadoAprobarRefugio {
+  invitada: boolean;   // true = se creó la cuenta y se mandó la invitación
+  correo: string;
+}
+
+export interface TarjetaSumate {
+  icono: LucideIcon;
+  titulo: string;
+  texto: string;
+}
+
+export interface HeroSumateProps {
+  resumen: ResumenRefugios | null;
+  onPostular: () => void;
+}
+
+export interface TestimonioSumateProps {
+  historia: HistoriaAdopcion;
+}
+
+export interface CierreSumateProps {
+  onPostular: () => void;
+}
+
+export interface GaleriaLugarRefugioProps {
+  fotos: string[];
+  nombre: string;
+}
+
+export interface CampoComunaRefugioProps {
+  id: string;
+  etiqueta: string;
+  region: string;      // en la Metropolitana sugiere comunas
+  valor: string;
+  onCambiar: (valor: string) => void;
+  error?: string;
+}
+
+export interface DatosPostulacionRefugioProps {
+  refugio: RefugioAdmin;
+}
+
+
+// =====================================================================
+// Mi horario del veterinario: reagendar, cancelar y bloquear horas (migración 52)
+// =====================================================================
+export interface BloqueoHorario {
+  id: number;
+  desde: string;   // ISO
+  hasta: string;   // ISO
+  motivo: string;
+}
+
+export type AccionCambioCita = "reagendar" | "cancelar";
+
+// Lo que se manda junto con cualquier cambio: el mensaje y si se avisa al centro
+export interface DatosAvisoCambio {
+  mensaje: string;
+  avisarCentro: boolean;
+}
+
+export interface DatosReagendarCita extends DatosAvisoCambio {
+  citaId: number;
+  nuevaFecha: string;  // ISO
+}
+
+export interface DatosCancelarCitaVeterinario extends DatosAvisoCambio {
+  citaId: number;
+  motivo: string;
+}
+
+export interface DatosBloquearHorario extends DatosAvisoCambio {
+  desde: string;          // ISO
+  hasta: string;          // ISO
+  motivo: string;
+  cancelarCitas: boolean; // cancela (y avisa) las citas que caen en el rango
+}
+
+export interface ModificarCitaModalProps {
+  cita: CitaAgendaItem;
+  horasLibres?: HoraLibre[];  // desde la grilla: reagendar eligiendo una hora libre
+  onCerrar: () => void;
+  onListo: () => void;    // se guardó el cambio (para recargar la agenda)
+}
+
+export interface BloquearHorarioModalProps {
+  citas: CitaAgendaItem[];   // la agenda, para mostrar las citas que caen en el rango
+  inicial?: ValoresBloqueo;  // desde la grilla: la hora que se tocó
+  onCerrar: () => void;
+  onListo: () => void;
+}
+
+export interface AvisarCambioProps {
+  dueno: string;
+  centros: string[];         // centros a los que se puede avisar (vacío = solo el dueño)
+  avisarCentro: boolean;
+  onAvisarCentro: (valor: boolean) => void;
+  mensaje: string;
+  onMensaje: (valor: string) => void;
+  deshabilitado: boolean;
+}
+
+export interface ChipsMotivoProps {
+  etiqueta: string;
+  opciones: readonly string[];
+  valor: string;
+  onCambiar: (valor: string) => void;
+  deshabilitado: boolean;
+}
+
+export interface ResumenCambioProps {
+  titulo: string;
+  detalle: string;
+  onCerrar: () => void;
+}
+
+// Avisos de cambios de hora (dueño y administradores de centro)
+export type TipoAvisoCita = "cita_reagendada" | "cita_cancelada";
+
+export interface AvisoCita {
+  id: number;
+  tipo: TipoAvisoCita;
+  titulo: string;
+  mensaje: string;
+  fechaAnterior: string | null;
+  fechaNueva: string | null;
+  creadaEn: string;
+}
+
+export interface AvisosCitasProps {
+  centroId?: number;   // en el panel del centro: solo los avisos de ese centro
+}
+
+
+// =====================================================================
+// Horario de atención y perfil profesional del veterinario (migración 53)
+// =====================================================================
+export interface TramoHorario {
+  centroId: number | null;   // null = atención independiente
+  diaSemana: number;         // 1 = lunes ... 7 = domingo
+  desde: string;             // "09:00"
+  hasta: string;             // "18:00"
+}
+
+export interface HorarioCentroDia {
+  diaSemana: number;
+  abre: string;
+  cierra: string;
+}
+
+export interface LugarAtencion {
+  centroId: number | null;
+  nombre: string | null;     // null = atención independiente
+  horarioCentro: HorarioCentroDia[];
+}
+
+export interface HorarioAtencion {
+  independiente: boolean;
+  urgencias247: boolean;
+  aDomicilio: boolean;
+  comunas: string[];
+  duracion: number;
+  lugares: LugarAtencion[];
+  tramos: TramoHorario[];
+}
+
+// Formulario: un día de un lugar
+export interface DiaHorarioForm {
+  activo: boolean;
+  desde: string;
+  hasta: string;
+}
+
+// Clave del lugar (id del centro o "independiente") -> sus 7 días (índice 0 = lunes)
+export type HorarioPorLugar = Record<string, DiaHorarioForm[]>;
+
+export interface DatosHorarioAtencion {
+  tramos: TramoHorario[];
+  duracion: number;
+  urgencias247: boolean;
+  aDomicilio: boolean;
+  comunas: string[];
+}
+
+export type PasoPerfilVeterinario = "foto" | "telefono" | "especialidades" | "colegiado" | "horario" | "zona";
+
+export interface ProgresoPerfilVeterinario {
+  independiente: boolean;
+  pasos: Partial<Record<PasoPerfilVeterinario, boolean>>; // sin "zona" si no es independiente
+}
+
+export interface ProgresoPerfilProps {
+  recarga: number;
+  onCompletar: (paso: PasoPerfilVeterinario) => void;
+}
+
+export interface TarjetaLugarHorarioProps {
+  lugar: LugarAtencion;
+  dias: DiaHorarioForm[];
+  onCambiarDia: (indice: number, cambio: Partial<DiaHorarioForm>) => void;
+  onUsarHorarioCentro: () => void;
+  deshabilitado: boolean;
+}
+
+export interface CampoComunasProps {
+  comunas: string[];
+  onCambiar: (comunas: string[]) => void;
+  deshabilitado: boolean;
+}
+
+export interface TarjetaColegiadoProps {
+  onRegistrado: () => void;
+}
+
+// Lo que se edita en "Mi horario de atención" (hooks/useHorarioAtencion.ts)
+export interface EstadoHorarioAtencion {
+  mostrarTelefono: boolean;  // aparecer con su teléfono en /urgencias (migración 55)
+  form: HorarioPorLugar;
+  duracion: number;
+  urgencias247: boolean;
+  aDomicilio: boolean;
+  comunas: string[];
+}
+
+// =====================================================================
+// Mi Agenda: la semana con todas las horas (etapa 2)
+// =====================================================================
+export type TipoCeldaAgenda = "libre" | "tomada" | "bloqueada" | "pasada";
+
+export interface CeldaAgenda {
+  fecha: string;             // "2026-11-06"
+  hora: string;              // "16:00"
+  inicio: string;            // ISO
+  fin: string;               // ISO
+  tipo: TipoCeldaAgenda;
+  cita: CitaAgendaItem | null;
+  bloqueo: BloqueoHorario | null;
+  fueraDeHorario: boolean;   // una cita que cae fuera del horario configurado
+}
+
+export interface DiaSemanaAgenda {
+  fecha: string;
+  titulo: string;            // "Jueves 6 nov"
+  esHoy: boolean;
+}
+
+export interface SemanaAgenda {
+  dias: DiaSemanaAgenda[];
+  horas: string[];                       // filas de la grilla, ordenadas
+  celdas: Record<string, CeldaAgenda>;   // clave "fecha|hora"
+}
+
+export interface DatosSemanaAgenda {
+  tramos: TramoHorario[];
+  duracion: number;
+  citas: CitaAgendaItem[];
+  bloqueos: BloqueoHorario[];
+  ahora: Date;
+}
+
+export interface HoraLibre {
+  fecha: string;
+  hora: string;
+  inicio: string;            // ISO
+}
+
+export interface SeccionMiAgendaProps {
+  veterinarioId: number;
+  onConfigurarHorario: () => void;
+  onVerPorConfirmar: () => void;
+  recarga: number;           // sube cuando el modal de la agenda cambió algo
+  onCambio: () => void;      // avisa al resto del panel (inicio)
+}
+
+export interface GrillaSemanaProps {
+  semana: SemanaAgenda;
+  onElegirCelda: (celda: CeldaAgenda) => void;
+}
+
+export interface CeldaAgendaProps {
+  celda: CeldaAgenda | undefined;
+  onElegir: (celda: CeldaAgenda) => void;
+}
+
+export interface SelectorHoraLibreProps {
+  horas: HoraLibre[];
+  elegida: string | null;    // inicio ISO de la elegida
+  onElegir: (hora: HoraLibre) => void;
+  deshabilitado: boolean;
+}
+
+export interface ValoresBloqueo {
+  fecha: string;
+  desde: string;
+  hasta: string;
+}
+
+
+// =====================================================================
+// Centros: horario editable, urgencias, UCI y progreso (migración 54)
+// =====================================================================
+export type EstadoUci = "disponible" | "pocos_cupos" | "sin_cupos" | "no_operativa";
+export type MotivoUci = "faltan_profesionales" | "falta_instrumental" | "otro";
+
+export interface EstadoUciCentro {
+  centroId: number;
+  estado: EstadoUci;
+  motivo: MotivoUci | null;
+  detalle: string | null;
+  actualizadoEn: string;
+}
+
+export interface OpcionEstadoUci {
+  valor: EstadoUci;
+  texto: string;
+  ayuda: string;
+}
+
+export interface OpcionMotivoUci {
+  valor: MotivoUci;
+  texto: string;
+}
+
+export type PasoPerfilCentro = "telefono" | "horario" | "especialidades" | "equipo" | "urgencias";
+export type ProgresoPerfilCentro = Record<PasoPerfilCentro, boolean>;
+
+// Tarjeta de progreso genérica (veterinario y centro)
+export interface PasoProgreso {
+  id: string;
+  texto: string;
+  Icono: LucideIcon;
+}
+
+export interface TarjetaProgresoProps {
+  titulo: string;
+  porcentaje: number;
+  textoPorcentaje: string;   // "Tu perfil está al 60%"
+  ayuda: string;
+  pendientes: PasoProgreso[];
+  onElegir: (id: string) => void;
+}
+
+export interface ProgresoPerfilCentroProps {
+  centroId: number;
+  recarga?: number;
+  onIrA: (seccion: SeccionCentroAdmin) => void;
+}
+
+export interface TarjetaDeCentroProps {
+  centro: CentroDetalle;
+  onGuardado: () => void;
+}
+
+export interface FilasHorarioCentroProps {
+  dias: DiaFormulario[];
+  onCambiarDia: (dia: number, cambio: Partial<DiaFormulario>) => void;
+  deshabilitado: boolean;
+}
+
+export interface PanelEstadoUciProps {
+  centroId: number;
+  compacto?: boolean;    // en el Resumen: solo los botones de estado
+}
+
+export interface DatosEstadoUci {
+  estado: EstadoUci;
+  motivo: MotivoUci | null;
+  detalle: string;
+}
+
+
+// =====================================================================
+// Urgencias sin cuenta: página pública /urgencias (migración 55)
+// =====================================================================
+export interface CentroUrgencia {
+  id: number;
+  nombre: string;
+  direccion: string;
+  comuna: string;
+  telefono: number | null;
+  urgencias247: boolean;
+  tieneUci: boolean;
+  estadoUci: EstadoUciCentro | null;
+  horarios: HorarioCentro[];
+}
+
+export interface VeterinarioUrgencia {
+  id: number;
+  nombre: string;
+  telefono: number;
+  avatarUrl: string | null;
+  aDomicilio: boolean;
+  comunas: string[];
+}
+
+export interface ListaUrgencias {
+  centros: CentroUrgencia[];
+  veterinarios: VeterinarioUrgencia[];
+}
+
+// Un centro listo para mostrar: si está abierto ahora y en qué orden va
+export interface CentroUrgenciaVista extends CentroUrgencia {
+  abiertoAhora: boolean;
+  uciVigente: boolean;       // tiene estado de UCI actualizado hace poco
+  prioridad: number;         // 0 = UCI con lugar · 1 = 24/7 · 2 = abierto · 3 = cerrado
+}
+
+export interface FiltrosUrgencias {
+  comuna: string;            // "" = todas
+  soloAbiertos: boolean;
+  soloUciDisponible: boolean;
+}
+
+export interface FiltrosUrgenciasProps {
+  comunas: string[];
+  filtros: FiltrosUrgencias;
+  onCambiar: (cambio: Partial<FiltrosUrgencias>) => void;
+}
+
+export interface TarjetaCentroUrgenciaProps {
+  centro: CentroUrgenciaVista;
+  ahora: Date;
+}
+
+export interface TarjetaVetUrgenciaProps {
+  veterinario: VeterinarioUrgencia;
+}
+
+export interface EtiquetaEstadoUciProps {
+  estado: EstadoUciCentro;
+  ahora: Date;
+}
+
+export interface TelefonoEnUrgencias {
+  mostrar: boolean;
+  tieneTelefono: boolean;
 }

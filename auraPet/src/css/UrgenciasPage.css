@@ -1,0 +1,348 @@
+/* Urgencias sin cuenta: franja de la portada y página /urgencias.
+   Páginas públicas: siempre en claro (como la landing). Prefijo "urg-". */
+
+.urg,
+.urg-franja {
+  --urg-primario: #0f8f80;
+  --urg-primario-oscuro: #0c7569;
+  --urg-texto: #1a1f27;
+  --urg-suave: #5b6472;
+  --urg-borde: #e4e6ea;
+  --urg-fondo: #f6f8f8;
+  --urg-rojo: #b42318;
+  --urg-rojo-suave: #fdecec;
+  font-family: "Inter", system-ui, sans-serif;
+  color: var(--urg-texto);
+}
+
+/* ---------- Franja en la portada ---------- */
+.urg-franja {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1120px;
+  margin: 28px auto 0;
+  padding: 18px 24px;
+  border: 1px solid #f5c2bd;
+  border-radius: 16px;
+  background: var(--urg-rojo-suave);
+}
+
+.urg-franja-texto {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.urg-franja-icono {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--urg-rojo);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.urg-franja h2 {
+  margin: 0;
+  font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  font-size: 1.15rem;
+  color: #7a1d1f;
+}
+
+.urg-franja p {
+  margin: 2px 0 0;
+  font-size: 0.92rem;
+  color: #7a1d1f;
+}
+
+.urg-boton-rojo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: var(--urg-rojo);
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.urg-boton-rojo:hover {
+  background: #912018;
+}
+
+/* ---------- Página ---------- */
+.urg {
+  min-height: 70vh;
+  padding: 32px 24px 56px;
+  background: var(--urg-fondo);
+}
+
+.urg-contenido {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.urg-cabecera h1 {
+  margin: 0;
+  font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  font-size: 2rem;
+}
+
+.urg-cabecera p {
+  margin: 6px 0 0;
+  color: var(--urg-suave);
+}
+
+.urg-consejo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #fdf3e1;
+  color: #5a3d00;
+  font-size: 0.92rem;
+}
+
+.urg-en-vivo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #177a4f;
+}
+
+.urg-en-vivo::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #22a06b;
+  box-shadow: 0 0 0 3px rgba(34, 160, 107, 0.2);
+}
+
+/* ---------- Filtros ---------- */
+.urg-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 14px 16px;
+  border: 1px solid var(--urg-borde);
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.urg-filtros label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.urg-filtros select {
+  min-height: 38px;
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.urg-filtros input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--urg-primario);
+}
+
+/* ---------- Listas ---------- */
+.urg-seccion-titulo {
+  margin: 8px 0 0;
+  font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  font-size: 1.2rem;
+}
+
+.urg-seccion-ayuda {
+  margin: 2px 0 0;
+  font-size: 0.88rem;
+  color: var(--urg-suave);
+}
+
+.urg-grilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.urg-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--urg-borde);
+  border-radius: 14px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.urg-tarjeta-cerrada {
+  opacity: 0.75;
+}
+
+.urg-tarjeta h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.urg-direccion {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--urg-suave);
+}
+
+.urg-etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.urg-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.urg-abierto { background: #dff3ea; color: #135e3d; }
+.urg-cerrado { background: #eceef1; color: #4b5563; }
+.urg-24 { background: #fbe4e4; color: #8c1f22; }
+.urg-uci-disponible { background: #dff3ea; color: #135e3d; }
+.urg-uci-pocos_cupos { background: #fdf3e1; color: #6b4600; }
+.urg-uci-sin_cupos { background: #fbe4e4; color: #8c1f22; }
+.urg-uci-no_operativa { background: #eceef1; color: #374151; }
+.urg-uci-sin-info { background: #f3f4f6; color: #4b5563; font-weight: 600; }
+
+.urg-hoy {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--urg-suave);
+}
+
+.urg-acciones {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: auto;
+}
+
+.urg-boton,
+.urg-boton-secundario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.urg-boton {
+  background: var(--urg-primario);
+  color: #ffffff;
+}
+
+.urg-boton:hover {
+  background: var(--urg-primario-oscuro);
+}
+
+.urg-boton-secundario {
+  border: 1px solid var(--urg-borde);
+  background: #ffffff;
+  color: var(--urg-texto);
+}
+
+.urg-boton-secundario:hover {
+  border-color: var(--urg-primario);
+  color: var(--urg-primario);
+}
+
+.urg-sin-telefono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  border-radius: 10px;
+  background: #f3f4f6;
+  color: var(--urg-suave);
+  font-size: 0.85rem;
+}
+
+.urg-vet {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.urg-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  object-fit: cover;
+  background: #e3f5f2;
+  color: var(--urg-primario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.urg-vacio {
+  margin: 0;
+  padding: 28px;
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  text-align: center;
+  color: var(--urg-suave);
+}
+
+@media (max-width: 600px) {
+  .urg {
+    padding: 20px 14px 40px;
+  }
+
+  .urg-cabecera h1 {
+    font-size: 1.6rem;
+  }
+
+  .urg-franja {
+    margin: 20px 14px 0;
+  }
+
+  .urg-grilla {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

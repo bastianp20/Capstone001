@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { MAX_CARACTERES_MOTIVO_ELIMINACION, TEXTOS_ELIMINACION as T } from "../../constants";
+import { CONFIRMACIONES, MAX_CARACTERES_MOTIVO_ELIMINACION, TEXTOS_ELIMINACION as T } from "../../constants";
 import { getMiSolicitudEliminacion } from "../../Api/getInfo";
-import { solicitarEliminacionCuenta } from "../../Api/postInfo";
+import { cancelarSolicitudEliminacion, solicitarEliminacionCuenta } from "../../Api/postInfo";
 import { useAccion } from "../../hooks/useAccion";
 import { useConsulta } from "../../hooks/useConsulta";
+import { useConfirmar } from "../../hooks/useConfirmar";
 import type { SolicitarEliminacionProps } from "../../interfaces";
 import styles from "../../css/modal/ConfiguracionModal.module.css";
 
@@ -13,10 +14,16 @@ export const SolicitarEliminacion = ({ perfilId }: SolicitarEliminacionProps) =>
   const [recarga, setRecarga] = useState(0);
   const [motivo, setMotivo] = useState("");
   const { ejecutar, ocupado, error } = useAccion();
+  const confirmar = useConfirmar();
   const { datos: solicitud } = useConsulta(() => getMiSolicitudEliminacion(perfilId), [perfilId, recarga]);
 
+  const cancelar = async () => {
+    if (!(await confirmar(CONFIRMACIONES.cancelarEliminacionCuenta()))) return;
+    if (await ejecutar(cancelarSolicitudEliminacion, "No se pudo cancelar la solicitud.")) setRecarga((n) => n + 1);
+  };
+
   const pedir = async () => {
-    if (!window.confirm(T.confirmar)) return;
+    if (!(await confirmar(CONFIRMACIONES.pedirEliminacionCuenta()))) return;
     const ok = await ejecutar(() => solicitarEliminacionCuenta(motivo), "No se pudo enviar la solicitud.");
     if (ok) {
       setMotivo("");
@@ -30,7 +37,15 @@ export const SolicitarEliminacion = ({ perfilId }: SolicitarEliminacionProps) =>
       <small className={styles.ayudaTexto}>{T.ayuda}</small>
 
       {solicitud?.estado === "pendiente" ? (
-        <p className={styles.exito}>{T.enRevision(solicitud.fecha)}</p>
+        <>
+          <p className={styles.exito}>{T.enRevision(solicitud.fecha)}</p>
+          {error && <p className={styles.error}>{error}</p>}
+          <div className={styles.acciones}>
+            <button type="button" className={styles.btnSecundario} onClick={cancelar} disabled={ocupado}>
+              {ocupado ? T.cancelando : T.cancelar}
+            </button>
+          </div>
+        </>
       ) : (
         <>
           {solicitud?.estado === "rechazada" && (
