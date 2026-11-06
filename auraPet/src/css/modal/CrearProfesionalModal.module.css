@@ -10,15 +10,17 @@
 }
 
 .modal {
-  background: #fff;
+  box-sizing: border-box;
+  background: var(--color-superficie);
   border-radius: 14px;
   width: 100%;
-  max-width: 520px;
+  max-width: 560px;
   max-height: 90vh;
   overflow-y: auto;
+  overflow-x: hidden;          /* nunca scroll horizontal: el contenido se ajusta al ancho */
   padding: 24px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
-  color: #1a1f27;
+  color: var(--color-terciario-texto);
 }
 
 .header {
@@ -37,13 +39,14 @@
   background: none;
   border: none;
   font-size: 1.1rem;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
   cursor: pointer;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, 1fr): las columnas no crecen por un texto largo (p. ej. una opción del select) */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
 }
 
@@ -55,18 +58,31 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
   font-size: 0.9rem;
   font-weight: 500;
 }
 
 .campo input,
-.campo select {
+.campo select,
+.campo textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   padding: 9px 11px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-borde-fuerte);
   border-radius: 8px;
   font-size: 0.9rem;
-  color: #1a1f27;
-  background: #fff;
+  color: var(--color-terciario-texto);
+  background: var(--color-superficie);
+  font-family: inherit;
+}
+
+/* Si el texto elegido no cabe, se corta con "…" en vez de ensanchar el modal */
+.campo select {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .campo input:focus,
@@ -82,8 +98,8 @@
 
 .telefono span {
   padding: 9px 10px;
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
+  background: var(--color-superficie-suave);
+  border: 1px solid var(--color-borde-fuerte);
   border-right: none;
   border-radius: 8px 0 0 8px;
   font-weight: 400;
@@ -105,17 +121,17 @@
 .chipActivo {
   padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid #d1d5db;
-  background: #fff;
+  border: 1px solid var(--color-borde-fuerte);
+  background: var(--color-superficie);
   font-size: 0.85rem;
   cursor: pointer;
-  color: #1a1f27;
+  color: var(--color-terciario-texto);
 }
 
 .chipActivo {
-  background: #e3f5f2;
-  border-color: #0f8f80;
-  color: #0f8f80;
+  background: var(--color-secundario);
+  border-color: var(--color-primario);
+  color: var(--color-primario-texto);
   font-weight: 600;
 }
 
@@ -135,6 +151,7 @@
 
 .acciones {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 10px;
   margin-top: 6px;
@@ -150,8 +167,8 @@
 }
 
 .cancelar {
-  background: #e5e7eb;
-  color: #1a1f27;
+  background: var(--color-terciario-borde);
+  color: var(--color-terciario-texto);
 }
 
 .enviar {
@@ -166,7 +183,17 @@
 .ayuda {
   font-size: 0.78rem;
   font-weight: 400;
-  color: #6b7280;
+  color: var(--color-terciario-texto-muted);
+}
+
+/* Especialidad del veterinario elegido (Solicitar cita) */
+.especialidadElegida {
+  justify-self: start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--color-secundario);
+  color: var(--color-primario-texto);
+  font-weight: 600;
 }
 
 .error {
@@ -188,7 +215,7 @@
   padding: 10px 12px;
   margin-bottom: 16px;
   border-radius: 8px;
-  background: #e3f5f2;
+  background: var(--color-secundario);
   color: #0f8f80;
   font-size: 1.05rem;
   font-weight: 700;
@@ -206,3 +233,64 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Horarios (modal de crear centro) ---------- */
+.horarios {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dia {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 8px;
+}
+
+.diaCerrado {
+  composes: dia;
+  background: var(--color-superficie-suave);
+  color: var(--color-terciario-texto-muted);
+}
+
+.horas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
+.horas input[type="time"] {
+  padding: 5px 6px;
+  border: 1px solid var(--color-borde-fuerte);
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.colacion {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--color-terciario-texto-muted);
+  cursor: pointer;
+}
+
+.colacion input[type="checkbox"] {
+  accent-color: #0f8f80;
+}
+
+@media (max-width: 560px) {
+  .dia {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Filtro por especialidades (Solicitar cita): el contador de coincidencias */
+.coincidencias { color: var(--color-primario-texto); font-weight: 600; }

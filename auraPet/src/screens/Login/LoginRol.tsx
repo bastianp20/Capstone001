@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { useAuth } from '../../Auth/AuthContext';
 import { DuenoScreen } from '../dueños/duenos';
 import { VeterinarioScreen } from '../Veterinario/VeterinarioScreen';
 import { SuperAdminScreen } from '../SuperAdmin/SuperAdminScreen';
+import { CentroAdminScreen } from '../CentroAdmin/CentroAdminScreen';
 import { HomeScreen } from '../Home/HomeScreen';
+import { useTemaDelPanel } from '../../hooks/useTemaDelPanel';
 
 // Se muestra una vez que ya hay usuarioActual (post-login). Decide qué
 // pantalla interna corresponde según el rol. Vive en Login/ porque es la
@@ -10,12 +13,25 @@ import { HomeScreen } from '../Home/HomeScreen';
 // ya haya pasado.
 export const LoginRol = () => {
   const { usuarioActual } = useAuth();
+  // Modo claro/oscuro solo dentro de los paneles; la página pública queda en claro
+  useTemaDelPanel();
+
+  // Un veterinario que además es admin de un centro puede cambiar entre
+  // "Mi agenda" y el panel del centro. null = su panel de veterinario.
+  const [centroAdministrando, setCentroAdministrando] = useState<number | null>(null);
 
   switch (usuarioActual!.rol) {
     case 'dueno':
       return <DuenoScreen />;
     case 'veterinario':
-      return <VeterinarioScreen />;
+      return centroAdministrando === null ? (
+        <VeterinarioScreen onAdministrarCentro={setCentroAdministrando} />
+      ) : (
+        <CentroAdminScreen centroInicialId={centroAdministrando} onVolver={() => setCentroAdministrando(null)} />
+      );
+    case 'administrativo':
+      // No tiene panel personal: entra directo al panel de su(s) centro(s)
+      return <CentroAdminScreen />;
     case 'superadmin':
       return <SuperAdminScreen />;
     default:

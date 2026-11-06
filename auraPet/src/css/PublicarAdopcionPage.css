@@ -1,0 +1,66 @@
+@import './theme.css';
+
+/* =====================================================================
+   "Dar en adopción" /adopta/publicar (lo común está en AdopcionCompartido.css)
+   ===================================================================== */
+.publica { padding-bottom: 72px; }
+.publica-banda { background: #e3f5f2; padding: 36px 32px 40px; text-align: center; }
+.publica-banda h1 { font-size: 34px; font-weight: 800; color: var(--adopta-primario); margin-bottom: 26px; }
+.publica-banda-pasos {
+  max-width: 980px; margin: 0 auto; padding: 0; list-style: none;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: left;
+}
+.publica-banda-pasos li { position: relative; display: flex; gap: 12px; align-items: flex-start; }
+.publica-banda-pasos strong { font-family: var(--fuente-marca); font-size: 16px; }
+.publica-banda-pasos p { margin: 4px 0 0; font-size: 13.5px; color: var(--adopta-suave); }
+.publica-banda-icono {
+  flex-shrink: 0; width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center;
+  background: #ffffff; color: var(--adopta-primario); box-shadow: 0 4px 12px rgba(15, 143, 128, 0.12);
+}
+.publica-banda-flecha { position: absolute; right: -16px; top: 12px; color: var(--adopta-primario); opacity: 0.6; }
+
+.publica-contenedor { max-width: 640px; margin: -18px auto 0; padding: 0 16px; position: relative; }
+.publica-tarjeta {
+  display: flex; flex-direction: column; gap: 22px; padding: 28px;
+  background: #ffffff; border-radius: 22px; box-shadow: 0 14px 40px rgba(18, 24, 31, 0.08);
+}
+.publica-tarjeta > h2 { font-size: 22px; font-weight: 800; }
+.publica-campos { display: flex; flex-direction: column; gap: 20px; }
+.publica-fila-doble { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.publica-edad .adopta-campo > label { font-family: "Inter", sans-serif; font-weight: 500; font-size: 13px; color: var(--adopta-suave); }
+.publica-revision { padding: 16px 18px; border-radius: 16px; background: var(--adopta-durazno); }
+.publica-rasgos { display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 16px; background: #f7fafa; }
+.publica-interruptores { display: flex; flex-direction: column; gap: 14px; padding: 16px; border-radius: 16px; background: #f7fafa; }
+.publica-botones { display: flex; gap: 12px; justify-content: flex-end; }
+.publica-continuar { flex: 1; min-height: 50px; font-size: 16px; }
+
+.publica-en-modal { box-shadow: none; border-radius: 0; padding: 20px 28px 28px; }
+
+/* Vista previa */
+.publica-vista-titulo { margin: 0 0 4px; color: var(--adopta-suave); font-size: 14px; }
+.publica-vista-tarjeta { border: 1px solid var(--adopta-borde); border-radius: 20px; overflow: hidden; }
+.publica-vista-foto { aspect-ratio: 16 / 9; }
+.publica-vista-cuerpo { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+.publica-vista-cuerpo h3 { font-size: 26px; font-weight: 800; }
+.publica-vista-cuerpo .ficha-datos { margin: 0; color: var(--adopta-suave); }
+.publica-vista-cuerpo .ficha-frase { margin: 0; font-style: italic; color: #374151; }
+.publica-vista-historia { margin: 0; color: #374151; line-height: 1.55; white-space: pre-line; }
+.publica-vista-chequeo { display: flex; align-items: center; gap: 6px; margin: 0; color: #0b6b60; font-size: 14px; font-weight: 600; }
+.publica-vista-gratis { margin: 0; font-size: 13px; color: var(--adopta-suave); }
+
+/* Sin sesión / publicado */
+.publica-centrado { align-items: center; text-align: center; padding: 44px 32px; }
+.publica-centrado h2 { font-size: 24px; font-weight: 800; }
+.publica-centrado p { margin: 0; max-width: 440px; color: #374151; line-height: 1.55; }
+.publica-icono-grande { color: var(--adopta-primario); }
+
+@media (max-width: 760px) {
+  .publica-banda { padding: 28px 16px 36px; }
+  .publica-banda h1 { font-size: 28px; }
+  .publica-banda-pasos { grid-template-columns: 1fr; }
+  .publica-banda-flecha { display: none; }
+  .publica-tarjeta { padding: 20px; }
+  .publica-en-modal { padding: 16px 18px 22px; }
+  .publica-fila-doble { grid-template-columns: 1fr; }
+  .publica-botones { flex-direction: column-reverse; }
+}

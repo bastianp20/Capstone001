@@ -76,3 +76,98 @@ export const calcularEdad = (fechaNacimiento: string | null, hoy = new Date()): 
 
 // "09:00" — columnas time (horario de un centro).
 export const formatHorario = (hora: string): string => hora.slice(0, 5);
+
+// "2026-10-20" — fecha (formato de columna date) dentro de N días desde hoy.
+// Se usa en los atajos de "Próximo control" de la receta.
+export const fechaDentroDe = (dias: number, desde = new Date()): string => {
+  const f = new Date(desde);
+  f.setDate(f.getDate() + dias); // setDate se encarga de pasar de mes o de año
+  return `${f.getFullYear()}-${d2(f.getMonth() + 1)}-${d2(f.getDate())}`;
+};
+
+// "10:30" — hora de una cita en formato 24 h (hora de Chile).
+export const formatHora24 = (iso: string): string => {
+  const { hora, minuto } = partesEnChile(iso);
+  return `${d2(hora)}:${d2(minuto)}`;
+};
+
+// Día del mes (1 a 31) en que cae un timestamptz, en hora de Chile.
+export const diaDelMesEnChile = (iso: string): number => partesEnChile(iso).dia;
+
+// "16 oct" — para fechas date cortas (controles próximos).
+export const formatDiaMes = (fecha: string): string => {
+  const { mes, dia } = partesFecha(fecha);
+  return `${dia} ${MESES_ABREV[mes - 1]}`;
+};
+
+// "martes 13 de octubre" — encabezado de la pantalla de inicio.
+export const formatFechaTitulo = (fecha = new Date()): string =>
+  new Intl.DateTimeFormat("es-CL", { timeZone: ZONA, weekday: "long", day: "numeric", month: "long" }).format(fecha);
+
+// "octubre" — nombre del mes actual.
+export const nombreMes = (fecha = new Date()): string =>
+  new Intl.DateTimeFormat("es-CL", { timeZone: ZONA, month: "long" }).format(fecha);
+
+// "Buenos días" / "Buenas tardes" / "Buenas noches" según la hora de Chile.
+export const saludoSegunHora = (fecha = new Date()): string => {
+  const { hora } = partesEnChile(fecha.toISOString());
+  if (hora >= 5 && hora < 12) return "Buenos días";
+  if (hora >= 12 && hora < 20) return "Buenas tardes";
+  return "Buenas noches";
+};
+
+// Rangos para consultar la base: inicio de hoy, de mañana, del mes y del mes siguiente.
+// Se calculan con la hora del computador (en Chile coincide con la del centro).
+export const rangosDeFecha = (ahora = new Date()) => {
+  const inicioHoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+  const inicioManana = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate() + 1);
+  const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
+  const inicioMesSiguiente = new Date(ahora.getFullYear(), ahora.getMonth() + 1, 1);
+  const diasDelMes = new Date(ahora.getFullYear(), ahora.getMonth() + 1, 0).getDate();
+  return { inicioHoy, inicioManana, inicioMes, inicioMesSiguiente, diasDelMes, diaHoy: ahora.getDate() };
+};
+
+// Día de la semana de una fecha date ("2026-10-20"): 1 = lunes ... 7 = domingo,
+// igual que dia_semana en horarios_centro. Se usa el mediodía para no cambiar de día por zona horaria.
+export const diaSemanaDeFecha = (fecha: string): number => {
+  const dia = new Date(`${fecha}T12:00:00`).getDay(); // 0 = domingo
+  return dia === 0 ? 7 : dia;
+};
+
+// "20 de octubre de 2026, 14:30 h" — fecha de emisión de los PDF (hora de Chile).
+export const formatFechaEmision = (fecha = new Date()): string => {
+  const partes = new Intl.DateTimeFormat("es-CL", {
+    timeZone: ZONA, day: "numeric", month: "long", year: "numeric",
+    hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+  }).formatToParts(fecha);
+  const p = Object.fromEntries(partes.map((x) => [x.type, x.value]));
+  return `${p.day} de ${p.month} de ${p.year}, ${p.hour}:${p.minute} h`;
+};
+
+// "2026-10" → "oct" (barras por mes de "Tu impacto").
+export const mesAbreviado = (anioMes: string): string => MESES_ABREV[Number(anioMes.slice(5, 7)) - 1] ?? "";
+
+
+// ---- Mi horario del veterinario ----
+
+const DIAS_SEMANA = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+
+// "2026-11-06" — el día (en Chile) en que cae un timestamptz.
+export const fechaEnChile = (iso: string): string => {
+  const { anio, mes, dia } = partesEnChile(iso);
+  return `${anio}-${d2(mes)}-${d2(dia)}`;
+};
+
+// "Jueves 6 nov" — para fechas date (los días de "Mi horario").
+export const formatDiaConNombre = (fecha: string): string => {
+  const { anio, mes, dia } = partesFecha(fecha);
+  const nombre = DIAS_SEMANA[new Date(anio, mes - 1, dia).getDay()];
+  return `${nombre.charAt(0).toUpperCase()}${nombre.slice(1)} ${dia} ${MESES_ABREV[mes - 1]}`;
+};
+
+// "Jueves 6 nov, 16:00" — un momento exacto con el nombre del día.
+export const formatDiaHora = (iso: string): string => `${formatDiaConNombre(fechaEnChile(iso))}, ${formatHora24(iso)}`;
+
+// Fecha ("2026-11-06") + hora ("16:00") del formulario -> ISO en UTC para la base.
+// Igual que Solicitar cita: el computador está en hora de Chile.
+export const isoDesdeFechaHora = (fecha: string, hora: string): string => new Date(`${fecha}T${hora}:00`).toISOString();

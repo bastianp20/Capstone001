@@ -1,0 +1,148 @@
+/* =====================================================================
+   /adopta/refugios/sumate (prefijo su-). Landing para refugios.
+   Usa los tokens ap- de AdopcionPanel.css.
+   ===================================================================== */
+.su { padding-bottom: 72px; gap: 0; --su-coral: var(--ap-coral); }
+.su-contenedor { max-width: 1180px; width: 100%; margin: 0 auto; padding: 0 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 72px; }
+
+/* ---------- Hero ---------- */
+.su-hero {
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 48px; align-items: center;
+  max-width: 1180px; width: 100%; margin: 0 auto; padding: 56px 32px 64px; box-sizing: border-box;
+}
+.su-etiqueta {
+  display: inline-flex; align-items: center; gap: 7px; padding: 7px 14px; border-radius: 999px;
+  background: var(--ap-coral-fondo); color: #c4502f; font-size: 13px; font-weight: 800;
+}
+.su-hero h1 { margin: 18px 0 16px !important; font-size: 54px; font-weight: 800; line-height: 1.03; letter-spacing: -0.03em; }
+.su-hero-texto > p { max-width: 520px; font-size: 18px; line-height: 1.55; color: var(--ap-suave); }
+.su-hero-botones { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+.su-hero-botones a { text-decoration: none; }
+.su-btn-coral { background: var(--su-coral); color: #ffffff; box-shadow: 0 12px 26px rgba(255, 122, 89, 0.38); }
+.su-btn-coral:hover:not(:disabled) { filter: brightness(1.05); }
+.su-gratis { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; color: var(--ap-suave); font-size: 13.5px; }
+.su-gratis svg { color: var(--ap-acento); }
+
+.su-hero-visual { position: relative; }
+.su-hero-visual img {
+  display: block; width: 100%; height: 440px; object-fit: cover; object-position: center 35%;
+  border-radius: 40% 60% 46% 54% / 52% 44% 56% 48%; box-shadow: 0 30px 60px rgba(15, 143, 128, 0.22);
+}
+.su-hero-numeros {
+  position: absolute; left: -28px; right: 28px; bottom: -28px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0;
+  border-radius: 22px; background: color-mix(in srgb, var(--ap-superficie) 88%, transparent); backdrop-filter: blur(12px);
+  border: 1px solid var(--ap-borde); box-shadow: 0 18px 40px rgba(18, 24, 31, 0.14);
+}
+.su-hero-numeros > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; padding: 14px 16px; border-left: 1px solid var(--ap-borde); min-width: 0; }
+.su-hero-numeros > div:first-child { border-left: none; }
+.su-hero-numeros dd { margin: 0; font-family: var(--fuente-marca); font-size: 28px; font-weight: 800; color: var(--ap-acento); line-height: 1.1; }
+.su-hero-numeros dt { font-size: 12.5px; color: var(--ap-suave); line-height: 1.3; }
+
+/* ---------- Secciones ---------- */
+.su-seccion { display: flex; flex-direction: column; gap: 26px; }
+.su-seccion > h2 { font-size: 36px; font-weight: 800; letter-spacing: -0.02em; text-align: center; max-width: 680px; margin: 0 auto !important; }
+
+/* Bento de beneficios */
+.su-bento { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(180px, auto); gap: 16px; }
+.su-beneficio {
+  display: flex; flex-direction: column; gap: 10px; padding: 24px; border-radius: 26px;
+  background: var(--ap-superficie); border: 1px solid var(--ap-borde); box-shadow: var(--ap-sombra);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.su-beneficio:hover { transform: translateY(-3px); box-shadow: 0 18px 36px rgba(15, 60, 55, 0.12); }
+.su-beneficio h3 { font-size: 18px; font-weight: 800; }
+.su-beneficio p { color: var(--ap-suave); font-size: 14.5px; line-height: 1.5; }
+.su-beneficio-icono { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 16px; background: var(--ap-menta); color: var(--ap-acento); }
+.su-beneficio-0 {
+  grid-column: span 2; grid-row: span 2; justify-content: flex-end; color: #ffffff; border: none;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(255, 255, 255, 0.2), transparent 40%),
+    linear-gradient(150deg, #0f8f80, #0b6f64);
+}
+.su-beneficio-0 h3 { font-size: 28px; color: #ffffff !important; }
+.su-beneficio-0 p { color: rgba(255, 255, 255, 0.88); font-size: 16px; max-width: 380px; }
+.su-beneficio-0 .su-beneficio-icono { width: 64px; height: 64px; margin-bottom: auto; border-radius: 20px; background: rgba(255, 255, 255, 0.18); color: #ffffff; }
+.su-beneficio-1 .su-beneficio-icono { background: var(--ap-coral-fondo); color: var(--su-coral); }
+.su-beneficio-2 .su-beneficio-icono { background: var(--ap-ambar-fondo); color: #c07a00; }
+.su-beneficio-3 .su-beneficio-icono { background: rgba(139, 108, 240, 0.14); color: #7a5ae0; }
+
+/* Pasos */
+.su-pasos { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 0; padding: 0; list-style: none; }
+.su-pasos::before {
+  content: ""; position: absolute; top: 34px; left: 16%; right: 16%; height: 2px;
+  background: repeating-linear-gradient(90deg, var(--ap-acento) 0 10px, transparent 10px 18px); opacity: 0.45;
+}
+.su-pasos li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.su-paso-icono {
+  position: relative; width: 70px; height: 70px; display: grid; place-items: center; border-radius: 22px;
+  background: var(--ap-superficie); color: var(--ap-acento); border: 1px solid var(--ap-borde); box-shadow: var(--ap-sombra); margin-bottom: 8px;
+}
+.su-paso-icono b {
+  position: absolute; top: -8px; right: -8px; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%;
+  background: var(--su-coral); color: #ffffff; font-size: 13px; border: 3px solid var(--ap-fondo);
+}
+.su-pasos h3 { font-size: 19px; font-weight: 800; }
+.su-pasos p { max-width: 260px; color: var(--ap-suave); font-size: 14.5px; line-height: 1.5; }
+
+/* Testimonio */
+.su-testimonio {
+  display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 36px; align-items: center; margin: 0; padding: 30px;
+  border-radius: 30px; background: linear-gradient(120deg, var(--ap-menta), var(--ap-crema)); border: 1px solid var(--ap-borde);
+}
+.su-testimonio-foto { width: 240px; height: 240px; border-radius: 26px; overflow: hidden; transform: rotate(-3deg); box-shadow: 0 18px 36px rgba(15, 60, 55, 0.18); }
+.su-testimonio blockquote { margin: 0; display: flex; flex-direction: column; gap: 14px; }
+.su-testimonio blockquote > svg { color: var(--su-coral); }
+.su-testimonio blockquote p { font-family: var(--fuente-marca); font-size: 24px; font-weight: 700; line-height: 1.4; color: var(--ap-texto-pastel); }
+.su-testimonio figcaption { font-size: 15px; color: var(--ap-suave); }
+.su-testimonio figcaption strong { color: var(--ap-texto-pastel); }
+
+/* Cierre coral */
+.su-cierre {
+  position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+  padding: 44px 48px; border-radius: 32px; color: #ffffff;
+  background: radial-gradient(circle at 15% 120%, rgba(255, 255, 255, 0.22), transparent 45%), linear-gradient(120deg, #ff8a6b, #f2633f);
+  box-shadow: 0 24px 50px rgba(242, 99, 63, 0.3);
+}
+.su-cierre > div { position: relative; }
+.su-cierre h2 { font-size: 34px; font-weight: 800; letter-spacing: -0.02em; color: #ffffff !important; }
+.su-cierre p { margin-top: 6px !important; font-size: 16.5px; opacity: 0.92; }
+.su-cierre-huella { position: absolute; right: 24%; top: -30px; color: rgba(255, 255, 255, 0.12); transform: rotate(18deg); pointer-events: none; }
+.su-btn-blanco { position: relative; background: #ffffff; color: #d14a28; box-shadow: 0 10px 24px rgba(120, 30, 10, 0.2); }
+.su-btn-blanco:hover:not(:disabled) { filter: brightness(0.97); }
+
+@media (prefers-reduced-motion: reduce) {
+  .su-beneficio { transition: none; }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 980px) {
+  .su-hero { grid-template-columns: minmax(0, 1fr); gap: 56px; padding: 36px 24px 56px; }
+  .su-hero h1 { font-size: 42px; }
+  .su-hero-visual img { height: 340px; }
+  .su-hero-numeros { left: 12px; right: 12px; }
+  .su-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .su-beneficio-0 { grid-row: span 1; }
+  .su-contenedor { padding: 0 24px; gap: 56px; }
+}
+@media (max-width: 640px) {
+  .su-hero { padding: 24px 16px 52px; }
+  .su-hero h1 { font-size: 34px; }
+  .su-hero-texto > p { font-size: 16px; }
+  .su-hero-botones .ap-btn { flex: 1 1 100%; justify-content: center; }
+  .su-hero-visual img { height: 260px; }
+  .su-hero-numeros dd { font-size: 22px; }
+  .su-hero-numeros > div { padding: 10px; }
+  .su-contenedor { padding: 0 16px; gap: 48px; }
+  .su-seccion > h2 { font-size: 27px; }
+  .su-bento { grid-template-columns: minmax(0, 1fr); }
+  .su-beneficio-0 { grid-column: auto; min-height: 240px; }
+  .su-pasos { grid-template-columns: minmax(0, 1fr); }
+  .su-pasos::before { display: none; }
+  .su-testimonio { grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; padding: 24px; }
+  .su-testimonio-foto { width: 180px; height: 180px; }
+  .su-testimonio blockquote { align-items: center; }
+  .su-testimonio blockquote p { font-size: 19px; }
+  .su-cierre { padding: 32px 24px; }
+  .su-cierre h2 { font-size: 26px; }
+  .su-btn-blanco { width: 100%; justify-content: center; }
+}

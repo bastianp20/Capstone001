@@ -1,0 +1,187 @@
+/* =====================================================================
+   Panel del dueño: piezas nuevas (components/dueno/*)
+   El diseño base (menú, tarjetas, paneles) sigue en duenoPage.css.
+   ===================================================================== */
+
+/* ---------- Tarjeta de mascota: datos extra y botón ---------- */
+.alergia {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #fdf3e1;
+  color: #8a5a00;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.botonCita {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 8px;
+  background: var(--color-superficie);
+  color: #0f8f80;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botonCita:hover {
+  border-color: #0f8f80;
+}
+
+/* ---------- Próximas citas: hora y botón cancelar ---------- */
+.horaCita {
+  color: var(--color-terciario-texto-muted);
+  font-size: 0.78rem;
+}
+
+.motivoRechazo {
+  margin: 6px 0 0;
+  padding: 6px 10px;
+  border-left: 3px solid #a4272a;
+  border-radius: 4px;
+  background: #fdf2f2;
+  color: #7a1f22;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.botonCancelar {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: #a4272a;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botonCancelar:hover:not(:disabled) {
+  background: #fdecec;
+}
+
+.botonCancelar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Historial médico completo ---------- */
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.filtro,
+.filtroActivo {
+  padding: 6px 14px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 999px;
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filtroActivo {
+  border-color: #0f8f80;
+  background: var(--color-secundario);
+  color: #0f8f80;
+}
+
+.dosColumnas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.registro {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 0;
+  border-top: 1px solid var(--color-terciario-borde);
+  font-size: 0.88rem;
+}
+
+.registro:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.registroCabecera {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+.tipo {
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--color-secundario);
+  color: #0f8f80;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.textoSuave {
+  color: var(--color-terciario-texto-muted);
+  font-size: 0.8rem;
+}
+
+/* Receta con su tabla de medicamentos */
+.receta {
+  padding: 12px 14px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 10px;
+  font-size: 0.86rem;
+}
+
+.receta + .receta {
+  margin-top: 12px;
+}
+
+.tablaMedicamentos {
+  width: 100%;
+  margin: 8px 0;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.tablaMedicamentos th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-terciario-texto-muted);
+  padding: 4px 6px 4px 0;
+  border-bottom: 1px solid var(--color-terciario-borde);
+}
+
+.tablaMedicamentos td {
+  padding: 5px 6px 5px 0;
+  vertical-align: top;
+}
+
+@media (max-width: 900px) {
+  .dosColumnas {
+    grid-template-columns: 1fr;
+  }
+}
+
+.indicacionesReceta {
+  margin: 4px 0;
+}
+
+.accionesReceta {
+  margin-top: 8px;
+}

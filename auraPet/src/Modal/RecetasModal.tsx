@@ -1,159 +1,169 @@
 import { useState } from "react";
+import styles from "../css/modal/RecetaModal.module.css";
 import type { MedicamentoReceta, RecetaModalProps } from "../interfaces";
 import { getPacienteByVeterinarioId } from "../Api/getInfo";
 import { useConsulta } from "../hooks/useConsulta";
-import styles from "../css/Modal.module.css";
-import {getFechaHoy} from '../constants'; 
+import { Iconos, medicamentoVacio } from "../constants";
+import { crearReceta } from "../Api/postInfo";
+import { useAccion } from "../hooks/useAccion";
+import { Spinner } from "../components/ui/Spinner";
+import { BotonRecetaPdf } from "../components/pdf/BotonRecetaPdf";
+import { formatFechaCorta } from "../lib/fechas";
+import { SelectorPaciente } from "../components/receta/SelectorPaciente";
+import { TablaMedicamentos } from "../components/receta/TablaMedicamentos";
+import { ProximoControl } from "../components/receta/ProximoControl";
 
+const iconos = Iconos;
 
-const medicamentoVacio = (): MedicamentoReceta => ({
-  nombre: "",
-  dosis: "",
-  frecuencia: "",
-  duracion: "",
-}); 
+// Modal "Nueva receta" del veterinario.
+// Este archivo solo maneja el ESTADO del formulario y arma las piezas;
+// cada parte visual vive en components/receta/:
+//   · SelectorPaciente  -> buscar y elegir paciente (muestra TarjetaPaciente)
+//   · TablaMedicamentos -> filas editables (FilaMedicamento) + agregar
+//   · ProximoControl    -> calendario + atajos "En 7 días", etc.
+export const RecetaModal = ({ veterinarioId, pacienteInicialId, nombreVeterinario, centro, onCerrar, onGuardada }: RecetaModalProps) => {
+  // Pacientes del veterinario (mascotas con las que ha tenido citas)
+  const { datos: pacientes = [], cargando } =
+    useConsulta(() => getPacienteByVeterinarioId(veterinarioId), [veterinarioId]);
 
-// Modal solo de escritura: el veterinario elige a cuál de sus pacientes
-// le está recetando (getPacientesPorVeterinario ya trae la lista de
-// mascotas únicas que atiende), agrega uno o más medicamentos e indicaciones.
-export const RecetaModal = ({ veterinarioId, onCerrar, onGuardar }: RecetaModalProps) => {
-  const { datos: pacientes = [] } = useConsulta(() => getPacienteByVeterinarioId(veterinarioId), [veterinarioId]);
-
-  const [mascotaId, setMascotaId] = useState<number | "">("");
+  // ---------- Estado del formulario ----------
+  const [pacienteId, setPacienteId] = useState<number | null>(pacienteInicialId ?? null);
   const [medicamentos, setMedicamentos] = useState<MedicamentoReceta[]>([medicamentoVacio()]);
   const [indicaciones, setIndicaciones] = useState("");
-  const [proximoControl, setProximoControl] = useState("");
+  const [proximoControl, setProximoControl] = useState(""); // "YYYY-MM-DD" o ""
+  const [guardada, setGuardada] = useState(false);
+  const [recetaId, setRecetaId] = useState<number | null>(null);   // para descargarla en PDF
+  const { ejecutar, ocupado, error } = useAccion();
 
-  const actualizarMedicamento = (index: number, campo: keyof MedicamentoReceta, valor: string) => {
+  // ---------- Acciones sobre la tabla de medicamentos ----------
+  const cambiarMedicamento = (index: number, campo: keyof MedicamentoReceta, valor: string) =>
     setMedicamentos((prev) => prev.map((m, i) => (i === index ? { ...m, [campo]: valor } : m)));
-  };
 
   const agregarMedicamento = () => setMedicamentos((prev) => [...prev, medicamentoVacio()]);
 
   const eliminarMedicamento = (index: number) =>
     setMedicamentos((prev) => prev.filter((_, i) => i !== index));
 
-  // Válida solo si hay paciente elegido y todos los medicamentos cargados
-  // tienen sus 4 campos completos (evita guardar filas a medio llenar).
-  const esValido =
-    mascotaId !== "" &&
-    medicamentos.length > 0 &&
-    medicamentos.every((m) => m.nombre.trim() && m.dosis.trim() && m.frecuencia.trim() && m.duracion.trim());
+  // ---------- Validación ----------
+  // Las filas totalmente vacías se ignoran (por si agregó una y no la usó).
+  const filasConDatos = medicamentos.filter((m) => Object.values(m).some((v) => v.trim()));
+  const filasCompletas = filasConDatos.every((m) => Object.values(m).every((v) => v.trim()));
+  const esValido = pacienteId !== null && filasConDatos.length > 0 && filasCompletas;
 
-  const handleGuardar = () => {
-    if (!esValido || mascotaId === null) return;
+  // Mensaje de ayuda: le dice al veterinario qué le falta para poder guardar
+  const ayuda =
+    pacienteId === null
+      ? "Elige un paciente para continuar."
+      : filasConDatos.length === 0
+        ? "Agrega al menos un medicamento."
+        : !filasCompletas
+          ? "Completa medicamento, dosis, frecuencia y duración en cada fila."
+          : null;
 
-    onGuardar({
-      mascotaId,
-      veterinarioId,
-      fecha: getFechaHoy(),
-      medicamentos,
+  const nombrePaciente = pacientes.find((p) => p.id === pacienteId)?.nombre;
+
+  // ---------- Guardar (en la base: crear_receta, migración 27) ----------
+  const guardar = async () => {
+    if (!esValido || pacienteId === null || ocupado) return;
+    const ok = await ejecutar(async () => setRecetaId(await crearReceta({
+      mascotaId: pacienteId,
+      medicamentos: filasConDatos.map((m) => ({
+        nombre: m.nombre.trim(),
+        dosis: m.dosis.trim(),
+        frecuencia: m.frecuencia.trim(),
+        duracion: m.duracion.trim(),
+      })),
       indicaciones: indicaciones.trim(),
-      proximoControl: proximoControl.trim() || undefined,
-    });
-    onCerrar();
+      proximoControl: proximoControl || undefined,
+    })), "No se pudo guardar la receta.");
+    if (ok) {
+      setGuardada(true);
+      onGuardada?.();
+    }
   };
 
+  // Subtítulo: "Dr. Camilo Rojas · Clínica VetSur · 13/10/2026" (solo lo que exista)
+  const subtitulo = [nombreVeterinario, centro, formatFechaCorta(new Date().toISOString())]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
-    <div className={styles.overlay} onClick={onCerrar}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+    <div className={styles.fondo} onClick={onCerrar}>
+      {/* stopPropagation: un clic dentro del modal no lo cierra */}
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()} role="dialog" aria-labelledby="titulo-receta">
+        {/* ---------- Encabezado ---------- */}
         <div className={styles.header}>
-          <h3 className={styles.title}>Nueva Receta</h3>
-          <button className={styles.closeButton} onClick={onCerrar}>
-            ×
+          <div>
+            <h2 id="titulo-receta" className={styles.titulo}>Nueva receta</h2>
+            <p className={styles.subtitulo}>{subtitulo}</p>
+          </div>
+          <button type="button" className={styles.cerrar} onClick={onCerrar} aria-label="Cerrar">
+            <iconos.cerrar size={18} />
           </button>
         </div>
 
-        <div className={styles.content}>
-          <label className={styles.label}>
-            Paciente <span className={styles.required}>(requerido)</span>
-          </label>
-          <select
-            className={styles.select}
-            value={mascotaId}
-            onChange={(e) => setMascotaId(e.target.value ? Number(e.target.value) : "")}
-          >
-            <option value="">Selecciona un paciente…</option>
-            {pacientes.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nombre} — {p.especie} ({p.dueno})
-              </option>
-            ))}
-          </select>
+        {/* ---------- Cuerpo (hace scroll si no cabe) ---------- */}
+        <div className={styles.cuerpo}>
+          <section className={styles.seccion}>
+            <span className={styles.etiqueta}>Paciente</span>
+            <SelectorPaciente
+              pacientes={pacientes}
+              pacienteId={pacienteId}
+              onSeleccionar={setPacienteId}
+              cargando={cargando}
+            />
+          </section>
 
-          <label className={styles.label} style={{ display: "block", marginTop: 16 }}>
-            Medicamentos <span className={styles.required}>(requerido)</span>
-          </label>
+          <section className={styles.seccion}>
+            <span className={styles.etiqueta}>Medicamentos</span>
+            <TablaMedicamentos
+              medicamentos={medicamentos}
+              onCambiar={cambiarMedicamento}
+              onAgregar={agregarMedicamento}
+              onEliminar={eliminarMedicamento}
+            />
+          </section>
 
-          {medicamentos.map((m, i) => (
-            <div key={i} className={styles.medicamentoRow}>
-              {medicamentos.length > 1 && (
-                <button
-                  type="button"
-                  className={styles.btnEliminarMedicamento}
-                  onClick={() => eliminarMedicamento(i)}
-                >
-                  ×
+          <section className={styles.seccion}>
+            <label className={styles.etiqueta} htmlFor="indicaciones-receta">Indicaciones para el dueño</label>
+            <textarea
+              id="indicaciones-receta"
+              className={styles.textarea}
+              rows={3}
+              placeholder="Ej: Administrar con comida. Reposo relativo, evitar saltos y paseos largos."
+              value={indicaciones}
+              onChange={(e) => setIndicaciones(e.target.value)}
+            />
+          </section>
+
+          <section className={styles.seccion}>
+            <span className={styles.etiqueta}>Próximo control (opcional)</span>
+            <ProximoControl valor={proximoControl} onCambiar={setProximoControl} />
+          </section>
+        </div>
+
+        {/* ---------- Pie ---------- */}
+        <div className={styles.pie}>
+          <p className={`${styles.notaPie} ${error ? styles.notaError : ""} ${guardada ? styles.notaExito : ""}`} role={error ? "alert" : "status"}>
+            {guardada
+              ? `Receta guardada. Ya está en el historial de ${nombrePaciente} y su dueño puede verla.`
+              : error ?? ayuda ?? `La receta quedará en el historial de ${nombrePaciente} y visible para su dueño.`}
+          </p>
+          <div className={styles.acciones}>
+            {guardada ? (
+              <>
+                {recetaId !== null && pacienteId !== null && <BotonRecetaPdf mascotaId={pacienteId} recetaId={recetaId} />}
+                <button type="button" className={styles.guardar} onClick={onCerrar}>Listo</button>
+              </>
+            ) : (
+              <>
+                <button type="button" className={styles.cancelar} onClick={onCerrar} disabled={ocupado}>Cancelar</button>
+                <button type="button" className={styles.guardar} disabled={!esValido || ocupado} onClick={guardar} aria-busy={ocupado}>
+                  {ocupado ? <><Spinner /> Guardando…</> : "Guardar receta"}
                 </button>
-              )}
-              <input
-                className={styles.input}
-                placeholder="Medicamento"
-                value={m.nombre}
-                onChange={(e) => actualizarMedicamento(i, "nombre", e.target.value)}
-              />
-              <input
-                className={styles.input}
-                placeholder="Dosis (ej: 5mg)"
-                value={m.dosis}
-                onChange={(e) => actualizarMedicamento(i, "dosis", e.target.value)}
-              />
-              <input
-                className={styles.input}
-                placeholder="Frecuencia (ej: cada 12h)"
-                value={m.frecuencia}
-                onChange={(e) => actualizarMedicamento(i, "frecuencia", e.target.value)}
-              />
-              <input
-                className={styles.input}
-                placeholder="Duración (ej: 7 días)"
-                value={m.duracion}
-                onChange={(e) => actualizarMedicamento(i, "duracion", e.target.value)}
-              />
-            </div>
-          ))}
-
-          <button type="button" className={styles.btnAgregar} onClick={agregarMedicamento}>
-            + Agregar medicamento
-          </button>
-
-          <label className={styles.label}>Indicaciones</label>
-          <textarea
-            className={styles.textarea}
-            rows={3}
-            placeholder="Indicaciones generales para el dueño…"
-            value={indicaciones}
-            onChange={(e) => setIndicaciones(e.target.value)}
-          />
-
-          <label className={styles.label} style={{ display: "block", marginTop: 12 }}>
-            Próximo control (opcional)
-          </label>
-          <input
-            className={styles.input}
-            placeholder="ej: en 10 días"
-            value={proximoControl}
-            onChange={(e) => setProximoControl(e.target.value)}
-          />
-        </div>
-
-        <div className={styles.actions}>
-          <button className={styles.btnCancelar} onClick={onCerrar}>
-            Cancelar
-          </button>
-          <button className={styles.btnConfirmar} disabled={!esValido} onClick={handleGuardar}>
-            Guardar receta
-          </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

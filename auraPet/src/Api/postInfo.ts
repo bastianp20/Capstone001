@@ -1,6 +1,11 @@
 // aquí van las acciones que CREAN o CAMBIAN datos en la base (los "POST").
-import type { DatosNuevaMascota, DatosNuevoDueno, DatosNuevoProfesional } from "../interfaces";
+import type { DatosEstadoUci, HorarioCentroNuevo, DatosHorarioAtencion, DatosReagendarCita, DatosCancelarCitaVeterinario, DatosBloquearHorario, DatosNuevaMascota, DatosNuevoCentro, DatosNuevoDueno, DatosNuevoProfesional, DatosNuevoSuperadmin, DatosEdicionCentro, DatosNuevoAdministrativo, CambioCita, DatosSolicitudCita, CambiosCuenta, NuevoRegistroMedico, CambiosDatosClinicos, DatosSolicitudCentro, NuevaReceta, NuevaDerivacion, DatosContacto, EstadoContacto, DatosNota, DatosPostulacionAdopcion, DatosPublicarAdopcion, DatosAtencionAdopcion, DatosConcretarAdopcion, DatosEditarMiRefugio, DatosPostularRefugio, DatosRefugio, DecisionModeracion, ImagenRefugio, MotivoReporte, RecepcionRefugio, ResultadoAprobarRefugio } from "../interfaces";
+import { BUCKET_ADOPCIONES, BUCKET_AVATARES, CARPETA_POSTULACIONES, RUTA_NUEVA_PASSWORD } from "../constants";
+import { fechaDesdeEdad } from "../lib/adopcion";
+import { telefonoParaGuardar } from "../lib/refugios";
+import { nulable } from "../lib/argumentosRpc";
 import { supabase } from "../lib/supabase";
+import type { Json } from "../lib/database.types";
 
 
 // Crea un veterinario llamando a la edge Function "crear-profesional" que está en la base de datos. la función se encarga de generar la contraseña temporal y 
@@ -10,7 +15,7 @@ import { supabase } from "../lib/supabase";
 // luegos los mismos veterinarios pueden crear sus propias cuentas, pero no pueden crear otras cuentas de veterinarios ni de centro
 // ese trabajo es exclusivo del superAdmin.
 export const crearProfesional = async (datos: DatosNuevoProfesional) => {
-  const { data, error } = await supabase.functions.invoke<{ ok: boolean; contrasenaTemporal: string }>(
+  const { data, error } = await supabase.functions.invoke<{ ok: boolean }>(
     "crear-profesional",
     { body: datos }
   );
@@ -37,6 +42,38 @@ export const crearDueno = async (datos: DatosNuevoDueno) => {
   return data!;
 };
 
+// CREAR SUPERADMIN (SOLO OTRO SUPERADMIN PUEDE HACERLO)
+// La Edge Function crea la cuenta (nace como dueño) y en la misma llamada la sube a superadmin.
+export const crearSuperadmin = async (datos: DatosNuevoSuperadmin) => {
+  const { data, error } = await supabase.functions.invoke<{ ok: boolean; contrasenaTemporal: string }>(
+    "crear-superadmin",
+    { body: datos }
+  );
+  if (error) {
+    const detalle = await error.context?.json?.().catch(() => null);
+    throw new Error(detalle?.error ?? "No se pudo crear el superadmin.");
+  }
+  return data!;
+};
+
+// CREAR CENTRO (SOLO EL SUPERADMIN)
+// No necesita Edge Function: son solo filas de la base. La función de Postgres
+// "crear_centro" guarda centro + horarios + especialidades en una sola transacción
+// (si algo falla, no queda nada a medias). Devuelve el id del centro nuevo.
+export const crearCentro = async (datos: DatosNuevoCentro) => {
+  const { data, error } = await supabase.rpc("crear_centro", {
+    p_nombre: datos.nombre.trim(),
+    p_direccion: datos.direccion.trim(),
+    p_comuna: datos.comuna.trim(),
+    p_telefono: datos.telefono ? Number(datos.telefono) : undefined,
+    p_es_prueba: datos.esPrueba,
+    p_horarios: datos.horarios as unknown as Json,
+    p_especialidad_ids: datos.especialidadIds,
+  });
+  if (error) throw new Error("No se pudo crear el centro.");
+  return data;
+};
+
 // Crear Mascota (ésto el dueño puede hacerlo) 
 export const crearMascota = async (duenoId: string, datos: DatosNuevaMascota) => {
   const { error } = await supabase.from("mascotas").insert({
@@ -50,4 +87,781 @@ export const crearMascota = async (duenoId: string, datos: DatosNuevaMascota) =>
     esterilizado: datos.esterilizado,
   });
   if (error) throw new Error("No se pudo registrar la mascota.");
+};
+
+
+// APROBAR O RECHAZAR UNA SOLICITUD (SOLO SUPERADMIN)
+// El id viene como "centro-3" o "veterinario-5" (ver getSolicitudesPendientes).
+// Rechazar exige un motivo: la base no acepta un rechazo sin motivo_rechazo.
+export const resolverSolicitud = async (
+  idSolicitud: string,
+  decision: "aprobado" | "rechazado",
+  revisadoPor: string,
+  motivo?: string
+) => {
+  const [tipo, id] = idSolicitud.split("-");
+
+  // Solicitud desde /solicitar-centro: la resuelve la base (migración 21),
+  // que además crea el centro si se aprueba.
+  if (tipo === "solicitud_centro") {
+    const { error } = await supabase.rpc("resolver_solicitud_centro", {
+      p_solicitud_id: Number(id),
+      p_decision: decision,
+      p_motivo: decision === "rechazado" ? motivo?.trim() : undefined,
+    });
+    if (error) throw new Error(error.message || "No se pudo resolver la solicitud.");
+    return;
+  }
+
+  const tabla = tipo === "centro" ? "centros" : "veterinarios";
+  const { data, error } = await supabase
+    .from(tabla)
+    .update({
+      estado_verificacion: decision,
+      revisado_por: revisadoPor,
+      revisado_en: new Date().toISOString(),
+      motivo_rechazo: decision === "rechazado" ? motivo?.trim() || null : null,
+    })
+    .eq("id", Number(id))
+    .select("id");
+  // Si no devolvió filas, la base no dejó editarla (permisos)
+  if (error || !data?.length) {
+    throw new Error(decision === "aprobado" ? "No se pudo aprobar la solicitud." : "No se pudo rechazar la solicitud.");
+  }
+};
+
+
+// ASIGNAR / QUITAR CENTROS A UN VETERINARIO (SOLO SUPERADMIN)
+export const asignarCentroAVeterinario = async (veterinarioId: number, centroId: number) => {
+  const { error } = await supabase
+    .from("veterinario_centros")
+    .insert({ veterinario_id: veterinarioId, centro_id: centroId });
+  if (error) {
+    // 23505 = la fila ya existe (ya estaba asignado a ese centro)
+    throw new Error(error.code === "23505" ? "Ya está asignado a ese centro." : "No se pudo asignar el centro.");
+  }
+};
+
+// Ojo: también borra los horarios que tenía el veterinario en ese centro.
+export const quitarCentroAVeterinario = async (veterinarioId: number, centroId: number) => {
+  const { data, error } = await supabase
+    .from("veterinario_centros")
+    .delete()
+    .eq("veterinario_id", veterinarioId)
+    .eq("centro_id", centroId)
+    .select("centro_id");
+  if (error || !data?.length) throw new Error("No se pudo quitar el centro.");
+};
+
+
+// EDITAR LOS DATOS DE UN CENTRO (admin de ese centro o superadmin)
+// La política "el admin edita su centro; el superadmin edita todos" ya lo permite.
+export const actualizarCentro = async (centroId: number, datos: DatosEdicionCentro) => {
+  const { data, error } = await supabase
+    .from("centros")
+    .update({
+      nombre: datos.nombre.trim(),
+      direccion: datos.direccion.trim(),
+      comuna: datos.comuna.trim(),
+      telefono: datos.telefono ? Number(datos.telefono) : null,
+      // es_prueba solo se manda si viene (lo cambia el superadmin; la migración 16
+      // no deja cambiarlo si el equipo del centro es del otro "mundo")
+      ...(datos.esPrueba !== undefined && { es_prueba: datos.esPrueba }),
+    })
+    .eq("id", centroId)
+    .select("id");
+  if (error) throw new Error(error.message || "No se pudieron guardar los cambios.");
+  // Sin filas devueltas = la base no dejó editar (no es admin de ese centro)
+  if (!data?.length) throw new Error("No tienes permiso para editar este centro.");
+};
+
+// CREAR CUENTA ADMINISTRATIVA (SOLO SUPERADMIN)
+// La Edge Function crea la cuenta, le pone rol "administrativo" y la deja
+// como admin del centro elegido, todo en la misma llamada.
+export const crearAdministrativo = async (datos: DatosNuevoAdministrativo) => {
+  const { data, error } = await supabase.functions.invoke<{ ok: boolean; contrasenaTemporal: string }>(
+    "crear-administrativo",
+    { body: datos }
+  );
+  if (error) {
+    const detalle = await error.context?.json?.().catch(() => null);
+    throw new Error(detalle?.error ?? "No se pudo crear la cuenta administrativa.");
+  }
+  return data!;
+};
+
+
+// AVANZAR EL ESTADO O CONFIRMAR LA URGENCIA DE UNA CITA PROPIA (VETERINARIO)
+// Usa la función actualizar_mi_cita de la base (migración 12): revisa que la
+// cita sea del veterinario y que el paso de estado sea válido.
+export const actualizarMiCita = async (citaId: number, cambio: CambioCita) => {
+  const { error } = await supabase.rpc("actualizar_mi_cita", {
+    p_cita_id: citaId,
+    p_estado: cambio.estado,
+    p_urgencia: cambio.urgencia,
+  });
+  if (error) throw new Error("No se pudo actualizar la cita.");
+};
+
+// RECHAZAR UNA SOLICITUD DE CITA (VETERINARIO)
+// La función rechazar_cita de la base (migración 18) revisa que la
+// cita sea de este veterinario y que siga pendiente. La deja "cancelada",
+// con cancelada_por = el veterinario y la razón en motivo_cancelacion.
+export const rechazarCita = async (citaId: number, motivo: string) => {
+  const { error } = await supabase.rpc("rechazar_cita", { p_cita_id: citaId, p_motivo: motivo.trim() });
+  if (error) throw new Error(error.message || "No se pudo rechazar la cita.");
+};
+
+// MI HORARIO DEL VETERINARIO (migración 52)
+// Reagendar o cancelar una cita propia, y bloquear horas. Cada cambio deja un
+// aviso para el dueño y, si se pide, para la administración del centro.
+export const reagendarCitaVeterinario = async (datos: DatosReagendarCita) => {
+  const { error } = await supabase.rpc("reagendar_cita_veterinario", {
+    p_cita_id: datos.citaId,
+    p_nueva_fecha: datos.nuevaFecha,
+    p_mensaje: datos.mensaje.trim(),
+    p_avisar_centro: datos.avisarCentro,
+  });
+  if (error) throw new Error(error.message || "No se pudo reagendar la cita.");
+};
+
+export const cancelarCitaVeterinario = async (datos: DatosCancelarCitaVeterinario) => {
+  const { error } = await supabase.rpc("cancelar_cita_veterinario", {
+    p_cita_id: datos.citaId,
+    p_motivo: datos.motivo.trim(),
+    p_mensaje: datos.mensaje.trim(),
+    p_avisar_centro: datos.avisarCentro,
+  });
+  if (error) throw new Error(error.message || "No se pudo cancelar la cita.");
+};
+
+export const bloquearMiHorario = async (datos: DatosBloquearHorario) => {
+  const { error } = await supabase.rpc("bloquear_mi_horario", {
+    p_desde: datos.desde,
+    p_hasta: datos.hasta,
+    p_motivo: datos.motivo.trim(),
+    p_cancelar_citas: datos.cancelarCitas,
+    p_mensaje: datos.mensaje.trim(),
+    p_avisar_centro: datos.avisarCentro,
+  });
+  if (error) throw new Error(error.message || "No se pudo bloquear el horario.");
+};
+
+export const quitarBloqueo = async (bloqueoId: number) => {
+  const { error } = await supabase.rpc("quitar_bloqueo", { p_bloqueo_id: bloqueoId });
+  if (error) throw new Error(error.message || "No se pudo quitar el bloqueo.");
+};
+
+// Sin id: marca como leídos todos los avisos de la persona.
+export const marcarAvisoLeido = async (avisoId?: number) => {
+  const { error } = await supabase.rpc("marcar_aviso_leido", avisoId === undefined ? {} : { p_aviso_id: avisoId });
+  if (error) throw new Error("No se pudo marcar el aviso.");
+};
+
+// AGREGAR UN REGISTRO AL HISTORIAL (VETERINARIO TRATANTE)
+// agregar_registro_medico (migración 19) pone el veterinario y el centro,
+// y revisa que la mascota sea su paciente. Los registros no se editan.
+export const agregarRegistroMedico = async (registro: NuevoRegistroMedico) => {
+  const { error } = await supabase.rpc("agregar_registro_medico", {
+    p_mascota_id: registro.mascotaId,
+    p_tipo: registro.tipo,
+    p_fecha: registro.fecha,
+    p_descripcion: registro.descripcion.trim(),
+    p_tratamiento: registro.tratamiento.trim() || undefined,
+    p_proxima_dosis: registro.proximaDosis || undefined,
+  });
+  if (error) throw new Error(error.message || "No se pudo guardar el registro.");
+};
+
+// ACTUALIZAR DATOS CLÍNICOS DE UN PACIENTE (VETERINARIO TRATANTE)
+// actualizar_datos_clinicos (migración 19): un texto vacío borra el dato.
+export const actualizarDatosClinicos = async (mascotaId: number, cambios: CambiosDatosClinicos) => {
+  const { error } = await supabase.rpc("actualizar_datos_clinicos", {
+    p_mascota_id: mascotaId,
+    p_peso_kg: cambios.pesoKg ?? undefined,
+    p_alergias: cambios.alergias,
+    p_condiciones_cronicas: cambios.condicionesCronicas,
+    p_esterilizado: cambios.esterilizado,
+    p_microchip: cambios.microchip,
+  });
+  if (error) throw new Error(error.message || "No se pudieron guardar los datos clínicos.");
+};
+
+// SOLICITAR UNA CITA (DUEÑO)
+// La función solicitar_cita de la base (migración 13) revisa todo: que la
+// mascota sea suya, el horario del centro, que la hora esté libre, etc.
+// Si algo no calza, su mensaje ("El centro no atiende ese día") llega tal cual.
+export const solicitarCita = async (datos: DatosSolicitudCita) => {
+  // Sin centro = veterinario independiente (migración 35): el veterinario es obligatorio
+  if (datos.centroId === null) {
+    if (datos.veterinarioId === null) throw new Error("Elige el veterinario independiente que te atenderá.");
+    const { data, error } = await supabase.rpc("solicitar_cita_independiente", {
+      p_mascota_id: datos.mascotaId,
+      p_veterinario_id: datos.veterinarioId,
+      p_fecha_hora: datos.fechaHora,
+      p_motivo: datos.motivo.trim(),
+      p_sintomas: datos.sintomas,
+    });
+    if (error) throw new Error(error.message || "No se pudo solicitar la cita.");
+    return data;
+  }
+  const { data, error } = await supabase.rpc("solicitar_cita", {
+    p_mascota_id: datos.mascotaId,
+    p_centro_id: datos.centroId,
+    p_fecha_hora: datos.fechaHora,
+    p_motivo: datos.motivo.trim(),
+    p_sintomas: datos.sintomas,
+    p_veterinario_id: datos.veterinarioId ?? undefined,
+  });
+  if (error) throw new Error(error.message || "No se pudo solicitar la cita.");
+  return data;
+};
+
+// CANCELAR UNA CITA PROPIA (DUEÑO): solo si está pendiente o confirmada.
+export const cancelarCita = async (citaId: number, motivo?: string) => {
+  const { error } = await supabase.rpc("cancelar_mi_cita", { p_cita_id: citaId, p_motivo: motivo });
+  if (error) throw new Error(error.message || "No se pudo cancelar la cita.");
+};
+
+
+// EDITAR UNA CUENTA (SOLO SUPERADMIN): nombre, teléfono, activar/desactivar y cuenta de prueba.
+// Solo se envían los campos que cambiaron. La base revisa que quien edita sea
+// superadmin y no deja desactivar al último superadmin activo.
+export const editarCuenta = async (perfilId: string, cambios: CambiosCuenta) => {
+  const fila: { nombre?: string; telefono?: number | null; desactivado_en?: string | null; es_prueba?: boolean } = {};
+  if (cambios.nombre !== undefined) fila.nombre = cambios.nombre.trim();
+  if (cambios.telefono !== undefined) fila.telefono = cambios.telefono;
+  if (cambios.activa !== undefined) fila.desactivado_en = cambios.activa ? null : new Date().toISOString();
+  // La base (migración 15) no deja cambiarla si la cuenta tiene centros del otro "mundo"
+  if (cambios.esPrueba !== undefined) fila.es_prueba = cambios.esPrueba;
+
+  const { data, error } = await supabase.from("perfiles").update(fila).eq("id", perfilId).select("id");
+  if (error) throw new Error(error.message || "No se pudo guardar la cuenta.");
+  if (!data?.length) throw new Error("No tienes permiso para editar esta cuenta.");
+};
+
+// SOLICITAR UNIRSE COMO CENTRO (página pública, sin cuenta)
+// solicitar_centro (migración 20) valida todo y no deja dos solicitudes
+// pendientes con el mismo correo. Su mensaje de error llega tal cual.
+export const solicitarCentro = async (datos: DatosSolicitudCentro) => {
+  const { error } = await supabase.rpc("solicitar_centro", {
+    p_nombre_centro: datos.nombreCentro.trim(),
+    p_direccion: datos.direccion.trim(),
+    p_comuna: datos.comuna.trim(),
+    p_telefono_centro: Number(datos.telefonoCentro.replace(/\D/g, "")),
+    p_especialidad_ids: datos.especialidadIds,
+    p_sitio_web: datos.sitioWeb.trim() || undefined,
+    p_nombre_responsable: datos.nombreResponsable.trim(),
+    p_cargo: datos.cargo,
+    p_correo: datos.correo.trim(),
+    p_telefono_responsable: Number(datos.telefonoResponsable.replace(/\D/g, "")),
+    p_mensaje: datos.mensaje.trim() || undefined,
+  });
+  if (error) throw new Error(error.message || "No se pudo enviar la solicitud.");
+};
+
+// SOLICITAR UN CAMBIO DE PLAN (ADMIN DEL CENTRO)
+// solicitar_cambio_plan (migración 24): deja la solicitud para el superadmin
+// y la anota en el historial. No cobra nada.
+export const solicitarCambioPlan = async (centroId: number, planId: string, mensaje: string) => {
+  const { error } = await supabase.rpc("solicitar_cambio_plan", {
+    p_centro_id: centroId,
+    p_plan_id: planId,
+    p_mensaje: mensaje.trim() || undefined,
+  });
+  if (error) throw new Error(error.message || "No se pudo enviar la solicitud.");
+};
+
+// GUARDAR UNA RECETA (VETERINARIO TRATANTE)
+// crear_receta (migración 27) guarda la receta y sus medicamentos juntos.
+export const crearReceta = async (receta: NuevaReceta): Promise<number> => {
+  const { data, error } = await supabase.rpc("crear_receta", {
+    p_mascota_id: receta.mascotaId,
+    p_medicamentos: receta.medicamentos as unknown as Json,
+    p_indicaciones: receta.indicaciones || undefined,
+    p_proximo_control: receta.proximoControl || undefined,
+  });
+  if (error) throw new Error(error.message || "No se pudo guardar la receta.");
+  return data;                                       // id de la receta (para descargarla en PDF)
+};
+
+// SUPERADMIN: activar o rechazar una solicitud de cambio de plan (migración 28).
+// Al activar, el plan queda "activa" y la renovación a N meses.
+export const resolverSolicitudPlan = async (solicitudId: number, aprobar: boolean, meses?: number) => {
+  const { error } = await supabase.rpc("resolver_solicitud_plan", { p_solicitud_id: solicitudId, p_aprobar: aprobar, p_meses: meses });
+  if (error) throw new Error(error.message || "No se pudo resolver la solicitud de plan.");
+};
+
+// SUPERADMIN: sumar días a la prueba o a la renovación de un centro.
+export const extenderSuscripcion = async (centroId: number, dias: number) => {
+  const { error } = await supabase.rpc("extender_suscripcion", { p_centro_id: centroId, p_dias: dias });
+  if (error) throw new Error(error.message || "No se pudo extender la suscripción.");
+};
+
+// DERIVAR UN PACIENTE (migración 29): a un veterinario o a un centro.
+// La base agrega el registro al historial y valida que sea tu paciente.
+export const crearDerivacion = async ({ mascotaId, destino, motivo }: NuevaDerivacion) => {
+  const { error } = await supabase.rpc("crear_derivacion", {
+    p_mascota_id: mascotaId,
+    p_motivo: motivo.trim(),
+    p_a_veterinario_id: destino.tipo === "veterinario" ? destino.id : undefined,
+    p_a_centro_id: destino.tipo === "centro" ? destino.id : undefined,
+  });
+  if (error) throw new Error(error.message || "No se pudo derivar al paciente.");
+};
+
+// realizada = true: el destino la cierra con el resultado.
+// realizada = false: el destino la rechaza o quien derivó la cancela.
+export const responderDerivacion = async (derivacionId: number, realizada: boolean, resultado?: string) => {
+  const { error } = await supabase.rpc("responder_derivacion", {
+    p_derivacion_id: derivacionId,
+    p_realizada: realizada,
+    p_resultado: resultado?.trim() || undefined,
+  });
+  if (error) throw new Error(error.message || "No se pudo actualizar la derivación.");
+};
+
+// FORMULARIO DE CONTACTO (público). Entra como 'pendiente' (política de la
+// migración 02) y le llega al superadmin en "Mensajes". Sin .select():
+// quien escribe (anon) no puede leer la tabla.
+export const enviarMensajeContacto = async (datos: DatosContacto) => {
+  const { error } = await supabase.from("mensajes_contacto").insert({
+    nombre: datos.nombre.trim(),
+    correo: datos.correo.trim().toLowerCase(),
+    asunto: datos.asunto,
+    mensaje: datos.mensaje.trim(),
+  });
+  if (error) throw new Error("No pudimos enviar tu mensaje. Inténtalo de nuevo en unos minutos.");
+};
+
+// SUPERADMIN: cambia el estado de un mensaje (pendiente / respondido / cerrado)
+export const cambiarEstadoMensaje = async (mensajeId: number, estado: EstadoContacto) => {
+  const { error } = await supabase.from("mensajes_contacto").update({ estado }).eq("id", mensajeId);
+  if (error) throw new Error(error.message || "No se pudo actualizar el mensaje.");
+};
+
+// ---------- ELIMINACIÓN DE CUENTA (migración 32) ----------
+// Pedir que se elimine (desactive) la propia cuenta
+export const solicitarEliminacionCuenta = async (motivo: string) => {
+  const { error } = await supabase.rpc("solicitar_eliminacion_cuenta", { p_motivo: motivo.trim() || undefined });
+  if (error) throw new Error(error.message || "No se pudo enviar la solicitud.");
+};
+
+// Arrepentirse mientras está en revisión (migración 49)
+export const cancelarSolicitudEliminacion = async () => {
+  const { error } = await supabase.rpc("cancelar_solicitud_eliminacion");
+  if (error) throw new Error(error.message || "No se pudo cancelar la solicitud.");
+};
+
+// SUPERADMIN: aprobar (desactiva la cuenta y cancela sus citas futuras) o rechazar con una respuesta
+export const resolverSolicitudEliminacion = async (solicitudId: number, aprobar: boolean, respuesta?: string) => {
+  const { error } = await supabase.rpc("resolver_solicitud_eliminacion", {
+    p_solicitud_id: solicitudId,
+    p_aprobar: aprobar,
+    p_respuesta: respuesta?.trim() || undefined,
+  });
+  if (error) throw new Error(error.message || "No se pudo resolver la solicitud.");
+};
+
+// ---------- NOTAS PERSONALES (migración 33) ----------
+// perfil_id lo pone la base (default auth.uid()) y RLS deja tocar solo las propias
+export const crearNota = async (datos: DatosNota) => {
+  const { error } = await supabase.from("notas").insert({
+    titulo: datos.titulo.trim(),
+    contenido: datos.contenido.trim(),
+    color: datos.color,
+  });
+  if (error) throw new Error(error.message || "No se pudo guardar la nota.");
+};
+
+export const actualizarNota = async (notaId: number, cambios: Partial<DatosNota> & { fijada?: boolean }) => {
+  const fila = {
+    ...cambios,
+    ...(cambios.titulo !== undefined ? { titulo: cambios.titulo.trim() } : {}),
+    ...(cambios.contenido !== undefined ? { contenido: cambios.contenido.trim() } : {}),
+  };
+  const { error } = await supabase.from("notas").update(fila).eq("id", notaId);
+  if (error) throw new Error(error.message || "No se pudo actualizar la nota.");
+};
+
+export const borrarNota = async (notaId: number) => {
+  const { error } = await supabase.from("notas").delete().eq("id", notaId);
+  if (error) throw new Error(error.message || "No se pudo borrar la nota.");
+};
+
+// ---------- ADOPCIÓN (migraciones 36 y 37) ----------
+
+// "Quiero adoptarlo": la base revisa que el animal esté disponible, que no sea
+// tuyo y que no hayas postulado antes.
+export const postularAdopcion = async (adopcionId: number, d: DatosPostulacionAdopcion): Promise<number> => {
+  const { data, error } = await supabase.rpc("postular_adopcion", {
+    p_adopcion_id: adopcionId,
+    p_vivienda: d.vivienda ?? "",
+    p_tiene_patio: !!d.tienePatio,
+    p_tenencia: d.tenencia ?? "",
+    p_permiten_mascotas: !!d.permitenMascotas,
+    p_hay_ninos: !!d.hayNinos,
+    p_edades_ninos: d.edadesNinos,
+    p_otras_mascotas: !!d.otrasMascotas,
+    p_cuales_mascotas: d.cualesMascotas,
+    p_todos_de_acuerdo: !!d.todosDeAcuerdo,
+    p_experiencia: d.experiencia,
+    p_motivo: d.motivo,
+  });
+  if (error) throw new Error(error.message || "No se pudo enviar la postulación.");
+  return data;
+};
+
+// "Dar en adopción": primero sube las fotos al bucket (carpeta de quien publica)
+// y después crea la publicación. Si algo falla, borra las fotos que alcanzó a subir.
+export const publicarAdopcion = async (perfilId: string, d: DatosPublicarAdopcion): Promise<number> => {
+  const bucket = supabase.storage.from(BUCKET_ADOPCIONES);
+  const rutas: string[] = [];
+  try {
+    for (const [i, foto] of d.fotos.entries()) {
+      const extension = foto.archivo.name.split(".").pop()?.toLowerCase() || "jpg";
+      const ruta = `${perfilId}/${Date.now()}-${i}.${extension}`;
+      const { error } = await bucket.upload(ruta, foto.archivo, { contentType: foto.archivo.type, upsert: false });
+      if (error) throw new Error("No se pudieron subir las fotos.");
+      rutas.push(ruta);
+    }
+
+    const { data, error } = await supabase
+      .from("adopciones")
+      .insert({
+        publicado_por: perfilId,
+        nombre: d.nombre.trim(),
+        especie: d.especie ?? "otro",
+        raza: d.raza.trim() || null,
+        sexo: d.sexo ?? "macho",
+        tamano: d.tamano ?? "mediano",
+        fecha_nacimiento: fechaDesdeEdad(d.anios, d.meses),
+        comuna: d.comuna.trim(),
+        historia: d.historia.trim() || null,
+        frase: d.frase.trim() || null,
+        personalidad: d.personalidad,
+        energia: d.rasgos.energia,
+        sociable_perros: d.rasgos.sociablePerros,
+        sociable_gatos: d.rasgos.sociableGatos,
+        sociable_ninos: d.rasgos.sociableNinos,
+        peso_kg: d.pesoKg.trim() ? Number(d.pesoKg.replace(",", ".")) : null,
+        alergias: d.alergias.trim() || null,
+        vacunas_al_dia: d.vacunasAlDia,
+        esterilizado: d.esterilizado,
+        con_microchip: d.conMicrochip,
+        solicita_chequeo: d.solicitaChequeo,
+        refugio_id: d.refugioId,
+        fotos: rutas,
+      })
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message || "No se pudo publicar.");
+    return data.id;
+  } catch (e) {
+    if (rutas.length) await bucket.remove(rutas);
+    throw e;
+  }
+};
+
+// ---------- MIS PUBLICACIONES, ADOPCIÓN SOLIDARIA (migración 39) ----------
+
+// Elegir (pasa a "en proceso") o rechazar una postulación
+export const responderPostulacion = async (postulacionId: number, aceptar: boolean) => {
+  const { error } = await supabase.rpc("responder_postulacion", { p_postulacion_id: postulacionId, p_aceptar: aceptar });
+  if (error) throw new Error(error.message || "No se pudo responder la postulación.");
+};
+
+// Cerrar la adopción. Devuelve el id de la mascota creada en la cuenta del adoptante (si se pidió traspasar).
+export const concretarAdopcion = async (adopcionId: number, postulacionId: number, d: DatosConcretarAdopcion): Promise<number | null> => {
+  const { data, error } = await supabase.rpc("concretar_adopcion", {
+    p_adopcion_id: adopcionId,
+    p_postulacion_id: postulacionId,
+    p_testimonio: d.testimonio,
+    p_traspasar: d.traspasar,
+  });
+  if (error) throw new Error(error.message || "No se pudo cerrar la adopción.");
+  return data ?? null;
+};
+
+// Retirar de Adopta o volver a publicar (la RLS deja solo a quien publicó)
+export const cambiarEstadoPublicacion = async (adopcionId: number, estado: "publicada" | "retirada") => {
+  const { data, error } = await supabase.from("adopciones").update({ estado }).eq("id", adopcionId).select("id");
+  if (error) throw new Error(error.message || "No se pudo actualizar la publicación.");
+  if (!data?.length) throw new Error("No puedes cambiar esta publicación.");
+};
+
+export const cambiarAliadoSolidario = async (activo: boolean) => {
+  const { error } = await supabase.rpc("cambiar_aliado_solidario", { p_activo: activo });
+  if (error) throw new Error(error.message || "No se pudo actualizar.");
+};
+
+// Registrar una atención a un animal en adopción (la base además actualiza su ficha)
+export const registrarAtencionAdopcion = async (adopcionId: number, d: DatosAtencionAdopcion): Promise<number> => {
+  const { data, error } = await supabase.rpc("registrar_atencion_adopcion", {
+    p_adopcion_id: adopcionId,
+    p_centro_id: nulable(d.centroId),
+    p_fecha: d.fecha,
+    p_estado_general: d.estadoGeneral,
+    p_procedimientos: d.procedimientos,
+    p_peso_kg: nulable(d.pesoKg.trim() ? Number(d.pesoKg.replace(",", ".")) : null),
+    p_resumen: d.resumen.trim(),
+    p_solidario: d.solidario,
+    p_monto: nulable(!d.solidario && d.monto.trim() ? Number(d.monto.replace(/\D/g, "")) : null),
+  });
+  if (error) throw new Error(error.message || "No se pudo guardar la atención.");
+  return data;
+};
+
+// ---------- GESTIÓN DE REFUGIOS (migración 42) ----------
+
+// Sube el logo o la portada nueva a una carpeta del bucket de adopciones
+// (la de quien edita: "<perfil>/refugios"). Si la imagen no cambió, devuelve la ruta que ya tenía.
+const subirImagenRefugio = async (carpeta: string, imagen: ImagenRefugio, tipo: "logo" | "portada", subidas: string[]): Promise<string | null> => {
+  if (!imagen.archivo) return imagen.ruta;
+  const extension = imagen.archivo.name.split(".").pop()?.toLowerCase() || "jpg";
+  const ruta = `${carpeta}/${tipo}-${Date.now()}.${extension}`;
+  const { error } = await supabase.storage
+    .from(BUCKET_ADOPCIONES)
+    .upload(ruta, imagen.archivo, { contentType: imagen.archivo.type, upsert: false });
+  if (error) throw new Error("No se pudo subir la imagen.");
+  subidas.push(ruta);
+  return ruta;
+};
+
+// Crear (refugioId null) o editar un refugio con sus administradores (solo superadmin).
+export const guardarRefugio = async (perfilId: string, refugioId: number | null, d: DatosRefugio): Promise<number> => {
+  const subidas: string[] = [];
+  try {
+    const logo = await subirImagenRefugio(`${perfilId}/refugios`, d.logo, "logo", subidas);
+    const portada = await subirImagenRefugio(`${perfilId}/refugios`, d.portada, "portada", subidas);
+    const { data, error } = await supabase.rpc("guardar_refugio", {
+      p_id: nulable(refugioId),
+      p_nombre: d.nombre.trim(),
+      p_comuna: d.comuna.trim(),
+      p_region: d.region,
+      p_descripcion: d.descripcion.trim(),
+      p_logo_url: nulable(logo),
+      p_portada_url: nulable(portada),
+      p_telefono: nulable(telefonoParaGuardar(d.telefono)),
+      p_correo: d.correo.trim(),
+      p_cupos_totales: d.cuposTotales,
+      p_cupos_ocupados: d.cuposOcupados,
+      p_recibe: d.recibe,
+      p_especies: d.especies,
+      p_es_prueba: d.esPrueba,
+      p_admins: d.administradores.map((a) => a.id),
+    });
+    if (error) throw new Error(error.message || "No se pudo guardar el refugio.");
+    return data;
+  } catch (e) {
+    if (subidas.length) await supabase.storage.from(BUCKET_ADOPCIONES).remove(subidas);
+    throw e;
+  }
+};
+
+// "Súmate a AuraPet": sube logo y fotos del lugar y postula (migración 48).
+// Con sesión van a la carpeta propia; sin sesión, a "postulaciones/<código>"
+// (quien no tiene cuenta solo puede subir ahí). Si algo falla, intenta borrar lo subido.
+export const postularRefugio = async (perfilId: string | null, d: DatosPostularRefugio): Promise<number> => {
+  const subidas: string[] = [];
+  const bucket = supabase.storage.from(BUCKET_ADOPCIONES);
+  const carpeta = perfilId ? `${perfilId}/refugios` : `${CARPETA_POSTULACIONES}/${crypto.randomUUID()}`;
+  try {
+    const logo = await subirImagenRefugio(carpeta, d.logo, "logo", subidas);
+    const fotos: string[] = [];
+    for (const [i, foto] of d.fotos.entries()) {
+      const extension = foto.archivo.name.split(".").pop()?.toLowerCase() || "jpg";
+      const ruta = `${carpeta}/lugar-${Date.now()}-${i}.${extension}`;
+      const { error } = await bucket.upload(ruta, foto.archivo, { contentType: foto.archivo.type, upsert: false });
+      if (error) throw new Error("No se pudieron subir las fotos.");
+      subidas.push(ruta);
+      fotos.push(ruta);
+    }
+    const { data, error } = await supabase.rpc("postular_refugio", {
+      p_nombre: d.nombre.trim(),
+      p_region: d.region,
+      p_comuna: d.comuna.trim(),
+      p_descripcion: d.descripcion.trim(),
+      p_logo_url: nulable(logo),
+      p_cupos_totales: d.cuposTotales,
+      p_cupos_ocupados: d.cuposOcupados,
+      p_recibe: d.recibe,
+      p_especies: d.especies,
+      p_fotos: fotos,
+      p_responsable: d.responsable.trim(),
+      p_telefono: nulable(telefonoParaGuardar(d.telefono)),
+      p_correo: d.correo.trim(),
+      p_sitio_web: d.sitioWeb.trim(),
+      p_mensaje: d.mensaje.trim(),
+    });
+    if (error) throw new Error(error.message || "No se pudo enviar la postulación.");
+    return data;
+  } catch (e) {
+    if (subidas.length) await bucket.remove(subidas);
+    throw e;
+  }
+};
+
+// Aprueba una postulación hecha sin cuenta: la edge function invita al correo
+// (o la vincula a la cuenta que ya tenga) y deja el refugio aprobado.
+export const aprobarRefugioConInvitacion = async (refugioId: number): Promise<ResultadoAprobarRefugio> => {
+  const { data, error } = await supabase.functions.invoke<ResultadoAprobarRefugio>("aprobar-refugio", {
+    body: { refugioId, redirigir: `${window.location.origin}${RUTA_NUEVA_PASSWORD}` },
+  });
+  if (error) {
+    const detalle = await error.context?.json?.().catch(() => null);
+    throw new Error(detalle?.error ?? "No se pudo aprobar el refugio.");
+  }
+  return data!;
+};
+
+export const verificarRefugio = async (refugioId: number, aprobar: boolean) => {
+  const { error } = await supabase.rpc("verificar_refugio", { p_id: refugioId, p_aprobar: aprobar });
+  if (error) throw new Error(error.message || "No se pudo actualizar el refugio.");
+};
+
+// Cupos ocupados o recepción (lo hace quien administra; la base revisa los límites).
+export const actualizarCapacidadRefugio = async (refugioId: number, cambio: { cuposOcupados?: number; recibe?: RecepcionRefugio }) => {
+  const { data, error } = await supabase
+    .from("refugios")
+    .update({ cupos_ocupados: cambio.cuposOcupados, recibe_animales: cambio.recibe })
+    .eq("id", refugioId)
+    .select("id");
+  if (error) throw new Error(error.message || "No se pudo actualizar.");
+  if (!data?.length) throw new Error("No puedes cambiar este refugio.");
+};
+
+// Datos que edita quien administra (nombre, región y verificación quedan para AuraPet).
+export const editarMiRefugio = async (perfilId: string, refugioId: number, d: DatosEditarMiRefugio) => {
+  const subidas: string[] = [];
+  try {
+    const logo = await subirImagenRefugio(`${perfilId}/refugios`, d.logo, "logo", subidas);
+    const portada = await subirImagenRefugio(`${perfilId}/refugios`, d.portada, "portada", subidas);
+    const { data, error } = await supabase
+      .from("refugios")
+      .update({
+        descripcion: d.descripcion.trim() || null,
+        telefono: telefonoParaGuardar(d.telefono),
+        correo: d.correo.trim() || null,
+        especies: d.especies,
+        logo_url: logo,
+        portada_url: portada,
+      })
+      .eq("id", refugioId)
+      .select("id");
+    if (error) throw new Error(error.message || "No se pudo guardar.");
+    if (!data?.length) throw new Error("No puedes cambiar este refugio.");
+  } catch (e) {
+    if (subidas.length) await supabase.storage.from(BUCKET_ADOPCIONES).remove(subidas);
+    throw e;
+  }
+};
+
+// ---------- ELIMINAR (DESACTIVAR) CENTROS (migración 43) ----------
+// Devuelve cuántas citas futuras se cancelaron.
+export const desactivarCentro = async (centroId: number, motivo: string): Promise<number> => {
+  const { data, error } = await supabase.rpc("desactivar_centro", { p_centro_id: centroId, p_motivo: motivo });
+  if (error) throw new Error(error.message || "No se pudo eliminar el centro.");
+  return data ?? 0;
+};
+
+export const reactivarCentro = async (centroId: number) => {
+  const { error } = await supabase.rpc("reactivar_centro", { p_centro_id: centroId });
+  if (error) throw new Error(error.message || "No se pudo reactivar el centro.");
+};
+
+// ---------- FOTO DE PERFIL (migración 44) ----------
+// Sube la foto nueva a la carpeta de la persona, la deja en su perfil y borra la anterior.
+export const guardarFotoPerfil = async (perfilId: string, archivo: File, rutaAnterior: string | null): Promise<string> => {
+  const bucket = supabase.storage.from(BUCKET_AVATARES);
+  const ruta = `${perfilId}/avatar-${Date.now()}.jpg`;
+  const { error: errorSubida } = await bucket.upload(ruta, archivo, { contentType: archivo.type, upsert: false });
+  if (errorSubida) throw new Error("No se pudo subir la foto.");
+  const { error } = await supabase.from("perfiles").update({ avatar_url: ruta }).eq("id", perfilId);
+  if (error) {
+    await bucket.remove([ruta]);
+    throw new Error(error.message || "No se pudo guardar la foto.");
+  }
+  if (rutaAnterior) await bucket.remove([rutaAnterior]);
+  return ruta;
+};
+
+export const quitarFotoPerfil = async (perfilId: string, ruta: string | null) => {
+  const { error } = await supabase.from("perfiles").update({ avatar_url: null }).eq("id", perfilId);
+  if (error) throw new Error(error.message || "No se pudo quitar la foto.");
+  if (ruta) await supabase.storage.from(BUCKET_AVATARES).remove([ruta]);
+};
+
+// ---------- ESPECIALIDADES DEL VETERINARIO (migración 45) ----------
+// Deja exactamente las marcadas (sin límite). La primera queda como principal.
+export const guardarMisEspecialidades = async (ids: number[], otra: string) => {
+  const { error } = await supabase.rpc("guardar_especialidades_veterinario", { p_ids: ids, p_otra: otra.trim() });
+  if (error) throw new Error(error.message || "No se pudieron guardar las especialidades.");
+};
+
+// ---------- REPORTES Y MODERACIÓN (migración 47) ----------
+// Devuelve el id del reporte (para mostrar su número).
+export const reportarAdopcion = async (adopcionId: number, motivo: MotivoReporte, comentario: string): Promise<number> => {
+  const { data, error } = await supabase.rpc("reportar_adopcion", { p_adopcion_id: adopcionId, p_motivo: motivo, p_comentario: comentario.trim() });
+  if (error) throw new Error(error.message || "No se pudo enviar el reporte.");
+  return data;
+};
+
+export const resolverModeracion = async (adopcionId: number, decision: DecisionModeracion, mensaje = "") => {
+  const { error } = await supabase.rpc("resolver_moderacion", { p_adopcion_id: adopcionId, p_decision: decision, p_mensaje: mensaje.trim() });
+  if (error) throw new Error(error.message || "No se pudo guardar la decisión.");
+};
+
+
+// ---- Horario de atención del veterinario (migración 53) ----
+// Reemplaza todo su horario. La base revisa cruces y el horario de cada centro.
+export const guardarMiHorarioAtencion = async (datos: DatosHorarioAtencion) => {
+  const { error } = await supabase.rpc("guardar_mi_horario_atencion", {
+    p_tramos: datos.tramos.map((t) => ({ centro_id: t.centroId, dia_semana: t.diaSemana, desde: t.desde, hasta: t.hasta })) as unknown as Json,
+    p_duracion: datos.duracion,
+    p_urgencias_24_7: datos.urgencias247,
+    p_a_domicilio: datos.aDomicilio,
+    p_comunas: datos.comunas,
+  });
+  if (error) throw new Error(error.message || "No se pudo guardar el horario.");
+};
+
+// Solo si todavía no tiene uno (después lo cambia el superadmin).
+export const registrarMiColegiado = async (numero: string) => {
+  const { error } = await supabase.rpc("registrar_mi_colegiado", { p_numero: numero.trim() });
+  if (error) throw new Error(error.message || "No se pudo guardar el número de colegiado.");
+};
+
+
+// ---- Centros: horario, especialidades, urgencias y UCI (migración 54) ----
+export const guardarHorarioCentro = async (centroId: number, horarios: HorarioCentroNuevo[]) => {
+  const { error } = await supabase.rpc("guardar_horario_centro", { p_centro_id: centroId, p_horarios: horarios as unknown as Json });
+  if (error) throw new Error(error.message || "No se pudo guardar el horario.");
+};
+
+export const guardarEspecialidadesCentro = async (centroId: number, especialidadIds: number[]) => {
+  const { error } = await supabase.rpc("guardar_especialidades_centro", { p_centro_id: centroId, p_especialidad_ids: especialidadIds });
+  if (error) throw new Error(error.message || "No se pudieron guardar las especialidades.");
+};
+
+export const guardarUrgenciasCentro = async (centroId: number, tieneUci: boolean, urgencias247: boolean) => {
+  const { error } = await supabase.rpc("guardar_urgencias_centro", { p_centro_id: centroId, p_tiene_uci: tieneUci, p_urgencias_24_7: urgencias247 });
+  if (error) throw new Error(error.message || "No se pudo guardar.");
+};
+
+export const actualizarEstadoUci = async (centroId: number, datos: DatosEstadoUci) => {
+  const { error } = await supabase.rpc("actualizar_estado_uci", {
+    p_centro_id: centroId,
+    p_estado: datos.estado,
+    ...(datos.motivo && { p_motivo: datos.motivo }),
+    ...(datos.detalle.trim() && { p_detalle: datos.detalle.trim() }),
+  });
+  if (error) throw new Error(error.message || "No se pudo actualizar el estado de la UCI.");
+};
+
+
+// El veterinario decide si su teléfono aparece en /urgencias (migración 55)
+export const cambiarTelefonoUrgencias = async (mostrar: boolean) => {
+  const { error } = await supabase.rpc("cambiar_telefono_urgencias", { p_mostrar: mostrar });
+  if (error) throw new Error(error.message || "No se pudo guardar.");
 };

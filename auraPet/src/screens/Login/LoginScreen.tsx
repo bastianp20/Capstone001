@@ -1,25 +1,50 @@
 import { useState, type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { DATOS_LABORALES_VACIOS, RUTA_ADOPTA, RUTA_SOLICITAR_CENTRO, TEXTOS_CONFIRMAR_PASSWORD, TEXTOS_RECUPERAR_PASSWORD, TEXTOS_REGISTRO_VETERINARIO } from '../../constants';
+import { bloquearCopiarPegar, passwordsNoCoinciden } from '../../lib/formularios';
+import { getCentrosParaCita, getEspecialidades } from '../../Api/getInfo';
+import { useConsulta } from '../../hooks/useConsulta';
+import { useDestacadosAdopcion } from '../../hooks/useDestacadosAdopcion';
+import { validarDatosLaborales } from '../../lib/validacionVeterinario';
+import { SelectorCentroVeterinario } from '../../components/veterinario/registro/SelectorCentroVeterinario';
+import { SelectorEspecialidad } from '../../components/veterinario/registro/SelectorEspecialidad';
 import { ArrowRight, Eye, EyeOff, PawPrint, Stethoscope, X } from 'lucide-react';
 import { useAuth } from '../../Auth/AuthContext';
+import { CarruselAdopcionLogin } from '../../components/adopcion/CarruselAdopcionLogin';
+import { FranjaAdopcionLogin } from '../../components/adopcion/FranjaAdopcionLogin';
 import '../../css/LoginPage.css';
 import fondologin from '../../assets/login/fondologin.png'; // TODO: cambiar por la imagen del login cuando la tengas
-import type { LoginScreenProps, ModoLogin } from '../../interfaces';
-
-type RolRegistro = 'dueno' | 'veterinario';
+import type { DatosLaboralesVeterinario, LoginScreenProps, ModoLogin, RolRegistro } from '../../interfaces';
 
 export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) => {
-  const { login, registrar } = useAuth();
+  const navigate = useNavigate();
+  // "Solicita unirte": si quien abre el login no pasa su propia acción, va a la página de solicitud
+  const irASolicitudCentro = onSolicitarCentro ?? (() => { onCerrar(); navigate(RUTA_SOLICITAR_CENTRO); });
+  const irAAdopta = () => { onCerrar(); navigate(RUTA_ADOPTA); };
+  const adopcion = useDestacadosAdopcion(); // "Ellos también buscan hogar"
+  const { login, registrar, recuperarPassword } = useAuth();
   const [modo, setModo] = useState<ModoLogin>('ingresar');
 
   // Campos compartidos por ingresar y crear cuenta
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [mostrarPassword, setMostrarPassword] = useState(false);
+  const [confirmacion, setConfirmacion] = useState(''); // solo al crear cuenta
 
   // Solo para crear cuenta
   const [rolRegistro, setRolRegistro] = useState<RolRegistro | null>(null);
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
+  // Solo veterinarios: dónde trabaja y especialidad
+  const [datosVet, setDatosVet] = useState<DatosLaboralesVeterinario>(DATOS_LABORALES_VACIOS);
+  const cambiarDatosVet = (cambios: Partial<DatosLaboralesVeterinario>) => setDatosVet((d) => ({ ...d, ...cambios }));
+  const esVeterinario = rolRegistro === 'veterinario';
+  // Catálogos (solo se piden si eligió "Soy veterinario"). Centros: solo los reales y aprobados.
+  const { datos: especialidades = [] } = useConsulta(() => (esVeterinario ? getEspecialidades() : Promise.resolve([])), [esVeterinario]);
+  const { datos: centros = [] } = useConsulta(
+    () => (esVeterinario ? getCentrosParaCita().then((cs) => cs.filter((c) => !c.esPrueba)) : Promise.resolve([])),
+    [esVeterinario]
+  );
 
   const [error, setError] = useState('');
   const [aviso, setAviso] = useState(''); // mensajes de éxito (ej: "revisa tu correo")
@@ -28,6 +53,7 @@ export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) =
   const cambiarModo = (nuevo: ModoLogin) => {
     setModo(nuevo);
     setRolRegistro(null);
+    setConfirmacion('');
     setError('');
     setAviso('');
   };
@@ -43,12 +69,35 @@ export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) =
     // App.tsx deja de mostrar la landing (y este modal) y pasa a LoginRol.
   };
 
+  const handleRecuperar = async (e: FormEvent) => {
+    e.preventDefault();
+    setEnviando(true);
+    setError('');
+    setAviso('');
+    const mensajeError = await recuperarPassword(email);
+    setEnviando(false);
+    if (mensajeError) setError(mensajeError);
+    else setAviso(TEXTOS_RECUPERAR_PASSWORD.enviado(email.trim()));
+  };
+
   const handleRegistrar = async (e: FormEvent) => {
     e.preventDefault();
     if (!rolRegistro) return;
+    if (password !== confirmacion) {
+      setError(TEXTOS_CONFIRMAR_PASSWORD.noCoinciden);
+      return;
+    }
+    const errorVet = esVeterinario ? validarDatosLaborales(datosVet) : null;
+    if (errorVet) {
+      setError(errorVet);
+      return;
+    }
     setEnviando(true);
     setError('');
-    const resultado = await registrar({ nombre, email, password, telefono, rol: rolRegistro });
+    const resultado = await registrar({
+      nombre, email, password, telefono, rol: rolRegistro,
+      veterinario: esVeterinario ? datosVet : undefined,
+    });
     setEnviando(false);
     if (resultado.error) {
       setError(resultado.error);
@@ -78,6 +127,7 @@ export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) =
           minLength={modo === 'crear' ? 6 : undefined}
           autoComplete={modo === 'crear' ? 'new-password' : 'current-password'}
           required
+          {...(modo === 'crear' ? bloquearCopiarPegar : {})}
         />
         <button
           type="button"
@@ -118,6 +168,7 @@ export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) =
             <h2>Tu mascota, en buenas manos</h2>
             <p>Citas, historial y veterinarias de confianza en un solo lugar.</p>
           </div>
+          <CarruselAdopcionLogin animales={adopcion.animales} onVerTodos={irAAdopta} />
         </div>
 
         {/* Panel derecho: formulario */}
@@ -126,13 +177,17 @@ export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) =
             <X size={18} />
           </button>
 
+          <FranjaAdopcionLogin total={adopcion.total} onVerTodos={irAAdopta} />
+
           <div className="login-contenido">
             <h1 className="login-titulo">
-              {modo === 'ingresar' ? 'Bienvenido de vuelta' : 'Crea tu cuenta'}
+              {modo === 'ingresar' ? 'Bienvenido de vuelta' : modo === 'recuperar' ? TEXTOS_RECUPERAR_PASSWORD.titulo : 'Crea tu cuenta'}
             </h1>
             <p className="login-subtitulo">
               {modo === 'ingresar'
                 ? 'Ingresa para continuar'
+                : modo === 'recuperar'
+                  ? TEXTOS_RECUPERAR_PASSWORD.subtitulo
                 : rolRegistro === 'dueno'
                   ? 'Cuenta de dueño de mascota'
                   : rolRegistro === 'veterinario'
@@ -141,7 +196,7 @@ export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) =
             </p>
 
             {/* Pestañas */}
-            <div className="login-tabs">
+            {modo !== 'recuperar' && <div className="login-tabs">
               <button
                 type="button"
                 className={`login-tab ${modo === 'ingresar' ? 'login-tab-activo' : ''}`}
@@ -156,17 +211,16 @@ export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) =
               >
                 Crear cuenta
               </button>
-            </div>
+            </div>}
 
             {modo === 'ingresar' && (
               <form onSubmit={handleIngresar}>
                 {campoEmail}
                 {campoPassword}
 
-                {/* TODO: flujo de recuperar contraseña (supabase.auth.resetPasswordForEmail) */}
-                <a href="#" className="login-link login-olvidaste" onClick={(e) => e.preventDefault()}>
-                  ¿Olvidaste tu contraseña?
-                </a>
+                <button type="button" className="login-link login-olvidaste" onClick={() => cambiarModo('recuperar')}>
+                  {TEXTOS_RECUPERAR_PASSWORD.enlace}
+                </button>
 
                 {aviso && <p className="login-hint">{aviso}</p>}
                 {error && <p className="login-error">{error}</p>}
@@ -174,6 +228,23 @@ export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) =
                 <button type="submit" className="login-btn" disabled={enviando}>
                   {enviando ? 'Ingresando…' : <>Ingresar <ArrowRight size={18} /></>}
                 </button>
+              </form>
+            )}
+
+            {/* Recuperar contraseña: se manda un enlace al correo */}
+            {modo === 'recuperar' && (
+              <form onSubmit={handleRecuperar}>
+                {campoEmail}
+                {aviso && <p className="login-hint">{aviso}</p>}
+                {error && <p className="login-error">{error}</p>}
+                <button type="submit" className="login-btn" disabled={enviando}>
+                  {enviando ? TEXTOS_RECUPERAR_PASSWORD.enviando : <>{TEXTOS_RECUPERAR_PASSWORD.enviar} <ArrowRight size={18} /></>}
+                </button>
+                <p className="login-hint">
+                  <button type="button" className="login-link" onClick={() => cambiarModo('ingresar')}>
+                    {TEXTOS_RECUPERAR_PASSWORD.volver}
+                  </button>
+                </p>
               </form>
             )}
 
@@ -209,6 +280,25 @@ export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) =
                 {campoEmail}
                 {campoPassword}
 
+                {/* Confirmación: hay que escribirla a mano (no se puede pegar) */}
+                <label className="login-label" htmlFor="login-confirmacion">{TEXTOS_CONFIRMAR_PASSWORD.etiqueta}</label>
+                <input
+                  id="login-confirmacion"
+                  type={mostrarPassword ? 'text' : 'password'}
+                  className={`login-input ${passwordsNoCoinciden(password, confirmacion) ? 'login-input-error' : ''}`}
+                  value={confirmacion}
+                  onChange={(e) => setConfirmacion(e.target.value)}
+                  placeholder={TEXTOS_CONFIRMAR_PASSWORD.placeholder}
+                  autoComplete="new-password"
+                  aria-invalid={passwordsNoCoinciden(password, confirmacion)}
+                  aria-describedby="login-confirmacion-ayuda"
+                  required
+                  {...bloquearCopiarPegar}
+                />
+                <p id="login-confirmacion-ayuda" className={passwordsNoCoinciden(password, confirmacion) ? 'login-campo-error' : 'login-campo-ayuda'}>
+                  {passwordsNoCoinciden(password, confirmacion) ? TEXTOS_CONFIRMAR_PASSWORD.noCoinciden : TEXTOS_CONFIRMAR_PASSWORD.ayuda}
+                </p>
+
                 <label className="login-label" htmlFor="login-telefono">Teléfono (opcional)</label>
                 <input
                   id="login-telefono"
@@ -219,6 +309,24 @@ export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) =
                   placeholder="+56 9 1234 5678"
                   autoComplete="tel"
                 />
+
+                {/* Solo veterinarios: dónde trabaja y su especialidad */}
+                {esVeterinario && (
+                  <div className="login-extra-veterinario">
+                    <SelectorCentroVeterinario
+                      datos={datosVet}
+                      centros={centros}
+                      onCambiar={cambiarDatosVet}
+                      ayudaCentroAuraPet={TEXTOS_REGISTRO_VETERINARIO.ayudaCentroPublico}
+                    />
+                    <SelectorEspecialidad
+                      especialidades={especialidades}
+                      especialidadIds={datosVet.especialidadIds}
+                      especialidadOtra={datosVet.especialidadOtra}
+                      onCambiar={cambiarDatosVet}
+                    />
+                  </div>
+                )}
 
                 {error && <p className="login-error">{error}</p>}
 
@@ -237,7 +345,7 @@ export const LoginScreen = ({ onCerrar, onSolicitarCentro }: LoginScreenProps) =
 
           <div className="login-footer">
             ¿Tienes un centro veterinario?{' '}
-            <button type="button" className="login-link" onClick={onSolicitarCentro}>
+            <button type="button" className="login-link" onClick={irASolicitudCentro}>
               Solicita unirte
             </button>
           </div>

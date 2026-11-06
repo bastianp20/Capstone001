@@ -57,8 +57,9 @@ on conflict (slug) do update
 -- ---------- Centro de pruebas ----------
 -- Solo para desarrollo: aquí asignamos los profesionales que vamos creando.
 -- Quitar antes de pasar a producción.
-insert into centros (nombre, direccion, comuna, estado_verificacion, revisado_en)
-select 'Pruebas AuraPet', 'Dirección de prueba 123', 'Santiago', 'aprobado', now()
+-- es_prueba = true: solo lo ven las cuentas de prueba (migraciones 04 y 14)
+insert into centros (nombre, direccion, comuna, estado_verificacion, revisado_en, es_prueba)
+select 'Pruebas AuraPet', 'Dirección de prueba 123', 'Santiago', 'aprobado', now(), true
 where not exists (select 1 from centros where nombre = 'Pruebas AuraPet');
 
 -- Horario: lunes (1) a viernes (5), de 09:00 a 18:00, colación 13:00 a 14:00

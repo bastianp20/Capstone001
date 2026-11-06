@@ -1,0 +1,121 @@
+/* =====================================================================
+   /adopta/refugios/postular (prefijo pr-). Panel verde a la izquierda
+   con los pasos y la vista previa; el formulario a la derecha.
+   Usa los tokens ap- de AdopcionPanel.css.
+   ===================================================================== */
+.pr { padding: 32px 24px 64px; }
+.pr-marco {
+  display: grid; grid-template-columns: minmax(300px, 400px) minmax(0, 1fr); max-width: 1180px; margin: 0 auto; width: 100%;
+  border-radius: 30px; overflow: hidden; background: var(--ap-superficie); border: 1px solid var(--ap-borde); box-shadow: 0 24px 60px rgba(15, 60, 55, 0.12);
+}
+
+/* ---------- Panel verde ---------- */
+.pr-panel {
+  position: relative; display: flex; flex-direction: column; gap: 30px; padding: 36px 32px; color: #ffffff;
+  background:
+    radial-gradient(circle at 110% -10%, rgba(255, 255, 255, 0.18), transparent 45%),
+    radial-gradient(circle at -20% 110%, rgba(255, 122, 89, 0.28), transparent 50%),
+    linear-gradient(160deg, #0f8f80 0%, #0b6f64 100%);
+}
+.pr-panel .ap-stepper-vertical { --sv-acento: #ffb199; --sv-linea: rgba(255, 255, 255, 0.35); }
+.pr-panel .ap-sv-actual .ap-sv-circulo, .pr-panel .ap-sv-hecho .ap-sv-circulo { color: #0b5d54; background: #ffffff; border-color: #ffffff; }
+.pr-panel .ap-sv-hecho:not(:last-child)::after { background: #ffffff; }
+.pr-panel-cabecera h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; color: #ffffff !important; }
+.pr-panel-cabecera p { margin-top: 6px !important; font-size: 14.5px; line-height: 1.5; opacity: 0.88; }
+
+.pr-vista { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+.pr-vista-etiqueta { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; opacity: 0.9; }
+.pr-punto { width: 8px; height: 8px; border-radius: 50%; background: #9df5e6; box-shadow: 0 0 0 0 rgba(157, 245, 230, 0.6); animation: pr-latido 1.8s infinite; }
+@keyframes pr-latido { 50% { box-shadow: 0 0 0 6px rgba(157, 245, 230, 0); } }
+.pr-vista-tarjeta { color: var(--ap-texto); transform: rotate(-1.5deg); transition: transform 0.3s ease; }
+.pr-vista-tarjeta .ap-refugio { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.22); }
+.pr-vista:hover .pr-vista-tarjeta { transform: rotate(0deg); }
+
+/* ---------- Formulario ---------- */
+.pr-formulario { display: flex; flex-direction: column; gap: 18px; padding: 32px 40px; min-width: 0; }
+.pr-volver {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px 6px 4px; border: none; border-radius: 10px;
+  background: none; color: var(--ap-suave); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.pr-volver:hover { color: var(--ap-acento); background: var(--ap-menta); }
+.pr-contador { font-size: 12.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ap-acento); }
+.pr-paso { display: flex; flex-direction: column; gap: 18px; }
+.pr-paso h2 { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin-top: -10px !important; }
+.pr-paso fieldset { margin: 0; padding: 0; border: none; min-width: 0; }
+.pr-paso legend { padding: 0; margin-bottom: 8px; font-weight: 700; }
+.pr-fila { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.pr-ayuda { display: block; margin: -2px 0 10px; color: var(--ap-suave); font-size: 13px; }
+
+.pr-logo { display: flex; align-items: center; gap: 18px; padding: 16px; border-radius: 20px; background: var(--ap-superficie-suave); border: 1px dashed var(--ap-borde); }
+.pr-logo > div { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.pr-logo small { color: var(--ap-suave); font-size: 13px; margin-bottom: 4px; }
+.pr-logo-boton { position: relative; padding: 0; border: none; background: none; border-radius: 50%; cursor: pointer; }
+.pr-logo-boton:focus-visible { outline: 3px solid var(--ap-acento); outline-offset: 3px; }
+.pr-logo-camara {
+  position: absolute; right: -2px; bottom: -2px; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%;
+  background: var(--ap-coral); color: #ffffff; border: 3px solid var(--ap-superficie);
+}
+
+.pr-capacidad { display: flex; flex-direction: column; gap: 12px; padding: 18px; border-radius: 20px; background: var(--ap-superficie-suave); border: 1px solid var(--ap-borde); }
+
+.pr-nota { display: flex; gap: 8px; align-items: flex-start; margin: -4px 0 0 !important; padding: 10px 14px; border-radius: 14px; background: var(--ap-menta); color: var(--ap-texto); font-size: 13px; line-height: 1.45; }
+.pr-nota svg { flex: none; margin-top: 1px; color: var(--ap-acento); }
+
+.pr-pie { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; padding-top: 18px; border-top: 1px solid var(--ap-borde); }
+.pr-btn-coral { background: var(--ap-coral); color: #ffffff; box-shadow: 0 8px 20px rgba(255, 122, 89, 0.35); }
+.pr-btn-coral:hover:not(:disabled) { filter: brightness(1.05); }
+
+/* ---------- Enviada ---------- */
+.pr-enviada {
+  max-width: 620px; margin: 24px auto; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 48px 36px; text-align: center;
+  border-radius: 30px; background: var(--ap-superficie); border: 1px solid var(--ap-borde); box-shadow: 0 24px 60px rgba(15, 60, 55, 0.12);
+}
+.pr-enviada-icono {
+  width: 92px; height: 92px; display: grid; place-items: center; border-radius: 50%; color: #ffffff;
+  background: linear-gradient(140deg, #ff9a7d, var(--ap-coral)); box-shadow: 0 16px 34px rgba(255, 122, 89, 0.35);
+  animation: pr-aparecer 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+@keyframes pr-aparecer { from { transform: scale(0.6); opacity: 0; } }
+.pr-enviada h2 { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
+.pr-enviada p { color: var(--ap-suave); font-size: 15.5px; line-height: 1.55; }
+.pr-enviada-pildora { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 999px; background: var(--ap-ambar-fondo); font-size: 13.5px; font-weight: 700; }
+.pr-enviada-botones { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pr-punto, .pr-enviada-icono { animation: none; }
+  .pr-vista-tarjeta { transform: none; }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 920px) {
+  .pr-marco { grid-template-columns: minmax(0, 1fr); }
+  .pr-panel { padding: 26px 22px; gap: 20px; }
+  .pr-panel .ap-stepper-vertical { flex-direction: row; gap: 8px; }
+  .pr-panel .ap-sv-paso { flex: 1; flex-direction: column; align-items: flex-start; gap: 6px; padding-bottom: 0; }
+  .pr-panel .ap-sv-paso::after { display: none; }
+  .pr-panel .ap-sv-texto small { display: none; }
+  .pr-vista { display: none; }
+  .pr-formulario { padding: 24px 22px; }
+}
+@media (max-width: 560px) {
+  .pr { padding: 16px 12px 48px; }
+  .pr-marco { border-radius: 24px; }
+  .pr-fila { grid-template-columns: minmax(0, 1fr); }
+  .pr-paso h2 { font-size: 24px; }
+  .pr-panel-cabecera h1 { font-size: 24px; }
+  .pr-panel .ap-sv-texto strong { font-size: 13px; }
+  .pr-pie .ap-btn { flex: 1; }
+  .pr-enviada { padding: 36px 20px; }
+}
+
+/* ---------- ¿Con o sin cuenta? ---------- */
+.pr-cuenta {
+  display: flex; align-items: center; gap: 14px; justify-content: space-between; flex-wrap: wrap; margin: -6px 0 0 !important;
+  padding: 12px 16px; border-radius: 16px; background: var(--ap-superficie-suave); border: 1px solid var(--ap-borde); font-size: 13.5px;
+}
+.pr-cuenta > div { display: flex; flex-direction: column; gap: 2px; flex: 1 1 260px; }
+.pr-cuenta span { color: var(--ap-suave); line-height: 1.45; }
+.pr-cuenta-con { justify-content: flex-start; gap: 8px; background: var(--ap-menta); border-color: transparent; font-weight: 600; }
+.pr-cuenta-con svg { color: var(--ap-acento); }
+/* Campo trampa anti-bots: fuera de la vista y del lector de pantalla */
+.pr-trampa { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
