@@ -1,9 +1,10 @@
 import { Text, View } from 'react-native';
 
-import { tituloLoginStyles as styles } from '@/css/LoginPage';
+import { useTituloLoginStyles } from '@/css/LoginPage';
 import type { TituloLoginProps } from '@/interfaces';
 
 export function TituloLogin({ titulo, subtitulo }: TituloLoginProps) {
+  const styles = useTituloLoginStyles();
   return (
     <View style={styles.contenedor}>
       <Text style={styles.titulo} accessibilityRole="header">

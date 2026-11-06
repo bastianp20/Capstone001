@@ -2,11 +2,15 @@ import { Text, View } from 'react-native';
 
 import { CirculoIcono } from '@/components/ui/CirculoIcono';
 import { TarjetaPastel } from '@/components/ui/TarjetaPastel';
-import { COLORES, TEXTOS_INICIO, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaSintomasStyles as styles } from '@/css/InicioPage';
+import { TEXTOS_INICIO } from '@/constants/constants';
+import { useTarjetaSintomasStyles } from '@/css/InicioPage';
 import type { TarjetaSintomasProps } from '@/interfaces';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 export function TarjetaSintomas({ nombreMascota, onPress }: TarjetaSintomasProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaSintomasStyles();
   const tono = TONOS_TARJETA.crema;
 
   return (

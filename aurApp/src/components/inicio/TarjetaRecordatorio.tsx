@@ -2,11 +2,15 @@ import { Text, View } from 'react-native';
 
 import { CirculoIcono } from '@/components/ui/CirculoIcono';
 import { TarjetaPastel } from '@/components/ui/TarjetaPastel';
-import { COLORES, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaRecordatorioStyles as styles } from '@/css/InicioPage';
+
+import { useTarjetaRecordatorioStyles } from '@/css/InicioPage';
 import type { TarjetaRecordatorioProps } from '@/interfaces';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 export function TarjetaRecordatorio({ recordatorio, onPress }: TarjetaRecordatorioProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaRecordatorioStyles();
   const tono = TONOS_TARJETA[recordatorio.tono];
   const colorDetalle = { al_dia: COLORES.textoSecundario, pronto: tono.icono, vencido: COLORES.error }[recordatorio.estado];
 

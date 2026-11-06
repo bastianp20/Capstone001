@@ -2,13 +2,16 @@ import { Text, View } from 'react-native';
 
 import { BotonPequeno } from '@/components/ui/BotonPequeno';
 import { CirculoIcono } from '@/components/ui/CirculoIcono';
-import { COLORES, ICONO_TIPO_SOLICITUD, TEXTOS_APROBACIONES as T, TIPO_SOLICITUD_LABEL } from '@/constants/constants';
-import { tarjetaSuperadminStyles as styles } from '@/css/SuperadminPage';
+import { ICONO_TIPO_SOLICITUD, TEXTOS_APROBACIONES as T, TIPO_SOLICITUD_LABEL } from '@/constants/constants';
+import { useTarjetaSuperadminStyles } from '@/css/SuperadminPage';
 import type { TarjetaSolicitudProps } from '@/interfaces';
 import { diaDeCita, tiempoDesde } from '@/lib/fechas';
+import { useColores } from '@/context/TemaContext';
 
 /** Centro, veterinario, solicitud de centro o refugio esperando aprobación. */
 export function TarjetaSolicitud({ solicitud: s, ocupado, onAprobar, onRechazar }: TarjetaSolicitudProps) {
+  const COLORES = useColores();
+  const styles = useTarjetaSuperadminStyles();
   return (
     <View style={styles.tarjeta}>
       <View style={styles.cabecera}>

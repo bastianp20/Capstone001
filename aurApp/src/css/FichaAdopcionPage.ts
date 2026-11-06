@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, MARGEN_PANTALLA, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, MARGEN_PANTALLA, RADIOS } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── FichaAdopcionScreen ───
-export const fichaAdopcionStyles = StyleSheet.create({
+export const useFichaAdopcionStyles = crearEstilos((COLORES) => ({
   pantalla: {
     flex: 1,
     backgroundColor: COLORES.fondo,
@@ -21,7 +21,7 @@ export const fichaAdopcionStyles = StyleSheet.create({
     gap: 12,
     padding: 16,
     borderRadius: RADIOS.lg,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   historia: {
     fontFamily: FUENTES.medium,
@@ -53,22 +53,22 @@ export const fichaAdopcionStyles = StyleSheet.create({
     paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: COLORES.borde,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   estado: {
     flex: 1,
   },
-});
+}));
 
 // ─── GaleriaFotosAdopcion ───
-export const galeriaFotosStyles = StyleSheet.create({
+export const useGaleriaFotosStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   contenedor: {
     backgroundColor: COLORES.huellas,
   },
   sinFoto: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFE6D5',
+    backgroundColor: TONOS_TARJETA.durazno.fondo,
   },
   barra: {
     position: 'absolute',
@@ -100,12 +100,12 @@ export const galeriaFotosStyles = StyleSheet.create({
   },
   puntoActivo: {
     width: 18,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
-});
+}));
 
 // ─── CabeceraFichaAdopcion ───
-export const cabeceraFichaStyles = StyleSheet.create({
+export const useCabeceraFichaStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   contenedor: {
     gap: 10,
   },
@@ -159,7 +159,7 @@ export const cabeceraFichaStyles = StyleSheet.create({
     gap: 10,
     padding: 14,
     borderRadius: RADIOS.md,
-    backgroundColor: '#FFF4D1',
+    backgroundColor: TONOS_TARJETA.crema.fondo,
   },
   fraseTexto: {
     flex: 1,
@@ -169,10 +169,10 @@ export const cabeceraFichaStyles = StyleSheet.create({
     fontStyle: 'italic',
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── BarrasRasgos ───
-export const barrasRasgosStyles = StyleSheet.create({
+export const useBarrasRasgosStyles = crearEstilos((COLORES) => ({
   lista: {
     gap: 12,
   },
@@ -207,10 +207,10 @@ export const barrasRasgosStyles = StyleSheet.create({
     fontSize: 12.5,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── SaludAdopcion ───
-export const saludAdopcionStyles = StyleSheet.create({
+export const useSaludAdopcionStyles = crearEstilos((COLORES) => ({
   grilla: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -250,10 +250,10 @@ export const saludAdopcionStyles = StyleSheet.create({
     fontSize: 14,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── TarjetaChequeoAdopcion ───
-export const tarjetaChequeoStyles = StyleSheet.create({
+export const useTarjetaChequeoStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   tarjeta: {
     flexDirection: 'row',
     gap: 12,
@@ -262,7 +262,7 @@ export const tarjetaChequeoStyles = StyleSheet.create({
     backgroundColor: COLORES.primarioSuave,
   },
   solicitado: {
-    backgroundColor: '#FFF4D1',
+    backgroundColor: TONOS_TARJETA.crema.fondo,
   },
   icono: {
     width: 42,
@@ -270,7 +270,7 @@ export const tarjetaChequeoStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 14,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   cuerpo: {
     flex: 1,
@@ -292,17 +292,17 @@ export const tarjetaChequeoStyles = StyleSheet.create({
     lineHeight: 19,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── TarjetaPublicador ───
-export const tarjetaPublicadorStyles = StyleSheet.create({
+export const useTarjetaPublicadorStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     padding: 16,
     borderRadius: RADIOS.lg,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   cuerpo: {
     flex: 1,
@@ -323,4 +323,4 @@ export const tarjetaPublicadorStyles = StyleSheet.create({
     fontSize: 12.5,
     color: COLORES.textoSecundario,
   },
-});
+}));

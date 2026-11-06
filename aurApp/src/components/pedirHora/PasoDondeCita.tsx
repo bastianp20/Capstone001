@@ -4,7 +4,7 @@ import { ControlSegmentado } from '@/components/ui/ControlSegmentado';
 import { EstadoCarga } from '@/components/ui/EstadoCarga';
 import { EstadoVacio } from '@/components/ui/EstadoVacio';
 import { MODOS_DESTINO_CITA, TEXTOS_CARGA, TEXTOS_PEDIR_HORA as T } from '@/constants/constants';
-import { pasosPedirHoraStyles as styles } from '@/css/PedirHoraPage';
+import { usePasosPedirHoraStyles } from '@/css/PedirHoraPage';
 import type { PasoDondeCitaProps } from '@/interfaces';
 
 import { FiltroEspecialidades } from './FiltroEspecialidades';
@@ -13,6 +13,7 @@ import { TarjetaDestinoCita } from './TarjetaDestinoCita';
 
 /** Paso 2: la mascota elegida, el filtro de especialidades, Centros | Independientes y las tarjetas. */
 export function PasoDondeCita(p: PasoDondeCitaProps) {
+  const styles = usePasosPedirHoraStyles();
   return (
     <View style={styles.paso}>
       {p.mascota && <MiniMascotaCita mascota={p.mascota} onCambiar={p.onCambiarMascota} />}

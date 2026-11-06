@@ -3,11 +3,12 @@ import { View } from 'react-native';
 import { CampoTexto } from '@/components/formulario/CampoTexto';
 import { FilaInterruptor } from '@/components/ui/FilaInterruptor';
 import { TEXTOS_PUBLICAR as T } from '@/constants/constants';
-import { publicarAdopcionStyles as styles } from '@/css/PublicarAdopcionPage';
+import { usePublicarAdopcionStyles } from '@/css/PublicarAdopcionPage';
 import type { PasoPublicarProps } from '@/interfaces';
 
 /** Paso 3 · Salud e historia: raza, peso, vacunas, esterilización, microchip, alergias y su historia. */
 export function PasoSaludPublicar({ datos: d, errores: e, onCambiar }: PasoPublicarProps) {
+  const styles = usePublicarAdopcionStyles();
   return (
     <View style={styles.paso}>
       <CampoTexto etiqueta={T.raza} icono="etiqueta" value={d.raza} onChangeText={(v) => onCambiar('raza', v)} placeholder={T.razaPlaceholder} maxLength={60} />

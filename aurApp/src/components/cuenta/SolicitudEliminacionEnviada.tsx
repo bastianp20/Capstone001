@@ -3,13 +3,16 @@ import { Text, View } from 'react-native';
 import { CirculoIcono } from '@/components/ui/CirculoIcono';
 import { LineaEstados } from '@/components/ui/LineaEstados';
 import { TarjetaAviso } from '@/components/ui/TarjetaAviso';
-import { COLORES, TEXTOS_ELIMINAR_CUENTA as T } from '@/constants/constants';
-import { solicitudEnviadaStyles as styles } from '@/css/CuentaPage';
+import { TEXTOS_ELIMINAR_CUENTA as T } from '@/constants/constants';
+import { useSolicitudEnviadaStyles } from '@/css/CuentaPage';
 import type { SolicitudEliminacionEnviadaProps } from '@/interfaces';
 import { cuandoFue } from '@/lib/fechas';
+import { useColores } from '@/context/TemaContext';
 
 /** La solicitud ya está en revisión: qué sigue y que puede seguir usando la app. */
 export function SolicitudEliminacionEnviada({ correo, creadaEn }: SolicitudEliminacionEnviadaProps) {
+  const COLORES = useColores();
+  const styles = useSolicitudEnviadaStyles();
   return (
     <View style={styles.contenedor}>
       <View style={styles.halo}>

@@ -7,10 +7,11 @@ import { EstadoVacio } from '@/components/ui/EstadoVacio';
 import { ModalTexto } from '@/components/ui/ModalTexto';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { TEXTOS_CARGA, TEXTOS_ELIMINACIONES as T } from '@/constants/constants';
-import { listaGruposStyles as styles } from '@/css/Compartido';
+import { useListaGruposStyles } from '@/css/Compartido';
 import { useEliminaciones } from '@/hooks/useEliminaciones';
 
 export default function EliminacionesScreen() {
+  const styles = useListaGruposStyles();
   const e = useEliminaciones();
   const s = e.superadmin;
 

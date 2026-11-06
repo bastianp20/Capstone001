@@ -7,13 +7,16 @@ import { EstadoCarga } from '@/components/ui/EstadoCarga';
 import { Icono } from '@/components/ui/Icono';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { TarjetaEspecialidad } from '@/components/veterinario/TarjetaEspecialidad';
-import { COLORES, TEXTOS_MIS_ESPECIALIDADES as T, TONOS_ESPECIALIDADES } from '@/constants/constants';
-import { misEspecialidadesStyles as styles } from '@/css/MisEspecialidadesPage';
+import { TEXTOS_MIS_ESPECIALIDADES as T, TONOS_ESPECIALIDADES } from '@/constants/constants';
+import { useMisEspecialidadesStyles } from '@/css/MisEspecialidadesPage';
 import { useMisEspecialidadesVeterinario } from '@/hooks/useMisEspecialidadesVeterinario';
 import { iconoEspecialidad } from '@/lib/especialidades';
+import { useColores } from '@/context/TemaContext';
 
 /** Perfil → "Mis especialidades": las que ofrece (sin límite) y "Otra". */
 export default function MisEspecialidadesScreen() {
+  const COLORES = useColores();
+  const styles = useMisEspecialidadesStyles();
   const e = useMisEspecialidadesVeterinario();
 
   return (

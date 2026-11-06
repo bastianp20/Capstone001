@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS, TONOS_TARJETA } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── RecetaAtencionScreen ───
-export const recetaStyles = StyleSheet.create({
+export const useRecetaStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   cuerpo: {
     gap: 16,
   },
@@ -35,15 +35,15 @@ export const recetaStyles = StyleSheet.create({
   pie: {
     gap: 8,
   },
-});
+}));
 
 // ─── TarjetaMedicamento ───
-export const tarjetaMedicamentoStyles = StyleSheet.create({
+export const useTarjetaMedicamentoStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   tarjeta: {
     flexDirection: 'row',
     overflow: 'hidden',
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     borderWidth: 1,
     borderColor: COLORES.borde,
     boxShadow: '0 6px 14px rgba(11, 59, 53, 0.06)',
@@ -89,17 +89,17 @@ export const tarjetaMedicamentoStyles = StyleSheet.create({
     paddingRight: 14,
     gap: 14,
   },
-});
+}));
 
 // ─── HojaMedicamento ───
-export const hojaMedicamentoStyles = StyleSheet.create({
+export const useHojaMedicamentoStyles = crearEstilos(() => ({
   formulario: {
     gap: 12,
   },
-});
+}));
 
 // ─── BotonCanal ───
-export const botonCanalStyles = StyleSheet.create({
+export const useBotonCanalStyles = crearEstilos((COLORES) => ({
   boton: {
     flex: 1,
     alignItems: 'center',
@@ -107,7 +107,7 @@ export const botonCanalStyles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 6,
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 6px 16px rgba(11, 59, 53, 0.08)',
   },
   presionado: {
@@ -128,10 +128,10 @@ export const botonCanalStyles = StyleSheet.create({
     fontSize: 14,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── RecetaLista ───
-export const recetaListaStyles = StyleSheet.create({
+export const useRecetaListaStyles = crearEstilos((COLORES) => ({
   contenedor: {
     alignItems: 'center',
     gap: 12,
@@ -174,4 +174,4 @@ export const recetaListaStyles = StyleSheet.create({
     fontSize: 16,
     color: COLORES.primario,
   },
-});
+}));

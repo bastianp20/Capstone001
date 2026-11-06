@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS, TONOS_TARJETA } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── HoyScreen ───
-export const hoyStyles = StyleSheet.create({
+export const useHoyStyles = crearEstilos(() => ({
   indicadores: {
     flexDirection: 'row',
     gap: 10,
@@ -12,16 +12,16 @@ export const hoyStyles = StyleSheet.create({
   seccion: {
     gap: 12,
   },
-});
+}));
 
 // ─── TarjetaSiguientePaciente ───
-export const tarjetaSiguientePacienteStyles = StyleSheet.create({
+export const useTarjetaSiguientePacienteStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     overflow: 'hidden',
     borderRadius: RADIOS.md,
     borderWidth: 1.5,
     borderColor: COLORES.primario,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 10px 24px rgba(11, 59, 53, 0.10)',
   },
   cinta: {
@@ -75,10 +75,10 @@ export const tarjetaSiguientePacienteStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'stretch',
   },
-});
+}));
 
 // ─── AgendaDelDia ───
-export const agendaDelDiaStyles = StyleSheet.create({
+export const useAgendaDelDiaStyles = crearEstilos((COLORES) => ({
   contenedor: {
     gap: 0,
   },
@@ -116,7 +116,7 @@ export const agendaDelDiaStyles = StyleSheet.create({
     marginBottom: 10,
     padding: 12,
     borderRadius: RADIOS.sm,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 4px 12px rgba(11, 59, 53, 0.06)',
   },
   presionada: {
@@ -136,17 +136,17 @@ export const agendaDelDiaStyles = StyleSheet.create({
     fontSize: 12.5,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── TarjetaPaciente ───
-export const tarjetaPacienteStyles = StyleSheet.create({
+export const useTarjetaPacienteStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     padding: 14,
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 4px 14px rgba(11, 59, 53, 0.06)',
   },
   presionada: {
@@ -172,10 +172,10 @@ export const tarjetaPacienteStyles = StyleSheet.create({
     fontSize: 13,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── FichaPacienteScreen ───
-export const fichaPacienteStyles = StyleSheet.create({
+export const useFichaPacienteStyles = crearEstilos((COLORES) => ({
   cabecera: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -206,7 +206,7 @@ export const fichaPacienteStyles = StyleSheet.create({
     gap: 12,
     padding: 14,
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   duenoTexto: {
     flex: 1,
@@ -214,10 +214,10 @@ export const fichaPacienteStyles = StyleSheet.create({
     fontSize: 15,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── DatoFicha ───
-export const datoFichaStyles = StyleSheet.create({
+export const useDatoFichaStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   dato: {
     minWidth: '30%',
     flexGrow: 1,
@@ -236,10 +236,10 @@ export const datoFichaStyles = StyleSheet.create({
     fontSize: 14.5,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── TarjetaDerivacion ───
-export const tarjetaDerivacionStyles = StyleSheet.create({
+export const useTarjetaDerivacionStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     gap: 6,
   },
@@ -276,4 +276,4 @@ export const tarjetaDerivacionStyles = StyleSheet.create({
     gap: 8,
     paddingTop: 4,
   },
-});
+}));

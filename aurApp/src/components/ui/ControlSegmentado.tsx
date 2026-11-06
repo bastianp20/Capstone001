@@ -1,10 +1,11 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { controlSegmentadoStyles as styles } from '@/css/Compartido';
+import { useControlSegmentadoStyles } from '@/css/Compartido';
 import type { ControlSegmentadoProps } from '@/interfaces';
 
 /** Dos o tres opciones excluyentes en una píldora (la activa, en oscuro). */
 export function ControlSegmentado<V extends string>({ opciones, valor, onCambiar }: ControlSegmentadoProps<V>) {
+  const styles = useControlSegmentadoStyles();
   return (
     <View style={styles.contenedor} accessibilityRole="tablist">
       {opciones.map((o) => {

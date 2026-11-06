@@ -1,13 +1,16 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { COLORES, TONOS_TARJETA } from '@/constants/constants';
-import { opcionHojaStyles as styles } from '@/css/Compartido';
+import { useOpcionHojaStyles } from '@/css/Compartido';
 import type { OpcionHojaProps } from '@/interfaces';
 
 import { Icono } from './Icono';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 /** Botón grande de una hoja inferior: ícono en un cuadrito y el texto. tono "peligro" = rojo. */
 export function OpcionHoja({ icono, texto, tono, onPress, deshabilitada }: OpcionHojaProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useOpcionHojaStyles();
   const peligro = tono === 'peligro';
   const fondo = peligro ? COLORES.peligro : TONOS_TARJETA[tono].fondo;
   const colorIcono = peligro ? COLORES.blanco : TONOS_TARJETA[tono].icono;

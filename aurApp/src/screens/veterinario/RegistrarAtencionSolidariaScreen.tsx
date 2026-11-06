@@ -25,7 +25,7 @@ import {
   TEXTOS_SOLIDARIA,
 } from '@/constants/constants';
 import { useAuth } from '@/Auth/AuthContext';
-import { atencionSolidariaStyles as styles } from '@/css/SolidariaPage';
+import { useAtencionSolidariaStyles } from '@/css/SolidariaPage';
 import { useAtencionSolidaria } from '@/hooks/useAtencionSolidaria';
 import type { ProcedimientoFicha } from '@/interfaces';
 import { formatearPeso } from '@/lib/formatos';
@@ -35,6 +35,7 @@ const A_DOMICILIO = 'domicilio';
 
 /** Registrar una atención a un animal en adopción (en terreno, con borrador sin conexión) y el "¡Gracias!". */
 export default function RegistrarAtencionSolidariaScreen() {
+  const styles = useAtencionSolidariaStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const a = useAtencionSolidaria(Number(id));
   const { usuarioActual } = useAuth();

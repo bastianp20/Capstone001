@@ -3,14 +3,18 @@ import { Pressable, Text, View } from 'react-native';
 import { AvatarPersona } from '@/components/ui/AvatarPersona';
 import { FilaAvatares } from '@/components/ui/FilaAvatares';
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaDestinoCitaStyles as styles } from '@/css/PedirHoraPage';
+
+import { useTarjetaDestinoCitaStyles } from '@/css/PedirHoraPage';
 import type { TarjetaDestinoCitaProps, TonoTarjeta } from '@/interfaces';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 const TONOS_CHIP: TonoTarjeta[] = ['menta', 'durazno', 'lavanda', 'crema'];
 
 /** Un centro (o un veterinario independiente): logo o foto, nombre, comuna, caras y especialidades. */
 export function TarjetaDestinoCita({ opcion: o, seleccionada, onPress }: TarjetaDestinoCitaProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaDestinoCitaStyles();
   return (
     <Pressable
       onPress={onPress}

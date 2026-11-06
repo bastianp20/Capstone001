@@ -2,12 +2,15 @@ import { Text, View } from 'react-native';
 
 import { BotonPequeno } from '@/components/ui/BotonPequeno';
 import { Etiqueta } from '@/components/ui/Etiqueta';
-import { COLORES, TEXTOS_PLANES as T } from '@/constants/constants';
-import { tarjetaPlanStyles as styles } from '@/css/CentroPage';
+import { TEXTOS_PLANES as T } from '@/constants/constants';
+import { useTarjetaPlanStyles } from '@/css/CentroPage';
 import type { TarjetaPlanProps } from '@/interfaces';
 import { formatearPrecio } from '@/lib/formatos';
+import { useColores } from '@/context/TemaContext';
 
 export function TarjetaPlan({ plan, esActual, esSolicitado, puedeSolicitar, onSolicitar }: TarjetaPlanProps) {
+  const COLORES = useColores();
+  const styles = useTarjetaPlanStyles();
   return (
     <View style={[styles.tarjeta, esActual && styles.actual]}>
       <View style={styles.cabecera}>

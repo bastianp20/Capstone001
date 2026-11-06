@@ -9,10 +9,11 @@ import { EstadoVacio } from '@/components/ui/EstadoVacio';
 import { PantallaLista } from '@/components/ui/PantallaLista';
 import { TEXTOS_CARGA, TEXTOS_EQUIPO as T } from '@/constants/constants';
 import { useCentro } from '@/context/CentroContext';
-import { filaMiembroStyles as styles } from '@/css/CentroPage';
+import { useFilaMiembroStyles } from '@/css/CentroPage';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
 
 export default function EquipoScreen() {
+  const styles = useFilaMiembroStyles();
   useBarraEstadoClara();
   const c = useCentro();
   const equipo = c.datos?.equipo ?? [];

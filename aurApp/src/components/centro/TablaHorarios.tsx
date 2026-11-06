@@ -1,13 +1,15 @@
 import { Text, View } from 'react-native';
 
-import { DIAS_SEMANA_LARGOS, TEXTOS_MI_CENTRO } from '@/constants/constants';
-import { tablaHorariosStyles as styles } from '@/css/CentroPage';
+import { DIAS_SEMANA_LARGOS, TEXTOS_HORARIO_CENTRO, TEXTOS_MI_CENTRO } from '@/constants/constants';
+import { useTablaHorariosStyles } from '@/css/CentroPage';
 import type { TablaHorariosProps } from '@/interfaces';
+import { esDiaCompleto } from '@/lib/horarioCentro';
 
 const DIAS = [1, 2, 3, 4, 5, 6, 7];
 
 /** Lunes a domingo con su horario; los días sin fila aparecen como cerrados. */
 export function TablaHorarios({ horarios }: TablaHorariosProps) {
+  const styles = useTablaHorariosStyles();
   return (
     <View style={styles.tarjeta}>
       {DIAS.map((dia, i) => {
@@ -16,7 +18,7 @@ export function TablaHorarios({ horarios }: TablaHorariosProps) {
           <View key={dia} style={[styles.fila, i < DIAS.length - 1 && styles.separador]}>
             <Text style={styles.dia}>{DIAS_SEMANA_LARGOS[dia]}</Text>
             <View style={styles.horas}>
-              <Text style={[styles.hora, !h && styles.cerrado]}>{h ? `${h.abre} – ${h.cierra}` : TEXTOS_MI_CENTRO.cerrado}</Text>
+              <Text style={[styles.hora, !h && styles.cerrado]}>{!h ? TEXTOS_MI_CENTRO.cerrado : esDiaCompleto(h) ? TEXTOS_HORARIO_CENTRO.diaCompleto : `${h.abre} – ${h.cierra}`}</Text>
               {h?.inicioColacion && (
                 <Text style={styles.colacion}>
                   Colación {h.inicioColacion} – {h.finColacion}

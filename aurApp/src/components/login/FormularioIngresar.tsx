@@ -6,7 +6,7 @@ import { CampoTexto } from '@/components/formulario/CampoTexto';
 import { EnlaceTexto } from '@/components/formulario/EnlaceTexto';
 import { MensajeFormulario } from '@/components/formulario/MensajeFormulario';
 import { TEXTOS_LOGIN, TEXTOS_RECUPERAR_PASSWORD } from '@/constants/constants';
-import { formularioLoginStyles as styles } from '@/css/LoginPage';
+import { useFormularioLoginStyles } from '@/css/LoginPage';
 import type { FormularioIngresarProps } from '@/interfaces';
 
 export function FormularioIngresar({
@@ -20,6 +20,7 @@ export function FormularioIngresar({
   onIngresar,
   onOlvidePassword,
 }: FormularioIngresarProps) {
+  const styles = useFormularioLoginStyles();
   return (
     <View style={styles.formulario}>
       <CampoTexto

@@ -2,11 +2,12 @@ import { Pressable, Text, View } from 'react-native';
 
 import { Icono } from '@/components/ui/Icono';
 import { MOTIVOS_REPORTE } from '@/constants/constants';
-import { grillaMotivosStyles as styles } from '@/css/PostularAdopcionPage';
+import { useGrillaMotivosStyles } from '@/css/PostularAdopcionPage';
 import type { GrillaMotivosReporteProps } from '@/interfaces';
 
 /** "¿Qué está pasando?": mosaicos de colores para elegir el motivo del reporte. */
 export function GrillaMotivosReporte({ valor, onCambiar }: GrillaMotivosReporteProps) {
+  const styles = useGrillaMotivosStyles();
   return (
     <View style={styles.grilla} accessibilityRole="radiogroup">
       {MOTIVOS_REPORTE.map((m) => {

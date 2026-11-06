@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AvisosCitas } from '@/components/avisos/AvisosCitas';
 import { BotonPedirHora } from '@/components/inicio/BotonPedirHora';
 import { EncabezadoInicio } from '@/components/inicio/EncabezadoInicio';
 import { EncabezadoSinMascotas } from '@/components/inicio/EncabezadoSinMascotas';
@@ -10,17 +11,21 @@ import { TarjetaFicha } from '@/components/inicio/TarjetaFicha';
 import { TarjetaRecordatorio } from '@/components/inicio/TarjetaRecordatorio';
 import { TarjetaSintomas } from '@/components/inicio/TarjetaSintomas';
 import { EstadoCarga } from '@/components/ui/EstadoCarga';
+import { TarjetaEntradaUrgencias } from '@/components/urgencias/TarjetaEntradaUrgencias';
 import { EstadoVacio } from '@/components/ui/EstadoVacio';
-import { ALTURA_BARRA_NAVEGACION, COLORES, TEXTOS_CARGA, TEXTOS_INICIO } from '@/constants/constants';
-import { inicioScreenStyles as styles } from '@/css/InicioPage';
+import { ALTURA_BARRA_NAVEGACION, TEXTOS_CARGA, TEXTOS_INICIO } from '@/constants/constants';
+import { useInicioScreenStyles } from '@/css/InicioPage';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
 import { useInicio } from '@/hooks/useInicio';
+import { useColores } from '@/context/TemaContext';
 
 const irAPerfil = () => router.navigate('/perfil');
 const irACitas = () => router.navigate('/citas');
 const agregarMascota = () => router.push('/mascota/nueva');
 
 export default function InicioScreen() {
+  const COLORES = useColores();
+  const styles = useInicioScreenStyles();
   const insets = useSafeAreaInsets();
   useBarraEstadoClara();
   const { nombreUsuario, nombreCompleto, mascotas, mascota, resumen, seleccionarMascota, cargando, error, recargar, recargando } =
@@ -91,7 +96,9 @@ export default function InicioScreen() {
 
         <View style={styles.cuerpo}>
           <HuellasFondo />
+          <AvisosCitas />
           {contenido()}
+          <TarjetaEntradaUrgencias />
         </View>
       </ScrollView>
     </View>

@@ -3,20 +3,22 @@ import { Text, View } from 'react-native';
 import { AvatarMascota } from '@/components/ui/AvatarMascota';
 import { Etiqueta } from '@/components/ui/Etiqueta';
 import {
-  COLORES,
   ETIQUETAS_ESTADO_CITA,
   MOTIVO_RECHAZO_SIN_DETALLE,
   TEXTO_ATENCION_INDEPENDIENTE,
   TEXTOS_CITAS,
 } from '@/constants/constants';
-import { tarjetaCitaStyles as styles } from '@/css/CitasPage';
+import { useTarjetaCitaStyles } from '@/css/CitasPage';
 import type { TarjetaCitaProps } from '@/interfaces';
 import { formatFechaHoraCita } from '@/lib/fechas';
 
 import { AccionesCita } from './AccionesCita';
 import { BloqueFechaCita } from './BloqueFechaCita';
+import { useColores } from '@/context/TemaContext';
 
 export function TarjetaCita({ cita, fotoMascota, variante, cancelando, onCancelar }: TarjetaCitaProps) {
+  const COLORES = useColores();
+  const styles = useTarjetaCitaStyles();
   const colorEstado = COLORES.estados[cita.estado];
   const detallada = variante === 'detallada';
   const lugar = [cita.veterinario ?? TEXTOS_CITAS.sinVeterinario, cita.centro ?? TEXTO_ATENCION_INDEPENDIENTE].join(' · ');

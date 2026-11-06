@@ -22,6 +22,7 @@ import { HistorialMedico } from '../../components/dueno/HistorialMedico';
 import '../../css/duenoPage.css';
 import LogoAuraPetSinFondo from '../../assets/logo/LogoAuraPetSinFondo.png';
 import { FotoPerfil } from '../../components/perfil/FotoPerfil';
+import { AvisosCitas } from '../../components/avisos/AvisosCitas';
 
 const iconos = Iconos;
 
@@ -149,6 +150,9 @@ export const DuenoScreen = () => {
                 </div>
                 {accionesRapidas}
               </div>
+
+              {/* Cambios de hora que hizo un veterinario (reagendó o canceló) */}
+              <AvisosCitas />
 
               <section className="dueno-seccion">
                 <div className="dueno-seccion-header">

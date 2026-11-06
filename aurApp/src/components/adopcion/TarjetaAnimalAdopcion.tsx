@@ -1,17 +1,20 @@
 import { Image } from 'expo-image';
 import { Pressable, Text, View } from 'react-native';
 
-import { ICONO_ESPECIE_ADOPCION, TEXTOS_ADOPTA as T, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaAnimalStyles as styles } from '@/css/AdoptaPage';
+import { ICONO_ESPECIE_ADOPCION, TEXTOS_ADOPTA as T } from '@/constants/constants';
+import { useTarjetaAnimalStyles } from '@/css/AdoptaPage';
 import type { TarjetaAnimalAdopcionProps } from '@/interfaces';
 
 import { Icono } from '@/components/ui/Icono';
 
 import { BotonGuardar } from './BotonGuardar';
 import { SelloRevisado } from './SelloRevisado';
+import { useTonosTarjeta } from '@/context/TemaContext';
 
 /** Tarjeta de la grilla de Adopta: foto, corazón, nombre, edad y comuna, y el sello si fue revisado. */
 export function TarjetaAnimalAdopcion({ animal: a, guardado, onGuardar, onPress }: TarjetaAnimalAdopcionProps) {
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaAnimalStyles();
   return (
     <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={a.nombre} style={({ pressed }) => [styles.tarjeta, pressed && styles.presionada]}>
       <View>

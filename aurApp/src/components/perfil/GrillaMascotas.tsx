@@ -1,7 +1,7 @@
 import { useWindowDimensions, View } from 'react-native';
 
 import { COLUMNAS_MASCOTAS_PERFIL, MARGEN_PANTALLA, SEPARACION_GRILLA_MASCOTAS, TONOS_MASCOTAS } from '@/constants/constants';
-import { grillaMascotasStyles as styles } from '@/css/PerfilPage';
+import { useGrillaMascotasStyles } from '@/css/PerfilPage';
 import type { GrillaMascotasProps } from '@/interfaces';
 
 import { TarjetaAgregarMascota } from './TarjetaAgregarMascota';
@@ -9,6 +9,7 @@ import { TarjetaMascotaPerfil } from './TarjetaMascotaPerfil';
 
 /** Mascotas del dueño en grilla de 3 columnas, con la tarjeta "Agregar mascota" al final. */
 export function GrillaMascotas({ mascotas, onAbrir, onAgregar }: GrillaMascotasProps) {
+  const styles = useGrillaMascotasStyles();
   const { width } = useWindowDimensions();
   const ancho = (width - MARGEN_PANTALLA * 2 - SEPARACION_GRILLA_MASCOTAS * (COLUMNAS_MASCOTAS_PERFIL - 1)) / COLUMNAS_MASCOTAS_PERFIL;
 

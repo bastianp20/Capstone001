@@ -1,14 +1,18 @@
 import { Text, View } from 'react-native';
 
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, SEXO_ADOPCION_TEXTO, TEXTOS_ADOPTA, TONOS_ESPECIALIDADES, TONOS_TARJETA } from '@/constants/constants';
-import { cabeceraFichaStyles as styles } from '@/css/FichaAdopcionPage';
+import { SEXO_ADOPCION_TEXTO, TEXTOS_ADOPTA, TONOS_ESPECIALIDADES } from '@/constants/constants';
+import { useCabeceraFichaStyles } from '@/css/FichaAdopcionPage';
 import type { CabeceraFichaAdopcionProps } from '@/interfaces';
 
 import { SelloRevisado } from '../SelloRevisado';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 /** Nombre, raza · edad · sexo, comuna, sello, personalidad y su frase. */
 export function CabeceraFichaAdopcion({ ficha: f }: CabeceraFichaAdopcionProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useCabeceraFichaStyles();
   return (
     <View style={styles.contenedor}>
       <View style={styles.filaNombre}>

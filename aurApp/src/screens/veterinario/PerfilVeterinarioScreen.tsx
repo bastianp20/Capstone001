@@ -4,7 +4,7 @@ import { MensajeFormulario } from '@/components/formulario/MensajeFormulario';
 import { PerfilCuenta } from '@/components/perfil/PerfilCuenta';
 import { TarjetaAliadoSolidario } from '@/components/solidaria/TarjetaAliadoSolidario';
 import { FilaOpcion } from '@/components/ui/FilaOpcion';
-import { TEXTOS_ALIADO_SOLIDARIO, TEXTOS_VETERINARIO as T } from '@/constants/constants';
+import { TEXTOS_ALIADO_SOLIDARIO, TEXTOS_HORARIO_ATENCION, TEXTOS_VETERINARIO as T } from '@/constants/constants';
 import { useCentro } from '@/context/CentroContext';
 import { useAliadoSolidario } from '@/hooks/useAliadoSolidario';
 
@@ -28,6 +28,7 @@ export default function PerfilVeterinarioScreen() {
             valor={aliado.esperando > 0 ? TEXTOS_ALIADO_SOLIDARIO.esperando(aliado.esperando) : undefined}
             onPress={() => router.push('/veterinario/solidaria')}
           />
+          <FilaOpcion icono="reloj" tono="lavanda" texto={TEXTOS_HORARIO_ATENCION.titulo} onPress={() => router.push('/veterinario/horario')} />
           <FilaOpcion icono="estetoscopio" tono="menta" texto={T.misEspecialidades} onPress={() => router.push('/veterinario/especialidades')} />
           <FilaOpcion icono="derivacion" tono="crema" texto={T.verDerivaciones} onPress={() => router.push('/veterinario/derivaciones')} />
         </>

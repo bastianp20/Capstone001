@@ -5,10 +5,11 @@ import { CampoTexto } from '@/components/formulario/CampoTexto';
 import { MensajeFormulario } from '@/components/formulario/MensajeFormulario';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { TEXTOS_EDITAR_CENTRO as T } from '@/constants/constants';
-import { editarCentroStyles as styles } from '@/css/CentroPage';
+import { useEditarCentroStyles } from '@/css/CentroPage';
 import { useEditarCentro } from '@/hooks/useEditarCentro';
 
 export default function EditarCentroScreen() {
+  const styles = useEditarCentroStyles();
   const e = useEditarCentro();
   return (
     <PantallaFormulario titulo={T.titulo} pie={<BotonPrincipal texto={T.guardar} textoCargando={T.guardando} cargando={e.guardando} onPress={e.guardar} />}>

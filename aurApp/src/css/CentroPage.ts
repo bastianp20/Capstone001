@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── ResumenCentroScreen ───
-export const resumenCentroStyles = StyleSheet.create({
+export const useResumenCentroStyles = crearEstilos(() => ({
   bento: {
     flexDirection: 'row',
     gap: 12,
@@ -16,10 +16,10 @@ export const resumenCentroStyles = StyleSheet.create({
   seccion: {
     gap: 12,
   },
-});
+}));
 
 // ─── TarjetaCitasSemana ───
-export const tarjetaCitasSemanaStyles = StyleSheet.create({
+export const useTarjetaCitasSemanaStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flex: 1,
     gap: 4,
@@ -36,17 +36,17 @@ export const tarjetaCitasSemanaStyles = StyleSheet.create({
     color: COLORES.texto,
     marginBottom: 6,
   },
-});
+}));
 
 // ─── TarjetaSuscripcion ───
-export const tarjetaSuscripcionStyles = StyleSheet.create({
+export const useTarjetaSuscripcionStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     gap: 8,
     padding: 16,
     borderRadius: RADIOS.md,
     borderWidth: 1,
     borderColor: COLORES.borde,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   cabecera: {
     flexDirection: 'row',
@@ -75,15 +75,15 @@ export const tarjetaSuscripcionStyles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 8,
   },
-});
+}));
 
 // ─── ListaAhoraCentro ───
-export const listaAhoraCentroStyles = StyleSheet.create({
+export const useListaAhoraCentroStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     borderRadius: RADIOS.md,
     borderWidth: 1,
     borderColor: COLORES.borde,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   fila: {
     flexDirection: 'row',
@@ -123,10 +123,10 @@ export const listaAhoraCentroStyles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 2,
   },
-});
+}));
 
 // ─── TarjetaHorarioHoy ───
-export const tarjetaHorarioHoyStyles = StyleSheet.create({
+export const useTarjetaHorarioHoyStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     padding: 14,
   },
@@ -140,13 +140,13 @@ export const tarjetaHorarioHoyStyles = StyleSheet.create({
     lineHeight: 20,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── EquipoScreen / FilaMiembro ───
-export const filaMiembroStyles = StyleSheet.create({
+export const useFilaMiembroStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 6px 18px rgba(11, 59, 53, 0.08)',
   },
   fila: {
@@ -173,13 +173,13 @@ export const filaMiembroStyles = StyleSheet.create({
     fontSize: 13,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── TablaHorarios ───
-export const tablaHorariosStyles = StyleSheet.create({
+export const useTablaHorariosStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   fila: {
     flexDirection: 'row',
@@ -214,15 +214,15 @@ export const tablaHorariosStyles = StyleSheet.create({
     fontSize: 12,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── MiCentroScreen ───
-export const miCentroStyles = StyleSheet.create({
+export const useMiCentroStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     gap: 10,
     padding: 16,
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   nombre: {
     fontFamily: FUENTES.extrabold,
@@ -245,21 +245,21 @@ export const miCentroStyles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 6,
   },
-});
+}));
 
 // ─── TarjetaPlan ───
-export const tarjetaPlanStyles = StyleSheet.create({
+export const useTarjetaPlanStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     gap: 4,
     padding: 16,
     borderRadius: RADIOS.md,
     borderWidth: 1.5,
     borderColor: COLORES.borde,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   actual: {
     borderColor: COLORES.primario,
-    backgroundColor: '#F1FAF8',
+    backgroundColor: COLORES.fondoMenta,
   },
   cabecera: {
     flexDirection: 'row',
@@ -291,11 +291,11 @@ export const tarjetaPlanStyles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingTop: 6,
   },
-});
+}));
 
 // ─── EditarCentroScreen ───
-export const editarCentroStyles = StyleSheet.create({
+export const useEditarCentroStyles = crearEstilos(() => ({
   formulario: {
     gap: 16,
   },
-});
+}));

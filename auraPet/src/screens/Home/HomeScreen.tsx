@@ -12,6 +12,7 @@ import { Colors, CONTACTO_INICIO_VACIO, LIMITES_CONTACTO, PASOS_HOME, TESTIMONIO
 import { LoginScreen } from "../Login/LoginScreen";
 import "../../css/HomePage.css";
 import { Servicios } from "../../components/Servicios";
+import { FranjaUrgencias } from "../../components/urgencias/FranjaUrgencias";
 import { usePreguntasFrecuentes } from "../../hooks/usePreguntasFrecuentes";
 import fondo from '../../assets/Home/fondo.png';
 import Historial from '../../assets/Home/Historial.png'; 
@@ -73,6 +74,9 @@ export const HomeScreen = () => {
           </button>
         </div>
       </header>
+
+      {/* Urgencias: sin cuenta, directo a quién llamar */}
+      <FranjaUrgencias />
 
       {/* Servicios */}
       <Servicios />

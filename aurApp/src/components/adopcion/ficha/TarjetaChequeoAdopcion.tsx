@@ -1,13 +1,17 @@
 import { Text, View } from 'react-native';
 
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, TEXTOS_FICHA_ADOPCION as T, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaChequeoStyles as styles } from '@/css/FichaAdopcionPage';
+import { TEXTOS_FICHA_ADOPCION as T } from '@/constants/constants';
+import { useTarjetaChequeoStyles } from '@/css/FichaAdopcionPage';
 import type { TarjetaChequeoAdopcionProps } from '@/interfaces';
 import { formatFechaLarga } from '@/lib/fechas';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 /** El último chequeo veterinario, o el aviso "Revisión solicitada" si aún no lo revisan. */
 export function TarjetaChequeoAdopcion({ chequeo, solicitado }: TarjetaChequeoAdopcionProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaChequeoStyles();
   if (!chequeo && !solicitado) return null;
   if (!chequeo) {
     return (

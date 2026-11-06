@@ -1,13 +1,15 @@
 import { Text, View } from 'react-native';
 
-import { COLORES } from '@/constants/constants';
-import { tarjetaListaIconosStyles as styles } from '@/css/Compartido';
+import { useTarjetaListaIconosStyles } from '@/css/Compartido';
 import type { TarjetaListaIconosProps } from '@/interfaces';
 
 import { Icono } from './Icono';
+import { useColores } from '@/context/TemaContext';
 
 /** Tarjeta blanca con un título y una lista corta, cada ítem con su ícono. */
 export function TarjetaListaIconos({ titulo, items }: TarjetaListaIconosProps) {
+  const COLORES = useColores();
+  const styles = useTarjetaListaIconosStyles();
   return (
     <View style={styles.tarjeta}>
       <Text style={styles.titulo}>{titulo}</Text>

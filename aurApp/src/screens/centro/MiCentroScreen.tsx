@@ -1,7 +1,9 @@
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 
+import { PanelEstadoUci } from '@/components/centro/PanelEstadoUci';
 import { TablaHorarios } from '@/components/centro/TablaHorarios';
+import { TarjetaUrgenciasCentro } from '@/components/centro/TarjetaUrgenciasCentro';
 import { BotonSecundario } from '@/components/formulario/BotonSecundario';
 import { MenuPerfil } from '@/components/perfil/MenuPerfil';
 import { EncabezadoPagina } from '@/components/ui/EncabezadoPagina';
@@ -12,16 +14,19 @@ import { FilaOpcion } from '@/components/ui/FilaOpcion';
 import { Icono } from '@/components/ui/Icono';
 import { PantallaLista } from '@/components/ui/PantallaLista';
 import { TituloSeccion } from '@/components/ui/TituloSeccion';
-import { COLORES, TEXTOS_CARGA, TEXTOS_LOGIN, TEXTOS_MI_CENTRO as T } from '@/constants/constants';
+import { TEXTOS_CARGA, TEXTOS_LOGIN, TEXTOS_MI_CENTRO as T, TEXTOS_MI_CENTRO_EXTRA } from '@/constants/constants';
 import { useAuth } from '@/Auth/AuthContext';
 import { useCentro } from '@/context/CentroContext';
-import { miCentroStyles as styles } from '@/css/CentroPage';
+import { useMiCentroStyles } from '@/css/CentroPage';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
 import { useMisRefugios } from '@/hooks/useMisRefugios';
 import { formatearTelefono } from '@/lib/formatos';
+import { useColores } from '@/context/TemaContext';
 
 /** Datos y horarios del centro, accesos a editar y a planes, y la cuenta de quien administra. */
 export default function MiCentroScreen() {
+  const COLORES = useColores();
+  const styles = useMiCentroStyles();
   useBarraEstadoClara();
   const { usuarioActual, logout } = useAuth();
   const c = useCentro();
@@ -59,6 +64,9 @@ export default function MiCentroScreen() {
           )}
         </View>
 
+        <TarjetaUrgenciasCentro key={d.id} centro={d} onGuardado={c.recargar} />
+        {d.tieneUci && <PanelEstadoUci centroId={d.id} />}
+
         <TituloSeccion texto={T.horarios} />
         <TablaHorarios horarios={d.horarios} />
       </>
@@ -78,6 +86,8 @@ export default function MiCentroScreen() {
         opcionesExtra={
           <>
             <FilaOpcion icono="editar" tono="menta" texto={T.editar} onPress={() => router.push('/centro/editar')} />
+            <FilaOpcion icono="reloj" tono="lavanda" texto={TEXTOS_MI_CENTRO_EXTRA.horario} onPress={() => router.push('/centro/horario')} />
+            <FilaOpcion icono="estetoscopio" tono="crema" texto={TEXTOS_MI_CENTRO_EXTRA.especialidades} onPress={() => router.push('/centro/especialidades')} />
             <FilaOpcion icono="plan" tono="durazno" texto={T.planes} onPress={() => router.push('/centro/planes')} />
             {esVeterinario && <FilaOpcion icono="hoy" tono="crema" texto={T.volverAgenda} onPress={() => c.cambiarModoCentro(false)} />}
           </>

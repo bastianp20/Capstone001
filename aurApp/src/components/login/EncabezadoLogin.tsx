@@ -4,15 +4,18 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EncabezadoVerde } from '@/components/ui/EncabezadoVerde';
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, HUELLAS_ENCABEZADO_LOGIN, TEXTOS_LOGIN } from '@/constants/constants';
-import { encabezadoLoginStyles as styles } from '@/css/LoginPage';
+import { HUELLAS_ENCABEZADO_LOGIN, TEXTOS_LOGIN } from '@/constants/constants';
+import { useEncabezadoLoginStyles } from '@/css/LoginPage';
 import type { EncabezadoLoginProps } from '@/interfaces';
+import { useColores } from '@/context/TemaContext';
 
 const IMAGEN_MASCOTAS = require('@/assets/images/login/mascotas-login.png');
 const RELACION_IMAGEN = 497 / 663; // alto / ancho del PNG
 
 /** Zona verde con el logo y el perro y el gato tipo sticker sobresaliendo de la onda. */
 export function EncabezadoLogin({ alto }: EncabezadoLoginProps) {
+  const COLORES = useColores();
+  const styles = useEncabezadoLoginStyles();
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const anchoImagen = Math.min(width * 0.6, 260);

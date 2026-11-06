@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import styles from "../css/modal/CrearProfesionalModal.module.css"; // mismo diseño que los otros modales de crear
-import type { CrearCentroModalProps, DiaFormulario, HorarioCentroNuevo } from "../interfaces";
+import type { CrearCentroModalProps, DiaFormulario } from "../interfaces";
+import { horariosDesdeDias, validarDiasCentro } from "../lib/horarioCentro";
 import { DIAS_INICIALES_CENTRO } from "../constants";
 import { useConsulta } from "../hooks/useConsulta";
 import { getEspecialidades } from "../Api/getInfo";
@@ -33,29 +34,13 @@ export const ModalCrearCentro = ({ onClose }: CrearCentroModalProps) => {
       actuales.includes(id) ? actuales.filter((e) => e !== id) : [...actuales, id]
     );
 
-  // Revisa los horarios antes de mandarlos (la base igual los vuelve a revisar)
-  const validarHorarios = (): string | null => {
-    const abiertos = dias.filter((d) => d.atiende);
-    if (abiertos.length === 0) return "Marca al menos un día de atención.";
-    for (const d of abiertos) {
-      if (!d.abre || !d.cierra || d.cierra <= d.abre) {
-        return `${d.nombre}: la hora de cierre debe ser después de la de apertura.`;
-      }
-      if (d.conColacion) {
-        const ok = d.abre < d.inicioColacion && d.inicioColacion < d.finColacion && d.finColacion < d.cierra;
-        if (!ok) return `${d.nombre}: la colación debe quedar dentro del horario de atención.`;
-      }
-    }
-    return null;
-  };
-
   const enviar = async (e: FormEvent) => {
     e.preventDefault();
     if (!nombre.trim() || !direccion.trim() || !comuna.trim()) {
       setError("Completa nombre, dirección y comuna.");
       return;
     }
-    const errorHorario = validarHorarios();
+    const errorHorario = validarDiasCentro(dias);
     if (errorHorario) {
       setError(errorHorario);
       return;
@@ -63,15 +48,7 @@ export const ModalCrearCentro = ({ onClose }: CrearCentroModalProps) => {
     setEnviando(true);
     setError(null);
     try {
-      const horarios: HorarioCentroNuevo[] = dias
-        .filter((d) => d.atiende)
-        .map((d) => ({
-          dia_semana: d.dia,
-          abre: d.abre,
-          cierra: d.cierra,
-          inicio_colacion: d.conColacion ? d.inicioColacion : null,
-          fin_colacion: d.conColacion ? d.finColacion : null,
-        }));
+      const horarios = horariosDesdeDias(dias);
       const soloNumeros = telefono.replace(/\D/g, ""); // "2 2345 6789" → "223456789"
       await crearCentro({
         nombre,

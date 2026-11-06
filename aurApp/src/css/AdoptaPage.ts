@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── AdoptaScreen ───
-export const adoptaStyles = StyleSheet.create({
+export const useAdoptaStyles = crearEstilos((COLORES) => ({
   acciones: {
     flexDirection: 'row',
     gap: 8,
@@ -24,10 +24,10 @@ export const adoptaStyles = StyleSheet.create({
     fontSize: 15,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── CifrasAdopcion (sobre el verde del encabezado) ───
-export const cifrasAdopcionStyles = StyleSheet.create({
+export const useCifrasAdopcionStyles = crearEstilos((COLORES) => ({
   fila: {
     flexDirection: 'row',
     gap: 8,
@@ -49,10 +49,10 @@ export const cifrasAdopcionStyles = StyleSheet.create({
     fontSize: 11.5,
     color: COLORES.textoSobrePrimarioSuave,
   },
-});
+}));
 
 // ─── BotonFiltros ───
-export const botonFiltrosStyles = StyleSheet.create({
+export const useBotonFiltrosStyles = crearEstilos((COLORES) => ({
   boton: {
     width: 48,
     height: 48,
@@ -61,7 +61,7 @@ export const botonFiltrosStyles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: COLORES.bordeCampo,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   activo: {
     borderColor: COLORES.primario,
@@ -83,20 +83,20 @@ export const botonFiltrosStyles = StyleSheet.create({
     lineHeight: 20,
     textAlign: 'center',
   },
-});
+}));
 
 // ─── GrillaAnimalesAdopcion / TarjetaAnimalAdopcion ───
-export const grillaAnimalesStyles = StyleSheet.create({
+export const useGrillaAnimalesStyles = crearEstilos(() => ({
   grilla: {
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
-});
+}));
 
-export const tarjetaAnimalStyles = StyleSheet.create({
+export const useTarjetaAnimalStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     overflow: 'hidden',
     boxShadow: '0 8px 20px rgba(11, 59, 53, 0.08)',
   },
@@ -150,10 +150,10 @@ export const tarjetaAnimalStyles = StyleSheet.create({
   sello: {
     marginTop: 4,
   },
-});
+}));
 
 // ─── BotonGuardar ───
-export const botonGuardarStyles = StyleSheet.create({
+export const useBotonGuardarStyles = crearEstilos(() => ({
   boton: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -163,10 +163,10 @@ export const botonGuardarStyles = StyleSheet.create({
   presionado: {
     transform: [{ scale: 0.9 }],
   },
-});
+}));
 
 // ─── SelloRevisado ───
-export const selloRevisadoStyles = StyleSheet.create({
+export const useSelloRevisadoStyles = crearEstilos((COLORES) => ({
   sello: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -182,10 +182,10 @@ export const selloRevisadoStyles = StyleSheet.create({
     fontSize: 11.5,
     color: COLORES.primarioOscuro,
   },
-});
+}));
 
 // ─── FiltroRefugioActivo ───
-export const filtroRefugioActivoStyles = StyleSheet.create({
+export const useFiltroRefugioActivoStyles = crearEstilos((COLORES) => ({
   fila: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -206,15 +206,15 @@ export const filtroRefugioActivoStyles = StyleSheet.create({
     fontSize: 13.5,
     color: COLORES.primario,
   },
-});
+}));
 
 // ─── TarjetaDarEnAdopcion ───
-export const tarjetaDarEnAdopcionStyles = StyleSheet.create({
+export const useTarjetaDarEnAdopcionStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   tarjeta: {
     gap: 12,
     padding: 18,
     borderRadius: RADIOS.lg,
-    backgroundColor: '#FFE6D5',
+    backgroundColor: TONOS_TARJETA.durazno.fondo,
   },
   encabezado: {
     flexDirection: 'row',
@@ -227,7 +227,7 @@ export const tarjetaDarEnAdopcionStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 16,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   textos: {
     flex: 1,
@@ -248,10 +248,10 @@ export const tarjetaDarEnAdopcionStyles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
   },
-});
+}));
 
 // ─── HojaFiltrosAdopcion ───
-export const hojaFiltrosAdopcionStyles = StyleSheet.create({
+export const useHojaFiltrosAdopcionStyles = crearEstilos((COLORES) => ({
   contenido: {
     gap: 18,
     paddingBottom: 4,
@@ -276,13 +276,13 @@ export const hojaFiltrosAdopcionStyles = StyleSheet.create({
   boton: {
     flex: 1,
   },
-});
+}));
 
 // ─── TarjetaRefugio ───
-export const tarjetaRefugioStyles = StyleSheet.create({
+export const useTarjetaRefugioStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     borderRadius: RADIOS.lg,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     overflow: 'hidden',
     boxShadow: '0 8px 20px rgba(11, 59, 53, 0.08)',
   },
@@ -299,8 +299,8 @@ export const tarjetaRefugioStyles = StyleSheet.create({
     height: 60,
     borderRadius: 18,
     borderWidth: 3,
-    borderColor: COLORES.blanco,
-    backgroundColor: COLORES.blanco,
+    borderColor: COLORES.superficie,
+    backgroundColor: COLORES.superficie,
   },
   logoVacio: {
     alignItems: 'center',
@@ -366,15 +366,15 @@ export const tarjetaRefugioStyles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
   },
-});
+}));
 
 // ─── TarjetaSumateRefugio ───
-export const tarjetaSumateStyles = StyleSheet.create({
+export const useTarjetaSumateStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   tarjeta: {
     gap: 10,
     padding: 18,
     borderRadius: RADIOS.lg,
-    backgroundColor: '#E9E4FB',
+    backgroundColor: TONOS_TARJETA.lavanda.fondo,
   },
   titulo: {
     fontFamily: FUENTES.extrabold,
@@ -387,4 +387,4 @@ export const tarjetaSumateStyles = StyleSheet.create({
     lineHeight: 18,
     color: COLORES.texto,
   },
-});
+}));

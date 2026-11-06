@@ -11,11 +11,12 @@ import { IndicadorPasos } from '@/components/ui/IndicadorPasos';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { ResultadoSolicitud } from '@/components/ui/ResultadoSolicitud';
 import { PASOS_POSTULACION, TEXTOS_POSTULACION as T } from '@/constants/constants';
-import { postularAdopcionStyles as styles } from '@/css/PostularAdopcionPage';
+import { usePostularAdopcionStyles } from '@/css/PostularAdopcionPage';
 import { usePostularAdopcion } from '@/hooks/usePostularAdopcion';
 
 /** "Quiero adoptarlo" en 4 pasos: Tu hogar · Tu familia · Experiencia · Confirmar. */
 export default function PostularAdopcionScreen() {
+  const styles = usePostularAdopcionStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const p = usePostularAdopcion(Number(id));
   const titulo = T.titulo(p.nombreAnimal);

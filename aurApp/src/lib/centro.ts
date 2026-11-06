@@ -1,8 +1,9 @@
-import { TEXTOS_CENTRO } from '@/constants/constants';
+import { TEXTOS_CENTRO, TEXTOS_HORARIO_CENTRO } from '@/constants/constants';
 import type { CentroDetalle, CitaCentro, FiltroAgendaCentro, SuscripcionCentro } from '@/interfaces';
 
 import { horarioDelDia } from './agenda';
 import { diaDeCita, diaSemanaIso, hoy, sumarDias, tiempoHasta } from './fechas';
+import { esDiaCompleto } from './horarioCentro';
 
 // Reglas de la vista del administrador de centro.
 
@@ -44,6 +45,7 @@ export const textoHorarioHoy = (detalle: CentroDetalle): string => {
   if (detalle.horarios.length === 0) return TEXTOS_CENTRO.sinHorarios;
   const h = horarioDelDia(hoy(), detalle.horarios);
   if (!h) return TEXTOS_CENTRO.cerradoHoy;
+  if (esDiaCompleto(h)) return TEXTOS_HORARIO_CENTRO.diaCompleto;
   return TEXTOS_CENTRO.textoHorario(h.abre, h.cierra, h.inicioColacion ? `${h.inicioColacion} a ${h.finColacion}` : null);
 };
 

@@ -9,11 +9,12 @@ import { EstadoVacio } from '@/components/ui/EstadoVacio';
 import { ModalTexto } from '@/components/ui/ModalTexto';
 import { PantallaLista } from '@/components/ui/PantallaLista';
 import { TEXTOS_APROBACIONES as T, TEXTOS_CARGA } from '@/constants/constants';
-import { listaGruposStyles as styles } from '@/css/Compartido';
+import { useListaGruposStyles } from '@/css/Compartido';
 import { useAprobaciones } from '@/hooks/useAprobaciones';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
 
 export default function AprobacionesScreen() {
+  const styles = useListaGruposStyles();
   useBarraEstadoClara();
   const a = useAprobaciones();
   const { superadmin: s, resolver: r } = a;

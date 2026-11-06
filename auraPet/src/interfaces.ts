@@ -457,7 +457,11 @@ export interface CentroDetalle {
   telefono: number | null;
   esPrueba: boolean;
   especialidades: string[];
+  especialidadIds: number[];
   horarios: HorarioCentro[];
+  tieneUci: boolean;
+  urgencias247: boolean;
+  urgenciasRevisadas: boolean;     // ya respondió las preguntas de urgencias/UCI
 }
 
 export interface MiembroEquipo {
@@ -626,6 +630,8 @@ export interface InicioVeterinarioProps {
   onRecetar: (mascotaId: number) => void;
   onVerPorConfirmar?: () => void;     // abre la agenda en las solicitudes por confirmar
   recargaExterna?: number;            // cambia cuando otra pantalla (la agenda) modificó citas
+  onCompletarPerfil: (paso: PasoPerfilVeterinario) => void; // un paso de "Completa tu perfil"
+  recargaPerfil?: number;             // cambia al cerrar Configuración (foto, teléfono, especialidades)
 }
 
 export interface ProximaCitaProps {
@@ -1022,7 +1028,7 @@ export interface FormDatosClinicosProps {
   onCancelar: () => void;
 }
 
-export type VarianteBoton = "primario" | "secundario" | "peligro";
+export type VarianteBoton = "primario" | "secundario" | "peligro" | "secundarioClaro"; // secundarioClaro: sobre paneles claros
 
 export interface BotonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variante?: VarianteBoton;           // por defecto "primario"
@@ -2028,6 +2034,7 @@ export interface OpcionTema {
 // ---- Configuración (Modal/ConfiguracionModal.tsx) ----
 export interface ConfiguracionModalProps {
   onCerrar: () => void;
+  seccionInicial?: SeccionConfiguracion; // abre esa sección (p. ej. desde "Completa tu perfil")
 }
 
 export type SeccionConfiguracion = "perfil" | "especialidades" | "seguridad" | "apariencia" | "notificaciones" | "privacidad" | "ayuda";
@@ -2069,6 +2076,10 @@ export interface CitaAgendaItem {
   motivo: string;
   estado: EstadoCita;
   urgencia: UrgenciaCita;
+  fechaHora: string;      // ISO de la base (para reagendar y agrupar por día)
+  centroId: number | null;
+  centro: string | null;  // null = atención independiente
+  reagendada: boolean;    // el veterinario le cambió la hora
 }
 
 // ---- Crear centro (Modal/CrearCentroModal.tsx): un día del formulario de horarios ----
@@ -2884,7 +2895,7 @@ export interface FiltrosSolidaria {
 }
 
 // Lo que muestra el centro del panel del veterinario
-export type VistaVeterinario = 'inicio' | 'publicaciones' | 'solidaria' | 'refugio';
+export type VistaVeterinario = 'inicio' | 'agenda' | 'publicaciones' | 'solidaria' | 'refugio' | 'horario';
 
 export interface SeccionAdopcionSolidariaProps {
   veterinario: string; // nombre para la vista previa del sello
@@ -3615,4 +3626,400 @@ export interface CampoComunaRefugioProps {
 
 export interface DatosPostulacionRefugioProps {
   refugio: RefugioAdmin;
+}
+
+
+// =====================================================================
+// Mi horario del veterinario: reagendar, cancelar y bloquear horas (migración 52)
+// =====================================================================
+export interface BloqueoHorario {
+  id: number;
+  desde: string;   // ISO
+  hasta: string;   // ISO
+  motivo: string;
+}
+
+export type AccionCambioCita = "reagendar" | "cancelar";
+
+// Lo que se manda junto con cualquier cambio: el mensaje y si se avisa al centro
+export interface DatosAvisoCambio {
+  mensaje: string;
+  avisarCentro: boolean;
+}
+
+export interface DatosReagendarCita extends DatosAvisoCambio {
+  citaId: number;
+  nuevaFecha: string;  // ISO
+}
+
+export interface DatosCancelarCitaVeterinario extends DatosAvisoCambio {
+  citaId: number;
+  motivo: string;
+}
+
+export interface DatosBloquearHorario extends DatosAvisoCambio {
+  desde: string;          // ISO
+  hasta: string;          // ISO
+  motivo: string;
+  cancelarCitas: boolean; // cancela (y avisa) las citas que caen en el rango
+}
+
+export interface ModificarCitaModalProps {
+  cita: CitaAgendaItem;
+  horasLibres?: HoraLibre[];  // desde la grilla: reagendar eligiendo una hora libre
+  onCerrar: () => void;
+  onListo: () => void;    // se guardó el cambio (para recargar la agenda)
+}
+
+export interface BloquearHorarioModalProps {
+  citas: CitaAgendaItem[];   // la agenda, para mostrar las citas que caen en el rango
+  inicial?: ValoresBloqueo;  // desde la grilla: la hora que se tocó
+  onCerrar: () => void;
+  onListo: () => void;
+}
+
+export interface AvisarCambioProps {
+  dueno: string;
+  centros: string[];         // centros a los que se puede avisar (vacío = solo el dueño)
+  avisarCentro: boolean;
+  onAvisarCentro: (valor: boolean) => void;
+  mensaje: string;
+  onMensaje: (valor: string) => void;
+  deshabilitado: boolean;
+}
+
+export interface ChipsMotivoProps {
+  etiqueta: string;
+  opciones: readonly string[];
+  valor: string;
+  onCambiar: (valor: string) => void;
+  deshabilitado: boolean;
+}
+
+export interface ResumenCambioProps {
+  titulo: string;
+  detalle: string;
+  onCerrar: () => void;
+}
+
+// Avisos de cambios de hora (dueño y administradores de centro)
+export type TipoAvisoCita = "cita_reagendada" | "cita_cancelada";
+
+export interface AvisoCita {
+  id: number;
+  tipo: TipoAvisoCita;
+  titulo: string;
+  mensaje: string;
+  fechaAnterior: string | null;
+  fechaNueva: string | null;
+  creadaEn: string;
+}
+
+export interface AvisosCitasProps {
+  centroId?: number;   // en el panel del centro: solo los avisos de ese centro
+}
+
+
+// =====================================================================
+// Horario de atención y perfil profesional del veterinario (migración 53)
+// =====================================================================
+export interface TramoHorario {
+  centroId: number | null;   // null = atención independiente
+  diaSemana: number;         // 1 = lunes ... 7 = domingo
+  desde: string;             // "09:00"
+  hasta: string;             // "18:00"
+}
+
+export interface HorarioCentroDia {
+  diaSemana: number;
+  abre: string;
+  cierra: string;
+}
+
+export interface LugarAtencion {
+  centroId: number | null;
+  nombre: string | null;     // null = atención independiente
+  horarioCentro: HorarioCentroDia[];
+}
+
+export interface HorarioAtencion {
+  independiente: boolean;
+  urgencias247: boolean;
+  aDomicilio: boolean;
+  comunas: string[];
+  duracion: number;
+  lugares: LugarAtencion[];
+  tramos: TramoHorario[];
+}
+
+// Formulario: un día de un lugar
+export interface DiaHorarioForm {
+  activo: boolean;
+  desde: string;
+  hasta: string;
+}
+
+// Clave del lugar (id del centro o "independiente") -> sus 7 días (índice 0 = lunes)
+export type HorarioPorLugar = Record<string, DiaHorarioForm[]>;
+
+export interface DatosHorarioAtencion {
+  tramos: TramoHorario[];
+  duracion: number;
+  urgencias247: boolean;
+  aDomicilio: boolean;
+  comunas: string[];
+}
+
+export type PasoPerfilVeterinario = "foto" | "telefono" | "especialidades" | "colegiado" | "horario" | "zona";
+
+export interface ProgresoPerfilVeterinario {
+  independiente: boolean;
+  pasos: Partial<Record<PasoPerfilVeterinario, boolean>>; // sin "zona" si no es independiente
+}
+
+export interface ProgresoPerfilProps {
+  recarga: number;
+  onCompletar: (paso: PasoPerfilVeterinario) => void;
+}
+
+export interface TarjetaLugarHorarioProps {
+  lugar: LugarAtencion;
+  dias: DiaHorarioForm[];
+  onCambiarDia: (indice: number, cambio: Partial<DiaHorarioForm>) => void;
+  onUsarHorarioCentro: () => void;
+  deshabilitado: boolean;
+}
+
+export interface CampoComunasProps {
+  comunas: string[];
+  onCambiar: (comunas: string[]) => void;
+  deshabilitado: boolean;
+}
+
+export interface TarjetaColegiadoProps {
+  onRegistrado: () => void;
+}
+
+// Lo que se edita en "Mi horario de atención" (hooks/useHorarioAtencion.ts)
+export interface EstadoHorarioAtencion {
+  mostrarTelefono: boolean;  // aparecer con su teléfono en /urgencias (migración 55)
+  form: HorarioPorLugar;
+  duracion: number;
+  urgencias247: boolean;
+  aDomicilio: boolean;
+  comunas: string[];
+}
+
+// =====================================================================
+// Mi Agenda: la semana con todas las horas (etapa 2)
+// =====================================================================
+export type TipoCeldaAgenda = "libre" | "tomada" | "bloqueada" | "pasada";
+
+export interface CeldaAgenda {
+  fecha: string;             // "2026-11-06"
+  hora: string;              // "16:00"
+  inicio: string;            // ISO
+  fin: string;               // ISO
+  tipo: TipoCeldaAgenda;
+  cita: CitaAgendaItem | null;
+  bloqueo: BloqueoHorario | null;
+  fueraDeHorario: boolean;   // una cita que cae fuera del horario configurado
+}
+
+export interface DiaSemanaAgenda {
+  fecha: string;
+  titulo: string;            // "Jueves 6 nov"
+  esHoy: boolean;
+}
+
+export interface SemanaAgenda {
+  dias: DiaSemanaAgenda[];
+  horas: string[];                       // filas de la grilla, ordenadas
+  celdas: Record<string, CeldaAgenda>;   // clave "fecha|hora"
+}
+
+export interface DatosSemanaAgenda {
+  tramos: TramoHorario[];
+  duracion: number;
+  citas: CitaAgendaItem[];
+  bloqueos: BloqueoHorario[];
+  ahora: Date;
+}
+
+export interface HoraLibre {
+  fecha: string;
+  hora: string;
+  inicio: string;            // ISO
+}
+
+export interface SeccionMiAgendaProps {
+  veterinarioId: number;
+  onConfigurarHorario: () => void;
+  onVerPorConfirmar: () => void;
+  recarga: number;           // sube cuando el modal de la agenda cambió algo
+  onCambio: () => void;      // avisa al resto del panel (inicio)
+}
+
+export interface GrillaSemanaProps {
+  semana: SemanaAgenda;
+  onElegirCelda: (celda: CeldaAgenda) => void;
+}
+
+export interface CeldaAgendaProps {
+  celda: CeldaAgenda | undefined;
+  onElegir: (celda: CeldaAgenda) => void;
+}
+
+export interface SelectorHoraLibreProps {
+  horas: HoraLibre[];
+  elegida: string | null;    // inicio ISO de la elegida
+  onElegir: (hora: HoraLibre) => void;
+  deshabilitado: boolean;
+}
+
+export interface ValoresBloqueo {
+  fecha: string;
+  desde: string;
+  hasta: string;
+}
+
+
+// =====================================================================
+// Centros: horario editable, urgencias, UCI y progreso (migración 54)
+// =====================================================================
+export type EstadoUci = "disponible" | "pocos_cupos" | "sin_cupos" | "no_operativa";
+export type MotivoUci = "faltan_profesionales" | "falta_instrumental" | "otro";
+
+export interface EstadoUciCentro {
+  centroId: number;
+  estado: EstadoUci;
+  motivo: MotivoUci | null;
+  detalle: string | null;
+  actualizadoEn: string;
+}
+
+export interface OpcionEstadoUci {
+  valor: EstadoUci;
+  texto: string;
+  ayuda: string;
+}
+
+export interface OpcionMotivoUci {
+  valor: MotivoUci;
+  texto: string;
+}
+
+export type PasoPerfilCentro = "telefono" | "horario" | "especialidades" | "equipo" | "urgencias";
+export type ProgresoPerfilCentro = Record<PasoPerfilCentro, boolean>;
+
+// Tarjeta de progreso genérica (veterinario y centro)
+export interface PasoProgreso {
+  id: string;
+  texto: string;
+  Icono: LucideIcon;
+}
+
+export interface TarjetaProgresoProps {
+  titulo: string;
+  porcentaje: number;
+  textoPorcentaje: string;   // "Tu perfil está al 60%"
+  ayuda: string;
+  pendientes: PasoProgreso[];
+  onElegir: (id: string) => void;
+}
+
+export interface ProgresoPerfilCentroProps {
+  centroId: number;
+  recarga?: number;
+  onIrA: (seccion: SeccionCentroAdmin) => void;
+}
+
+export interface TarjetaDeCentroProps {
+  centro: CentroDetalle;
+  onGuardado: () => void;
+}
+
+export interface FilasHorarioCentroProps {
+  dias: DiaFormulario[];
+  onCambiarDia: (dia: number, cambio: Partial<DiaFormulario>) => void;
+  deshabilitado: boolean;
+}
+
+export interface PanelEstadoUciProps {
+  centroId: number;
+  compacto?: boolean;    // en el Resumen: solo los botones de estado
+}
+
+export interface DatosEstadoUci {
+  estado: EstadoUci;
+  motivo: MotivoUci | null;
+  detalle: string;
+}
+
+
+// =====================================================================
+// Urgencias sin cuenta: página pública /urgencias (migración 55)
+// =====================================================================
+export interface CentroUrgencia {
+  id: number;
+  nombre: string;
+  direccion: string;
+  comuna: string;
+  telefono: number | null;
+  urgencias247: boolean;
+  tieneUci: boolean;
+  estadoUci: EstadoUciCentro | null;
+  horarios: HorarioCentro[];
+}
+
+export interface VeterinarioUrgencia {
+  id: number;
+  nombre: string;
+  telefono: number;
+  avatarUrl: string | null;
+  aDomicilio: boolean;
+  comunas: string[];
+}
+
+export interface ListaUrgencias {
+  centros: CentroUrgencia[];
+  veterinarios: VeterinarioUrgencia[];
+}
+
+// Un centro listo para mostrar: si está abierto ahora y en qué orden va
+export interface CentroUrgenciaVista extends CentroUrgencia {
+  abiertoAhora: boolean;
+  uciVigente: boolean;       // tiene estado de UCI actualizado hace poco
+  prioridad: number;         // 0 = UCI con lugar · 1 = 24/7 · 2 = abierto · 3 = cerrado
+}
+
+export interface FiltrosUrgencias {
+  comuna: string;            // "" = todas
+  soloAbiertos: boolean;
+  soloUciDisponible: boolean;
+}
+
+export interface FiltrosUrgenciasProps {
+  comunas: string[];
+  filtros: FiltrosUrgencias;
+  onCambiar: (cambio: Partial<FiltrosUrgencias>) => void;
+}
+
+export interface TarjetaCentroUrgenciaProps {
+  centro: CentroUrgenciaVista;
+  ahora: Date;
+}
+
+export interface TarjetaVetUrgenciaProps {
+  veterinario: VeterinarioUrgencia;
+}
+
+export interface EtiquetaEstadoUciProps {
+  estado: EstadoUciCentro;
+  ahora: Date;
+}
+
+export interface TelefonoEnUrgencias {
+  mostrar: boolean;
+  tieneTelefono: boolean;
 }

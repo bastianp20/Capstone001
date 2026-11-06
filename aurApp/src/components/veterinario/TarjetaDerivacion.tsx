@@ -3,12 +3,15 @@ import { Text, View } from 'react-native';
 import { BotonPequeno } from '@/components/ui/BotonPequeno';
 import { Etiqueta } from '@/components/ui/Etiqueta';
 import { TarjetaPastel } from '@/components/ui/TarjetaPastel';
-import { ESTADO_DERIVACION_LABEL, TEXTOS_DERIVACIONES as T, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaDerivacionStyles as styles } from '@/css/VeterinarioPage';
+import { ESTADO_DERIVACION_LABEL, TEXTOS_DERIVACIONES as T } from '@/constants/constants';
+import { useTarjetaDerivacionStyles } from '@/css/VeterinarioPage';
 import type { TarjetaDerivacionProps } from '@/interfaces';
 import { formatFechaCorta } from '@/lib/fechas';
+import { useTonosTarjeta } from '@/context/TemaContext';
 
 export function TarjetaDerivacion({ derivacion: d, ocupado, onRealizada, onRechazar }: TarjetaDerivacionProps) {
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaDerivacionStyles();
   const tono = d.recibida ? 'lavanda' : 'crema';
   const colores = TONOS_TARJETA[tono];
   const pendiente = d.estado === 'pendiente';

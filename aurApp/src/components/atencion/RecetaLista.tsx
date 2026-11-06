@@ -3,16 +3,19 @@ import Svg, { Path, Rect } from 'react-native-svg';
 
 import { MensajeFormulario } from '@/components/formulario/MensajeFormulario';
 import { CirculoIcono } from '@/components/ui/CirculoIcono';
-import { COLORES, TEXTOS_RECETA_ATENCION as T } from '@/constants/constants';
-import { recetaListaStyles as styles } from '@/css/RecetaPage';
+import { TEXTOS_RECETA_ATENCION as T } from '@/constants/constants';
+import { useRecetaListaStyles } from '@/css/RecetaPage';
 import type { CanalReceta, RecetaListaProps } from '@/interfaces';
 
 import { BotonCanal } from './BotonCanal';
+import { useColores } from '@/context/TemaContext';
 
 const CANALES: CanalReceta[] = ['whatsapp', 'correo', 'guardar'];
 
 /** "¡Receta lista!": quedó en la ficha y se puede enviar o guardar en PDF. */
 export function RecetaLista({ mascota, dueno, ocupado, error, onCompartir, onVolver }: RecetaListaProps) {
+  const COLORES = useColores();
+  const styles = useRecetaListaStyles();
   return (
     <View style={styles.contenedor}>
       <View style={styles.halo}>

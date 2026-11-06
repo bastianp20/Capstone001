@@ -1,10 +1,11 @@
 import { Text, View } from 'react-native';
 
-import { mensajeFormularioStyles as styles } from '@/css/Compartido';
+import { useMensajeFormularioStyles } from '@/css/Compartido';
 import type { MensajeFormularioProps } from '@/interfaces';
 
 /** Caja de error o de aviso (por ejemplo, "revisa tu correo"). */
 export function MensajeFormulario({ tipo, texto }: MensajeFormularioProps) {
+  const styles = useMensajeFormularioStyles();
   if (!texto) return null;
   const esError = tipo === 'error';
 

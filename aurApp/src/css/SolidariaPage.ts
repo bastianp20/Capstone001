@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── AdopcionSolidariaScreen ───
-export const solidariaStyles = StyleSheet.create({
+export const useSolidariaStyles = crearEstilos((COLORES) => ({
   urgentes: {
     gap: 10,
   },
@@ -25,10 +25,10 @@ export const solidariaStyles = StyleSheet.create({
     textAlign: 'center',
     overflow: 'hidden',
   },
-});
+}));
 
 // ─── TarjetaImpactoSolidario (dentro del encabezado verde) ───
-export const tarjetaImpactoStyles = StyleSheet.create({
+export const useTarjetaImpactoStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   tarjeta: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -62,7 +62,7 @@ export const tarjetaImpactoStyles = StyleSheet.create({
     gap: 2,
     borderRadius: 42,
     borderWidth: 3,
-    borderColor: '#FFD2B8',
+    borderColor: TONOS_TARJETA.durazno.iconoFondo,
     backgroundColor: COLORES.coral,
     boxShadow: '0 6px 16px rgba(242, 99, 63, 0.35)',
   },
@@ -73,10 +73,10 @@ export const tarjetaImpactoStyles = StyleSheet.create({
     color: COLORES.blanco,
     textAlign: 'center',
   },
-});
+}));
 
 // ─── TarjetaUrgenteSolidaria ───
-export const tarjetaUrgenteStyles = StyleSheet.create({
+export const useTarjetaUrgenteStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     width: 222,
     flexDirection: 'row',
@@ -85,7 +85,7 @@ export const tarjetaUrgenteStyles = StyleSheet.create({
     borderRadius: RADIOS.md,
     borderWidth: 1,
     borderColor: COLORES.borde,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   foto: {
     width: 64,
@@ -103,17 +103,17 @@ export const tarjetaUrgenteStyles = StyleSheet.create({
     fontSize: 14.5,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── TarjetaAnimalSolidario / TarjetaAtencionPropia ───
-export const tarjetaAnimalSolidarioStyles = StyleSheet.create({
+export const useTarjetaAnimalSolidarioStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   tarjeta: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     padding: 12,
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 4px 14px rgba(11, 59, 53, 0.07)',
   },
   presionada: {
@@ -128,7 +128,7 @@ export const tarjetaAnimalSolidarioStyles = StyleSheet.create({
   sinFoto: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFE6D5',
+    backgroundColor: TONOS_TARJETA.durazno.fondo,
   },
   cuerpo: {
     flex: 1,
@@ -182,10 +182,10 @@ export const tarjetaAnimalSolidarioStyles = StyleSheet.create({
     lineHeight: 18,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── RegistrarAtencionSolidariaScreen ───
-export const atencionSolidariaStyles = StyleSheet.create({
+export const useAtencionSolidariaStyles = crearEstilos((COLORES) => ({
   cuerpo: {
     gap: 20,
   },
@@ -197,7 +197,7 @@ export const atencionSolidariaStyles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 4,
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   aviso: {
     fontFamily: FUENTES.medium,
@@ -208,10 +208,10 @@ export const atencionSolidariaStyles = StyleSheet.create({
   pie: {
     gap: 8,
   },
-});
+}));
 
 // ─── TarjetaTipoAtencion ───
-export const tarjetaTipoAtencionStyles = StyleSheet.create({
+export const useTarjetaTipoAtencionStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flex: 1,
     gap: 4,
@@ -219,7 +219,7 @@ export const tarjetaTipoAtencionStyles = StyleSheet.create({
     borderRadius: RADIOS.md,
     borderWidth: 1.5,
     borderColor: COLORES.bordeCampo,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   seleccionada: {
     borderWidth: 2,
@@ -242,10 +242,10 @@ export const tarjetaTipoAtencionStyles = StyleSheet.create({
     fontSize: 11.5,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── FilaFichaAtencion ───
-export const filaFichaAtencionStyles = StyleSheet.create({
+export const useFilaFichaAtencionStyles = crearEstilos((COLORES) => ({
   fila: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -266,10 +266,10 @@ export const filaFichaAtencionStyles = StyleSheet.create({
     fontSize: 12,
     color: COLORES.primario,
   },
-});
+}));
 
 // ─── AtencionSolidariaGuardada ───
-export const atencionGuardadaStyles = StyleSheet.create({
+export const useAtencionGuardadaStyles = crearEstilos((COLORES) => ({
   contenedor: {
     alignItems: 'center',
     gap: 16,
@@ -293,7 +293,7 @@ export const atencionGuardadaStyles = StyleSheet.create({
     gap: 10,
     padding: 16,
     borderRadius: RADIOS.lg,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 8px 20px rgba(11, 59, 53, 0.08)',
   },
   selloFila: {
@@ -314,7 +314,7 @@ export const atencionGuardadaStyles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 16,
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   impactoTexto: {
     fontFamily: FUENTES.bold,
@@ -333,17 +333,17 @@ export const atencionGuardadaStyles = StyleSheet.create({
     alignSelf: 'stretch',
     gap: 10,
   },
-});
+}));
 
 // ─── TarjetaAliadoSolidario (perfil del veterinario) ───
-export const tarjetaAliadoStyles = StyleSheet.create({
+export const useTarjetaAliadoStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   tarjeta: {
     gap: 6,
     padding: 16,
     borderRadius: RADIOS.lg,
     borderWidth: 1.5,
-    borderColor: '#F4B6A0',
-    backgroundColor: COLORES.blanco,
+    borderColor: TONOS_TARJETA.durazno.iconoFondo,
+    backgroundColor: COLORES.superficie,
   },
   fila: {
     flexDirection: 'row',
@@ -371,4 +371,4 @@ export const tarjetaAliadoStyles = StyleSheet.create({
     fontSize: 12,
     color: COLORES.textoSecundario,
   },
-});
+}));

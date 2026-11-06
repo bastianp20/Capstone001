@@ -6,7 +6,7 @@ import { CampoTexto } from '@/components/formulario/CampoTexto';
 import { MensajeFormulario } from '@/components/formulario/MensajeFormulario';
 import { HojaInferior } from '@/components/ui/HojaInferior';
 import { MEDICAMENTO_VACIO, TEXTOS_RECETA_ATENCION as T } from '@/constants/constants';
-import { hojaMedicamentoStyles as styles } from '@/css/RecetaPage';
+import { useHojaMedicamentoStyles } from '@/css/RecetaPage';
 import type { HojaMedicamentoProps, MedicamentoReceta } from '@/interfaces';
 
 /** Hoja para agregar o editar un medicamento (los 4 datos son obligatorios). */
@@ -20,6 +20,7 @@ export function HojaMedicamento({ visible, inicial, onGuardar, onCerrar }: HojaM
 }
 
 function FormularioMedicamento({ inicial, onGuardar }: Pick<HojaMedicamentoProps, 'inicial' | 'onGuardar'>) {
+  const styles = useHojaMedicamentoStyles();
   const [m, setM] = useState<MedicamentoReceta>(inicial ?? MEDICAMENTO_VACIO);
   const [error, setError] = useState('');
   const campo = (clave: keyof MedicamentoReceta) => (texto: string) => setM((x) => ({ ...x, [clave]: texto }));

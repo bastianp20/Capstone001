@@ -1,12 +1,15 @@
 import { Pressable, Text } from 'react-native';
 
 import { Etiqueta } from '@/components/ui/Etiqueta';
-import { COLORES, ETIQUETAS_ESTADO_CITA, TEXTO_ATENCION_INDEPENDIENTE, TEXTOS_INICIO } from '@/constants/constants';
-import { tarjetaProximaCitaStyles as styles } from '@/css/InicioPage';
+import { ETIQUETAS_ESTADO_CITA, TEXTO_ATENCION_INDEPENDIENTE, TEXTOS_INICIO } from '@/constants/constants';
+import { useTarjetaProximaCitaStyles } from '@/css/InicioPage';
 import type { TarjetaProximaCitaProps } from '@/interfaces';
 import { formatFechaHoraCita } from '@/lib/fechas';
+import { useColores } from '@/context/TemaContext';
 
 export function TarjetaProximaCita({ cita, onPress, style }: TarjetaProximaCitaProps) {
+  const COLORES = useColores();
+  const styles = useTarjetaProximaCitaStyles();
   const colorEstado = cita ? COLORES.estados[cita.estado] : null;
 
   return (

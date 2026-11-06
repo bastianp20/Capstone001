@@ -6,12 +6,13 @@ import { MensajeFormulario } from '@/components/formulario/MensajeFormulario';
 import { HojaInferior } from '@/components/ui/HojaInferior';
 import { Icono } from '@/components/ui/Icono';
 import { TarjetaListaIconos } from '@/components/ui/TarjetaListaIconos';
-import { COLORES, TEXTOS_POSTULANTES as T } from '@/constants/constants';
-import { hojaPostulanteStyles as styles } from '@/css/MisPublicacionesPage';
+import { TEXTOS_POSTULANTES as T } from '@/constants/constants';
+import { useHojaPostulanteStyles } from '@/css/MisPublicacionesPage';
 import type { HojaPostulanteProps } from '@/interfaces';
 import { haceCuanto, lineasFamilia, lineasHogar } from '@/lib/adopcion';
 
 import { AfinidadAnillo } from './AfinidadAnillo';
+import { useColores } from '@/context/TemaContext';
 
 /** Detalle de una postulación: afinidad y por qué, hogar, familia, experiencia, motivo, contactar y decidir. */
 export function HojaPostulante({
@@ -27,6 +28,8 @@ export function HojaPostulante({
   onContactar,
   onCerrar,
 }: HojaPostulanteProps) {
+  const COLORES = useColores();
+  const styles = useHojaPostulanteStyles();
   const p = postulante?.postulacion;
   const afinidad = postulante?.afinidad;
   return (

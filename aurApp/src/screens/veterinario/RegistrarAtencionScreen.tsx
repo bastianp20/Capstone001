@@ -11,13 +11,15 @@ import { EstadoBorrador } from '@/components/ui/EstadoBorrador';
 import { GrupoCampo } from '@/components/ui/GrupoCampo';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { MAX_DESCRIPCION_ATENCION, TEXTOS_REGISTRO_ATENCION as T, TIPOS_REGISTRO_ATENCION } from '@/constants/constants';
-import { atencionStyles as styles } from '@/css/AtencionPage';
-import { chipsMultiplesStyles } from '@/css/Compartido';
+import { useAtencionStyles } from '@/css/AtencionPage';
+import { useChipsMultiplesStyles } from '@/css/Compartido';
 import { useAtencion } from '@/hooks/useAtencion';
 import { useRegistrarAtencion } from '@/hooks/useRegistrarAtencion';
 
 /** Registrar la atención en la ficha: tipo, fecha, qué encontró, tratamiento y peso de hoy. */
 export default function RegistrarAtencionScreen() {
+  const chipsMultiplesStyles = useChipsMultiplesStyles();
+  const styles = useAtencionStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const a = useAtencion(Number(id));
   const r = useRegistrarAtencion(Number(id), a.mascota?.pesoKg ?? null);

@@ -1,12 +1,15 @@
 import { Text, View } from 'react-native';
 
 import { Icono } from '@/components/ui/Icono';
-import { TEXTOS_FICHA_ADOPCION as T, TONOS_TARJETA } from '@/constants/constants';
-import { saludAdopcionStyles as styles } from '@/css/FichaAdopcionPage';
+import { TEXTOS_FICHA_ADOPCION as T } from '@/constants/constants';
+import { useSaludAdopcionStyles } from '@/css/FichaAdopcionPage';
 import type { ItemSaludAdopcion, SaludAdopcionProps } from '@/interfaces';
+import { useTonosTarjeta } from '@/context/TemaContext';
 
 /** Vacunas, esterilización, microchip, peso y alergias en mosaicos. */
 export function SaludAdopcion({ ficha: f }: SaludAdopcionProps) {
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useSaludAdopcionStyles();
   const items: ItemSaludAdopcion[] = [
     { icono: 'jeringa', tono: 'menta', etiqueta: T.vacunas, valor: f.vacunasAlDia ? T.alDia : T.pendientes },
     { icono: 'tijeras', tono: 'lavanda', etiqueta: T.esterilizado(f.sexo), valor: f.esterilizado ? T.si : T.no },

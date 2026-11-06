@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── PostularAdopcionScreen y sus pasos ───
-export const postularAdopcionStyles = StyleSheet.create({
+export const usePostularAdopcionStyles = crearEstilos((COLORES) => ({
   paso: {
     gap: 20,
   },
@@ -16,7 +16,7 @@ export const postularAdopcionStyles = StyleSheet.create({
     gap: 12,
     padding: 12,
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   animalTextos: {
     flex: 1,
@@ -43,10 +43,10 @@ export const postularAdopcionStyles = StyleSheet.create({
     fontSize: 12.5,
     color: COLORES.error,
   },
-});
+}));
 
 // ─── ReportarAdopcionScreen ───
-export const reportarAdopcionStyles = StyleSheet.create({
+export const useReportarAdopcionStyles = crearEstilos((COLORES) => ({
   cuerpo: {
     gap: 18,
   },
@@ -59,10 +59,10 @@ export const reportarAdopcionStyles = StyleSheet.create({
   pie: {
     gap: 8,
   },
-});
+}));
 
 // ─── GrillaMotivosReporte ───
-export const grillaMotivosStyles = StyleSheet.create({
+export const useGrillaMotivosStyles = crearEstilos((COLORES) => ({
   grilla: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -86,11 +86,11 @@ export const grillaMotivosStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 12,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   texto: {
     fontFamily: FUENTES.bold,
     fontSize: 14,
     color: COLORES.texto,
   },
-});
+}));

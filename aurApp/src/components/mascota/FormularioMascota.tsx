@@ -5,11 +5,12 @@ import { FilaInterruptor } from '@/components/ui/FilaInterruptor';
 import { GrupoCampo } from '@/components/ui/GrupoCampo';
 import { SelectorPildoras } from '@/components/ui/SelectorPildoras';
 import { ESPECIES_MASCOTA, SEXOS_MASCOTA, TEXTOS_MASCOTA as T } from '@/constants/constants';
-import { formularioMascotaStyles as styles } from '@/css/MascotaPage';
+import { useFormularioMascotaStyles } from '@/css/MascotaPage';
 import type { FormularioMascotaProps } from '@/interfaces';
 
 /** Campos de la ficha de una mascota (mismas columnas que la tabla mascotas). */
 export function FormularioMascota({ datos, onCambiar, errores }: FormularioMascotaProps) {
+  const styles = useFormularioMascotaStyles();
   return (
     <View style={styles.formulario}>
       <CampoTexto

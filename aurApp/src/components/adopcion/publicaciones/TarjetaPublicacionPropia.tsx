@@ -4,15 +4,19 @@ import { Pressable, Text, View } from 'react-native';
 import { BotonPequeno } from '@/components/ui/BotonPequeno';
 import { Etiqueta } from '@/components/ui/Etiqueta';
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, ESTILO_ESTADO_PUBLICACION, ICONO_ESPECIE_ADOPCION, TEXTOS_MIS_PUBLICACIONES as T, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaPublicacionStyles as styles } from '@/css/MisPublicacionesPage';
+import { ESTILO_ESTADO_PUBLICACION, ICONO_ESPECIE_ADOPCION, TEXTOS_MIS_PUBLICACIONES as T } from '@/constants/constants';
+import { useTarjetaPublicacionStyles } from '@/css/MisPublicacionesPage';
 import type { TarjetaPublicacionPropiaProps } from '@/interfaces';
 
 import { AvisoModeracionPublicacion } from './AvisoModeracionPublicacion';
 import { CaminoACasa } from './CaminoACasa';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 /** Una publicación mía: foto, estado, postulaciones, aviso de moderación, camino a casa y retirar / volver a publicar. */
 export function TarjetaPublicacionPropia({ publicacion: p, ocupado, onPress, onRetirar, onRepublicar }: TarjetaPublicacionPropiaProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaPublicacionStyles();
   const estado = ESTILO_ESTADO_PUBLICACION[p.estado];
   const detalle = [p.raza, p.edad, p.comuna].join(' · ');
   const subtitulo = p.elegido ? T.familia(p.elegido) : p.refugio ? T.aNombreDe(p.refugio) : null;

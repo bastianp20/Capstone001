@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── PublicarAdopcionScreen y sus pasos ───
-export const publicarAdopcionStyles = StyleSheet.create({
+export const usePublicarAdopcionStyles = crearEstilos((COLORES) => ({
   paso: {
     gap: 20,
   },
@@ -21,19 +21,19 @@ export const publicarAdopcionStyles = StyleSheet.create({
     gap: 14,
     padding: 14,
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   interruptores: {
     gap: 4,
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
-});
+}));
 
 // ─── SelectorFotosAdopcion ───
-export const selectorFotosStyles = StyleSheet.create({
+export const useSelectorFotosStyles = crearEstilos((COLORES) => ({
   fila: {
     gap: 10,
     paddingRight: 4,
@@ -90,10 +90,10 @@ export const selectorFotosStyles = StyleSheet.create({
     color: COLORES.primarioOscuro,
     textAlign: 'center',
   },
-});
+}));
 
 // ─── SelectorNivel ───
-export const selectorNivelStyles = StyleSheet.create({
+export const useSelectorNivelStyles = crearEstilos((COLORES) => ({
   contenedor: {
     gap: 8,
   },
@@ -115,7 +115,7 @@ export const selectorNivelStyles = StyleSheet.create({
     borderRadius: 19,
     borderWidth: 1,
     borderColor: COLORES.bordeCampo,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   nivelActivo: {
     borderColor: COLORES.primario,
@@ -149,10 +149,10 @@ export const selectorNivelStyles = StyleSheet.create({
   noSeTextoActivo: {
     color: COLORES.blanco,
   },
-});
+}));
 
 // ─── VistaPreviaPublicacion ───
-export const vistaPreviaStyles = StyleSheet.create({
+export const useVistaPreviaStyles = crearEstilos((COLORES) => ({
   contenedor: {
     gap: 14,
   },
@@ -166,4 +166,4 @@ export const vistaPreviaStyles = StyleSheet.create({
     alignSelf: 'center',
     width: 190,
   },
-});
+}));

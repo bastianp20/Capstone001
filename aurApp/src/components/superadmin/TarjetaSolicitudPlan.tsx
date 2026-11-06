@@ -2,11 +2,12 @@ import { Text, View } from 'react-native';
 
 import { BotonPequeno } from '@/components/ui/BotonPequeno';
 import { TEXTOS_SOLICITUDES_PLAN as T } from '@/constants/constants';
-import { tarjetaSuperadminStyles as styles } from '@/css/SuperadminPage';
+import { useTarjetaSuperadminStyles } from '@/css/SuperadminPage';
 import type { TarjetaSolicitudPlanProps } from '@/interfaces';
 import { formatFechaHoraCita } from '@/lib/fechas';
 
 export function TarjetaSolicitudPlan({ solicitud: s, ocupado, onActivar, onRechazar }: TarjetaSolicitudPlanProps) {
+  const styles = useTarjetaSuperadminStyles();
   return (
     <View style={styles.tarjeta}>
       <View style={styles.textos}>

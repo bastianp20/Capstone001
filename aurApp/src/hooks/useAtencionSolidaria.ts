@@ -10,6 +10,7 @@ import {
   TEXTOS_ATENCION_SOLIDARIA as T,
 } from '@/constants/constants';
 import type { AtencionGuardada, DatosAtencionSolidaria, ProcedimientoFicha } from '@/interfaces';
+import { redondearAlPaso } from '@/lib/formatos';
 import { esErrorDeRed } from '@/lib/red';
 
 import { useAccion } from './useAccion';
@@ -73,7 +74,7 @@ export function useAtencionSolidaria(adopcionId: number) {
     yaEnFicha,
     alternarProcedimiento,
     peso: b.valor.pesoKg ?? ficha?.pesoKg ?? null,
-    cambiarPeso: (nuevo: number) => b.cambiar({ pesoKg: Math.max(0, Math.round(nuevo / PASO_PESO_KG) * PASO_PESO_KG) }),
+    cambiarPeso: (nuevo: number) => b.cambiar({ pesoKg: Math.max(0, redondearAlPaso(nuevo, PASO_PESO_KG)) }),
     guardadoEn: b.guardadoEn,
     guardar,
     guardando: ocupado,

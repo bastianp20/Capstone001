@@ -11,11 +11,12 @@ import { IndicadorPasos } from '@/components/ui/IndicadorPasos';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { ResultadoSolicitud } from '@/components/ui/ResultadoSolicitud';
 import { PASOS_PEDIR_HORA, TEXTOS_INICIO, TEXTOS_PEDIR_HORA as T } from '@/constants/constants';
-import { pasosPedirHoraStyles as styles } from '@/css/PedirHoraPage';
+import { usePasosPedirHoraStyles } from '@/css/PedirHoraPage';
 import { usePedirHora } from '@/hooks/usePedirHora';
 
 /** Pedir hora en 3 pasos: Mascota · Dónde · Día y hora. */
 export default function PedirHoraScreen() {
+  const styles = usePasosPedirHoraStyles();
   const params = useLocalSearchParams<{ mascotaId?: string }>();
   const p = usePedirHora(params.mascotaId ? Number(params.mascotaId) : null);
 

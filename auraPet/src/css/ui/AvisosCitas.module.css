@@ -1,0 +1,129 @@
+/* Avisos de cambios de hora (components/avisos/AvisosCitas.tsx).
+   Paneles claros del dueño y del centro; modo oscuro por los tokens. */
+@import '../theme.css';
+
+.avisos {
+  margin-bottom: 20px;
+  padding: 16px 18px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 12px;
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
+}
+
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.contador {
+  min-width: 20px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--color-primario);
+  color: #ffffff;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.link {
+  border: none;
+  background: none;
+  color: var(--color-primario-texto);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.link:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+}
+
+.reagendada {
+  background: #fdf3e1;
+  color: #5a3d00;
+}
+
+.cancelada {
+  background: #fdecec;
+  color: #7a1d1f;
+}
+
+.cuerpo {
+  flex: 1;
+  min-width: 0;
+}
+
+.avisoTitulo {
+  font-size: 0.9rem;
+}
+
+.fechas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 0;
+  font-size: 0.84rem;
+}
+
+.anterior {
+  text-decoration: line-through;
+  opacity: 0.75;
+}
+
+.nueva {
+  font-weight: 700;
+}
+
+.mensaje {
+  margin: 6px 0 0;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.cerrar {
+  flex-shrink: 0;
+  display: flex;
+  padding: 4px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.cerrar:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.06);
+}

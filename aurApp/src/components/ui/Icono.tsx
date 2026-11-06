@@ -1,7 +1,7 @@
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
-import { COLORES } from '@/constants/constants';
 import type { IconoProps, NombreIcono } from '@/interfaces';
+import { useColores } from '@/context/TemaContext';
 
 // Trazos de Lucide (https://lucide.dev, licencia ISC), en una grilla de 24x24.
 const TRAZOS: Record<NombreIcono, React.ReactNode> = {
@@ -409,6 +409,38 @@ const TRAZOS: Record<NombreIcono, React.ReactNode> = {
       <Path d="M11.25 16.25h1.5L12 17l-.75-.75Z" />
     </>
   ),
+  // Propio (no es de Lucide): el gato de arriba con cejas, ojos entrecerrados y colmillos. Modo oscuro.
+  gatoMalvado: (
+    <>
+      <Path d="M12 5c.67 0 1.35.09 2 .26 1.78-2 5.03-2.84 6.42-2.26 1.4.58-.42 7-.42 7 .57 1.07 1 2.24 1 3.44C21 17.9 16.97 21 12 21s-9-3-9-7.56c0-1.25.5-2.4 1-3.44 0 0-1.89-6.42-.5-7 1.39-.58 4.72.23 6.5 2.23A9.04 9.04 0 0 1 12 5Z" />
+      <Path d="M6.8 10.9 10 12.4" />
+      <Path d="M17.2 10.9 14 12.4" />
+      <Path d="M7.6 13.6c.7.5 1.5.6 2.2.3" />
+      <Path d="M16.4 13.6c-.7.5-1.5.6-2.2.3" />
+      <Path d="M9.2 16.6c1.8 1.3 3.8 1.3 5.6 0" />
+      <Path d="M10.4 17.3v1.1" />
+      <Path d="M13.6 17.3v1.1" />
+    </>
+  ),
+  sol: (
+    <>
+      <Circle cx="12" cy="12" r="4" />
+      <Path d="M12 2v2" />
+      <Path d="M12 20v2" />
+      <Path d="m4.93 4.93 1.41 1.41" />
+      <Path d="m17.66 17.66 1.41 1.41" />
+      <Path d="M2 12h2" />
+      <Path d="M20 12h2" />
+      <Path d="m6.34 17.66-1.41 1.41" />
+      <Path d="m19.07 4.93-1.41 1.41" />
+    </>
+  ),
+  celular: (
+    <>
+      <Rect x="5" y="2" width="14" height="20" rx="2" />
+      <Path d="M12 18h.01" />
+    </>
+  ),
   filtro: (
     <>
       <Path d="M10 5H3" />
@@ -449,7 +481,9 @@ const TRAZOS: Record<NombreIcono, React.ReactNode> = {
   ),
 };
 
-export function Icono({ nombre, tamano = 24, color = COLORES.texto, grosor = 2, relleno = false }: IconoProps) {
+export function Icono({ nombre, tamano = 24, color: colorElegido, grosor = 2, relleno = false }: IconoProps) {
+  const COLORES = useColores();
+  const color = colorElegido ?? COLORES.texto;
   return (
     <Svg
       width={tamano}

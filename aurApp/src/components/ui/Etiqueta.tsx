@@ -1,12 +1,13 @@
 import { Text, View } from 'react-native';
 
-import { etiquetaStyles as styles } from '@/css/Compartido';
+import { useEtiquetaStyles } from '@/css/Compartido';
 import type { EtiquetaProps } from '@/interfaces';
 
 import { Icono } from './Icono';
 
 /** Chip pequeño: estados ("Confirmada"), fechas, categorías. */
 export function Etiqueta({ texto, colorFondo, colorTexto, icono, conPunto }: EtiquetaProps) {
+  const styles = useEtiquetaStyles();
   return (
     <View style={[styles.etiqueta, { backgroundColor: colorFondo }]}>
       {conPunto && <View style={[styles.punto, { backgroundColor: colorTexto }]} />}

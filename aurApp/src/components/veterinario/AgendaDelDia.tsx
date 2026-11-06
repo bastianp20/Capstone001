@@ -1,13 +1,16 @@
 import { Pressable, Text, View } from 'react-native';
 
 import { Etiqueta } from '@/components/ui/Etiqueta';
-import { COLORES, ETIQUETAS_ESTADO_CITA } from '@/constants/constants';
-import { agendaDelDiaStyles as styles } from '@/css/VeterinarioPage';
+import { ETIQUETAS_ESTADO_CITA } from '@/constants/constants';
+import { useAgendaDelDiaStyles } from '@/css/VeterinarioPage';
 import type { AgendaDelDiaProps } from '@/interfaces';
 import { partesFechaCita } from '@/lib/fechas';
+import { useColores } from '@/context/TemaContext';
 
 /** Las citas del día como línea de tiempo: hora a la izquierda y una tarjeta chica por cita. */
 export function AgendaDelDia({ citas, onAbrir }: AgendaDelDiaProps) {
+  const COLORES = useColores();
+  const styles = useAgendaDelDiaStyles();
   return (
     <View style={styles.contenedor}>
       {citas.map((c, i) => {

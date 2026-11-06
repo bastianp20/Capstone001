@@ -1,12 +1,13 @@
 import { View } from 'react-native';
 
-import { huellasDecorativasStyles as styles } from '@/css/Compartido';
+import { useHuellasDecorativasStyles } from '@/css/Compartido';
 import type { HuellasDecorativasProps } from '@/interfaces';
 
 import { Icono } from './Icono';
 
 /** Huellitas de adorno en posiciones fijas. No reciben toques. */
 export function HuellasDecorativas({ huellas, color }: HuellasDecorativasProps) {
+  const styles = useHuellasDecorativasStyles();
   return (
     <View style={styles.capa} pointerEvents="none">
       {huellas.map((h, i) => (

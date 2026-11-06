@@ -10,11 +10,12 @@ import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { ResultadoSolicitud } from '@/components/ui/ResultadoSolicitud';
 import { TarjetaAviso } from '@/components/ui/TarjetaAviso';
 import { MAX_COMENTARIO_REPORTE, TEXTOS_REPORTE as T } from '@/constants/constants';
-import { reportarAdopcionStyles as styles } from '@/css/PostularAdopcionPage';
+import { useReportarAdopcionStyles } from '@/css/PostularAdopcionPage';
 import { useReportarAdopcion } from '@/hooks/useReportarAdopcion';
 
 /** Reportar una publicación de adopción (piden dinero, posible estafa, animal en riesgo…). */
 export default function ReportarAdopcionScreen() {
+  const styles = useReportarAdopcionStyles();
   const { id, nombre } = useLocalSearchParams<{ id: string; nombre?: string }>();
   const r = useReportarAdopcion(Number(id));
   const subtitulo = nombre ? T.subtitulo(nombre) : undefined;

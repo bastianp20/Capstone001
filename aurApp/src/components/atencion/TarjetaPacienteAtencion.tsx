@@ -2,12 +2,15 @@ import { Text, View } from 'react-native';
 
 import { AvatarMascota } from '@/components/ui/AvatarMascota';
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, TEXTOS_ATENCION as T } from '@/constants/constants';
-import { tarjetaPacienteAtencionStyles as styles } from '@/css/AtencionPage';
+import { TEXTOS_ATENCION as T } from '@/constants/constants';
+import { useTarjetaPacienteAtencionStyles } from '@/css/AtencionPage';
 import type { TarjetaPacienteAtencionProps } from '@/interfaces';
+import { useColores } from '@/context/TemaContext';
 
 /** El paciente: foto, raza/edad/peso, dueño y la alerta de alergia si tiene. */
 export function TarjetaPacienteAtencion({ nombre, descripcion, dueno, fotoUrl, alergias }: TarjetaPacienteAtencionProps) {
+  const COLORES = useColores();
+  const styles = useTarjetaPacienteAtencionStyles();
   return (
     <View style={styles.tarjeta}>
       <AvatarMascota nombre={nombre} fotoUrl={fotoUrl} tamano={72} />

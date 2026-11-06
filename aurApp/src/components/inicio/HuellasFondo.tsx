@@ -1,11 +1,14 @@
 import { View } from 'react-native';
 
 import { HuellasDecorativas } from '@/components/ui/HuellasDecorativas';
-import { COLORES, HUELLAS_FONDO_INICIO } from '@/constants/constants';
-import { huellasFondoStyles as styles } from '@/css/InicioPage';
+import { HUELLAS_FONDO_INICIO } from '@/constants/constants';
+import { useHuellasFondoStyles } from '@/css/InicioPage';
+import { useColores } from '@/context/TemaContext';
 
 /** Huellitas y manchas suaves detrás de las tarjetas del inicio. */
 export function HuellasFondo() {
+  const COLORES = useColores();
+  const styles = useHuellasFondoStyles();
   return (
     <View style={styles.capa} pointerEvents="none">
       <View style={styles.manchaIzquierda} />

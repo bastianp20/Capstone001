@@ -1,16 +1,17 @@
 import { ActivityIndicator, Pressable, Text } from 'react-native';
 
-import { COLORES } from '@/constants/constants';
-import { botonPequenoStyles as styles } from '@/css/Compartido';
-import type { BotonPequenoProps } from '@/interfaces';
+import { useColores } from '@/context/TemaContext';
+import { useBotonPequenoStyles } from '@/css/Compartido';
+import type { BotonPequenoProps, Paleta } from '@/interfaces';
 
 import { Icono } from './Icono';
 
-const COLOR_TEXTO = { blanco: COLORES.texto, peligro: COLORES.error, sobrePrimario: COLORES.primarioOscuro, primario: COLORES.blanco, coral: COLORES.blanco } as const;
+const colorTexto = (c: Paleta) => ({ blanco: c.texto, peligro: c.error, sobrePrimario: c.primarioOscuro, primario: c.blanco, coral: c.blanco });
 
 /** Botón chico en forma de píldora: "Cómo llegar", "Cancelar cita", "Ficha PDF". */
 export function BotonPequeno({ texto, onPress, icono, variante = 'blanco', cargando, deshabilitado }: BotonPequenoProps) {
-  const color = COLOR_TEXTO[variante];
+  const styles = useBotonPequenoStyles();
+  const color = colorTexto(useColores())[variante];
   return (
     <Pressable
       onPress={onPress}

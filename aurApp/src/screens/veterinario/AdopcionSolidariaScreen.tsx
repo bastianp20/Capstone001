@@ -12,7 +12,7 @@ import { PantallaLista } from '@/components/ui/PantallaLista';
 import { SelectorPildoras } from '@/components/ui/SelectorPildoras';
 import { TituloSeccion } from '@/components/ui/TituloSeccion';
 import { TEXTOS_CARGA, TEXTOS_SOLIDARIA as T } from '@/constants/constants';
-import { solidariaStyles as styles } from '@/css/SolidariaPage';
+import { useSolidariaStyles } from '@/css/SolidariaPage';
 import { useAdopcionSolidaria } from '@/hooks/useAdopcionSolidaria';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
 import type { PestanaSolidaria } from '@/interfaces';
@@ -22,6 +22,7 @@ const verFicha = (id: number) => router.push(`/adopcion/${id}`);
 
 /** Adopción solidaria: impacto, los más urgentes y los animales para atender (o mis atenciones). */
 export default function AdopcionSolidariaScreen() {
+  const styles = useSolidariaStyles();
   useBarraEstadoClara();
   const { pestana } = useLocalSearchParams<{ pestana?: PestanaSolidaria }>();
   const s = useAdopcionSolidaria(pestana ?? 'esperando');

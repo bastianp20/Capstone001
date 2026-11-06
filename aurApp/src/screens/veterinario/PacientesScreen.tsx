@@ -8,11 +8,12 @@ import { EstadoCarga } from '@/components/ui/EstadoCarga';
 import { EstadoVacio } from '@/components/ui/EstadoVacio';
 import { PantallaLista } from '@/components/ui/PantallaLista';
 import { TEXTOS_CARGA, TEXTOS_PACIENTES as T } from '@/constants/constants';
-import { listaGruposStyles as styles } from '@/css/Compartido';
+import { useListaGruposStyles } from '@/css/Compartido';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
 import { usePacientes } from '@/hooks/usePacientes';
 
 export default function PacientesScreen() {
+  const styles = useListaGruposStyles();
   useBarraEstadoClara();
   const p = usePacientes();
 

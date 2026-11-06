@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 import { Ban, BadgeAlert, CalendarX, CircleAlert, DoorOpen, Gauge, HandCoins, HeartCrack, House, HouseHeart, ImageOff, MessageCircle, Rabbit, Rocket, ShieldAlert } from "lucide-react";
-import type { CampoImagenRefugio, CampoPostularRefugio, CampoRefugio, DatosPostularRefugio, DatosRefugio, PasoConDetalle, TarjetaSumate, DecisionModeracion, EstadoCasoModeracion, FormatoRecorte, MotivoReporte, OpcionMotivoReporte, EspecieRefugio, EstadoRefugio, FiltroEstadoRefugio, FiltrosRefugiosAdmin, PestanaMiRefugio } from "./interfaces";
+import type { OpcionEstadoUci, OpcionMotivoUci, PasoPerfilCentro, CampoImagenRefugio, CampoPostularRefugio, CampoRefugio, DatosPostularRefugio, DatosRefugio, PasoConDetalle, TarjetaSumate, DecisionModeracion, EstadoCasoModeracion, FormatoRecorte, MotivoReporte, OpcionMotivoReporte, EspecieRefugio, EstadoRefugio, FiltroEstadoRefugio, FiltrosRefugiosAdmin, PestanaMiRefugio } from "./interfaces";
 
 export const Colors = {
   bg: "rgb(31, 27, 27)",
@@ -58,6 +58,7 @@ export const badgeStyles: Record<string, CSSProperties> = {
   cancelada: { background: "#fbe4e4", color: "#a4272a" },
   pendiente: { background: "#eceef1", color: "#4b5563" },
   completada: { background: "#dff3ea", color: "#177a4f" },
+  reagendada: { background: "#fdf3e1", color: "#8a5a00" }, // el veterinario le cambió la hora
   // urgencia
   critica: { background: "#e0403f", color: "#ffffff" },
   alta: { background: "#f4a13a", color: "#5a3600" },
@@ -194,6 +195,7 @@ export const getFechaHoy = (): number => {
 };
 
 export const RUTA_ADOPTA = "/adopta"; // página pública de adopción
+export const RUTA_URGENCIAS = "/urgencias"; // página pública de urgencias (sin cuenta)
 export const RUTA_PUBLICAR_ADOPCION = "/adopta/publicar"; // "Dar en adopción"
 export const rutaFichaAdopcion = (id: number) => `/adopta/${id}`;
 export const RUTA_CONTACTO_REPORTE = "/contacto"; // "Reportar una publicación" (por ahora, el formulario de contacto)
@@ -203,6 +205,7 @@ export const links: { ruta: string; label: string }[] = [
   { ruta: "/veterinarias", label: "Para veterinarias" },
   { ruta: "/duenos", label: "Para dueños" },
   { ruta: RUTA_ADOPTA, label: "Adopta" },
+  { ruta: RUTA_URGENCIAS, label: "Urgencias" },
   { ruta: "/nosotros", label: "Nosotros" },
   { ruta: "/contacto", label: "Contacto" },
 ];
@@ -1442,6 +1445,14 @@ export const TEXTOS_CONFIRMACION = {
 };
 
 export const CONFIRMACIONES = {
+  quitarBloqueo: (detalle: string): OpcionesConfirmacion => ({
+    tipo: "advertencia",
+    titulo: "¿Quitar este bloqueo?",
+    mensaje: "Esas horas vuelven a quedar disponibles para que los dueños las pidan.",
+    detalle,
+    textoConfirmar: "Sí, quitar bloqueo",
+    textoCancelar: "Volver",
+  }),
   borrarNota: (titulo: string): OpcionesConfirmacion => ({
     tipo: "peligro",
     titulo: "¿Borrar esta nota?",
@@ -2774,4 +2785,292 @@ export const TEXTOS_POSTULACION_ADMIN = {
   aprobarInvitar: "Aprobar e invitar",
   aprobadoInvitado: (correo: string) => `Refugio aprobado. Enviamos la invitación a ${correo}.`,
   aprobadoVinculado: (correo: string) => `Refugio aprobado y vinculado a la cuenta ${correo}.`,
+} as const;
+
+
+// ---- Mi horario del veterinario (Mi Agenda → "Mi horario", migración 52) ----
+export const MOTIVOS_CAMBIO_HORA = ["Imprevisto personal", "Urgencia médica", "Capacitación", "Otro"] as const;
+export const MAX_CARACTERES_AVISO = 600;
+
+export const TEXTOS_MI_HORARIO = {
+  modificar: "Modificar",
+  reagendada: "Reagendada",
+  independiente: "Atención independiente",
+  // Modificar cita
+  tituloModificar: "Modificar cita",
+  reagendar: "Reagendar",
+  cancelarCita: "Cancelar cita",
+  nuevaFecha: "Nuevo día",
+  nuevaHora: "Nueva hora",
+  horaPorElegir: "[nueva hora]",
+  antesAhora: (antes: string, ahora: string) => `${antes} → ${ahora}`,
+  motivo: "Motivo",
+  detalleMotivo: "Detalle (opcional)",
+  avisoCancelar: "La cita quedará cancelada. El dueño verá el motivo y podrá pedir otra hora.",
+  volver: "Volver",
+  confirmarReagendar: "Reagendar y avisar",
+  confirmarCancelar: "Cancelar cita y avisar",
+  guardando: "Guardando…",
+  // Bloquear
+  tituloBloquear: "Bloquear horario",
+  subtituloBloquear: "En ese rango nadie podrá pedirte hora.",
+  dia: "Día",
+  desde: "Desde",
+  hasta: "Hasta",
+  todoElDia: "Todo el día",
+  citasEnRango: (n: number) => (n === 1 ? "Este horario tiene 1 cita" : `Este horario tiene ${n} citas`),
+  opcionCancelarCitas: "Cancelarlas y avisar a sus dueños",
+  ayudaReagendar: "Si prefieres moverlas a otra hora, cierra esto y usa “Modificar” en cada una.",
+  confirmarBloquear: "Bloquear",
+  confirmarBloquearYCancelar: "Bloquear y avisar",
+  // Avisar
+  aQuienAvisamos: "¿A quién avisamos?",
+  dueno: (nombre: string) => `${nombre} · dueño de la mascota`,
+  siempreDueno: "Siempre se avisa al dueño",
+  centro: (nombre: string) => `${nombre} · administración`,
+  mensaje: "Mensaje",
+  // Listo
+  listoTitulo: "Listo",
+  listoAvisamos: (destinos: string[]) => `Avisamos a ${destinos.join(" y ")}.`,
+  cerrar: "Cerrar",
+  errorGenerico: "No se pudo guardar el cambio.",
+} as const;
+
+// Mensaje que se sugiere al dueño (editable antes de enviar)
+export const MENSAJE_SUGERIDO_CAMBIO = {
+  reagendar: (dueno: string, vet: string, mascota: string, antes: string, ahora: string) =>
+    `Hola ${dueno}, ${vet} tuvo un imprevisto y movió la hora de ${mascota} del ${antes} al ${ahora}. Si no te acomoda, puedes cancelarla y pedir otra hora desde AuraPet.`,
+  cancelar: (dueno: string, vet: string, mascota: string, cuando: string) =>
+    `Hola ${dueno}, ${vet} no podrá atender a ${mascota} el ${cuando} y tuvo que cancelar la hora. Puedes pedir una nueva desde AuraPet.`,
+  bloqueo: (vet: string) =>
+    `Hola, ${vet} no podrá atender en ese horario y tuvo que cancelar la hora. Puedes pedir una nueva desde AuraPet.`,
+} as const;
+
+// Avisos de cambios de hora (panel del dueño y del centro)
+export const TEXTOS_AVISOS_CITAS = {
+  titulo: "Avisos",
+  marcarTodos: "Marcar todo como leído",
+  marcarLeido: "Marcar como leído",
+  antes: "Antes",
+  ahora: "Ahora",
+} as const;
+
+
+// ---- Horario de atención y perfil profesional del veterinario (migración 53) ----
+export const DURACIONES_CITA = [15, 20, 30, 45, 60] as const;
+export const HORARIO_POR_DEFECTO = { desde: "09:00", hasta: "18:00" } as const;
+export const CLAVE_INDEPENDIENTE = "independiente";
+
+export const TEXTOS_HORARIO_ATENCION = {
+  menu: "Mi horario",
+  titulo: "Mi horario de atención",
+  subtitulo: "Marca los días y horas en que atiendes. Con esto tu agenda muestra todas tus horas, libres y tomadas.",
+  independiente: "Atención independiente",
+  usarHorarioCentro: "Usar el horario del centro",
+  centroAtiende: (abre: string, cierra: string) => `Centro: ${abre} a ${cierra}`,
+  centroCerrado: "Centro cerrado",
+  centro24h: "Centro: las 24 horas",
+  desde: "Desde",
+  hasta: "Hasta",
+  duracionTitulo: "Duración de cada hora",
+  duracionAyuda: "Cuánto dura cada cita en tu agenda.",
+  minutos: (n: number) => `${n} min`,
+  urgenciasTitulo: "Urgencias 24/7",
+  urgenciasTexto: "Atiendo urgencias fuera de mi horario",
+  urgenciasAyuda: "Se muestra como un sello en tu perfil y al pedir hora. No agrega horas a tu agenda: es para que los dueños sepan que pueden contactarte por una urgencia.",
+  zonaTitulo: "Dónde atiendes",
+  zonaAyuda: "Para que los dueños sepan si llegas a su comuna.",
+  aDomicilio: "Atiendo a domicilio",
+  comunas: "Comunas donde atiendes",
+  agregarComuna: "Agregar",
+  placeholderComuna: "Escribe una comuna y presiona Enter",
+  quitarComuna: (c: string) => `Quitar ${c}`,
+  guardar: "Guardar horario",
+  guardando: "Guardando…",
+  guardado: "Listo, tu horario quedó guardado.",
+  sinDias: "Marca al menos un día para que tu agenda tenga horas.",
+  errorHasta: (dia: string) => `${dia}: la hora de término debe ser posterior a la de inicio.`,
+  errorCruce: (dia: string) => `${dia}: tienes dos horarios que se cruzan. No puedes estar en dos lugares a la vez.`,
+  colegiadoTitulo: "N° de colegiado",
+  colegiadoAyuda: "Lo puedes agregar una vez. Si después necesitas cambiarlo, escríbenos.",
+  colegiadoGuardar: "Guardar",
+  colegiadoGuardado: "Listo, guardamos tu número de colegiado.",
+} as const;
+
+export const TEXTOS_PROGRESO_PERFIL = {
+  titulo: "Completa tu perfil",
+  porcentaje: (n: number) => `Tu perfil está al ${n}%`,
+  ayuda: "Los dueños confían más en un perfil completo, y con tu horario tu agenda muestra todas tus horas.",
+  pasos: {
+    foto: "Sube una foto de perfil",
+    telefono: "Agrega tu teléfono",
+    especialidades: "Elige tus especialidades",
+    colegiado: "Agrega tu N° de colegiado",
+    horario: "Configura tu horario de atención",
+    zona: "Cuenta dónde atiendes",
+  },
+} as const;
+
+// Orden en que se muestran los pasos
+export const PASOS_PERFIL_VETERINARIO = ["horario", "foto", "telefono", "especialidades", "colegiado", "zona"] as const;
+
+
+// ---- Mi Agenda: la semana con todas las horas (etapa 2) ----
+export const DIAS_HORAS_LIBRES = 14; // para reagendar se ofrecen las horas libres de estos días
+
+export const TEXTOS_MI_AGENDA = {
+  titulo: "Mi Agenda",
+  subtitulo: "Todas tus horas de la semana. Toca una hora libre para bloquearla, o una cita para moverla o cancelarla.",
+  semanaAnterior: "Semana anterior",
+  semanaSiguiente: "Semana siguiente",
+  hoy: "Hoy",
+  rango: (desde: string, hasta: string) => `${desde} – ${hasta}`,
+  porConfirmar: "Por confirmar",
+  bloquear: "Bloquear horario",
+  sinHorarioTitulo: "Todavía no configuras tu horario de atención",
+  sinHorarioTexto: "Sin horario solo vemos tus citas. Configúralo para ver también tus horas libres.",
+  configurarHorario: "Configurar mi horario",
+  sinHoras: "No tienes horas ni citas esta semana.",
+  hora: "Hora",
+  leyendaTitulo: "Qué significa cada color",
+  leyenda: { libre: "Libre", tomada: "Con cita", pendiente: "Por confirmar", bloqueada: "Bloqueada", pasada: "Ya pasó" },
+  libre: "Libre",
+  bloqueado: "Bloqueado",
+  fueraDeHorario: "Fuera de horario",
+  etiquetaCelda: {
+    libre: (dia: string, hora: string) => `${dia}, ${hora}: libre. Bloquear esta hora`,
+    tomada: (dia: string, hora: string, mascota: string) => `${dia}, ${hora}: cita con ${mascota}. Modificar`,
+    bloqueada: (dia: string, hora: string) => `${dia}, ${hora}: bloqueada. Quitar bloqueo`,
+    pasada: (dia: string, hora: string) => `${dia}, ${hora}: ya pasó`,
+  },
+  // Reagendar eligiendo entre horas libres
+  horasLibres: "Elige una de tus horas libres",
+  sinHorasLibres: "No tienes horas libres en los próximos días. Escribe la hora a mano.",
+  otraHora: "Escribir otra hora",
+  verHorasLibres: "Ver mis horas libres",
+} as const;
+
+
+// ---- Centros: horario, urgencias, UCI y progreso (migración 54) ----
+export const HORAS_VIGENCIA_UCI = 6; // pasado esto sin actualizar, el estado se muestra "sin información reciente"
+
+export const ESTADOS_UCI: OpcionEstadoUci[] = [
+  { valor: "disponible", texto: "Disponible", ayuda: "Pueden recibir pacientes" },
+  { valor: "pocos_cupos", texto: "Pocos cupos", ayuda: "Quedan pocos lugares" },
+  { valor: "sin_cupos", texto: "Sin cupos", ayuda: "La UCI está llena" },
+  { valor: "no_operativa", texto: "No operativa", ayuda: "Hoy no pueden recibir" },
+];
+
+export const MOTIVOS_UCI: OpcionMotivoUci[] = [
+  { valor: "faltan_profesionales", texto: "Faltan profesionales" },
+  { valor: "falta_instrumental", texto: "Falta instrumental" },
+  { valor: "otro", texto: "Otro" },
+];
+
+export const TEXTOS_URGENCIAS_CENTRO = {
+  titulo: "Urgencias y UCI",
+  ayuda: "Con esto los dueños sabrán si pueden llegar con una urgencia.",
+  tieneUci: "Tenemos UCI / hospitalización",
+  urgencias247: "Atendemos urgencias 24/7",
+  guardar: "Guardar",
+  guardado: "Listo, quedó guardado.",
+  estadoTitulo: "Estado de la UCI ahora",
+  estadoAyuda: "Cámbialo cada vez que cambie: los dueños lo ven al momento.",
+  motivo: "¿Por qué no está operativa?",
+  detalle: "Detalle (opcional)",
+  guardarMotivo: "Guardar motivo",
+  actualizado: (hace: string) => `Actualizado ${hace}`,
+  sinActualizar: "Todavía no indicas el estado de la UCI.",
+  desactualizado: (horas: number) => `Lleva más de ${horas} horas sin actualizarse: los dueños lo ven como "sin información reciente".`,
+  enVivo: "En vivo",
+};
+
+export const TEXTO_DIA_COMPLETO = "Las 24 horas";
+
+export const TEXTOS_HORARIO_CENTRO = {
+  abierto247: "Abierto las 24 horas, los 7 días.",
+  ayuda247: "Como marcaron \"Atendemos urgencias 24/7\", el horario es completo y no se edita. Para cambiarlo, desmarca esa opción.",
+  editar: "Editar horario",
+  cancelar: "Cancelar",
+  guardar: "Guardar horario",
+  guardado: "Horario guardado.",
+  colacion: "Colación",
+  desde: "Abre",
+  hasta: "Cierra",
+  inicioColacion: "Desde",
+  finColacion: "Hasta",
+  ayuda: "Los veterinarios del centro arman su horario dentro de este. Si lo achicas, revisa que sus horarios sigan calzando.",
+  sinDias: "Marca al menos un día de atención.",
+  errorCierre: (dia: string) => `${dia}: la hora de cierre debe ser después de la de apertura.`,
+  errorColacion: (dia: string) => `${dia}: la colación debe quedar dentro del horario de atención.`,
+};
+
+export const TEXTOS_ESPECIALIDADES_CENTRO = {
+  editar: "Editar especialidades",
+  etiqueta: "Especialidades del centro",
+  ayuda: "Marca lo que atienden. Así los dueños los encuentran al pedir hora y al derivar.",
+  guardar: "Guardar especialidades",
+  cancelar: "Cancelar",
+  guardado: "Especialidades guardadas.",
+};
+
+export const TEXTOS_PROGRESO_CENTRO = {
+  titulo: "Completa el perfil del centro",
+  porcentaje: (n: number) => `El perfil está al ${n}%`,
+  ayuda: "Un perfil completo aparece mejor al pedir hora y en urgencias.",
+  pasos: {
+    telefono: "Agrega el teléfono del centro",
+    horario: "Configura el horario de atención",
+    especialidades: "Elige las especialidades",
+    equipo: "Suma al menos un veterinario",
+    urgencias: "Cuéntanos si atienden urgencias o tienen UCI",
+  },
+};
+
+export const PASOS_PERFIL_CENTRO: PasoPerfilCentro[] = ["horario", "telefono", "especialidades", "urgencias", "equipo"];
+
+
+// ---- Urgencias sin cuenta (/urgencias, migración 55) ----
+export const TEXTOS_URGENCIAS = {
+  // Franja en la portada
+  franjaTitulo: "¿Tu mascota tiene una urgencia?",
+  franjaTexto: "Mira qué centros atienden ahora y llama directo. No necesitas cuenta.",
+  franjaBoton: "Ver centros que atienden ahora",
+  // Página
+  titulo: "Urgencias veterinarias",
+  subtitulo: "Centros que atienden ahora y el estado de su UCI en vivo. No necesitas cuenta.",
+  consejo: "Llama antes de ir: así te confirman que pueden recibir a tu mascota y te dicen qué hacer en el camino.",
+  enVivo: "Estado de UCI en vivo",
+  // Filtros
+  comuna: "Comuna",
+  todasLasComunas: "Todas las comunas",
+  soloAbiertos: "Solo abiertos ahora",
+  soloUci: "Solo con UCI disponible",
+  // Tarjetas
+  abiertoAhora: "Abierto ahora",
+  cerradoAhora: "Cerrado ahora",
+  urgencias247: "Urgencias 24/7",
+  uci: "UCI",
+  sinInfoReciente: "Sin información reciente",
+  hoy: (texto: string) => `Hoy: ${texto}`,
+  hoyCerrado: "Hoy: cerrado",
+  sinHorario: "Horario no informado",
+  llamar: "Llamar",
+  comoLlegar: "Cómo llegar",
+  sinTelefono: "Sin teléfono registrado",
+  // Secciones
+  centros: "Centros",
+  veterinarios: "Veterinarios con urgencias 24/7",
+  veterinariosAyuda: "Atienden urgencias fuera de horario. Llámalos para coordinar.",
+  aDomicilio: "A domicilio",
+  sinResultados: "No encontramos centros con esos filtros. Prueba con otra comuna o quita un filtro.",
+  cargando: "Buscando centros…",
+  error: "No pudimos cargar los centros. Si es una urgencia, llama a tu veterinaria de siempre.",
+} as const;
+
+// Teléfono del vet en /urgencias (Mi horario → Urgencias 24/7)
+export const TEXTOS_TELEFONO_URGENCIAS = {
+  casilla: "Mostrar mi teléfono en la página pública de urgencias",
+  ayuda: "Así cualquier persona con una urgencia te puede llamar, aunque no tenga cuenta en AuraPet.",
+  sinTelefono: "Primero agrega tu teléfono en Configuración → Editar perfil.",
 } as const;

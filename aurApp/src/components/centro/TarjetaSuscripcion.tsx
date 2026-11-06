@@ -3,19 +3,22 @@ import { Text, View } from 'react-native';
 import { EnlaceTexto } from '@/components/formulario/EnlaceTexto';
 import { BarraProgreso } from '@/components/ui/BarraProgreso';
 import { Etiqueta } from '@/components/ui/Etiqueta';
-import { COLORES, ESTADO_SUSCRIPCION_LABEL, TEXTOS_CENTRO as T } from '@/constants/constants';
-import { tarjetaSuscripcionStyles as styles } from '@/css/CentroPage';
-import type { TarjetaSuscripcionProps } from '@/interfaces';
+import { ESTADO_SUSCRIPCION_LABEL, TEXTOS_CENTRO as T } from '@/constants/constants';
+import { useTarjetaSuscripcionStyles } from '@/css/CentroPage';
+import type { Paleta, TarjetaSuscripcionProps } from '@/interfaces';
 import { vencimientoSuscripcion } from '@/lib/centro';
+import { useColores } from '@/context/TemaContext';
 
-const COLOR_ESTADO = {
-  prueba: COLORES.estados.pendiente,
-  activa: COLORES.estados.confirmada,
-  vencida: COLORES.estados.cancelada,
-  cancelada: COLORES.estados.cancelada,
-} as const;
+const colorEstado = (c: Paleta) => ({
+  prueba: c.estados.pendiente,
+  activa: c.estados.confirmada,
+  vencida: c.estados.cancelada,
+  cancelada: c.estados.cancelada,
+});
 
 export function TarjetaSuscripcion({ suscripcion: s, onVerPlanes }: TarjetaSuscripcionProps) {
+  const COLORES = useColores();
+  const styles = useTarjetaSuscripcionStyles();
   if (!s) {
     return (
       <View style={styles.tarjeta}>
@@ -27,7 +30,7 @@ export function TarjetaSuscripcion({ suscripcion: s, onVerPlanes }: TarjetaSuscr
   }
   const { texto, progreso } = vencimientoSuscripcion(s);
   const limite = s.plan.limiteVeterinarios;
-  const color = COLOR_ESTADO[s.estado];
+  const color = colorEstado(COLORES)[s.estado];
 
   return (
     <View style={styles.tarjeta}>

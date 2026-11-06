@@ -1,4 +1,4 @@
-import { MAX_PROXIMAS_CITAS_CENTRO } from "../constants";
+import { MAX_PROXIMAS_CITAS_CENTRO, TEXTO_DIA_COMPLETO } from "../constants";
 import type { CitaCentro, ResumenCitasCentro } from "../interfaces";
 
 const mismoDia = (a: Date, b: Date) =>
@@ -22,5 +22,10 @@ export const resumirCitasCentro = (citas: CitaCentro[], ahora = new Date()): Res
 };
 
 // Texto del horario de un día: "09:00 a 18:00 · colación 13:00 a 14:00"
+// Un día de 00:00 a 24:00 (centro 24/7, migración 56) se lee "Las 24 horas"
+export const esDiaCompleto = (h: { abre: string; cierra: string }) => h.abre === "00:00" && h.cierra.startsWith("24:00");
+
 export const textoHorario = (h: { abre: string; cierra: string; inicioColacion: string | null; finColacion: string | null }) =>
-  `${h.abre} a ${h.cierra}${h.inicioColacion ? ` · colación ${h.inicioColacion} a ${h.finColacion}` : ""}`;
+  esDiaCompleto(h)
+    ? TEXTO_DIA_COMPLETO
+    : `${h.abre} a ${h.cierra}${h.inicioColacion ? ` · colación ${h.inicioColacion} a ${h.finColacion}` : ""}`;

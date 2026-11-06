@@ -1,15 +1,18 @@
 import { Text, View } from 'react-native';
 
-import { COLORES, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaAccionStyles as styles } from '@/css/Compartido';
+import { useTarjetaAccionStyles } from '@/css/Compartido';
 import type { TarjetaAccionProps } from '@/interfaces';
 
 import { CirculoIcono } from './CirculoIcono';
 import { Icono } from './Icono';
 import { TarjetaPastel } from './TarjetaPastel';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 /** Fila de color que lleva a otra pantalla: "Aprobaciones pendientes · 3 >". */
 export function TarjetaAccion({ icono, tono, titulo, detalle, cantidad, onPress }: TarjetaAccionProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaAccionStyles();
   const colores = TONOS_TARJETA[tono];
   return (
     <TarjetaPastel tono={tono} onPress={onPress} style={styles.tarjeta}>

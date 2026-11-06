@@ -4,12 +4,15 @@ import { MensajeFormulario } from '@/components/formulario/MensajeFormulario';
 import { AvatarPersona } from '@/components/ui/AvatarPersona';
 import { HojaInferior } from '@/components/ui/HojaInferior';
 import { OpcionHoja } from '@/components/ui/OpcionHoja';
-import { COLORES, TEXTOS_FOTO_PERFIL as T } from '@/constants/constants';
-import { hojaFotoPerfilStyles as styles } from '@/css/PerfilPage';
+import { TEXTOS_FOTO_PERFIL as T } from '@/constants/constants';
+import { useHojaFotoPerfilStyles } from '@/css/PerfilPage';
 import type { HojaFotoPerfilProps } from '@/interfaces';
+import { useColores } from '@/context/TemaContext';
 
 /** Hoja "Foto de perfil": vista previa, tomar, elegir de la galería o quitar. */
 export function HojaFotoPerfil({ visible, nombre, fotoUrl, ocupado, error, onTomar, onElegir, onQuitar, onCerrar }: HojaFotoPerfilProps) {
+  const COLORES = useColores();
+  const styles = useHojaFotoPerfilStyles();
   return (
     <HojaInferior visible={visible} titulo={T.titulo} onCerrar={onCerrar}>
       <View style={styles.vista}>

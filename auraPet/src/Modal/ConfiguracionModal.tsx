@@ -22,9 +22,9 @@ import { CampoFotoPerfil } from "../components/perfil/CampoFotoPerfil";
 // =====================================================================
 // MODAL PRINCIPAL
 // =====================================================================
-export const ConfiguracionModal = ({ onCerrar }: ConfiguracionModalProps) => {
+export const ConfiguracionModal = ({ onCerrar, seccionInicial }: ConfiguracionModalProps) => {
   const { usuarioActual, logout } = useAuth();
-  const [abierta, setAbierta] = useState<SeccionConfiguracion | null>(null);
+  const [abierta, setAbierta] = useState<SeccionConfiguracion | null>(seccionInicial ?? null);
 
   // Abre la sección; si ya estaba abierta, la cierra (acordeón)
   const alternar = (s: SeccionConfiguracion) => setAbierta(abierta === s ? null : s);

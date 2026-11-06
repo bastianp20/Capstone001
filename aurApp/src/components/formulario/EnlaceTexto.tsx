@@ -1,11 +1,12 @@
 import { Pressable, Text } from 'react-native';
 
-import { enlaceTextoStyles as styles } from '@/css/Compartido';
+import { useEnlaceTextoStyles } from '@/css/Compartido';
 import type { EnlaceTextoProps } from '@/interfaces';
 
 const ALINEACION = { izquierda: 'flex-start', centro: 'center', derecha: 'flex-end' } as const;
 
 export function EnlaceTexto({ texto, onPress, alineacion = 'izquierda' }: EnlaceTextoProps) {
+  const styles = useEnlaceTextoStyles();
   return (
     <Pressable
       onPress={onPress}

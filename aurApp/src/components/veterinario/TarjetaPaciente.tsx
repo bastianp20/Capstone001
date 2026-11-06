@@ -3,12 +3,15 @@ import { Pressable, Text, View } from 'react-native';
 import { AvatarMascota } from '@/components/ui/AvatarMascota';
 import { Etiqueta } from '@/components/ui/Etiqueta';
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, ESPECIE_LABEL, TEXTOS_PACIENTES as T, TEXTOS_VETERINARIO } from '@/constants/constants';
-import { tarjetaPacienteStyles as styles } from '@/css/VeterinarioPage';
+import { ESPECIE_LABEL, TEXTOS_PACIENTES as T, TEXTOS_VETERINARIO } from '@/constants/constants';
+import { useTarjetaPacienteStyles } from '@/css/VeterinarioPage';
 import type { TarjetaPacienteProps } from '@/interfaces';
 import { diaDeCita, tiempoDesde } from '@/lib/fechas';
+import { useColores } from '@/context/TemaContext';
 
 export function TarjetaPaciente({ paciente, onPress }: TarjetaPacienteProps) {
+  const COLORES = useColores();
+  const styles = useTarjetaPacienteStyles();
   const especie = paciente.raza || (paciente.especie ? ESPECIE_LABEL[paciente.especie] : null);
   return (
     <Pressable onPress={onPress} accessibilityRole="button" style={({ pressed }) => [styles.tarjeta, pressed && styles.presionada]}>

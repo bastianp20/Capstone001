@@ -1,0 +1,260 @@
+/* Mi horario de atención del veterinario y "Completa tu perfil".
+   Paneles claros; el modo oscuro llega por los tokens de theme.css. */
+@import '../theme.css';
+
+.seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 920px;
+  padding: 4px 32px 40px;
+  color: var(--color-terciario-texto);
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.subtitulo {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: var(--color-terciario-texto-muted);
+}
+
+.tarjeta {
+  padding: 18px 20px;
+  color: var(--color-terciario-texto);
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 12px;
+  background: var(--color-superficie);
+}
+
+.tarjetaEncabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.tarjetaTitulo {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.ayuda {
+  margin: 0 0 12px;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--color-terciario-texto-muted);
+}
+
+/* ---- días ---- */
+.dias {
+  display: flex;
+  flex-direction: column;
+}
+
+.dia {
+  display: grid;
+  grid-template-columns: 150px repeat(2, minmax(0, 130px)) minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.dia + .dia {
+  border-top: 1px solid var(--color-terciario-borde);
+}
+
+.casilla {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.casilla input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--color-primario);
+}
+
+.campoHora {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.74rem;
+  color: var(--color-terciario-texto-muted);
+}
+
+.input {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--color-borde-fuerte);
+  border-radius: 8px;
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
+  font-family: inherit;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.input:disabled {
+  opacity: 0.45;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 3px var(--color-secundario);
+}
+
+.notaCentro {
+  font-size: 0.78rem;
+  color: var(--color-terciario-texto-muted);
+}
+
+/* ---- chips ---- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 1px solid var(--color-borde-fuerte);
+  border-radius: 999px;
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
+  font-family: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chip:hover:not(:disabled) {
+  border-color: var(--color-primario);
+}
+
+.chipActivo {
+  border-color: var(--color-primario);
+  background: var(--color-primario);
+  color: #ffffff;
+}
+
+.chipQuitar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px 5px 12px;
+  border-radius: 999px;
+  background: var(--color-secundario);
+  color: var(--color-primario-texto);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.chipQuitar button {
+  display: flex;
+  padding: 2px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.filaComuna {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+/* ---- botones ---- */
+.boton,
+.botonSecundario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.boton {
+  border: none;
+  background: var(--color-primario);
+  color: #ffffff;
+}
+
+.boton:hover:not(:disabled) {
+  background: #0c7569;
+}
+
+.botonSecundario {
+  border: 1px solid var(--color-terciario-borde);
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
+}
+
+.botonSecundario:hover:not(:disabled) {
+  border-color: var(--color-primario);
+  color: var(--color-primario-texto);
+}
+
+.boton:disabled,
+.botonSecundario:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pie {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+@media (max-width: 760px) {
+  .seccion {
+    padding: 4px 16px 32px;
+  }
+
+  .dia {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dia > :first-child,
+  .notaCentro {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Opción que depende de otra (p. ej. teléfono en urgencias) */
+.subopcion {
+  margin: 12px 0 0 26px;
+}
+
+.subopcion .ayuda {
+  margin: 4px 0 0 25px;
+}
+
+.listaChips {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

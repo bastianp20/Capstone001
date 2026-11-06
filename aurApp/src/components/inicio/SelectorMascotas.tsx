@@ -2,12 +2,15 @@ import { Pressable } from 'react-native';
 
 import { Icono } from '@/components/ui/Icono';
 import { SelectorPildoras } from '@/components/ui/SelectorPildoras';
-import { COLORES, TEXTOS_INICIO } from '@/constants/constants';
-import { selectorMascotasStyles as styles } from '@/css/InicioPage';
+import { TEXTOS_INICIO } from '@/constants/constants';
+import { useSelectorMascotasStyles } from '@/css/InicioPage';
 import type { SelectorMascotasProps } from '@/interfaces';
+import { useColores } from '@/context/TemaContext';
 
 /** Píldoras con las mascotas del dueño y el botón "+" para agregar otra. */
 export function SelectorMascotas({ mascotas, idSeleccionada, onSeleccionar, onAgregar }: SelectorMascotasProps) {
+  const COLORES = useColores();
+  const styles = useSelectorMascotasStyles();
   return (
     <SelectorPildoras
       opciones={mascotas.map((m) => ({ valor: String(m.id), texto: m.nombre }))}

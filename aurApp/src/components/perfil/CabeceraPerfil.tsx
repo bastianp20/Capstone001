@@ -2,12 +2,15 @@ import { Pressable, Text, View } from 'react-native';
 
 import { AvatarPersona } from '@/components/ui/AvatarPersona';
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, TEXTOS_FOTO_PERFIL } from '@/constants/constants';
-import { cabeceraPerfilStyles as styles } from '@/css/PerfilPage';
+import { TEXTOS_FOTO_PERFIL } from '@/constants/constants';
+import { useCabeceraPerfilStyles } from '@/css/PerfilPage';
 import type { CabeceraPerfilProps } from '@/interfaces';
+import { useColores } from '@/context/TemaContext';
 
 /** Foto (o iniciales) montada sobre la onda, con el botón de cámara; nombre y correo. */
 export function CabeceraPerfil({ nombre, correo, fotoUrl, onCambiarFoto }: CabeceraPerfilProps) {
+  const COLORES = useColores();
+  const styles = useCabeceraPerfilStyles();
   return (
     <View style={styles.contenedor}>
       <Pressable onPress={onCambiarFoto} accessibilityRole="button" accessibilityLabel={TEXTOS_FOTO_PERFIL.cambiar} style={styles.foto}>

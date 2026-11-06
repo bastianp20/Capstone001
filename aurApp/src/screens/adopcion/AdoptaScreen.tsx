@@ -28,7 +28,7 @@ import {
   TEXTOS_REFUGIOS,
   VISTAS_ADOPTA,
 } from '@/constants/constants';
-import { adoptaStyles as styles } from '@/css/AdoptaPage';
+import { useAdoptaStyles } from '@/css/AdoptaPage';
 import { useAdopta } from '@/hooks/useAdopta';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
 import { useRefugios } from '@/hooks/useRefugios';
@@ -41,6 +41,7 @@ const misPublicaciones = () => router.push('/adopcion/mis-publicaciones');
 
 /** Adopta: animales que buscan hogar (con filtros y guardados) y refugios verificados. */
 export default function AdoptaScreen({ conVolver = false }: AdoptaScreenProps) {
+  const styles = useAdoptaStyles();
   useBarraEstadoClara();
   const a = useAdopta();
   const r = useRefugios();

@@ -1,12 +1,15 @@
 import { Text, View } from 'react-native';
 
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, TEXTOS_MIS_PUBLICACIONES as T } from '@/constants/constants';
-import { avisoModeracionStyles as styles } from '@/css/MisPublicacionesPage';
+import { TEXTOS_MIS_PUBLICACIONES as T } from '@/constants/constants';
+import { useAvisoModeracionStyles } from '@/css/MisPublicacionesPage';
 import type { AvisoModeracionProps } from '@/interfaces';
+import { useColores } from '@/context/TemaContext';
 
 /** Aviso del equipo AuraPet sobre una publicación (oculta o con una advertencia). */
 export function AvisoModeracionPublicacion({ aviso }: AvisoModeracionProps) {
+  const COLORES = useColores();
+  const styles = useAvisoModeracionStyles();
   const oculta = aviso.tipo === 'oculta';
   const color = oculta ? COLORES.peligro : COLORES.avisoTexto;
   return (

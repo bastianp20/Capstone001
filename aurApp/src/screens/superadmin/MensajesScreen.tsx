@@ -8,11 +8,12 @@ import { EstadoCarga } from '@/components/ui/EstadoCarga';
 import { EstadoVacio } from '@/components/ui/EstadoVacio';
 import { PantallaLista } from '@/components/ui/PantallaLista';
 import { TEXTOS_CARGA, TEXTOS_MENSAJES as T } from '@/constants/constants';
-import { listaGruposStyles as styles } from '@/css/Compartido';
+import { useListaGruposStyles } from '@/css/Compartido';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
 import { useMensajes } from '@/hooks/useMensajes';
 
 export default function MensajesScreen() {
+  const styles = useListaGruposStyles();
   useBarraEstadoClara();
   const m = useMensajes();
   const s = m.superadmin;

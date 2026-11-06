@@ -66,6 +66,15 @@ import type {
   MisEspecialidades,
   TipoDestinoDerivacion,
   SolicitudEliminacionPropia,
+  AvisoCita,
+  BloqueoHorario,
+  EstadoUciCentro,
+  HorarioAtencion,
+  ListaUrgencias,
+  ProgresoPerfilCentro,
+  ProgresoPerfilVeterinario,
+  TelefonoEnUrgencias,
+  TipoAvisoCita,
 } from '@/interfaces';
 import { edadAdopcion, especieAdopcion, etapaAdopcion, urlFotoAdopcion } from '@/lib/adopcion';
 import type { Database } from '@/lib/database.types';
@@ -292,7 +301,7 @@ export const getCitasVeterinario = async (veterinarioId: number): Promise<CitaVe
   const { data, error } = await supabase
     .from('citas')
     .select(
-      `id, mascota_id, fecha_hora, motivo, estado, sintomas_reportados,
+      `id, mascota_id, fecha_hora, motivo, estado, sintomas_reportados, centro_id, reagendada_en,
        mascotas ( nombre, especie, raza, fecha_nacimiento, alergias, foto_url, perfiles ( nombre ) ),
        centros ( nombre )`,
     )
@@ -314,6 +323,8 @@ export const getCitasVeterinario = async (veterinarioId: number): Promise<CitaVe
     sintomas: c.sintomas_reportados ?? [],
     estado: c.estado,
     centro: c.centros?.nombre ?? null,
+    centroId: c.centro_id,
+    reagendada: c.reagendada_en !== null,
   }));
 };
 
@@ -405,9 +416,9 @@ export const getCentroDetalle = async (centroId: number): Promise<CentroDetalle>
   const { data, error } = await supabase
     .from('centros')
     .select(
-      `id, nombre, direccion, comuna, telefono, es_prueba,
+      `id, nombre, direccion, comuna, telefono, es_prueba, tiene_uci, urgencias_24_7, urgencias_revisado_en,
        horarios_centro ( dia_semana, abre, cierra, inicio_colacion, fin_colacion ),
-       centro_especialidades ( especialidades ( nombre ) )`,
+       centro_especialidades ( especialidad_id, especialidades ( nombre ) )`,
     )
     .eq('id', centroId)
     .single();
@@ -423,6 +434,10 @@ export const getCentroDetalle = async (centroId: number): Promise<CentroDetalle>
       .map((ce) => ce.especialidades?.nombre)
       .filter((n): n is string => Boolean(n))
       .sort(),
+    especialidadIds: (data.centro_especialidades ?? []).map((ce) => ce.especialidad_id),
+    tieneUci: data.tiene_uci,
+    urgencias247: data.urgencias_24_7,
+    urgenciasRevisadas: data.urgencias_revisado_en !== null,
     horarios: (data.horarios_centro ?? [])
       .map((h) => ({
         diaSemana: h.dia_semana,
@@ -1071,4 +1086,142 @@ export const getMisCentrosAtencion = async (): Promise<CentroAtencion[]> => {
   const { data, error } = await supabase.rpc('mis_centros_de_atencion');
   if (error) throw error;
   return (data ?? []).map((c) => ({ id: c.id, nombre: c.nombre }));
+};
+
+
+// =====================================================================
+// Horario de atención, agenda completa, UCI y urgencias (migraciones 52 a 56)
+// =====================================================================
+
+/** Bloqueos de horario del veterinario conectado que todavía no terminan. */
+export const getMisBloqueos = async (): Promise<BloqueoHorario[]> => {
+  const { data, error } = await supabase
+    .from('bloqueos_veterinario')
+    .select('id, desde, hasta, motivo')
+    .gt('hasta', new Date().toISOString())
+    .order('desde');
+  if (error) throw error;
+  return data ?? [];
+};
+
+interface HorarioAtencionBase {
+  independiente: boolean; urgencias_24_7: boolean; a_domicilio: boolean; comunas: string[]; duracion: number;
+  lugares: { centro_id: number | null; nombre: string | null; horario_centro: { dia_semana: number; abre: string; cierra: string }[] }[];
+  tramos: { centro_id: number | null; dia_semana: number; desde: string; hasta: string }[];
+}
+
+export const getMiHorarioAtencion = async (): Promise<HorarioAtencion> => {
+  const { data, error } = await supabase.rpc('mi_horario_atencion');
+  if (error) throw error;
+  const h = data as unknown as HorarioAtencionBase;
+  return {
+    independiente: h.independiente,
+    urgencias247: h.urgencias_24_7,
+    aDomicilio: h.a_domicilio,
+    comunas: h.comunas ?? [],
+    duracion: h.duracion,
+    lugares: (h.lugares ?? []).map((l) => ({
+      centroId: l.centro_id,
+      nombre: l.nombre,
+      horarioCentro: (l.horario_centro ?? []).map((x) => ({ diaSemana: x.dia_semana, abre: x.abre, cierra: x.cierra })),
+    })),
+    tramos: (h.tramos ?? []).map((t) => ({ centroId: t.centro_id, diaSemana: t.dia_semana, desde: t.desde, hasta: t.hasta })),
+  };
+};
+
+/** null si la cuenta no tiene ficha de veterinario. "zona" solo viene para independientes. */
+export const getProgresoPerfilVeterinario = async (): Promise<ProgresoPerfilVeterinario | null> => {
+  const { data, error } = await supabase.rpc('progreso_perfil_veterinario');
+  if (error) throw error;
+  if (!data) return null;
+  const p = data as unknown as { pasos: Record<string, boolean | null> };
+  return Object.fromEntries(Object.entries(p.pasos).filter(([, v]) => v !== null)) as ProgresoPerfilVeterinario;
+};
+
+export const getMiTelefonoEnUrgencias = async (): Promise<TelefonoEnUrgencias> => {
+  const { data, error } = await supabase.rpc('mi_telefono_en_urgencias');
+  if (error) throw error;
+  const t = data as unknown as { mostrar: boolean; tiene_telefono: boolean } | null;
+  return { mostrar: t?.mostrar ?? false, tieneTelefono: t?.tiene_telefono ?? false };
+};
+
+/** Avisos sin leer. Con centroId, solo los de ese centro; sin él, los personales (dueño). */
+export const getAvisosCitas = async (centroId?: number): Promise<AvisoCita[]> => {
+  let consulta = supabase
+    .from('notificaciones')
+    .select('id, tipo, titulo, mensaje, fecha_anterior, fecha_nueva')
+    .is('leida_en', null)
+    .order('creada_en', { ascending: false })
+    .limit(20);
+  consulta = centroId === undefined ? consulta.is('centro_id', null) : consulta.eq('centro_id', centroId);
+  const { data, error } = await consulta;
+  if (error) throw error;
+  return (data ?? []).map((a) => ({
+    id: a.id,
+    tipo: a.tipo as TipoAvisoCita,
+    titulo: a.titulo,
+    mensaje: a.mensaje,
+    fechaAnterior: a.fecha_anterior,
+    fechaNueva: a.fecha_nueva,
+  }));
+};
+
+/** Fila de estado_uci_centros (consulta o Realtime) → formato de la app. */
+export const estadoUciDesdeFila = (f: { centro_id: number; estado: string; motivo: string | null; detalle: string | null; actualizado_en: string }): EstadoUciCentro => ({
+  centroId: f.centro_id,
+  estado: f.estado as EstadoUciCentro['estado'],
+  motivo: f.motivo as EstadoUciCentro['motivo'],
+  detalle: f.detalle,
+  actualizadoEn: f.actualizado_en,
+});
+
+export const getEstadoUci = async (centroId: number): Promise<EstadoUciCentro | null> => {
+  const { data, error } = await supabase
+    .from('estado_uci_centros')
+    .select('centro_id, estado, motivo, detalle, actualizado_en')
+    .eq('centro_id', centroId)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? estadoUciDesdeFila(data) : null;
+};
+
+export const getProgresoPerfilCentro = async (centroId: number): Promise<ProgresoPerfilCentro | null> => {
+  const { data, error } = await supabase.rpc('progreso_perfil_centro', { p_centro_id: centroId });
+  if (error) throw error;
+  return (data as unknown as ProgresoPerfilCentro) ?? null;
+};
+
+interface ListaUrgenciasBase {
+  centros: {
+    id: number; nombre: string; direccion: string; comuna: string; telefono: number | null;
+    urgencias_24_7: boolean; tiene_uci: boolean;
+    estado_uci: Parameters<typeof estadoUciDesdeFila>[0] | null;
+    horarios: { dia_semana: number; abre: string; cierra: string; inicio_colacion: string | null; fin_colacion: string | null }[];
+  }[];
+  veterinarios: { id: number; nombre: string; telefono: number; avatar_url: string | null; a_domicilio: boolean; comunas: string[] }[];
+}
+
+/** Centros y veterinarios para urgencias. Funciona sin sesión (mundo real). */
+export const getUrgencias = async (): Promise<ListaUrgencias> => {
+  const { data, error } = await supabase.rpc('listar_urgencias');
+  if (error) throw error;
+  const l = data as unknown as ListaUrgenciasBase;
+  return {
+    centros: (l.centros ?? []).map((c) => ({
+      id: c.id,
+      nombre: c.nombre,
+      direccion: c.direccion,
+      comuna: c.comuna,
+      telefono: c.telefono,
+      urgencias247: c.urgencias_24_7,
+      tieneUci: c.tiene_uci,
+      estadoUci: c.estado_uci ? estadoUciDesdeFila(c.estado_uci) : null,
+      horarios: (c.horarios ?? []).map((h) => ({
+        diaSemana: h.dia_semana, abre: h.abre, cierra: h.cierra, inicioColacion: h.inicio_colacion, finColacion: h.fin_colacion,
+      })),
+    })),
+    veterinarios: (l.veterinarios ?? []).map((v) => ({
+      id: v.id, nombre: v.nombre, telefono: v.telefono, avatarUrl: v.avatar_url, aDomicilio: v.a_domicilio, comunas: v.comunas ?? [],
+    })),
+  };
 };

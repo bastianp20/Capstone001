@@ -8,10 +8,11 @@ import { ModalTexto } from '@/components/ui/ModalTexto';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { SelectorPildoras } from '@/components/ui/SelectorPildoras';
 import { TEXTOS_CARGA, TEXTOS_DERIVACIONES as T } from '@/constants/constants';
-import { listaGruposStyles as styles } from '@/css/Compartido';
+import { useListaGruposStyles } from '@/css/Compartido';
 import { useDerivacionesVeterinario } from '@/hooks/useDerivacionesVeterinario';
 
 export default function DerivacionesScreen() {
+  const styles = useListaGruposStyles();
   const d = useDerivacionesVeterinario();
 
   return (

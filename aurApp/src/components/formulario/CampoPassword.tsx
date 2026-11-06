@@ -1,14 +1,17 @@
 import { Pressable } from 'react-native';
 
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, TEXTOS_LOGIN } from '@/constants/constants';
-import { campoTextoStyles as styles } from '@/css/Compartido';
+import { TEXTOS_LOGIN } from '@/constants/constants';
+import { useCampoTextoStyles } from '@/css/Compartido';
 import type { CampoPasswordProps } from '@/interfaces';
 
 import { CampoTexto } from './CampoTexto';
+import { useColores } from '@/context/TemaContext';
 
 /** Campo de contraseña con el ojo para mostrarla u ocultarla. */
 export function CampoPassword({ visible, onCambiarVisible, bloquearPegar, ...props }: CampoPasswordProps) {
+  const COLORES = useColores();
+  const styles = useCampoTextoStyles();
   return (
     <CampoTexto
       icono="candado"

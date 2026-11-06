@@ -1,11 +1,12 @@
 import { Text, View } from 'react-native';
 
-import { bloqueFechaCitaStyles as styles } from '@/css/CitasPage';
+import { useBloqueFechaCitaStyles } from '@/css/CitasPage';
 import type { BloqueFechaCitaProps } from '@/interfaces';
 import { partesFechaCita } from '@/lib/fechas';
 
 /** Fecha estilo calendario: "MIÉ / 28 / OCT" y la hora debajo. */
 export function BloqueFechaCita({ fechaHora }: BloqueFechaCitaProps) {
+  const styles = useBloqueFechaCitaStyles();
   const { dia, numero, mes, hora } = partesFechaCita(fechaHora);
   return (
     <View style={styles.contenedor}>

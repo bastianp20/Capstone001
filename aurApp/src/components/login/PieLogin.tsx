@@ -1,10 +1,11 @@
 import { Pressable, Text, View } from 'react-native';
 
 import { TEXTOS_LOGIN } from '@/constants/constants';
-import { pieLoginStyles as styles } from '@/css/LoginPage';
+import { usePieLoginStyles } from '@/css/LoginPage';
 import type { PieLoginProps } from '@/interfaces';
 
 export function PieLogin({ modo, onCambiarModo, onSolicitarCentro }: PieLoginProps) {
+  const styles = usePieLoginStyles();
   const enIngresar = modo === 'ingresar';
   const { pie } = TEXTOS_LOGIN;
 

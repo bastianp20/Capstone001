@@ -1,12 +1,14 @@
 import { Pressable, TextInput, View } from 'react-native';
 
-import { COLORES } from '@/constants/constants';
-import { campoBusquedaStyles as styles } from '@/css/Compartido';
+import { useCampoBusquedaStyles } from '@/css/Compartido';
 import type { CampoBusquedaProps } from '@/interfaces';
 
 import { Icono } from './Icono';
+import { useColores } from '@/context/TemaContext';
 
 export function CampoBusqueda({ valor, onCambiar, placeholder }: CampoBusquedaProps) {
+  const COLORES = useColores();
+  const styles = useCampoBusquedaStyles();
   return (
     <View style={styles.caja}>
       <Icono nombre="buscar" tamano={18} color={COLORES.textoSecundario} />

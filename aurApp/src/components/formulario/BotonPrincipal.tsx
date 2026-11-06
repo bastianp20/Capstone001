@@ -1,11 +1,14 @@
 import { ActivityIndicator, Pressable, Text } from 'react-native';
 
 import { Icono } from '@/components/ui/Icono';
-import { COLORES } from '@/constants/constants';
-import { botonPrincipalStyles as styles } from '@/css/Compartido';
+
+import { useBotonPrincipalStyles } from '@/css/Compartido';
 import type { BotonPrincipalProps } from '@/interfaces';
+import { useColores } from '@/context/TemaContext';
 
 export function BotonPrincipal({ texto, textoCargando, cargando, deshabilitado, onPress, tono = 'primario', conFlecha }: BotonPrincipalProps) {
+  const COLORES = useColores();
+  const styles = useBotonPrincipalStyles();
   const inactivo = cargando || deshabilitado;
 
   return (

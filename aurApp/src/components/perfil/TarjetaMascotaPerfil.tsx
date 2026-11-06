@@ -1,11 +1,14 @@
 import { Pressable, Text } from 'react-native';
 
 import { AvatarMascota } from '@/components/ui/AvatarMascota';
-import { ESPECIE_LABEL, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaMascotaPerfilStyles as styles } from '@/css/PerfilPage';
+import { ESPECIE_LABEL } from '@/constants/constants';
+import { useTarjetaMascotaPerfilStyles } from '@/css/PerfilPage';
 import type { TarjetaMascotaPerfilProps } from '@/interfaces';
+import { useTonosTarjeta } from '@/context/TemaContext';
 
 export function TarjetaMascotaPerfil({ mascota, tono, ancho, onPress }: TarjetaMascotaPerfilProps) {
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaMascotaPerfilStyles();
   return (
     <Pressable
       onPress={onPress}

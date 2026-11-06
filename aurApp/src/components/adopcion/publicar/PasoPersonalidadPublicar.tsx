@@ -3,14 +3,20 @@ import { View } from 'react-native';
 import { CampoTexto } from '@/components/formulario/CampoTexto';
 import { ChipsMultiples } from '@/components/ui/ChipsMultiples';
 import { GrupoCampo } from '@/components/ui/GrupoCampo';
-import { ETIQUETAS_RASGOS_ADOPCION, OPCIONES_PERSONALIDAD_ADOPCION, RASGOS_ADOPCION, TEXTOS_PUBLICAR as T } from '@/constants/constants';
-import { publicarAdopcionStyles as styles } from '@/css/PublicarAdopcionPage';
+import {
+  ETIQUETAS_RASGOS_ADOPCION,
+  OPCIONES_PERSONALIDAD_ADOPCION,
+  RASGOS_ADOPCION,
+  TEXTOS_PUBLICAR as T,
+} from '@/constants/constants';
+import { usePublicarAdopcionStyles } from '@/css/PublicarAdopcionPage';
 import type { PasoPersonalidadPublicarProps } from '@/interfaces';
 
 import { SelectorNivel } from './SelectorNivel';
 
 /** Paso 2 · Personalidad: hasta 5 rasgos, cómo es (1 a 5) y una frase en primera persona. */
 export function PasoPersonalidadPublicar({ datos: d, errores: e, onCambiar, onAlternarPersonalidad }: PasoPersonalidadPublicarProps) {
+  const styles = usePublicarAdopcionStyles();
   return (
     <View style={styles.paso}>
       <GrupoCampo titulo={T.personalidad} error={e.personalidad}>

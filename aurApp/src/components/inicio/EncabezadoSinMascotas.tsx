@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AvatarIniciales } from '@/components/ui/AvatarIniciales';
 import { EncabezadoVerde } from '@/components/ui/EncabezadoVerde';
 import { HUELLAS_ENCABEZADO_INICIO, TEXTOS_INICIO } from '@/constants/constants';
-import { encabezadoInicioStyles as styles } from '@/css/InicioPage';
+import { useEncabezadoInicioStyles } from '@/css/InicioPage';
 import type { EncabezadoSinMascotasProps } from '@/interfaces';
 
 const IMAGEN_MASCOTAS = require('@/assets/images/login/mascotas-login.png');
@@ -13,6 +13,7 @@ const RELACION_IMAGEN = 497 / 663;
 
 /** Encabezado del inicio cuando el dueño todavía no registra mascotas. */
 export function EncabezadoSinMascotas({ nombreUsuario, nombreCompleto, onIrAPerfil }: EncabezadoSinMascotasProps) {
+  const styles = useEncabezadoInicioStyles();
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const anchoImagen = Math.min(width * 0.58, 250);

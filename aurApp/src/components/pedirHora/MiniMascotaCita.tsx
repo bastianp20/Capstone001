@@ -2,12 +2,13 @@ import { Pressable, Text, View } from 'react-native';
 
 import { AvatarMascota } from '@/components/ui/AvatarMascota';
 import { TEXTOS_PEDIR_HORA as T } from '@/constants/constants';
-import { miniMascotaCitaStyles as styles } from '@/css/PedirHoraPage';
+import { useMiniMascotaCitaStyles } from '@/css/PedirHoraPage';
 import type { MiniMascotaCitaProps } from '@/interfaces';
 import { edadDesde } from '@/lib/fechas';
 
 /** "Toby · Beagle, 3 años" con su foto y "Cambiar" (vuelve al primer paso). */
 export function MiniMascotaCita({ mascota: m, onCambiar }: MiniMascotaCitaProps) {
+  const styles = useMiniMascotaCitaStyles();
   const detalle = [m.raza, edadDesde(m.fechaNacimiento)].filter(Boolean).join(', ');
   return (
     <View style={styles.tarjeta}>

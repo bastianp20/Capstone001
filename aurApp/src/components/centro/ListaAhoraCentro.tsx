@@ -1,13 +1,16 @@
 import { Text, View } from 'react-native';
 
 import { Etiqueta } from '@/components/ui/Etiqueta';
-import { COLORES, ETIQUETAS_ESTADO_CITA, TEXTOS_CENTRO as T } from '@/constants/constants';
-import { listaAhoraCentroStyles as styles } from '@/css/CentroPage';
+import { ETIQUETAS_ESTADO_CITA, TEXTOS_CENTRO as T } from '@/constants/constants';
+import { useListaAhoraCentroStyles } from '@/css/CentroPage';
 import type { ListaAhoraCentroProps } from '@/interfaces';
 import { diaDeCita, formatFechaHoraCita, hoy, partesFechaCita } from '@/lib/fechas';
+import { useColores } from '@/context/TemaContext';
 
 /** Próximas citas del centro en una tarjeta: hora, mascota, veterinario y estado. */
 export function ListaAhoraCentro({ citas }: ListaAhoraCentroProps) {
+  const COLORES = useColores();
+  const styles = useListaAhoraCentroStyles();
   return (
     <View style={styles.tarjeta}>
       {citas.map((c, i) => {

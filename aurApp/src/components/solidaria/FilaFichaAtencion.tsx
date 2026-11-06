@@ -1,11 +1,14 @@
 import { Switch, Text, View } from 'react-native';
 
-import { COLORES, TEXTOS_ATENCION_SOLIDARIA as T } from '@/constants/constants';
-import { filaFichaAtencionStyles as styles } from '@/css/SolidariaPage';
+import { TEXTOS_ATENCION_SOLIDARIA as T } from '@/constants/constants';
+import { useFilaFichaAtencionStyles } from '@/css/SolidariaPage';
 import type { FilaFichaAtencionProps } from '@/interfaces';
+import { useColores } from '@/context/TemaContext';
 
 /** Una fila de "Su ficha" (vacunas, esterilización…). Lo que ya estaba en su ficha queda marcado y fijo. */
 export function FilaFichaAtencion({ texto, yaEnFicha, marcado, onCambiar }: FilaFichaAtencionProps) {
+  const COLORES = useColores();
+  const styles = useFilaFichaAtencionStyles();
   return (
     <View style={styles.fila}>
       <View style={styles.textos}>

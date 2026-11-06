@@ -2,12 +2,15 @@ import { Text, View } from 'react-native';
 
 import { BotonPequeno } from '@/components/ui/BotonPequeno';
 import { Icono } from '@/components/ui/Icono';
-import { TEXTOS_ADOPTA as T, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaDarEnAdopcionStyles as styles } from '@/css/AdoptaPage';
+import { TEXTOS_ADOPTA as T } from '@/constants/constants';
+import { useTarjetaDarEnAdopcionStyles } from '@/css/AdoptaPage';
 import type { TarjetaDarEnAdopcionProps } from '@/interfaces';
+import { useTonosTarjeta } from '@/context/TemaContext';
 
 /** Invitación a "Dar en adopción" y acceso a "Mis publicaciones". */
 export function TarjetaDarEnAdopcion({ onPublicar, onMisPublicaciones }: TarjetaDarEnAdopcionProps) {
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaDarEnAdopcionStyles();
   return (
     <View style={styles.tarjeta}>
       <View style={styles.encabezado}>

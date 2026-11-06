@@ -12,11 +12,12 @@ import { IndicadorPasos } from '@/components/ui/IndicadorPasos';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { ResultadoSolicitud } from '@/components/ui/ResultadoSolicitud';
 import { PASOS_PUBLICAR, TEXTOS_PUBLICAR as T } from '@/constants/constants';
-import { publicarAdopcionStyles as styles } from '@/css/PublicarAdopcionPage';
+import { usePublicarAdopcionStyles } from '@/css/PublicarAdopcionPage';
 import { usePublicarAdopcion } from '@/hooks/usePublicarAdopcion';
 
 /** "Dar en adopción" en 4 pasos: Datos (con fotos de la cámara o la galería) · Personalidad · Salud · Revisar. */
 export default function PublicarAdopcionScreen() {
+  const styles = usePublicarAdopcionStyles();
   const { refugio } = useLocalSearchParams<{ refugio?: string }>();
   const p = usePublicarAdopcion(refugio ? Number(refugio) : null);
 

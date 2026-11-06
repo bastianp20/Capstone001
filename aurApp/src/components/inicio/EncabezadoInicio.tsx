@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AvatarIniciales } from '@/components/ui/AvatarIniciales';
 import { EncabezadoVerde } from '@/components/ui/EncabezadoVerde';
 import { HUELLAS_ENCABEZADO_INICIO, MARGEN_PANTALLA, TEXTOS_INICIO } from '@/constants/constants';
-import { encabezadoInicioStyles as styles } from '@/css/InicioPage';
+import { useEncabezadoInicioStyles } from '@/css/InicioPage';
 import type { EncabezadoInicioProps } from '@/interfaces';
 
 import { FotoMascota } from './FotoMascota';
@@ -24,6 +24,7 @@ export function EncabezadoInicio({
   onIrAPerfil,
   onVerCita,
 }: EncabezadoInicioProps) {
+  const styles = useEncabezadoInicioStyles();
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const diametroFoto = (width - MARGEN_PANTALLA * 2) * PROPORCION_COLUMNA_FOTO;

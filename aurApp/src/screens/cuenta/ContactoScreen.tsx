@@ -9,12 +9,13 @@ import { GrupoCampo } from '@/components/ui/GrupoCampo';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { SelectorPildoras } from '@/components/ui/SelectorPildoras';
 import { ASUNTOS_CONTACTO, MAX_CARACTERES_CONTACTO, TEXTOS_CONTACTO as T } from '@/constants/constants';
-import { contactoStyles as styles } from '@/css/CuentaPage';
+import { useContactoStyles } from '@/css/CuentaPage';
 import { useFormularioContacto } from '@/hooks/useFormularioContacto';
 
 const OPCIONES_ASUNTO = ASUNTOS_CONTACTO.map((a) => ({ valor: a, texto: a }));
 
 export default function ContactoScreen() {
+  const styles = useContactoStyles();
   const c = useFormularioContacto();
 
   if (c.enviado) {

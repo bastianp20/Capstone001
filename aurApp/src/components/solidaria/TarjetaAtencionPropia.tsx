@@ -1,15 +1,19 @@
 import { Pressable, Text, View } from 'react-native';
 
 import { Etiqueta } from '@/components/ui/Etiqueta';
-import { COLORES, TEXTOS_SOLIDARIA as T, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaAnimalSolidarioStyles as styles } from '@/css/SolidariaPage';
+import { TEXTOS_SOLIDARIA as T } from '@/constants/constants';
+import { useTarjetaAnimalSolidarioStyles } from '@/css/SolidariaPage';
 import type { TarjetaAtencionPropiaProps } from '@/interfaces';
 import { formatFechaLarga } from '@/lib/fechas';
 
 import { FotoAnimal } from './FotoAnimal';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 /** Una atención que registró el veterinario: animal, fecha, dónde, si fue solidaria y el resumen. */
 export function TarjetaAtencionPropia({ atencion: a, onPress }: TarjetaAtencionPropiaProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaAnimalSolidarioStyles();
   return (
     <Pressable onPress={onPress} accessibilityRole="button" style={({ pressed }) => [styles.tarjeta, pressed && styles.presionada]}>
       <FotoAnimal fotoUrl={a.fotoUrl} especie={a.especie} estilo={styles.foto} />

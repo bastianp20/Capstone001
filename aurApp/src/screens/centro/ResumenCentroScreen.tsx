@@ -1,7 +1,10 @@
 import { router } from 'expo-router';
 import { Pressable, View } from 'react-native';
 
+import { AvisosCitas } from '@/components/avisos/AvisosCitas';
 import { ListaAhoraCentro } from '@/components/centro/ListaAhoraCentro';
+import { PanelEstadoUci } from '@/components/centro/PanelEstadoUci';
+import { ProgresoPerfilCentro } from '@/components/centro/ProgresoPerfilCentro';
 import { TarjetaCitasSemana } from '@/components/centro/TarjetaCitasSemana';
 import { TarjetaHorarioHoy } from '@/components/centro/TarjetaHorarioHoy';
 import { TarjetaSuscripcion } from '@/components/centro/TarjetaSuscripcion';
@@ -15,13 +18,14 @@ import { PantallaLista } from '@/components/ui/PantallaLista';
 import { SelectorPildoras } from '@/components/ui/SelectorPildoras';
 import { TituloSeccion } from '@/components/ui/TituloSeccion';
 import { TEXTOS_CARGA, TEXTOS_CENTRO as T } from '@/constants/constants';
-import { resumenCentroStyles as styles } from '@/css/CentroPage';
+import { useResumenCentroStyles } from '@/css/CentroPage';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
 import { useResumenCentro } from '@/hooks/useResumenCentro';
 
 const irAPlanes = () => router.push('/centro/planes');
 
 export default function ResumenCentroScreen() {
+  const styles = useResumenCentroStyles();
   useBarraEstadoClara();
   const r = useResumenCentro();
   const c = r.centro;
@@ -32,6 +36,8 @@ export default function ResumenCentroScreen() {
     if (!r.detalle) return <EstadoVacio icono="centro" titulo={T.sinCentros} />;
     return (
       <>
+        <ProgresoPerfilCentro key={`p-${r.detalle.id}`} centroId={r.detalle.id} />
+        <AvisosCitas key={`a-${r.detalle.id}`} centroId={r.detalle.id} />
         <View style={styles.bento}>
           <TarjetaCitasSemana citasHoy={r.citasHoy} porDia={r.semana.porDia} indiceHoy={r.semana.indiceHoy} />
           <View style={styles.columna}>
@@ -47,6 +53,7 @@ export default function ResumenCentroScreen() {
           {r.ahora.length ? <ListaAhoraCentro citas={r.ahora} /> : <MensajeFormulario tipo="aviso" texto={T.sinCitasProximas} />}
         </View>
 
+        {r.detalle.tieneUci && <PanelEstadoUci key={`u-${r.detalle.id}`} centroId={r.detalle.id} compacto />}
         <TarjetaHorarioHoy texto={r.horarioHoy} />
       </>
     );

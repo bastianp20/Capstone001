@@ -1,16 +1,16 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES } from '@/constants/constants';
 
-import { COLORES, FUENTES } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── DatosPersonalesScreen ───
-export const datosPersonalesStyles = StyleSheet.create({
+export const useDatosPersonalesStyles = crearEstilos(() => ({
   formulario: {
     gap: 16,
   },
-});
+}));
 
 // ─── ContactoScreen ───
-export const contactoStyles = StyleSheet.create({
+export const useContactoStyles = crearEstilos((COLORES) => ({
   formulario: {
     gap: 16,
   },
@@ -20,10 +20,10 @@ export const contactoStyles = StyleSheet.create({
     lineHeight: 22,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── EliminarCuentaScreen / FormularioEliminarCuenta ───
-export const eliminarCuentaStyles = StyleSheet.create({
+export const useEliminarCuentaStyles = crearEstilos((COLORES) => ({
   formulario: {
     gap: 16,
   },
@@ -56,10 +56,10 @@ export const eliminarCuentaStyles = StyleSheet.create({
     fontSize: 16,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── SolicitudEliminacionEnviada ───
-export const solicitudEnviadaStyles = StyleSheet.create({
+export const useSolicitudEnviadaStyles = crearEstilos((COLORES) => ({
   contenedor: {
     gap: 14,
     paddingTop: 8,
@@ -87,4 +87,4 @@ export const solicitudEnviadaStyles = StyleSheet.create({
     paddingTop: 6,
     paddingHorizontal: 8,
   },
-});
+}));

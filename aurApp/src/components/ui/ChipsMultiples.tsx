@@ -1,13 +1,15 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { COLORES } from '@/constants/constants';
-import { chipsMultiplesStyles as styles } from '@/css/Compartido';
+import { useChipsMultiplesStyles } from '@/css/Compartido';
 import type { ChipsMultiplesProps } from '@/interfaces';
 
 import { Icono } from './Icono';
+import { useColores } from '@/context/TemaContext';
 
 /** Chips que se pueden marcar varios a la vez (por ejemplo, los síntomas). */
 export function ChipsMultiples({ opciones, seleccionadas, onAlternar }: ChipsMultiplesProps) {
+  const COLORES = useColores();
+  const styles = useChipsMultiplesStyles();
   return (
     <View style={styles.contenedor}>
       {opciones.map((opcion) => {

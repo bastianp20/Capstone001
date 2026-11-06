@@ -1,13 +1,16 @@
 import { Pressable, Text, View } from 'react-native';
 
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, SEPARACION_BARRA_NAVEGACION } from '@/constants/constants';
+import { SEPARACION_BARRA_NAVEGACION } from '@/constants/constants';
 
-import { barraNavegacionStyles as styles } from '@/css/Navegacion';
+import { useBarraNavegacionStyles } from '@/css/Navegacion';
 import type { BarraNavegacionProps } from '@/interfaces';
+import { useColores } from '@/context/TemaContext';
 
 /** Barra inferior flotante (la usan todos los roles, cada uno con sus pestañas). */
 export function BarraNavegacion({ state, emitter, navigateToTab, insets, pestanas }: BarraNavegacionProps) {
+  const COLORES = useColores();
+  const styles = useBarraNavegacionStyles();
   return (
     <View
       style={[styles.contenedor, { bottom: Math.max(insets.bottom, 8) + SEPARACION_BARRA_NAVEGACION - 8 }]}

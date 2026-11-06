@@ -2,12 +2,13 @@ import { Pressable, Text, View } from 'react-native';
 
 import { ChipIcono } from '@/components/ui/ChipIcono';
 import { TEXTOS_PEDIR_HORA as T } from '@/constants/constants';
-import { filtroEspecialidadesStyles as styles } from '@/css/PedirHoraPage';
+import { useFiltroEspecialidadesStyles } from '@/css/PedirHoraPage';
 import type { FiltroEspecialidadesProps } from '@/interfaces';
 import { iconoEspecialidad } from '@/lib/especialidades';
 
 /** "¿Qué necesita tu mascota?" (o "¿Qué especialidad necesita?" al derivar): chips de especialidades y "Quitar filtro". */
 export function FiltroEspecialidades({ especialidades, seleccion, onAlternar, onQuitar, titulo = T.queNecesita, ayuda = T.queNecesitaAyuda }: FiltroEspecialidadesProps) {
+  const styles = useFiltroEspecialidadesStyles();
   if (!especialidades.length) return null;
   return (
     <View style={styles.tarjeta}>

@@ -12,7 +12,7 @@ import { BotonAgregar } from '@/components/ui/BotonAgregar';
 import { EstadoBorrador } from '@/components/ui/EstadoBorrador';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { TEXTOS_RECETA_ATENCION as T } from '@/constants/constants';
-import { recetaStyles as styles } from '@/css/RecetaPage';
+import { useRecetaStyles } from '@/css/RecetaPage';
 import { useAuth } from '@/Auth/AuthContext';
 import { useAtencion } from '@/hooks/useAtencion';
 import { useRecetaAtencion } from '@/hooks/useRecetaAtencion';
@@ -20,6 +20,7 @@ import { formatFechaChilena, hoy } from '@/lib/fechas';
 
 /** Nueva receta: medicamentos, indicaciones y próximo control; al guardar, se comparte el PDF. */
 export default function RecetaAtencionScreen() {
+  const styles = useRecetaStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { usuarioActual } = useAuth();
   const a = useAtencion(Number(id));

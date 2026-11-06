@@ -4,8 +4,13 @@ import { CampoTexto } from '@/components/formulario/CampoTexto';
 import { FilaInterruptor } from '@/components/ui/FilaInterruptor';
 import { GrupoCampo } from '@/components/ui/GrupoCampo';
 import { PreguntaOpciones } from '@/components/ui/PreguntaOpciones';
-import { OPCIONES_ESPECIE_PUBLICAR, OPCIONES_SEXO_ADOPCION, OPCIONES_TAMANO_ADOPCION, TEXTOS_PUBLICAR as T } from '@/constants/constants';
-import { publicarAdopcionStyles as styles } from '@/css/PublicarAdopcionPage';
+import {
+  OPCIONES_ESPECIE_PUBLICAR,
+  OPCIONES_SEXO_ADOPCION,
+  OPCIONES_TAMANO_ADOPCION,
+  TEXTOS_PUBLICAR as T,
+} from '@/constants/constants';
+import { usePublicarAdopcionStyles } from '@/css/PublicarAdopcionPage';
 import type { PasoDatosPublicarProps } from '@/interfaces';
 
 import { SelectorFotosAdopcion } from './SelectorFotosAdopcion';
@@ -14,6 +19,7 @@ const A_MI_NOMBRE = 'personal';
 
 /** Paso 1 · Datos: fotos, nombre, especie, sexo, edad, tamaño, comuna y a nombre de quién. */
 export function PasoDatosPublicar({ datos: d, errores: e, onCambiar, misRefugios, onAgregarFoto, onQuitarFoto }: PasoDatosPublicarProps) {
+  const styles = usePublicarAdopcionStyles();
   const opcionesNombre = [{ valor: A_MI_NOMBRE, texto: T.miNombre }, ...misRefugios.map((r) => ({ valor: String(r.id), texto: r.nombre, icono: 'casa' as const }))];
   return (
     <View style={styles.paso}>

@@ -1,9 +1,10 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { grillaHorasStyles as styles } from '@/css/PedirHoraPage';
+import { useGrillaHorasStyles } from '@/css/PedirHoraPage';
 import type { GrillaHorasProps } from '@/interfaces';
 
 export function GrillaHoras({ horas, seleccionada, onElegir }: GrillaHorasProps) {
+  const styles = useGrillaHorasStyles();
   return (
     <View style={styles.grilla}>
       {horas.map((hora) => {

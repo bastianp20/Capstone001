@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EncabezadoLogin } from '@/components/login/EncabezadoLogin';
@@ -7,10 +7,12 @@ import { FormularioIngresar } from '@/components/login/FormularioIngresar';
 import { FormularioRecuperar } from '@/components/login/FormularioRecuperar';
 import { PieLogin } from '@/components/login/PieLogin';
 import { TituloLogin } from '@/components/login/TituloLogin';
+import { TarjetaEntradaUrgencias } from '@/components/urgencias/TarjetaEntradaUrgencias';
 import { ALTO_ENCABEZADO_LOGIN, TEXTOS_LOGIN, TEXTOS_RECUPERAR_PASSWORD } from '@/constants/constants';
-import { loginScreenStyles as styles } from '@/css/LoginPage';
+import { useLoginScreenStyles } from '@/css/LoginPage';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
 import { useFormularioLogin } from '@/hooks/useFormularioLogin';
+import { useScrollConTeclado } from '@/hooks/useScrollConTeclado';
 import { abrirSolicitudCentro } from '@/lib/enlacesWeb';
 
 const TITULOS = {
@@ -20,8 +22,10 @@ const TITULOS = {
 } as const;
 
 export default function LoginScreen() {
+  const styles = useLoginScreenStyles();
   const insets = useSafeAreaInsets();
   useBarraEstadoClara();
+  const teclado = useScrollConTeclado();
 
   const {
     modo,
@@ -39,11 +43,12 @@ export default function LoginScreen() {
   } = useFormularioLogin();
 
   return (
-    <KeyboardAvoidingView style={styles.pantalla} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <View ref={teclado.contenedorRef} style={[styles.pantalla, { paddingBottom: teclado.alto }]}>
       <ScrollView
-        keyboardShouldPersistTaps="handled"
+        ref={teclado.scrollRef}
+        {...teclado.scrollProps}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
+        contentContainerStyle={[styles.scroll, { paddingBottom: teclado.alto ? 24 : insets.bottom + 24 }]}>
         <EncabezadoLogin alto={ALTO_ENCABEZADO_LOGIN} />
 
         <View style={styles.cuerpo}>
@@ -88,8 +93,9 @@ export default function LoginScreen() {
           )}
 
           <PieLogin modo={modo} onCambiarModo={cambiarModo} onSolicitarCentro={abrirSolicitudCentro} />
+          {modo === 'ingresar' && <TarjetaEntradaUrgencias />}
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
+    </View>
   );
 }

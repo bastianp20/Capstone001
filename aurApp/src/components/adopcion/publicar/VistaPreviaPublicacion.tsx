@@ -2,7 +2,7 @@ import { Text, View } from 'react-native';
 
 import { TarjetaListaIconos } from '@/components/ui/TarjetaListaIconos';
 import { TEXTOS_FICHA_ADOPCION as F, TEXTOS_PUBLICAR as T } from '@/constants/constants';
-import { vistaPreviaStyles as styles } from '@/css/PublicarAdopcionPage';
+import { useVistaPreviaStyles } from '@/css/PublicarAdopcionPage';
 import type { ItemConIcono, VistaPreviaPublicacionProps } from '@/interfaces';
 import { animalDeVistaPrevia } from '@/lib/adopcion';
 
@@ -12,6 +12,7 @@ const sinAccion = () => undefined;
 
 /** Paso 4 · Revisar: la tarjeta tal como se verá en Adopta y un resumen de lo que se publicará. */
 export function VistaPreviaPublicacion({ datos: d, nombreRefugio }: VistaPreviaPublicacionProps) {
+  const styles = useVistaPreviaStyles();
   const animal = animalDeVistaPrevia(d, nombreRefugio);
   const resumen: ItemConIcono[] = [
     { icono: 'chispas', texto: d.personalidad.join(', ') },

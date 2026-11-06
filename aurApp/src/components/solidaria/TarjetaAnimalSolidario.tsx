@@ -3,15 +3,19 @@ import { Pressable, Text, View } from 'react-native';
 import { BotonPequeno } from '@/components/ui/BotonPequeno';
 import { Etiqueta } from '@/components/ui/Etiqueta';
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, TEXTOS_SOLIDARIA as T, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaAnimalSolidarioStyles as styles } from '@/css/SolidariaPage';
+import { TEXTOS_SOLIDARIA as T } from '@/constants/constants';
+import { useTarjetaAnimalSolidarioStyles } from '@/css/SolidariaPage';
 import type { TarjetaAnimalSolidarioProps } from '@/interfaces';
 import { esperaAtencion } from '@/lib/solidaria';
 
 import { FotoAnimal } from './FotoAnimal';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 /** Un animal en adopción para el veterinario: quién lo cuida, si pidió revisión, si ya lo atendió y "Atender". */
 export function TarjetaAnimalSolidario({ animal: a, onAtender, onVer }: TarjetaAnimalSolidarioProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaAnimalSolidarioStyles();
   return (
     <Pressable onPress={onVer} accessibilityRole="button" style={({ pressed }) => [styles.tarjeta, pressed && styles.presionada]}>
       <FotoAnimal fotoUrl={a.fotoUrl} especie={a.especie} estilo={styles.foto} />

@@ -14,12 +14,13 @@ import { PreguntaOpciones } from '@/components/ui/PreguntaOpciones';
 import { TarjetaAccion } from '@/components/ui/TarjetaAccion';
 import { TituloSeccion } from '@/components/ui/TituloSeccion';
 import { OPCIONES_RECEPCION_REFUGIO, TEXTOS_CARGA, TEXTOS_MI_REFUGIO as T } from '@/constants/constants';
-import { miRefugioStyles as styles } from '@/css/MiRefugioPage';
+import { useMiRefugioStyles } from '@/css/MiRefugioPage';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
 import { useMiRefugio } from '@/hooks/useMiRefugio';
 
 /** Mi refugio: cupos con − / +, si reciben animales, números del mes, publicar con la cámara y sus animales. */
 export default function MiRefugioScreen() {
+  const styles = useMiRefugioStyles();
   useBarraEstadoClara();
   const { id } = useLocalSearchParams<{ id: string }>();
   const refugioId = Number(id);

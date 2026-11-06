@@ -1,14 +1,14 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── TarjetaCasoModeracion ───
-export const tarjetaCasoModeracionStyles = StyleSheet.create({
+export const useTarjetaCasoModeracionStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   tarjeta: {
     gap: 12,
     padding: 14,
     borderRadius: RADIOS.lg,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 4px 14px rgba(11, 59, 53, 0.07)',
   },
   urgente: {
@@ -28,7 +28,7 @@ export const tarjetaCasoModeracionStyles = StyleSheet.create({
   sinFoto: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFE6D5',
+    backgroundColor: TONOS_TARJETA.durazno.fondo,
   },
   textos: {
     flex: 1,
@@ -100,4 +100,4 @@ export const tarjetaCasoModeracionStyles = StyleSheet.create({
     justifyContent: 'flex-end',
     gap: 8,
   },
-});
+}));

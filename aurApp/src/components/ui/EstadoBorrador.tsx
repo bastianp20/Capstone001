@@ -1,16 +1,19 @@
 import { Text, View } from 'react-native';
 
-import { COLORES, TEXTOS_SIN_CONEXION as T } from '@/constants/constants';
-import { estadoBorradorStyles as styles } from '@/css/Compartido';
+import { TEXTOS_SIN_CONEXION as T } from '@/constants/constants';
+import { useEstadoBorradorStyles } from '@/css/Compartido';
 import type { EstadoBorradorProps } from '@/interfaces';
 import { partesFechaCita } from '@/lib/fechas';
 
 import { Icono } from './Icono';
+import { useColores } from '@/context/TemaContext';
 
 const RECIENTE_MS = 60_000;
 
 /** "Borrador guardado hace un momento" (o "a las 22:15"), sobre el botón de enviar. */
 export function EstadoBorrador({ guardadoEn }: EstadoBorradorProps) {
+  const COLORES = useColores();
+  const styles = useEstadoBorradorStyles();
   if (!guardadoEn) return null;
   const reciente = Date.now() - new Date(guardadoEn).getTime() < RECIENTE_MS;
   return (

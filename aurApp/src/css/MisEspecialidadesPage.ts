@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── MisEspecialidadesScreen ───
-export const misEspecialidadesStyles = StyleSheet.create({
+export const useMisEspecialidadesStyles = crearEstilos((COLORES) => ({
   cuerpo: {
     gap: 16,
   },
@@ -48,10 +48,10 @@ export const misEspecialidadesStyles = StyleSheet.create({
   boton: {
     flex: 1,
   },
-});
+}));
 
 // ─── TarjetaEspecialidad ───
-export const tarjetaEspecialidadStyles = StyleSheet.create({
+export const useTarjetaEspecialidadStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     width: '48%',
     alignItems: 'center',
@@ -62,7 +62,7 @@ export const tarjetaEspecialidadStyles = StyleSheet.create({
     borderRadius: RADIOS.md,
     borderWidth: 1.5,
     borderColor: COLORES.borde,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   marcada: {
     borderWidth: 2,
@@ -96,4 +96,4 @@ export const tarjetaEspecialidadStyles = StyleSheet.create({
     borderRadius: 11,
     backgroundColor: COLORES.primario,
   },
-});
+}));

@@ -4,12 +4,13 @@ import { Casilla } from '@/components/ui/Casilla';
 import { TarjetaAviso } from '@/components/ui/TarjetaAviso';
 import { TarjetaListaIconos } from '@/components/ui/TarjetaListaIconos';
 import { TEXTOS_POSTULACION as T, TEXTOS_POSTULANTES } from '@/constants/constants';
-import { postularAdopcionStyles as styles } from '@/css/PostularAdopcionPage';
+import { usePostularAdopcionStyles } from '@/css/PostularAdopcionPage';
 import type { PasoConfirmacionPostulacionProps } from '@/interfaces';
 import { lineasFamilia, lineasHogar } from '@/lib/adopcion';
 
 /** Paso 4 · Confirmar: resumen de lo que respondió, aviso de contacto y el compromiso. */
 export function PasoConfirmacionPostulacion({ datos: d, errores: e, onCambiar, nombreAnimal }: PasoConfirmacionPostulacionProps) {
+  const styles = usePostularAdopcionStyles();
   return (
     <View style={styles.paso}>
       <TarjetaListaIconos titulo={TEXTOS_POSTULANTES.hogar} items={lineasHogar(d)} />

@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { ICONO_ADOPCION_SOLIDARIA as IconoSolidaria, ICONO_DAR_EN_ADOPCION as IconoAdopcion, ICONO_MIS_PUBLICACIONES as IconoPublicaciones, ICONO_MI_REFUGIO as IconoMiRefugio, Iconos, TEXTOS_CENTRO_VETERINARIO, TEXTOS_DAR_EN_ADOPCION_PANEL, TEXTOS_MI_REFUGIO, TEXTOS_MIS_PUBLICACIONES, TEXTOS_SOLIDARIA } from '../../constants';
+import { TEXTOS_HORARIO_ATENCION, ICONO_ADOPCION_SOLIDARIA as IconoSolidaria, ICONO_DAR_EN_ADOPCION as IconoAdopcion, ICONO_MIS_PUBLICACIONES as IconoPublicaciones, ICONO_MI_REFUGIO as IconoMiRefugio, Iconos, TEXTOS_CENTRO_VETERINARIO, TEXTOS_DAR_EN_ADOPCION_PANEL, TEXTOS_MI_REFUGIO, TEXTOS_MIS_PUBLICACIONES, TEXTOS_SOLIDARIA } from '../../constants';
 import { getInfoVeterinario, getMisCentrosAdmin } from '../../Api/getInfo';
 import { useConsulta } from '../../hooks/useConsulta';
 import { ModalAgenda } from '../../Modal/AgendaModal';
 import {PacientesModal} from '../../Modal/PacientesModal'; 
-import type { PestanaAgenda, VeterinarioScreenProps, VistaVeterinario } from '../../interfaces';
+import type { PasoPerfilVeterinario, PestanaAgenda, SeccionConfiguracion, VeterinarioScreenProps, VistaVeterinario } from '../../interfaces';
+import { SeccionHorarioAtencion } from '../../components/veterinario/horarioAtencion/SeccionHorarioAtencion';
+import { SeccionMiAgenda } from '../../components/veterinario/agenda/SeccionMiAgenda';
 import '../../css/VeterinariosPage.css';
 import { RecetaModal } from '../../Modal/RecetasModal';
 import { DerivacionesModal } from '../../Modal/DerivacionesModal';
@@ -65,6 +67,19 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
     setModalAbierto("agenda");
   };
 
+  // "Completa tu perfil": foto, teléfono y especialidades están en Configuración;
+  // horario, dónde atiende y N° de colegiado, en "Mi horario".
+  const [seccionConfiguracion, setSeccionConfiguracion] = useState<SeccionConfiguracion | undefined>(undefined);
+  const [versionPerfil, setVersionPerfil] = useState(0);
+  const completarPerfil = (paso: PasoPerfilVeterinario) => {
+    if (paso === "foto" || paso === "telefono" || paso === "especialidades") {
+      setSeccionConfiguracion(paso === "especialidades" ? "especialidades" : "perfil");
+      setModalAbierto("configuracion");
+    } else {
+      setVista("horario");
+    }
+  };
+
   return (
     <div className="vet-page">
       {/* logo y nombre de la página */}
@@ -80,9 +95,13 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
             <iconos.inicio size={18} />
             <span className="vet-nav-item-label">Inicio</span>
           </div>
-          <div className="vet-nav-item" onClick={() => abrirAgenda("agenda")}>
+          <div className={claseItem("agenda")} onClick={() => setVista("agenda")}>
             <iconos.calendario size={18} />
             <span className="vet-nav-item-label">Mi Agenda</span>
+          </div>
+          <div className={claseItem("horario")} onClick={() => setVista("horario")}>
+            <iconos.horario size={18} />
+            <span className="vet-nav-item-label">{TEXTOS_HORARIO_ATENCION.menu}</span>
           </div>
           <div className="vet-nav-item" onClick={() => setModalAbierto("pacientes")}>
             <iconos.fichaMedica size={18} />
@@ -156,6 +175,8 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
             veterinarioId={veterinarioIdActual}
             nombre={usuarioActual!.nombre}
             recargaExterna={versionCitas}
+            recargaPerfil={versionPerfil}
+            onCompletarPerfil={completarPerfil}
             onVerPorConfirmar={() => abrirAgenda("por_confirmar")}
             onRecetar={(mascotaId) => {
               setPacienteParaReceta(mascotaId);
@@ -163,6 +184,16 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
             }}
           />
         )}
+        {vista === "agenda" && (
+          <SeccionMiAgenda
+            veterinarioId={veterinarioIdActual}
+            recarga={versionCitas}
+            onCambio={() => setVersionCitas((n) => n + 1)}
+            onConfigurarHorario={() => setVista("horario")}
+            onVerPorConfirmar={() => abrirAgenda("por_confirmar")}
+          />
+        )}
+        {vista === "horario" && <SeccionHorarioAtencion />}
         {vista === "solidaria" && (
           <div className="vet-seccion-adopcion">
             <SeccionAdopcionSolidaria veterinario={usuarioActual!.nombre} />
@@ -221,7 +252,14 @@ export const VeterinarioScreen = ({ onAdministrarCentro }: VeterinarioScreenProp
         <DarEnAdopcionModal onCerrar={() => setModalAbierto(null)} onPublicada={() => setVersionPublicaciones((n) => n + 1)} />
       )}
       {modalAbierto === "configuracion" && (
-        <ConfiguracionModal onCerrar={() => setModalAbierto(null)} />
+        <ConfiguracionModal
+          seccionInicial={seccionConfiguracion}
+          onCerrar={() => {
+            setModalAbierto(null);
+            setSeccionConfiguracion(undefined);
+            setVersionPerfil((n) => n + 1); // pudo cambiar la foto, el teléfono o las especialidades
+          }}
+        />
       )}
     </div>
   );

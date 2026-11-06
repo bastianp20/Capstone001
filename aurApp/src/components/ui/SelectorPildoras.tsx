@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { selectorPildorasStyles as styles } from '@/css/Compartido';
+import { useSelectorPildorasStyles } from '@/css/Compartido';
 import type { SelectorPildorasProps } from '@/interfaces';
 
 /**
@@ -14,6 +14,7 @@ export function SelectorPildoras<V extends string>({
   variante = 'claro',
   accesorioFinal,
 }: SelectorPildorasProps<V>) {
+  const styles = useSelectorPildorasStyles();
   const sobrePrimario = variante === 'sobrePrimario';
 
   return (

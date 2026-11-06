@@ -9,6 +9,10 @@
 
 // Tipos que ya usaban las pantallas (formato "listo para mostrar").
 import type {
+  ListaUrgencias, TelefonoEnUrgencias,
+  EstadoUciCentro, ProgresoPerfilCentro,
+  HorarioAtencion, ProgresoPerfilVeterinario,
+  AvisoCita, BloqueoHorario, TipoAvisoCita,
   AnimalAdopcion,          // animal publicado en /adopta
   ActividadPublicacion, AnimalParaVeterinario, AtencionPropia, CentroAtencion, EstadoPostulacion, EstadoPublicacion,
   MesSolidario, OpcionRefugio, PostulacionRecibida, PublicacionPropia, RecepcionRefugio, Refugio, ResumenRefugios,
@@ -204,7 +208,8 @@ export const getAgendaVeterinario = async (veterinarioId: number): Promise<CitaA
   const { data, error } = await supabase
     .from("citas")
     .select(`
-      id, fecha_hora, motivo, estado, urgencia,
+      id, fecha_hora, motivo, estado, urgencia, centro_id, reagendada_en,
+      centros ( nombre ),
       mascotas ( nombre, especie, raza, perfiles ( nombre ) )
     `)                                            // mascota y, a través de ella, el nombre del dueño
     .eq("veterinario_id", veterinarioId)          // solo las de este veterinario
@@ -222,6 +227,46 @@ export const getAgendaVeterinario = async (veterinarioId: number): Promise<CitaA
     motivo: c.motivo,
     estado: c.estado,
     urgencia: c.urgencia ?? "baja",              // sin urgencia aún -> se muestra como baja
+    fechaHora: c.fecha_hora,
+    centroId: c.centro_id,
+    centro: c.centros?.nombre ?? null,           // null = atención independiente
+    reagendada: c.reagendada_en !== null,
+  }));
+};
+
+// Los bloqueos de horario del veterinario conectado que todavía no terminan
+// (RLS: cada veterinario ve solo los suyos). Migración 52.
+export const getMisBloqueos = async (): Promise<BloqueoHorario[]> => {
+  const { data, error } = await supabase
+    .from("bloqueos_veterinario")
+    .select("id, desde, hasta, motivo")
+    .gt("hasta", new Date().toISOString())
+    .order("desde");
+  if (error) throw error;
+  return (data ?? []).map((b) => ({ id: b.id, desde: b.desde, hasta: b.hasta, motivo: b.motivo }));
+};
+
+// Avisos sin leer de la persona conectada (cambios de hora que hizo un
+// veterinario). Con centroId, solo los de ese centro (panel del centro);
+// sin él, los que no son de un centro (los del dueño). RLS: cada uno ve los suyos.
+export const getAvisosCitas = async (centroId?: number): Promise<AvisoCita[]> => {
+  let consulta = supabase
+    .from("notificaciones")
+    .select("id, tipo, titulo, mensaje, fecha_anterior, fecha_nueva, creada_en")
+    .is("leida_en", null)
+    .order("creada_en", { ascending: false })
+    .limit(20);
+  consulta = centroId === undefined ? consulta.is("centro_id", null) : consulta.eq("centro_id", centroId);
+  const { data, error } = await consulta;
+  if (error) throw error;
+  return (data ?? []).map((a) => ({
+    id: a.id,
+    tipo: a.tipo as TipoAvisoCita,
+    titulo: a.titulo,
+    mensaje: a.mensaje,
+    fechaAnterior: a.fecha_anterior,
+    fechaNueva: a.fecha_nueva,
+    creadaEn: a.creada_en,
   }));
 };
 
@@ -685,9 +730,9 @@ export const getCentroDetalle = async (centroId: number): Promise<CentroDetalle>
   const { data, error } = await supabase
     .from("centros")
     .select(`
-      id, nombre, direccion, comuna, telefono, es_prueba,
+      id, nombre, direccion, comuna, telefono, es_prueba, tiene_uci, urgencias_24_7, urgencias_revisado_en,
       horarios_centro ( dia_semana, abre, cierra, inicio_colacion, fin_colacion ),
-      centro_especialidades ( especialidades ( nombre ) )
+      centro_especialidades ( especialidad_id, especialidades ( nombre ) )
     `)
     .eq("id", centroId)
     .single();
@@ -703,6 +748,10 @@ export const getCentroDetalle = async (centroId: number): Promise<CentroDetalle>
       .map((ce) => ce.especialidades?.nombre)
       .filter((n): n is string => Boolean(n))
       .sort(),
+    especialidadIds: (data.centro_especialidades ?? []).map((ce) => ce.especialidad_id),
+    tieneUci: data.tiene_uci,
+    urgencias247: data.urgencias_24_7,
+    urgenciasRevisadas: data.urgencias_revisado_en !== null,
     horarios: (data.horarios_centro ?? [])
       .map((h) => ({
         diaSemana: h.dia_semana,
@@ -1871,4 +1920,118 @@ export const getAvisosModeracion = async (): Promise<Map<number, AvisoModeracion
   const { data, error } = await supabase.rpc("avisos_moderacion_mias");
   if (error) throw error;
   return new Map((data ?? []).map((a) => [a.adopcion_id, { tipo: a.tipo as AvisoModeracion["tipo"], mensaje: a.mensaje }]));
+};
+
+
+// ---- Horario de atención y perfil del veterinario conectado (migración 53) ----
+interface HorarioAtencionBase {
+  independiente: boolean; urgencias_24_7: boolean; a_domicilio: boolean; comunas: string[]; duracion: number;
+  lugares: { centro_id: number | null; nombre: string | null; horario_centro: { dia_semana: number; abre: string; cierra: string }[] }[];
+  tramos: { centro_id: number | null; dia_semana: number; desde: string; hasta: string }[];
+}
+
+export const getMiHorarioAtencion = async (): Promise<HorarioAtencion> => {
+  const { data, error } = await supabase.rpc("mi_horario_atencion");
+  if (error) throw error;
+  const h = data as unknown as HorarioAtencionBase;
+  return {
+    independiente: h.independiente,
+    urgencias247: h.urgencias_24_7,
+    aDomicilio: h.a_domicilio,
+    comunas: h.comunas ?? [],
+    duracion: h.duracion,
+    lugares: (h.lugares ?? []).map((l) => ({
+      centroId: l.centro_id,
+      nombre: l.nombre,
+      horarioCentro: (l.horario_centro ?? []).map((x) => ({ diaSemana: x.dia_semana, abre: x.abre, cierra: x.cierra })),
+    })),
+    tramos: (h.tramos ?? []).map((t) => ({ centroId: t.centro_id, diaSemana: t.dia_semana, desde: t.desde, hasta: t.hasta })),
+  };
+};
+
+// null si la cuenta todavía no tiene ficha de veterinario
+export const getProgresoPerfilVeterinario = async (): Promise<ProgresoPerfilVeterinario | null> => {
+  const { data, error } = await supabase.rpc("progreso_perfil_veterinario");
+  if (error) throw error;
+  if (!data) return null;
+  const p = data as unknown as { independiente: boolean; pasos: Record<string, boolean | null> };
+  return {
+    independiente: p.independiente,
+    // "zona" viene null si no es independiente: ese paso no cuenta
+    pasos: Object.fromEntries(Object.entries(p.pasos).filter(([, v]) => v !== null)),
+  };
+};
+
+
+// ---- Centros: estado de la UCI y progreso del perfil (migración 54) ----
+// null si el centro todavía no indica su estado
+export const getEstadoUci = async (centroId: number): Promise<EstadoUciCentro | null> => {
+  const { data, error } = await supabase
+    .from("estado_uci_centros")
+    .select("centro_id, estado, motivo, detalle, actualizado_en")
+    .eq("centro_id", centroId)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? estadoUciDesdeFila(data) : null;
+};
+
+// Fila de estado_uci_centros (de una consulta o de Realtime) -> formato del front
+export const estadoUciDesdeFila = (f: { centro_id: number; estado: string; motivo: string | null; detalle: string | null; actualizado_en: string }): EstadoUciCentro => ({
+  centroId: f.centro_id,
+  estado: f.estado as EstadoUciCentro["estado"],
+  motivo: f.motivo as EstadoUciCentro["motivo"],
+  detalle: f.detalle,
+  actualizadoEn: f.actualizado_en,
+});
+
+// null si la cuenta no gestiona ese centro
+export const getProgresoPerfilCentro = async (centroId: number): Promise<ProgresoPerfilCentro | null> => {
+  const { data, error } = await supabase.rpc("progreso_perfil_centro", { p_centro_id: centroId });
+  if (error) throw error;
+  return (data as unknown as ProgresoPerfilCentro) ?? null;
+};
+
+
+// ---- Urgencias sin cuenta (migración 55) ----
+interface ListaUrgenciasBase {
+  centros: {
+    id: number; nombre: string; direccion: string; comuna: string; telefono: number | null;
+    urgencias_24_7: boolean; tiene_uci: boolean;
+    estado_uci: Parameters<typeof estadoUciDesdeFila>[0] | null;
+    horarios: { dia_semana: number; abre: string; cierra: string; inicio_colacion: string | null; fin_colacion: string | null }[];
+  }[];
+  veterinarios: { id: number; nombre: string; telefono: number; avatar_url: string | null; a_domicilio: boolean; comunas: string[] }[];
+}
+
+// Funciona sin sesión (visitantes = mundo real)
+export const getUrgencias = async (): Promise<ListaUrgencias> => {
+  const { data, error } = await supabase.rpc("listar_urgencias");
+  if (error) throw error;
+  const l = data as unknown as ListaUrgenciasBase;
+  return {
+    centros: (l.centros ?? []).map((c) => ({
+      id: c.id,
+      nombre: c.nombre,
+      direccion: c.direccion,
+      comuna: c.comuna,
+      telefono: c.telefono,
+      urgencias247: c.urgencias_24_7,
+      tieneUci: c.tiene_uci,
+      estadoUci: c.estado_uci ? estadoUciDesdeFila(c.estado_uci) : null,
+      horarios: (c.horarios ?? []).map((h) => ({
+        diaSemana: h.dia_semana, abre: h.abre, cierra: h.cierra,
+        inicioColacion: h.inicio_colacion, finColacion: h.fin_colacion,
+      })),
+    })),
+    veterinarios: (l.veterinarios ?? []).map((v) => ({
+      id: v.id, nombre: v.nombre, telefono: v.telefono, avatarUrl: v.avatar_url, aDomicilio: v.a_domicilio, comunas: v.comunas ?? [],
+    })),
+  };
+};
+
+export const getMiTelefonoEnUrgencias = async (): Promise<TelefonoEnUrgencias> => {
+  const { data, error } = await supabase.rpc("mi_telefono_en_urgencias");
+  if (error) throw error;
+  const t = data as unknown as { mostrar: boolean; tiene_telefono: boolean } | null;
+  return { mostrar: t?.mostrar ?? false, tieneTelefono: t?.tiene_telefono ?? false };
 };

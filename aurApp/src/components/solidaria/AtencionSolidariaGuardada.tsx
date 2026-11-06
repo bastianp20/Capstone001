@@ -5,16 +5,19 @@ import { BotonSecundario } from '@/components/formulario/BotonSecundario';
 import { AvatarMascota } from '@/components/ui/AvatarMascota';
 import { Etiqueta } from '@/components/ui/Etiqueta';
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, TEXTOS_ATENCION_SOLIDARIA as T, TEXTOS_SOLIDARIA } from '@/constants/constants';
-import { atencionGuardadaStyles as styles } from '@/css/SolidariaPage';
+import { TEXTOS_ATENCION_SOLIDARIA as T, TEXTOS_SOLIDARIA } from '@/constants/constants';
+import { useAtencionGuardadaStyles } from '@/css/SolidariaPage';
 import type { AtencionSolidariaGuardadaProps } from '@/interfaces';
 import { formatFechaCorta, hoy } from '@/lib/fechas';
 import { primerNombre } from '@/lib/texto';
 
 import { IlustracionGracias } from './IlustracionGracias';
+import { useColores } from '@/context/TemaContext';
 
 /** "¡Gracias!": el sello tal como se verá en Adopta y el impacto actualizado. */
 export function AtencionSolidariaGuardada({ guardada: g, nombreVeterinario, onOtro, onMisAtenciones }: AtencionSolidariaGuardadaProps) {
+  const COLORES = useColores();
+  const styles = useAtencionGuardadaStyles();
   return (
     <View style={styles.contenedor}>
       <IlustracionGracias />

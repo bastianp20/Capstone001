@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS, TONOS_TARJETA } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── AtencionScreen / RegistrarAtencionScreen ───
-export const atencionStyles = StyleSheet.create({
+export const useAtencionStyles = crearEstilos((COLORES) => ({
   cuerpo: {
     gap: 16,
   },
@@ -25,10 +25,10 @@ export const atencionStyles = StyleSheet.create({
   pie: {
     gap: 8,
   },
-});
+}));
 
 // ─── PildoraEnConsulta ───
-export const pildoraEnConsultaStyles = StyleSheet.create({
+export const usePildoraEnConsultaStyles = crearEstilos((COLORES) => ({
   pildora: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -49,17 +49,17 @@ export const pildoraEnConsultaStyles = StyleSheet.create({
     fontSize: 12,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── TarjetaPacienteAtencion ───
-export const tarjetaPacienteAtencionStyles = StyleSheet.create({
+export const useTarjetaPacienteAtencionStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
     padding: 16,
     borderRadius: RADIOS.lg,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 10px 24px rgba(11, 59, 53, 0.10)',
   },
   textos: {
@@ -93,10 +93,10 @@ export const tarjetaPacienteAtencionStyles = StyleSheet.create({
     fontSize: 12.5,
     color: COLORES.peligro,
   },
-});
+}));
 
 // ─── MotivoConsulta ───
-export const motivoConsultaStyles = StyleSheet.create({
+export const useMotivoConsultaStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   tarjeta: {
     gap: 6,
     padding: 16,
@@ -132,10 +132,10 @@ export const motivoConsultaStyles = StyleSheet.create({
     fontSize: 12.5,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── TarjetaAccionAtencion ───
-export const tarjetaAccionAtencionStyles = StyleSheet.create({
+export const useTarjetaAccionAtencionStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flex: 1,
     minHeight: 150,
@@ -176,5 +176,5 @@ export const tarjetaAccionAtencionStyles = StyleSheet.create({
     fontSize: 12.5,
     color: COLORES.primario,
   },
-});
+}));
 

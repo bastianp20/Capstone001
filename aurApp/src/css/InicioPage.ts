@@ -1,9 +1,11 @@
 import { StyleSheet } from 'react-native';
 
-import { COLORES, FUENTES, MARGEN_PANTALLA, RADIOS, TONOS_TARJETA } from '@/constants/constants';
+import { FUENTES, MARGEN_PANTALLA, RADIOS } from '@/constants/constants';
+
+import { crearEstilos } from './crearEstilos';
 
 // ─── InicioScreen ───
-export const inicioScreenStyles = StyleSheet.create({
+export const useInicioScreenStyles = crearEstilos((COLORES) => ({
   pantalla: {
     flex: 1,
     backgroundColor: COLORES.fondo,
@@ -25,10 +27,10 @@ export const inicioScreenStyles = StyleSheet.create({
   contenedorBoton: {
     paddingTop: 12,
   },
-});
+}));
 
 // ─── EncabezadoInicio ───
-export const encabezadoInicioStyles = StyleSheet.create({
+export const useEncabezadoInicioStyles = crearEstilos((COLORES) => ({
   contenedor: {
     paddingHorizontal: MARGEN_PANTALLA,
     paddingBottom: 6,
@@ -104,27 +106,27 @@ export const encabezadoInicioStyles = StyleSheet.create({
   tarjetaCita: {
     marginTop: 12,
   },
-});
+}));
 
 // ─── FotoMascota ───
-export const fotoMascotaStyles = StyleSheet.create({
+export const useFotoMascotaStyles = crearEstilos((COLORES) => ({
   marco: {
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORES.primarioSuave,
     borderWidth: 5,
-    borderColor: COLORES.blanco,
+    borderColor: COLORES.superficie,
     boxShadow: '0 10px 24px rgba(11, 59, 53, 0.25)',
   },
   imagen: {
     width: '100%',
     height: '100%',
   },
-});
+}));
 
 // ─── SelectorMascotas ───
-export const selectorMascotasStyles = StyleSheet.create({
+export const useSelectorMascotasStyles = crearEstilos((COLORES) => ({
   botonAgregar: {
     width: 30,
     height: 30,
@@ -137,12 +139,12 @@ export const selectorMascotasStyles = StyleSheet.create({
   presionado: {
     opacity: 0.7,
   },
-});
+}));
 
 // ─── TarjetaProximaCita ───
-export const tarjetaProximaCitaStyles = StyleSheet.create({
+export const useTarjetaProximaCitaStyles = crearEstilos((COLORES) => ({
   tarjeta: {
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     borderRadius: RADIOS.md,
     padding: 14,
     gap: 6,
@@ -168,10 +170,10 @@ export const tarjetaProximaCitaStyles = StyleSheet.create({
     lineHeight: 16,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── TarjetaFicha ───
-export const tarjetaFichaStyles = StyleSheet.create({
+export const useTarjetaFichaStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flex: 1,
     alignItems: 'center',
@@ -210,10 +212,10 @@ export const tarjetaFichaStyles = StyleSheet.create({
     color: COLORES.texto,
     textAlign: 'center',
   },
-});
+}));
 
 // ─── TarjetaRecordatorio ───
-export const tarjetaRecordatorioStyles = StyleSheet.create({
+export const useTarjetaRecordatorioStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flex: 1,
     padding: 14,
@@ -232,10 +234,10 @@ export const tarjetaRecordatorioStyles = StyleSheet.create({
     fontFamily: FUENTES.semibold,
     fontSize: 13,
   },
-});
+}));
 
 // ─── TarjetaSintomas ───
-export const tarjetaSintomasStyles = StyleSheet.create({
+export const useTarjetaSintomasStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -256,10 +258,10 @@ export const tarjetaSintomasStyles = StyleSheet.create({
     lineHeight: 18,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── BotonPedirHora ───
-export const botonPedirHoraStyles = StyleSheet.create({
+export const useBotonPedirHoraStyles = crearEstilos((COLORES) => ({
   boton: {
     alignSelf: 'center',
     flexDirection: 'row',
@@ -280,10 +282,10 @@ export const botonPedirHoraStyles = StyleSheet.create({
     fontSize: 17,
     color: COLORES.blanco,
   },
-});
+}));
 
 // ─── HuellasFondo ───
-export const huellasFondoStyles = StyleSheet.create({
+export const useHuellasFondoStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   capa: {
     ...StyleSheet.absoluteFill,
     overflow: 'hidden',
@@ -308,4 +310,4 @@ export const huellasFondoStyles = StyleSheet.create({
     backgroundColor: TONOS_TARJETA.menta.fondo,
     opacity: 0.5,
   },
-});
+}));

@@ -1,14 +1,17 @@
 import { Text, View } from 'react-native';
 
 import { BotonPrincipal } from '@/components/formulario/BotonPrincipal';
-import { COLORES } from '@/constants/constants';
-import { estadoVacioStyles as styles } from '@/css/Compartido';
+
+import { useEstadoVacioStyles } from '@/css/Compartido';
 import type { EstadoVacioProps } from '@/interfaces';
 
 import { CirculoIcono } from './CirculoIcono';
+import { useColores } from '@/context/TemaContext';
 
 /** Mensaje cuando una lista está vacía o algo falló, con una acción opcional. */
 export function EstadoVacio({ icono, titulo, detalle, textoAccion, onAccion }: EstadoVacioProps) {
+  const COLORES = useColores();
+  const styles = useEstadoVacioStyles();
   return (
     <View style={styles.contenedor}>
       <CirculoIcono icono={icono} tamano={72} tamanoIcono={30} colorIcono={COLORES.primario} colorFondo={COLORES.primarioSuave} />

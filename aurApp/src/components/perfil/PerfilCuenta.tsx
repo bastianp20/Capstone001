@@ -5,7 +5,7 @@ import { BotonSecundario } from '@/components/formulario/BotonSecundario';
 import { EncabezadoPagina } from '@/components/ui/EncabezadoPagina';
 import { PantallaLista } from '@/components/ui/PantallaLista';
 import { TEXTOS_LOGIN, TEXTOS_PERFIL } from '@/constants/constants';
-import { perfilScreenStyles as styles } from '@/css/PerfilPage';
+import { usePerfilScreenStyles } from '@/css/PerfilPage';
 import { useAuth } from '@/Auth/AuthContext';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
 import { useFotoPerfil } from '@/hooks/useFotoPerfil';
@@ -19,6 +19,7 @@ import { MenuPerfil } from './MenuPerfil';
 
 /** Perfil de cualquier rol: foto (opcional), nombre, contenido propio, ajustes, eliminar cuenta y cerrar sesión. */
 export function PerfilCuenta({ children, opcionesExtra, rolTexto }: PerfilCuentaProps) {
+  const styles = usePerfilScreenStyles();
   useBarraEstadoClara();
   const { usuarioActual, logout } = useAuth();
   const correo = [usuarioActual?.email, rolTexto].filter(Boolean).join(' · ');

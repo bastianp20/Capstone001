@@ -4,15 +4,19 @@ import { Text, View } from 'react-native';
 import { BotonPequeno } from '@/components/ui/BotonPequeno';
 import { Etiqueta } from '@/components/ui/Etiqueta';
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, ICONO_ESPECIE_ADOPCION, MOTIVOS_REPORTE, TEXTOS_MODERACION as T, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaCasoModeracionStyles as styles } from '@/css/ModeracionPage';
+import { ICONO_ESPECIE_ADOPCION, MOTIVOS_REPORTE, TEXTOS_MODERACION as T } from '@/constants/constants';
+import { useTarjetaCasoModeracionStyles } from '@/css/ModeracionPage';
 import type { MotivoReporte, TarjetaCasoModeracionProps } from '@/interfaces';
 import { haceCuanto } from '@/lib/adopcion';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 const motivo = (valor: MotivoReporte) => MOTIVOS_REPORTE.find((m) => m.valor === valor) ?? MOTIVOS_REPORTE[MOTIVOS_REPORTE.length - 1];
 
 /** Una publicación reportada: quién la publicó, sus reportes y los botones para decidir. */
 export function TarjetaCasoModeracion({ caso: c, ocupado, onVer, onDecidir }: TarjetaCasoModeracionProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaCasoModeracionStyles();
   const principal = motivo(c.motivoPrincipal);
   return (
     <View style={[styles.tarjeta, c.urgente && !c.decision && styles.urgente]}>

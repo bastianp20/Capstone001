@@ -16,7 +16,7 @@ import { TituloSeccion } from '@/components/ui/TituloSeccion';
 import { TEXTOS_APROBACIONES, TEXTOS_CARGA, TEXTOS_SUPERADMIN as T } from '@/constants/constants';
 import { useAuth } from '@/Auth/AuthContext';
 import { useSuperadmin } from '@/context/SuperadminContext';
-import { resumenSuperadminStyles as styles } from '@/css/SuperadminPage';
+import { useResumenSuperadminStyles } from '@/css/SuperadminPage';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
 import { useResolverSolicitud } from '@/hooks/useResolverSolicitud';
 import { primerNombre } from '@/lib/texto';
@@ -24,6 +24,7 @@ import { primerNombre } from '@/lib/texto';
 const POR_APROBAR_EN_RESUMEN = 2;
 
 export default function ResumenSuperadminScreen() {
+  const styles = useResumenSuperadminStyles();
   useBarraEstadoClara();
   const { usuarioActual } = useAuth();
   const s = useSuperadmin();

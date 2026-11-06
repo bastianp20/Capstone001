@@ -1,13 +1,16 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { COLORES, TEXTOS_SIN_CONEXION as T } from '@/constants/constants';
-import { avisoSinConexionStyles as styles } from '@/css/Compartido';
+import { TEXTOS_SIN_CONEXION as T } from '@/constants/constants';
+import { useAvisoSinConexionStyles } from '@/css/Compartido';
 import type { AvisoSinConexionProps } from '@/interfaces';
 
 import { Icono } from './Icono';
+import { useColores } from '@/context/TemaContext';
 
 /** Franja crema: no hubo señal, el borrador está a salvo y se puede reintentar. */
 export function AvisoSinConexion({ visible, reintentando, onReintentar }: AvisoSinConexionProps) {
+  const COLORES = useColores();
+  const styles = useAvisoSinConexionStyles();
   if (!visible) return null;
   return (
     <View style={styles.franja} accessibilityRole="alert">

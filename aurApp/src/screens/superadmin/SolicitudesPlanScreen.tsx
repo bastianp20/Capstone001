@@ -6,10 +6,11 @@ import { EstadoCarga } from '@/components/ui/EstadoCarga';
 import { EstadoVacio } from '@/components/ui/EstadoVacio';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { TEXTOS_CARGA, TEXTOS_SOLICITUDES_PLAN as T } from '@/constants/constants';
-import { listaGruposStyles as styles } from '@/css/Compartido';
+import { useListaGruposStyles } from '@/css/Compartido';
 import { useSolicitudesPlan } from '@/hooks/useSolicitudesPlan';
 
 export default function SolicitudesPlanScreen() {
+  const styles = useListaGruposStyles();
   const p = useSolicitudesPlan();
   const s = p.superadmin;
 

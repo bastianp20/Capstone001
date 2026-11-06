@@ -1,12 +1,16 @@
 import { Switch, Text, View } from 'react-native';
 
 import { CirculoIcono } from '@/components/ui/CirculoIcono';
-import { COLORES, TEXTOS_ALIADO_SOLIDARIO as T, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaAliadoStyles as styles } from '@/css/SolidariaPage';
+import { TEXTOS_ALIADO_SOLIDARIO as T } from '@/constants/constants';
+import { useTarjetaAliadoStyles } from '@/css/SolidariaPage';
 import type { TarjetaAliadoSolidarioProps } from '@/interfaces';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 /** "Aliado solidario" en el perfil del veterinario: el interruptor y sus atenciones gratis. */
 export function TarjetaAliadoSolidario({ activo, solidarias, ocupado, onCambiar }: TarjetaAliadoSolidarioProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaAliadoStyles();
   return (
     <View style={styles.tarjeta}>
       <View style={styles.fila}>

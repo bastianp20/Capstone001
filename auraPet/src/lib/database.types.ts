@@ -254,6 +254,41 @@ export type Database = {
           },
         ]
       }
+      bloqueos_veterinario: {
+        Row: {
+          creado_en: string
+          desde: string
+          hasta: string
+          id: number
+          motivo: string
+          veterinario_id: number
+        }
+        Insert: {
+          creado_en?: string
+          desde: string
+          hasta: string
+          id?: never
+          motivo: string
+          veterinario_id: number
+        }
+        Update: {
+          creado_en?: string
+          desde?: string
+          hasta?: string
+          id?: never
+          motivo?: string
+          veterinario_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bloqueos_veterinario_veterinario_id_fkey"
+            columns: ["veterinario_id"]
+            isOneToOne: false
+            referencedRelation: "veterinarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categorias_contacto: {
         Row: {
           pregunta: string
@@ -319,6 +354,9 @@ export type Database = {
           revisado_en: string | null
           revisado_por: string | null
           telefono: number | null
+          tiene_uci: boolean
+          urgencias_24_7: boolean
+          urgencias_revisado_en: string | null
         }
         Insert: {
           comuna: string
@@ -336,6 +374,9 @@ export type Database = {
           revisado_en?: string | null
           revisado_por?: string | null
           telefono?: number | null
+          tiene_uci?: boolean
+          urgencias_24_7?: boolean
+          urgencias_revisado_en?: string | null
         }
         Update: {
           comuna?: string
@@ -353,6 +394,9 @@ export type Database = {
           revisado_en?: string | null
           revisado_por?: string | null
           telefono?: number | null
+          tiene_uci?: boolean
+          urgencias_24_7?: boolean
+          urgencias_revisado_en?: string | null
         }
         Relationships: [
           {
@@ -452,10 +496,12 @@ export type Database = {
           creada_en: string
           estado: Database["public"]["Enums"]["estado_cita"]
           fecha_hora: string
+          fecha_hora_anterior: string | null
           id: number
           mascota_id: number
           motivo: string
           motivo_cancelacion: string | null
+          reagendada_en: string | null
           sintomas_reportados: string[]
           urgencia: Database["public"]["Enums"]["urgencia_cita"] | null
           urgencia_sugerida: Database["public"]["Enums"]["urgencia_cita"] | null
@@ -467,10 +513,12 @@ export type Database = {
           creada_en?: string
           estado?: Database["public"]["Enums"]["estado_cita"]
           fecha_hora: string
+          fecha_hora_anterior?: string | null
           id?: never
           mascota_id: number
           motivo: string
           motivo_cancelacion?: string | null
+          reagendada_en?: string | null
           sintomas_reportados?: string[]
           urgencia?: Database["public"]["Enums"]["urgencia_cita"] | null
           urgencia_sugerida?:
@@ -484,10 +532,12 @@ export type Database = {
           creada_en?: string
           estado?: Database["public"]["Enums"]["estado_cita"]
           fecha_hora?: string
+          fecha_hora_anterior?: string | null
           id?: never
           mascota_id?: number
           motivo?: string
           motivo_cancelacion?: string | null
+          reagendada_en?: string | null
           sintomas_reportados?: string[]
           urgencia?: Database["public"]["Enums"]["urgencia_cita"] | null
           urgencia_sugerida?:
@@ -596,6 +646,48 @@ export type Database = {
         }
         Relationships: []
       }
+      estado_uci_centros: {
+        Row: {
+          actualizado_en: string
+          actualizado_por: string | null
+          centro_id: number
+          detalle: string | null
+          estado: string
+          motivo: string | null
+        }
+        Insert: {
+          actualizado_en?: string
+          actualizado_por?: string | null
+          centro_id: number
+          detalle?: string | null
+          estado: string
+          motivo?: string | null
+        }
+        Update: {
+          actualizado_en?: string
+          actualizado_por?: string | null
+          centro_id?: number
+          detalle?: string | null
+          estado?: string
+          motivo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "estado_uci_centros_actualizado_por_fkey"
+            columns: ["actualizado_por"]
+            isOneToOne: false
+            referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estado_uci_centros_centro_id_fkey"
+            columns: ["centro_id"]
+            isOneToOne: true
+            referencedRelation: "centros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       historial_suscripcion: {
         Row: {
           accion: string
@@ -668,7 +760,7 @@ export type Database = {
       }
       horarios_veterinario: {
         Row: {
-          centro_id: number
+          centro_id: number | null
           desde: string
           dia_semana: number
           duracion_cita_min: number
@@ -677,7 +769,7 @@ export type Database = {
           veterinario_id: number
         }
         Insert: {
-          centro_id: number
+          centro_id?: number | null
           desde: string
           dia_semana: number
           duracion_cita_min?: number
@@ -686,7 +778,7 @@ export type Database = {
           veterinario_id: number
         }
         Update: {
-          centro_id?: number
+          centro_id?: number | null
           desde?: string
           dia_semana?: number
           duracion_cita_min?: number
@@ -695,6 +787,13 @@ export type Database = {
           veterinario_id?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "horarios_veterinario_veterinario_fkey"
+            columns: ["veterinario_id"]
+            isOneToOne: false
+            referencedRelation: "veterinarios"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "horarios_veterinario_veterinario_id_centro_id_fkey"
             columns: ["veterinario_id", "centro_id"]
@@ -842,6 +941,80 @@ export type Database = {
           {
             foreignKeyName: "notas_perfil_id_fkey"
             columns: ["perfil_id"]
+            isOneToOne: false
+            referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notificaciones: {
+        Row: {
+          centro_id: number | null
+          cita_id: number | null
+          creada_en: string
+          creada_por: string | null
+          destinatario: string
+          fecha_anterior: string | null
+          fecha_nueva: string | null
+          id: number
+          leida_en: string | null
+          mensaje: string
+          tipo: string
+          titulo: string
+        }
+        Insert: {
+          centro_id?: number | null
+          cita_id?: number | null
+          creada_en?: string
+          creada_por?: string | null
+          destinatario: string
+          fecha_anterior?: string | null
+          fecha_nueva?: string | null
+          id?: never
+          leida_en?: string | null
+          mensaje: string
+          tipo: string
+          titulo: string
+        }
+        Update: {
+          centro_id?: number | null
+          cita_id?: number | null
+          creada_en?: string
+          creada_por?: string | null
+          destinatario?: string
+          fecha_anterior?: string | null
+          fecha_nueva?: string | null
+          id?: never
+          leida_en?: string | null
+          mensaje?: string
+          tipo?: string
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notificaciones_centro_id_fkey"
+            columns: ["centro_id"]
+            isOneToOne: false
+            referencedRelation: "centros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cita_id_fkey"
+            columns: ["cita_id"]
+            isOneToOne: false
+            referencedRelation: "citas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notificaciones_creada_por_fkey"
+            columns: ["creada_por"]
+            isOneToOne: false
+            referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notificaciones_destinatario_fkey"
+            columns: ["destinatario"]
             isOneToOne: false
             referencedRelation: "perfiles"
             referencedColumns: ["id"]
@@ -1570,52 +1743,64 @@ export type Database = {
       }
       veterinarios: {
         Row: {
+          a_domicilio: boolean
           aliado_solidario: boolean
           centro_mencionado: string | null
           centro_mencionado_comuna: string | null
           centro_solicitado_id: number | null
+          comunas_atencion: string[]
           creado_en: string
           especialidad_id: number | null
           especialidad_otra: string | null
           estado_verificacion: Database["public"]["Enums"]["estado_verificacion"]
           id: number
+          mostrar_telefono_urgencias: boolean
           motivo_rechazo: string | null
           numero_colegiado: string | null
           perfil_id: string | null
           revisado_en: string | null
           revisado_por: string | null
+          urgencias_24_7: boolean
         }
         Insert: {
+          a_domicilio?: boolean
           aliado_solidario?: boolean
           centro_mencionado?: string | null
           centro_mencionado_comuna?: string | null
           centro_solicitado_id?: number | null
+          comunas_atencion?: string[]
           creado_en?: string
           especialidad_id?: number | null
           especialidad_otra?: string | null
           estado_verificacion?: Database["public"]["Enums"]["estado_verificacion"]
           id?: never
+          mostrar_telefono_urgencias?: boolean
           motivo_rechazo?: string | null
           numero_colegiado?: string | null
           perfil_id?: string | null
           revisado_en?: string | null
           revisado_por?: string | null
+          urgencias_24_7?: boolean
         }
         Update: {
+          a_domicilio?: boolean
           aliado_solidario?: boolean
           centro_mencionado?: string | null
           centro_mencionado_comuna?: string | null
           centro_solicitado_id?: number | null
+          comunas_atencion?: string[]
           creado_en?: string
           especialidad_id?: number | null
           especialidad_otra?: string | null
           estado_verificacion?: Database["public"]["Enums"]["estado_verificacion"]
           id?: never
+          mostrar_telefono_urgencias?: boolean
           motivo_rechazo?: string | null
           numero_colegiado?: string | null
           perfil_id?: string | null
           revisado_en?: string | null
           revisado_por?: string | null
+          urgencias_24_7?: boolean
         }
         Relationships: [
           {
@@ -1671,6 +1856,15 @@ export type Database = {
           p_mascota_id: number
           p_microchip?: string
           p_peso_kg?: number
+        }
+        Returns: undefined
+      }
+      actualizar_estado_uci: {
+        Args: {
+          p_centro_id: number
+          p_detalle?: string
+          p_estado: string
+          p_motivo?: string
         }
         Returns: undefined
       }
@@ -1768,6 +1962,17 @@ export type Database = {
           testimonio: string
         }[]
       }
+      avisar_cambio_de_cita: {
+        Args: {
+          p_avisar_centro: boolean
+          p_cita_id: number
+          p_fecha_anterior: string
+          p_fecha_nueva: string
+          p_mensaje: string
+          p_tipo: string
+        }
+        Returns: undefined
+      }
       avisos_moderacion_mias: {
         Args: never
         Returns: {
@@ -1775,6 +1980,17 @@ export type Database = {
           mensaje: string
           tipo: string
         }[]
+      }
+      bloquear_mi_horario: {
+        Args: {
+          p_avisar_centro?: boolean
+          p_cancelar_citas?: boolean
+          p_desde: string
+          p_hasta: string
+          p_mensaje?: string
+          p_motivo: string
+        }
+        Returns: number
       }
       buscar_cuentas: {
         Args: { p_texto: string }
@@ -1788,6 +2004,19 @@ export type Database = {
       }
       cambiar_aliado_solidario: {
         Args: { p_activo: boolean }
+        Returns: undefined
+      }
+      cambiar_telefono_urgencias: {
+        Args: { p_mostrar: boolean }
+        Returns: undefined
+      }
+      cancelar_cita_veterinario: {
+        Args: {
+          p_avisar_centro?: boolean
+          p_cita_id: number
+          p_mensaje?: string
+          p_motivo: string
+        }
         Returns: undefined
       }
       cancelar_mi_cita: {
@@ -1968,6 +2197,10 @@ export type Database = {
         Args: { p_centro_id: number }
         Returns: boolean
       }
+      es_veterinario_independiente: {
+        Args: { p_veterinario_id: number }
+        Returns: boolean
+      }
       especialidad_de_veterinario: {
         Args: { p_veterinario_id: number }
         Returns: string
@@ -1993,8 +2226,26 @@ export type Database = {
         Args: { p_fotos: string[] }
         Returns: boolean
       }
+      guardar_especialidades_centro: {
+        Args: { p_centro_id: number; p_especialidad_ids: number[] }
+        Returns: undefined
+      }
       guardar_especialidades_veterinario: {
         Args: { p_ids: number[]; p_otra?: string; p_veterinario_id?: number }
+        Returns: undefined
+      }
+      guardar_horario_centro: {
+        Args: { p_centro_id: number; p_horarios: Json }
+        Returns: undefined
+      }
+      guardar_mi_horario_atencion: {
+        Args: {
+          p_a_domicilio?: boolean
+          p_comunas?: string[]
+          p_duracion: number
+          p_tramos: Json
+          p_urgencias_24_7: boolean
+        }
         Returns: undefined
       }
       guardar_refugio: {
@@ -2016,6 +2267,14 @@ export type Database = {
           p_telefono: number
         }
         Returns: number
+      }
+      guardar_urgencias_centro: {
+        Args: {
+          p_centro_id: number
+          p_tiene_uci: boolean
+          p_urgencias_24_7: boolean
+        }
+        Returns: undefined
       }
       historial_de_paciente: {
         Args: { p_mascota_id: number }
@@ -2042,6 +2301,10 @@ export type Database = {
           testimonio: string
           testimonio_autor: string
         }[]
+      }
+      hora_bloqueada: {
+        Args: { p_fecha_hora: string; p_veterinario_id: number }
+        Returns: boolean
       }
       listar_adopciones: {
         Args: never
@@ -2171,6 +2434,7 @@ export type Database = {
           veterinarios: number
         }[]
       }
+      listar_urgencias: { Args: never; Returns: Json }
       listar_usuarios: {
         Args: never
         Returns: {
@@ -2184,7 +2448,10 @@ export type Database = {
           telefono: number
         }[]
       }
+      marcar_aviso_leido: { Args: { p_aviso_id?: number }; Returns: undefined }
       me_derivaron: { Args: { p_mascota_id: number }; Returns: boolean }
+      mi_horario_atencion: { Args: never; Returns: Json }
+      mi_telefono_en_urgencias: { Args: never; Returns: Json }
       mi_veterinario_id: { Args: never; Returns: number }
       mis_atenciones_adopcion: {
         Args: never
@@ -2347,11 +2614,27 @@ export type Database = {
           veterinario_id: number
         }[]
       }
+      progreso_perfil_centro: { Args: { p_centro_id: number }; Returns: Json }
+      progreso_perfil_veterinario: { Args: never; Returns: Json }
       puedo_gestionar_adopcion: {
         Args: { p_adopcion_id: number }
         Returns: boolean
       }
+      puedo_gestionar_centro: {
+        Args: { p_centro_id: number }
+        Returns: boolean
+      }
+      quitar_bloqueo: { Args: { p_bloqueo_id: number }; Returns: undefined }
       reactivar_centro: { Args: { p_centro_id: number }; Returns: undefined }
+      reagendar_cita_veterinario: {
+        Args: {
+          p_avisar_centro?: boolean
+          p_cita_id: number
+          p_mensaje?: string
+          p_nueva_fecha: string
+        }
+        Returns: undefined
+      }
       rechazar_cita: {
         Args: { p_cita_id: number; p_motivo: string }
         Returns: undefined
@@ -2370,6 +2653,7 @@ export type Database = {
         }
         Returns: number
       }
+      registrar_mi_colegiado: { Args: { p_numero: string }; Returns: undefined }
       reportar_adopcion: {
         Args: { p_adopcion_id: number; p_comentario?: string; p_motivo: string }
         Returns: number
@@ -2457,6 +2741,10 @@ export type Database = {
           renovacion: string
           veterinarios: number
         }[]
+      }
+      revisar_horario_centro: {
+        Args: { p_centro_id: number; p_fecha_hora: string }
+        Returns: undefined
       }
       solicitar_cambio_plan: {
         Args: { p_centro_id: number; p_mensaje?: string; p_plan_id: string }

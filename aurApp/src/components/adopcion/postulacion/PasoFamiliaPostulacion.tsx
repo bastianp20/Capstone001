@@ -3,11 +3,12 @@ import { View } from 'react-native';
 import { CampoTexto } from '@/components/formulario/CampoTexto';
 import { PreguntaSiNo } from '@/components/ui/PreguntaSiNo';
 import { TEXTOS_POSTULACION as T } from '@/constants/constants';
-import { postularAdopcionStyles as styles } from '@/css/PostularAdopcionPage';
+import { usePostularAdopcionStyles } from '@/css/PostularAdopcionPage';
 import type { PasoPostulacionProps } from '@/interfaces';
 
 /** Paso 2 · Tu familia: niños, otras mascotas y si todos están de acuerdo. */
 export function PasoFamiliaPostulacion({ datos: d, errores: e, onCambiar }: PasoPostulacionProps) {
+  const styles = usePostularAdopcionStyles();
   return (
     <View style={styles.paso}>
       <PreguntaSiNo titulo={T.hayNinos} valor={d.hayNinos} onCambiar={(v) => onCambiar('hayNinos', v)} error={e.hayNinos} />

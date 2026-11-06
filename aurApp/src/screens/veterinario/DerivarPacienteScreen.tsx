@@ -13,11 +13,12 @@ import { EstadoCarga } from '@/components/ui/EstadoCarga';
 import { EstadoVacio } from '@/components/ui/EstadoVacio';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { MODOS_DERIVACION, TEXTOS_CARGA, TEXTOS_DERIVAR_ATENCION as T } from '@/constants/constants';
-import { derivarStyles as styles } from '@/css/DerivarPage';
+import { useDerivarStyles } from '@/css/DerivarPage';
 import { useDerivarPaciente } from '@/hooks/useDerivarPaciente';
 
 /** Derivar al paciente: filtrar por especialidad, elegir colega o centro y escribir el motivo. */
 export default function DerivarPacienteScreen() {
+  const styles = useDerivarStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const d = useDerivarPaciente(Number(id));
   const subtitulo = [d.cita?.mascota, d.cita?.raza].filter(Boolean).join(' · ');

@@ -1,13 +1,15 @@
 import { Pressable } from 'react-native';
 
-import { COLORES } from '@/constants/constants';
-import { botonIconoStyles as styles } from '@/css/Compartido';
+import { useBotonIconoStyles } from '@/css/Compartido';
 import type { BotonIconoProps } from '@/interfaces';
 
 import { Icono } from './Icono';
+import { useColores } from '@/context/TemaContext';
 
 /** Botón redondo con un ícono: el "+" de Citas, la flecha de volver, etc. */
 export function BotonIcono({ icono, etiqueta, onPress, variante = 'blanco', tamano = 48 }: BotonIconoProps) {
+  const COLORES = useColores();
+  const styles = useBotonIconoStyles();
   const blanco = variante === 'blanco';
   return (
     <Pressable

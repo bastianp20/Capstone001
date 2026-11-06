@@ -16,13 +16,16 @@ import { EstadoVacio } from '@/components/ui/EstadoVacio';
 import { Icono } from '@/components/ui/Icono';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { TituloSeccion } from '@/components/ui/TituloSeccion';
-import { COLORES, TEXTOS_CARGA, TEXTOS_FICHA_ADOPCION as T } from '@/constants/constants';
-import { fichaAdopcionStyles as styles } from '@/css/FichaAdopcionPage';
+import { TEXTOS_CARGA, TEXTOS_FICHA_ADOPCION as T } from '@/constants/constants';
+import { useFichaAdopcionStyles } from '@/css/FichaAdopcionPage';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
 import { useFichaAdopcion } from '@/hooks/useFichaAdopcion';
+import { useColores } from '@/context/TemaContext';
 
 /** Ficha de un animal en adopción: fotos, cómo es, salud, chequeo, historia, quién lo cuida y adoptar. */
 export default function FichaAdopcionScreen() {
+  const COLORES = useColores();
+  const styles = useFichaAdopcionStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const adopcionId = Number(id);
   const f = useFichaAdopcion(adopcionId);

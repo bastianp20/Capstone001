@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 
 import { TEXTOS_PUBLICAR as T } from '@/constants/constants';
-import { hojaElegirFotoStyles as styles } from '@/css/Compartido';
+import { useHojaElegirFotoStyles } from '@/css/Compartido';
 import type { HojaElegirFotoProps } from '@/interfaces';
 
 import { HojaInferior } from './HojaInferior';
@@ -9,6 +9,7 @@ import { OpcionHoja } from './OpcionHoja';
 
 /** Hoja con "Tomar foto" y "Elegir de la galería". */
 export function HojaElegirFoto({ visible, titulo, onTomar, onElegir, onCerrar }: HojaElegirFotoProps) {
+  const styles = useHojaElegirFotoStyles();
   return (
     <HojaInferior visible={visible} titulo={titulo} onCerrar={onCerrar}>
       <View style={styles.fila}>

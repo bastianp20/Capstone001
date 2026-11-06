@@ -4,12 +4,18 @@ import { BotonPrincipal } from '@/components/formulario/BotonPrincipal';
 import { FilaInterruptor } from '@/components/ui/FilaInterruptor';
 import { HojaInferior } from '@/components/ui/HojaInferior';
 import { PreguntaOpciones } from '@/components/ui/PreguntaOpciones';
-import { OPCIONES_ETAPA_ADOPCION, OPCIONES_SEXO_ADOPCION, OPCIONES_TAMANO_ADOPCION, TEXTOS_ADOPTA as T } from '@/constants/constants';
-import { hojaFiltrosAdopcionStyles as styles } from '@/css/AdoptaPage';
+import {
+  OPCIONES_ETAPA_ADOPCION,
+  OPCIONES_SEXO_ADOPCION,
+  OPCIONES_TAMANO_ADOPCION,
+  TEXTOS_ADOPTA as T,
+} from '@/constants/constants';
+import { useHojaFiltrosAdopcionStyles } from '@/css/AdoptaPage';
 import type { HojaFiltrosAdopcionProps } from '@/interfaces';
 
 /** Hoja "Filtrar animales": revisados, guardados, tamaño, edad, sexo y comuna. */
 export function HojaFiltrosAdopcion({ visible, filtros: f, comunas, resultados, onCambiar, onLimpiar, onCerrar }: HojaFiltrosAdopcionProps) {
+  const styles = useHojaFiltrosAdopcionStyles();
   const opcionesComuna = comunas.map((c) => ({ valor: c, texto: c }));
   return (
     <HojaInferior visible={visible} titulo={T.filtrosTitulo} onCerrar={onCerrar}>

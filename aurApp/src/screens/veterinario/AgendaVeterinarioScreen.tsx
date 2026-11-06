@@ -1,8 +1,12 @@
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { View } from 'react-native';
+
+import { AgendaSemanaVeterinario } from '@/components/agenda/AgendaSemanaVeterinario';
 
 import { MensajeFormulario } from '@/components/formulario/MensajeFormulario';
 import { AccionesCitaVeterinario } from '@/components/veterinario/AccionesCitaVeterinario';
+import { ControlSegmentado } from '@/components/ui/ControlSegmentado';
 import { BarraFiltros } from '@/components/ui/BarraFiltros';
 import { EncabezadoPagina } from '@/components/ui/EncabezadoPagina';
 import { EstadoCarga } from '@/components/ui/EstadoCarga';
@@ -11,15 +15,19 @@ import { ModalTexto } from '@/components/ui/ModalTexto';
 import { PantallaLista } from '@/components/ui/PantallaLista';
 import { TarjetaCitaGestion } from '@/components/ui/TarjetaCitaGestion';
 import { TituloSeccion } from '@/components/ui/TituloSeccion';
-import { TEXTOS_AGENDA_VETERINARIO as T, TEXTOS_CARGA, TEXTOS_VETERINARIO } from '@/constants/constants';
-import { listaGruposStyles as styles } from '@/css/Compartido';
+import { TEXTOS_AGENDA_VETERINARIO as T, TEXTOS_CARGA, TEXTOS_MI_AGENDA, TEXTOS_VETERINARIO } from '@/constants/constants';
+import { useListaGruposStyles } from '@/css/Compartido';
 import { useAgendaVeterinario } from '@/hooks/useAgendaVeterinario';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
+import type { VistaAgendaVeterinario } from '@/interfaces';
+import { citaModificable } from '@/lib/agendaSemana';
 
 export default function AgendaVeterinarioScreen() {
+  const styles = useListaGruposStyles();
   useBarraEstadoClara();
   const g = useAgendaVeterinario();
   const a = g.acciones;
+  const [vista, setVista] = useState<VistaAgendaVeterinario>('semana');
 
   const contenido = () => {
     if (g.cargando) return <EstadoCarga />;
@@ -54,6 +62,7 @@ export default function AgendaVeterinarioScreen() {
                     onRechazar={a.pedirRechazo}
                     onIniciar={a.iniciar}
                     onAbrirAtencion={a.abrirAtencion}
+                    onModificar={citaModificable(c) ? () => router.push({ pathname: '/veterinario/cita/[id]', params: { id: c.id } }) : undefined}
                   />
                 }
               />
@@ -66,6 +75,8 @@ export default function AgendaVeterinarioScreen() {
 
   return (
     <PantallaLista recargando={g.recargando} onRecargar={g.recargar} encabezado={<EncabezadoPagina titulo={T.titulo} />}>
+      <ControlSegmentado opciones={TEXTOS_MI_AGENDA.vistas} valor={vista} onCambiar={setVista} />
+      {vista === 'semana' ? <AgendaSemanaVeterinario /> : <>
       <BarraFiltros
         busqueda={g.busqueda}
         onBuscar={g.setBusqueda}
@@ -76,6 +87,7 @@ export default function AgendaVeterinarioScreen() {
       />
       <MensajeFormulario tipo="error" texto={a.error} />
       {contenido()}
+      </>}
       <ModalTexto
         visible={!!a.rechazando}
         titulo={TEXTOS_VETERINARIO.rechazarTitulo}

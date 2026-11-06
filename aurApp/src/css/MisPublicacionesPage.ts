@@ -1,14 +1,14 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── TarjetaPublicacionPropia ───
-export const tarjetaPublicacionStyles = StyleSheet.create({
+export const useTarjetaPublicacionStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   tarjeta: {
     gap: 12,
     padding: 14,
     borderRadius: RADIOS.lg,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 6px 16px rgba(11, 59, 53, 0.06)',
   },
   presionada: {
@@ -27,7 +27,7 @@ export const tarjetaPublicacionStyles = StyleSheet.create({
   sinFoto: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFE6D5',
+    backgroundColor: TONOS_TARJETA.durazno.fondo,
   },
   cuerpo: {
     flex: 1,
@@ -69,10 +69,10 @@ export const tarjetaPublicacionStyles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 10,
   },
-});
+}));
 
 // ─── CaminoACasa ───
-export const caminoACasaStyles = StyleSheet.create({
+export const useCaminoACasaStyles = crearEstilos((COLORES) => ({
   fila: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -88,7 +88,7 @@ export const caminoACasaStyles = StyleSheet.create({
     borderRadius: 7,
     borderWidth: 2,
     borderColor: COLORES.bordeCampo,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   puntoHecho: {
     borderColor: COLORES.primario,
@@ -114,10 +114,10 @@ export const caminoACasaStyles = StyleSheet.create({
   textoHecho: {
     color: COLORES.primarioOscuro,
   },
-});
+}));
 
 // ─── AvisoModeracionPublicacion ───
-export const avisoModeracionStyles = StyleSheet.create({
+export const useAvisoModeracionStyles = crearEstilos((COLORES) => ({
   aviso: {
     flexDirection: 'row',
     gap: 10,
@@ -138,10 +138,10 @@ export const avisoModeracionStyles = StyleSheet.create({
     lineHeight: 18,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── PostulantesAdopcionScreen ───
-export const postulantesStyles = StyleSheet.create({
+export const usePostulantesStyles = crearEstilos((COLORES) => ({
   resumen: {
     gap: 4,
   },
@@ -158,17 +158,17 @@ export const postulantesStyles = StyleSheet.create({
   lista: {
     gap: 10,
   },
-});
+}));
 
 // ─── TarjetaPostulante ───
-export const tarjetaPostulanteStyles = StyleSheet.create({
+export const useTarjetaPostulanteStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     padding: 14,
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   elegida: {
     borderWidth: 2,
@@ -198,10 +198,10 @@ export const tarjetaPostulanteStyles = StyleSheet.create({
     fontSize: 12.5,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── AfinidadAnillo ───
-export const afinidadAnilloStyles = StyleSheet.create({
+export const useAfinidadAnilloStyles = crearEstilos((COLORES) => ({
   contenedor: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -214,10 +214,10 @@ export const afinidadAnilloStyles = StyleSheet.create({
     fontFamily: FUENTES.extrabold,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── HojaPostulante / HojaConcretarAdopcion ───
-export const hojaPostulanteStyles = StyleSheet.create({
+export const useHojaPostulanteStyles = crearEstilos((COLORES) => ({
   scroll: {
     maxHeight: 520,
   },
@@ -283,4 +283,4 @@ export const hojaPostulanteStyles = StyleSheet.create({
   acciones: {
     gap: 10,
   },
-});
+}));

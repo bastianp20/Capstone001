@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 
-import { barraFiltrosStyles as styles } from '@/css/Compartido';
+import { useBarraFiltrosStyles } from '@/css/Compartido';
 import type { BarraFiltrosProps } from '@/interfaces';
 
 import { CampoBusqueda } from './CampoBusqueda';
@@ -12,6 +12,7 @@ import { SelectorPildoras } from './SelectorPildoras';
  *     opciones={[{ valor: 'proximas', texto: 'Próximas', cantidad: cantidad('proximas') }, …]} />
  */
 export function BarraFiltros<F extends string>({ busqueda, onBuscar, placeholder, opciones, filtro, onFiltrar }: BarraFiltrosProps<F>) {
+  const styles = useBarraFiltrosStyles();
   return (
     <View style={styles.contenedor}>
       <CampoBusqueda valor={busqueda} onCambiar={onBuscar} placeholder={placeholder} />

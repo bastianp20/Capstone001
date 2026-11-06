@@ -1,12 +1,13 @@
 import { Text, View } from 'react-native';
 
 import { HITOS_CAMINO_CASA } from '@/constants/constants';
-import { caminoACasaStyles as styles } from '@/css/MisPublicacionesPage';
+import { useCaminoACasaStyles } from '@/css/MisPublicacionesPage';
 import type { CaminoACasaProps } from '@/interfaces';
 import { hitosCumplidos } from '@/lib/adopcion';
 
 /** El "camino a casa" en 5 puntitos: publicado, revisado, postulan, familia elegida, adoptado. */
 export function CaminoACasa({ publicacion }: CaminoACasaProps) {
+  const styles = useCaminoACasaStyles();
   const hechos = hitosCumplidos(publicacion);
   return (
     <View style={styles.fila}>

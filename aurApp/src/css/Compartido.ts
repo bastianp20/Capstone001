@@ -1,18 +1,20 @@
 import { Platform, StyleSheet } from 'react-native';
 
-import { COLORES, FUENTES, MARGEN_PANTALLA, RADIOS } from '@/constants/constants';
+import { FUENTES, MARGEN_PANTALLA, RADIOS } from '@/constants/constants';
+
+import { crearEstilos } from './crearEstilos';
 
 // ─── OndaEncabezado ───
-export const ondaEncabezadoStyles = StyleSheet.create({
+export const useOndaEncabezadoStyles = crearEstilos(() => ({
   onda: {
     position: 'absolute',
     left: 0,
     bottom: -1,
   },
-});
+}));
 
 // ─── CampoTexto / CampoPassword ───
-export const campoTextoStyles = StyleSheet.create({
+export const useCampoTextoStyles = crearEstilos((COLORES) => ({
   contenedor: {
     gap: 6,
   },
@@ -26,7 +28,7 @@ export const campoTextoStyles = StyleSheet.create({
     borderRadius: RADIOS.md,
     borderWidth: 1.5,
     borderColor: COLORES.bordeCampo,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   cajaEnfocada: {
     borderColor: COLORES.primario,
@@ -81,10 +83,10 @@ export const campoTextoStyles = StyleSheet.create({
   presionado: {
     opacity: 0.6,
   },
-});
+}));
 
 // ─── BotonPrincipal ───
-export const botonPrincipalStyles = StyleSheet.create({
+export const useBotonPrincipalStyles = crearEstilos((COLORES) => ({
   boton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -121,12 +123,12 @@ export const botonPrincipalStyles = StyleSheet.create({
     boxShadow: '0 12px 24px rgba(214, 69, 69, 0.28)',
   },
   peligroPresionado: {
-    backgroundColor: '#B83A3A',
+    backgroundColor: COLORES.peligroPresionado,
   },
-});
+}));
 
 // ─── MensajeFormulario ───
-export const mensajeFormularioStyles = StyleSheet.create({
+export const useMensajeFormularioStyles = crearEstilos((COLORES) => ({
   caja: {
     borderRadius: RADIOS.sm,
     paddingHorizontal: 14,
@@ -149,10 +151,10 @@ export const mensajeFormularioStyles = StyleSheet.create({
   textoAviso: {
     color: COLORES.primarioOscuro,
   },
-});
+}));
 
 // ─── EnlaceTexto ───
-export const enlaceTextoStyles = StyleSheet.create({
+export const useEnlaceTextoStyles = crearEstilos((COLORES) => ({
   texto: {
     fontFamily: FUENTES.semibold,
     fontSize: 14,
@@ -162,10 +164,10 @@ export const enlaceTextoStyles = StyleSheet.create({
   presionado: {
     opacity: 0.6,
   },
-});
+}));
 
 // ─── BotonSecundario ───
-export const botonSecundarioStyles = StyleSheet.create({
+export const useBotonSecundarioStyles = crearEstilos((COLORES) => ({
   boton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -175,7 +177,7 @@ export const botonSecundarioStyles = StyleSheet.create({
     borderRadius: 27,
     borderWidth: 1.5,
     borderColor: COLORES.bordeCampo,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   presionado: {
     backgroundColor: COLORES.fondo,
@@ -188,20 +190,20 @@ export const botonSecundarioStyles = StyleSheet.create({
     fontSize: 16,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── HuellasDecorativas ───
-export const huellasDecorativasStyles = StyleSheet.create({
+export const useHuellasDecorativasStyles = crearEstilos(() => ({
   capa: {
     ...StyleSheet.absoluteFill,
   },
   huella: {
     position: 'absolute',
   },
-});
+}));
 
 // ─── EncabezadoVerde ───
-export const encabezadoVerdeStyles = StyleSheet.create({
+export const useEncabezadoVerdeStyles = crearEstilos((COLORES) => ({
   contenedor: {
     backgroundColor: COLORES.primario,
   },
@@ -213,18 +215,18 @@ export const encabezadoVerdeStyles = StyleSheet.create({
     height: 800,
     backgroundColor: COLORES.primario,
   },
-});
+}));
 
 // ─── CirculoIcono ───
-export const circuloIconoStyles = StyleSheet.create({
+export const useCirculoIconoStyles = crearEstilos(() => ({
   circulo: {
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+}));
 
 // ─── Etiqueta ───
-export const etiquetaStyles = StyleSheet.create({
+export const useEtiquetaStyles = crearEstilos(() => ({
   etiqueta: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -244,10 +246,10 @@ export const etiquetaStyles = StyleSheet.create({
     fontSize: 11.5,
     letterSpacing: 0.2,
   },
-});
+}));
 
 // ─── TarjetaPastel ───
-export const tarjetaPastelStyles = StyleSheet.create({
+export const useTarjetaPastelStyles = crearEstilos(() => ({
   tarjeta: {
     borderRadius: RADIOS.lg,
     padding: 16,
@@ -255,10 +257,10 @@ export const tarjetaPastelStyles = StyleSheet.create({
   presionada: {
     transform: [{ scale: 0.98 }],
   },
-});
+}));
 
 // ─── SelectorPildoras ───
-export const selectorPildorasStyles = StyleSheet.create({
+export const useSelectorPildorasStyles = crearEstilos((COLORES) => ({
   contenedor: {
     alignSelf: 'flex-start',
     flexDirection: 'row',
@@ -281,13 +283,13 @@ export const selectorPildorasStyles = StyleSheet.create({
     borderRadius: 18,
   },
   activaSobrePrimario: {
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 2px 6px rgba(11, 59, 53, 0.18)',
   },
   pildoraClara: {
     borderWidth: 1,
     borderColor: COLORES.bordeCampo,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   activaClaro: {
     borderColor: COLORES.primario,
@@ -314,10 +316,10 @@ export const selectorPildorasStyles = StyleSheet.create({
   cantidad: {
     opacity: 0.7,
   },
-});
+}));
 
 // ─── CampoBusqueda ───
-export const campoBusquedaStyles = StyleSheet.create({
+export const useCampoBusquedaStyles = crearEstilos((COLORES) => ({
   caja: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -327,7 +329,7 @@ export const campoBusquedaStyles = StyleSheet.create({
     borderRadius: 24,
     borderWidth: 1,
     borderColor: COLORES.borde,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   input: {
     flex: 1,
@@ -337,17 +339,17 @@ export const campoBusquedaStyles = StyleSheet.create({
     padding: 0,
     ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as object) : {}),
   },
-});
+}));
 
 // ─── BarraFiltros ───
-export const barraFiltrosStyles = StyleSheet.create({
+export const useBarraFiltrosStyles = crearEstilos(() => ({
   contenedor: {
     gap: 12,
   },
-});
+}));
 
 // ─── EncabezadoPagina ───
-export const encabezadoPaginaStyles = StyleSheet.create({
+export const useEncabezadoPaginaStyles = crearEstilos((COLORES) => ({
   contenedor: {
     paddingHorizontal: MARGEN_PANTALLA,
     paddingBottom: 58, // espacio para la onda
@@ -391,16 +393,16 @@ export const encabezadoPaginaStyles = StyleSheet.create({
     fontSize: 13.5,
     color: COLORES.textoSobrePrimarioSuave,
   },
-});
+}));
 
 // ─── BotonIcono ───
-export const botonIconoStyles = StyleSheet.create({
+export const useBotonIconoStyles = crearEstilos((COLORES) => ({
   boton: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   blanco: {
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 6px 16px rgba(11, 59, 53, 0.22)',
   },
   translucido: {
@@ -409,10 +411,10 @@ export const botonIconoStyles = StyleSheet.create({
   presionado: {
     transform: [{ scale: 0.94 }],
   },
-});
+}));
 
 // ─── BotonPequeno ───
-export const botonPequenoStyles = StyleSheet.create({
+export const useBotonPequenoStyles = crearEstilos((COLORES) => ({
   boton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -422,7 +424,7 @@ export const botonPequenoStyles = StyleSheet.create({
     borderRadius: 19,
     borderWidth: 1,
     borderColor: COLORES.bordeCampo,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   peligro: {
     borderColor: COLORES.errorSuave,
@@ -445,10 +447,10 @@ export const botonPequenoStyles = StyleSheet.create({
     fontFamily: FUENTES.bold,
     fontSize: 13.5,
   },
-});
+}));
 
 // ─── EstadoVacio ───
-export const estadoVacioStyles = StyleSheet.create({
+export const useEstadoVacioStyles = crearEstilos((COLORES) => ({
   contenedor: {
     alignItems: 'center',
     gap: 8,
@@ -473,10 +475,10 @@ export const estadoVacioStyles = StyleSheet.create({
     alignSelf: 'stretch',
     marginTop: 12,
   },
-});
+}));
 
 // ─── EstadoCarga ───
-export const estadoCargaStyles = StyleSheet.create({
+export const useEstadoCargaStyles = crearEstilos((COLORES) => ({
   contenedor: {
     alignItems: 'center',
     gap: 12,
@@ -487,10 +489,10 @@ export const estadoCargaStyles = StyleSheet.create({
     fontSize: 14,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── PantallaLista ───
-export const pantallaListaStyles = StyleSheet.create({
+export const usePantallaListaStyles = crearEstilos((COLORES) => ({
   pantalla: {
     flex: 1,
     backgroundColor: COLORES.fondo,
@@ -500,10 +502,10 @@ export const pantallaListaStyles = StyleSheet.create({
     paddingTop: 4,
     gap: 16,
   },
-});
+}));
 
 // ─── PantallaFormulario ───
-export const pantallaFormularioStyles = StyleSheet.create({
+export const usePantallaFormularioStyles = crearEstilos((COLORES) => ({
   pantalla: {
     flex: 1,
     backgroundColor: COLORES.fondo,
@@ -523,10 +525,10 @@ export const pantallaFormularioStyles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: COLORES.borde,
   },
-});
+}));
 
 // ─── TituloSeccion ───
-export const tituloSeccionStyles = StyleSheet.create({
+export const useTituloSeccionStyles = crearEstilos((COLORES) => ({
   fila: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -538,10 +540,10 @@ export const tituloSeccionStyles = StyleSheet.create({
     fontSize: 18,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── FilaOpcion ───
-export const filaOpcionStyles = StyleSheet.create({
+export const useFilaOpcionStyles = crearEstilos((COLORES) => ({
   fila: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -567,14 +569,14 @@ export const filaOpcionStyles = StyleSheet.create({
     fontSize: 14,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── AvatarIniciales ───
-export const avatarInicialesStyles = StyleSheet.create({
+export const useAvatarInicialesStyles = crearEstilos((COLORES) => ({
   circulo: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     borderWidth: 4,
     borderColor: COLORES.primario,
     boxShadow: '0 8px 20px rgba(11, 59, 53, 0.18)',
@@ -583,24 +585,24 @@ export const avatarInicialesStyles = StyleSheet.create({
     fontFamily: FUENTES.extrabold,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── AvatarMascota ───
-export const avatarMascotaStyles = StyleSheet.create({
+export const useAvatarMascotaStyles = crearEstilos((COLORES) => ({
   foto: {
     borderWidth: 2,
-    borderColor: COLORES.blanco,
+    borderColor: COLORES.superficie,
   },
   sinFoto: {
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: COLORES.blanco,
+    borderColor: COLORES.superficie,
   },
-});
+}));
 
 // ─── ChipsMultiples ───
-export const chipsMultiplesStyles = StyleSheet.create({
+export const useChipsMultiplesStyles = crearEstilos((COLORES) => ({
   contenedor: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -615,7 +617,7 @@ export const chipsMultiplesStyles = StyleSheet.create({
     borderRadius: 18,
     borderWidth: 1,
     borderColor: COLORES.bordeCampo,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   chipMarcado: {
     borderColor: COLORES.primario,
@@ -629,10 +631,10 @@ export const chipsMultiplesStyles = StyleSheet.create({
   textoMarcado: {
     color: COLORES.blanco,
   },
-});
+}));
 
 // ─── TarjetaOpcion ───
-export const tarjetaOpcionStyles = StyleSheet.create({
+export const useTarjetaOpcionStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -641,11 +643,11 @@ export const tarjetaOpcionStyles = StyleSheet.create({
     borderRadius: RADIOS.md,
     borderWidth: 1.5,
     borderColor: COLORES.bordeCampo,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   seleccionada: {
     borderColor: COLORES.primario,
-    backgroundColor: '#F1FAF8',
+    backgroundColor: COLORES.fondoMenta,
   },
   presionada: {
     opacity: 0.85,
@@ -678,10 +680,10 @@ export const tarjetaOpcionStyles = StyleSheet.create({
     borderColor: COLORES.primario,
     backgroundColor: COLORES.primario,
   },
-});
+}));
 
 // ─── FilaInterruptor ───
-export const filaInterruptorStyles = StyleSheet.create({
+export const useFilaInterruptorStyles = crearEstilos((COLORES) => ({
   fila: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -692,7 +694,7 @@ export const filaInterruptorStyles = StyleSheet.create({
     borderRadius: RADIOS.md,
     borderWidth: 1.5,
     borderColor: COLORES.bordeCampo,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   texto: {
     flex: 1,
@@ -700,10 +702,10 @@ export const filaInterruptorStyles = StyleSheet.create({
     fontSize: 15,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── EtiquetaCampo (título encima de un grupo de opciones en formularios) ───
-export const etiquetaCampoStyles = StyleSheet.create({
+export const useEtiquetaCampoStyles = crearEstilos((COLORES) => ({
   grupo: {
     gap: 10,
   },
@@ -723,10 +725,10 @@ export const etiquetaCampoStyles = StyleSheet.create({
     fontSize: 12.5,
     color: COLORES.error,
   },
-});
+}));
 
 // ─── ResultadoSolicitud ───
-export const resultadoSolicitudStyles = StyleSheet.create({
+export const useResultadoSolicitudStyles = crearEstilos((COLORES) => ({
   contenedor: {
     alignItems: 'center',
     gap: 10,
@@ -750,16 +752,16 @@ export const resultadoSolicitudStyles = StyleSheet.create({
     alignSelf: 'stretch',
     marginTop: 18,
   },
-});
+}));
 
 // ─── IndicadorNumero ───
-export const indicadorNumeroStyles = StyleSheet.create({
+export const useIndicadorNumeroStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flex: 1,
     gap: 6,
     padding: 14,
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 6px 18px rgba(11, 59, 53, 0.08)',
   },
   cabecera: {
@@ -779,10 +781,10 @@ export const indicadorNumeroStyles = StyleSheet.create({
     fontSize: 26,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── BarraProgreso ───
-export const barraProgresoStyles = StyleSheet.create({
+export const useBarraProgresoStyles = crearEstilos((COLORES) => ({
   fondo: {
     height: 6,
     borderRadius: 3,
@@ -793,10 +795,10 @@ export const barraProgresoStyles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
   },
-});
+}));
 
 // ─── MiniGraficoBarras ───
-export const miniGraficoStyles = StyleSheet.create({
+export const useMiniGraficoStyles = crearEstilos((COLORES) => ({
   contenedor: {
     flexDirection: 'row',
     alignItems: 'flex-end',
@@ -824,10 +826,10 @@ export const miniGraficoStyles = StyleSheet.create({
     fontFamily: FUENTES.extrabold,
     color: COLORES.primarioOscuro,
   },
-});
+}));
 
 // ─── TarjetaAccion ───
-export const tarjetaAccionStyles = StyleSheet.create({
+export const useTarjetaAccionStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -853,10 +855,10 @@ export const tarjetaAccionStyles = StyleSheet.create({
     fontSize: 12.5,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── ModalTexto ───
-export const modalTextoStyles = StyleSheet.create({
+export const useModalTextoStyles = crearEstilos((COLORES) => ({
   fondo: {
     flex: 1,
     justifyContent: 'center',
@@ -870,7 +872,7 @@ export const modalTextoStyles = StyleSheet.create({
     gap: 12,
     padding: 20,
     borderRadius: RADIOS.lg,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   titulo: {
     fontFamily: FUENTES.extrabold,
@@ -900,17 +902,17 @@ export const modalTextoStyles = StyleSheet.create({
     justifyContent: 'flex-end',
     gap: 8,
   },
-});
+}));
 
 // ─── TarjetaCitaGestion ───
-export const tarjetaCitaGestionStyles = StyleSheet.create({
+export const useTarjetaCitaGestionStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     gap: 10,
     padding: 14,
     borderRadius: RADIOS.md,
     borderWidth: 1,
     borderColor: COLORES.borde,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   presionada: {
     opacity: 0.85,
@@ -970,20 +972,20 @@ export const tarjetaCitaGestionStyles = StyleSheet.create({
     right: 12,
     bottom: 12,
   },
-});
+}));
 
 // ─── Listas agrupadas (agendas, pacientes, solicitudes) ───
-export const listaGruposStyles = StyleSheet.create({
+export const useListaGruposStyles = crearEstilos(() => ({
   contenedor: {
     gap: 22,
   },
   grupo: {
     gap: 12,
   },
-});
+}));
 
 // ─── IndicadorPastel ───
-export const indicadorPastelStyles = StyleSheet.create({
+export const useIndicadorPastelStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flex: 1,
     gap: 2,
@@ -1005,21 +1007,21 @@ export const indicadorPastelStyles = StyleSheet.create({
     fontSize: 13,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── AvatarPersona ───
-export const avatarPersonaStyles = StyleSheet.create({
+export const useAvatarPersonaStyles = crearEstilos((COLORES) => ({
   foto: {
     backgroundColor: COLORES.primarioSuave,
   },
   borde: {
     borderWidth: 2,
-    borderColor: COLORES.blanco,
+    borderColor: COLORES.superficie,
   },
-});
+}));
 
 // ─── FilaAvatares ───
-export const filaAvataresStyles = StyleSheet.create({
+export const useFilaAvataresStyles = crearEstilos((COLORES) => ({
   fila: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1032,17 +1034,17 @@ export const filaAvataresStyles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: COLORES.primarioSuave,
     borderWidth: 2,
-    borderColor: COLORES.blanco,
+    borderColor: COLORES.superficie,
   },
   masTexto: {
     fontFamily: FUENTES.bold,
     fontSize: 11,
     color: COLORES.primarioOscuro,
   },
-});
+}));
 
 // ─── IndicadorPasos ───
-export const indicadorPasosStyles = StyleSheet.create({
+export const useIndicadorPasosStyles = crearEstilos((COLORES) => ({
   contenedor: {
     alignItems: 'center',
     gap: 8,
@@ -1070,10 +1072,10 @@ export const indicadorPasosStyles = StyleSheet.create({
     fontFamily: FUENTES.bold,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── ChipIcono ───
-export const chipIconoStyles = StyleSheet.create({
+export const useChipIconoStyles = crearEstilos((COLORES) => ({
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1083,7 +1085,7 @@ export const chipIconoStyles = StyleSheet.create({
     borderRadius: 18,
     borderWidth: 1,
     borderColor: COLORES.bordeCampo,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   activo: {
     borderColor: COLORES.primario,
@@ -1096,10 +1098,10 @@ export const chipIconoStyles = StyleSheet.create({
     fontFamily: FUENTES.semibold,
     fontSize: 13.5,
   },
-});
+}));
 
 // ─── ControlSegmentado ───
-export const controlSegmentadoStyles = StyleSheet.create({
+export const useControlSegmentadoStyles = crearEstilos((COLORES) => ({
   contenedor: {
     flexDirection: 'row',
     alignSelf: 'center',
@@ -1125,10 +1127,10 @@ export const controlSegmentadoStyles = StyleSheet.create({
   textoActivo: {
     color: COLORES.blanco,
   },
-});
+}));
 
 // ─── HojaInferior ───
-export const hojaInferiorStyles = StyleSheet.create({
+export const useHojaInferiorStyles = crearEstilos((COLORES) => ({
   fondo: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -1147,7 +1149,7 @@ export const hojaInferiorStyles = StyleSheet.create({
     paddingTop: 10,
     borderTopLeftRadius: RADIOS.xl,
     borderTopRightRadius: RADIOS.xl,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   agarre: {
     alignSelf: 'center',
@@ -1162,10 +1164,10 @@ export const hojaInferiorStyles = StyleSheet.create({
     color: COLORES.texto,
     textAlign: 'center',
   },
-});
+}));
 
 // ─── OpcionHoja ───
-export const opcionHojaStyles = StyleSheet.create({
+export const useOpcionHojaStyles = crearEstilos((COLORES) => ({
   opcion: {
     flex: 1,
     minHeight: 64,
@@ -1202,15 +1204,15 @@ export const opcionHojaStyles = StyleSheet.create({
   textoPeligro: {
     color: COLORES.blanco,
   },
-});
+}));
 
 // ─── TarjetaListaIconos ───
-export const tarjetaListaIconosStyles = StyleSheet.create({
+export const useTarjetaListaIconosStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     gap: 10,
     padding: 16,
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     borderWidth: 1,
     borderColor: COLORES.borde,
   },
@@ -1231,10 +1233,10 @@ export const tarjetaListaIconosStyles = StyleSheet.create({
     lineHeight: 20,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── TarjetaAviso ───
-export const tarjetaAvisoStyles = StyleSheet.create({
+export const useTarjetaAvisoStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -1264,10 +1266,10 @@ export const tarjetaAvisoStyles = StyleSheet.create({
   textoCentrado: {
     textAlign: 'center',
   },
-});
+}));
 
 // ─── Casilla ───
-export const casillaStyles = StyleSheet.create({
+export const useCasillaStyles = crearEstilos((COLORES) => ({
   fila: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1282,7 +1284,7 @@ export const casillaStyles = StyleSheet.create({
     borderRadius: 7,
     borderWidth: 1.5,
     borderColor: COLORES.textoSecundario,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   cajaMarcada: {
     borderColor: COLORES.primario,
@@ -1295,10 +1297,10 @@ export const casillaStyles = StyleSheet.create({
     lineHeight: 20,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── LineaEstados ───
-export const lineaEstadosStyles = StyleSheet.create({
+export const useLineaEstadosStyles = crearEstilos((COLORES) => ({
   paso: {
     flexDirection: 'row',
     gap: 14,
@@ -1320,7 +1322,7 @@ export const lineaEstadosStyles = StyleSheet.create({
   actual: {
     borderWidth: 3,
     borderColor: COLORES.primario,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   pendiente: {
     backgroundColor: COLORES.borde,
@@ -1354,10 +1356,10 @@ export const lineaEstadosStyles = StyleSheet.create({
   textoPendiente: {
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── AvisoSinConexion ───
-export const avisoSinConexionStyles = StyleSheet.create({
+export const useAvisoSinConexionStyles = crearEstilos((COLORES) => ({
   franja: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1379,10 +1381,10 @@ export const avisoSinConexionStyles = StyleSheet.create({
     fontSize: 14,
     color: COLORES.primario,
   },
-});
+}));
 
 // ─── EstadoBorrador ───
-export const estadoBorradorStyles = StyleSheet.create({
+export const useEstadoBorradorStyles = crearEstilos((COLORES) => ({
   fila: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1394,10 +1396,10 @@ export const estadoBorradorStyles = StyleSheet.create({
     fontSize: 13,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── BotonAgregar ───
-export const botonAgregarStyles = StyleSheet.create({
+export const useBotonAgregarStyles = crearEstilos((COLORES) => ({
   boton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1418,27 +1420,27 @@ export const botonAgregarStyles = StyleSheet.create({
     fontSize: 15,
     color: COLORES.primario,
   },
-});
+}));
 
 // ─── ChipsOpcion (una opción, con ícono opcional; usa el mismo chip que ChipIcono) ───
-export const chipsOpcionStyles = StyleSheet.create({
+export const useChipsOpcionStyles = crearEstilos(() => ({
   contenedor: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
   },
-});
+}));
 
 // ─── FilaChipsIcono ───
-export const filaChipsIconoStyles = StyleSheet.create({
+export const useFilaChipsIconoStyles = crearEstilos(() => ({
   contenido: {
     gap: 8,
     paddingRight: 4,
   },
-});
+}));
 
 // ─── HojaContacto ───
-export const hojaContactoStyles = StyleSheet.create({
+export const useHojaContactoStyles = crearEstilos((COLORES) => ({
   fila: {
     flexDirection: 'row',
     gap: 10,
@@ -1449,18 +1451,18 @@ export const hojaContactoStyles = StyleSheet.create({
     color: COLORES.textoSecundario,
     textAlign: 'center',
   },
-});
+}));
 
 // ─── HojaElegirFoto ───
-export const hojaElegirFotoStyles = StyleSheet.create({
+export const useHojaElegirFotoStyles = crearEstilos(() => ({
   fila: {
     flexDirection: 'row',
     gap: 10,
   },
-});
+}));
 
 // ─── ContadorNumero (peso de la atención, cupos del refugio) ───
-export const contadorNumeroStyles = StyleSheet.create({
+export const useContadorNumeroStyles = crearEstilos((COLORES) => ({
   fila: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1474,7 +1476,7 @@ export const contadorNumeroStyles = StyleSheet.create({
     borderRadius: RADIOS.md,
     borderWidth: 1.5,
     borderColor: COLORES.bordeCampo,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   deshabilitado: {
     opacity: 0.4,
@@ -1485,8 +1487,158 @@ export const contadorNumeroStyles = StyleSheet.create({
     color: COLORES.texto,
   },
   valor: {
+    flex: 1,
+    marginHorizontal: 10,
     fontFamily: FUENTES.extrabold,
     fontSize: 30,
     color: COLORES.texto,
+    textAlign: 'center',
   },
-});
+}));
+
+// ─── TarjetaProgreso ("Completa tu perfil": veterinario y centro) ───
+export const useTarjetaProgresoStyles = crearEstilos((COLORES) => ({
+  tarjeta: {
+    gap: 12,
+    padding: 16,
+    borderRadius: RADIOS.lg,
+    borderWidth: 1,
+    borderColor: COLORES.borde,
+    backgroundColor: COLORES.superficie,
+  },
+  titulo: {
+    fontFamily: FUENTES.bold,
+    fontSize: 16,
+    color: COLORES.texto,
+  },
+  porcentaje: {
+    fontFamily: FUENTES.semibold,
+    fontSize: 13.5,
+    color: COLORES.primarioOscuro,
+  },
+  paso: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    minHeight: 48,
+    paddingHorizontal: 12,
+    borderRadius: RADIOS.sm,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    borderColor: COLORES.bordeCampo,
+  },
+  pasoPresionado: {
+    backgroundColor: COLORES.primarioSuave,
+  },
+  pasoTexto: {
+    flex: 1,
+    fontFamily: FUENTES.semibold,
+    fontSize: 14,
+    color: COLORES.texto,
+  },
+}));
+
+// ─── CampoHora ("09:30") ───
+export const useCampoHoraStyles = crearEstilos((COLORES) => ({
+  contenedor: {
+    flex: 1,
+    gap: 4,
+  },
+  etiqueta: {
+    fontFamily: FUENTES.medium,
+    fontSize: 12,
+    color: COLORES.textoSecundario,
+  },
+  input: {
+    minHeight: 44,
+    paddingHorizontal: 12,
+    borderRadius: RADIOS.sm,
+    borderWidth: 1.5,
+    borderColor: COLORES.bordeCampo,
+    backgroundColor: COLORES.superficie,
+    fontFamily: FUENTES.semibold,
+    fontSize: 16,
+    color: COLORES.texto,
+  },
+  deshabilitado: {
+    opacity: 0.45,
+  },
+}));
+
+// ─── AvisosCitas (Inicio del dueño y Resumen del centro) ───
+export const useAvisosCitasStyles = crearEstilos((COLORES) => ({
+  contenedor: {
+    gap: 8,
+  },
+  encabezado: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  titulo: {
+    fontFamily: FUENTES.bold,
+    fontSize: 16,
+    color: COLORES.texto,
+  },
+  contador: {
+    minWidth: 22,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: 11,
+    backgroundColor: COLORES.coral,
+    fontFamily: FUENTES.bold,
+    fontSize: 12,
+    color: COLORES.blanco,
+    textAlign: 'center',
+    overflow: 'hidden',
+  },
+  todos: {
+    marginLeft: 'auto',
+  },
+  link: {
+    fontFamily: FUENTES.semibold,
+    fontSize: 13,
+    color: COLORES.primario,
+  },
+  aviso: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    padding: 14,
+    borderRadius: RADIOS.md,
+    borderLeftWidth: 4,
+    backgroundColor: COLORES.superficie,
+  },
+  reagendada: {
+    borderLeftColor: COLORES.primario,
+  },
+  cancelada: {
+    borderLeftColor: COLORES.peligro,
+  },
+  cuerpo: {
+    flex: 1,
+    gap: 4,
+  },
+  avisoTitulo: {
+    fontFamily: FUENTES.bold,
+    fontSize: 14.5,
+    color: COLORES.texto,
+  },
+  fechas: {
+    fontFamily: FUENTES.semibold,
+    fontSize: 13,
+  },
+  anterior: {
+    color: COLORES.textoSecundario,
+    textDecorationLine: 'line-through',
+  },
+  nueva: {
+    color: COLORES.primarioOscuro,
+  },
+  mensaje: {
+    fontFamily: FUENTES.medium,
+    fontSize: 13.5,
+    lineHeight: 19,
+    color: COLORES.textoSecundario,
+  },
+}));

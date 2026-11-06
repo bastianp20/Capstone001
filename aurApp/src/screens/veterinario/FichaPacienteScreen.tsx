@@ -12,7 +12,6 @@ import { Etiqueta } from '@/components/ui/Etiqueta';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { TituloSeccion } from '@/components/ui/TituloSeccion';
 import {
-  COLORES,
   SEXO_LABEL,
   TEXTO_SIN_REGISTRAR,
   TEXTOS_CARGA,
@@ -20,12 +19,15 @@ import {
   TEXTOS_HISTORIAL,
   TEXTOS_VETERINARIO,
 } from '@/constants/constants';
-import { fichaPacienteStyles as styles } from '@/css/VeterinarioPage';
+import { useFichaPacienteStyles } from '@/css/VeterinarioPage';
 import { useFichaPaciente } from '@/hooks/useFichaPaciente';
 import { formatFechaLarga } from '@/lib/fechas';
 import { formatearPeso } from '@/lib/formatos';
+import { useColores } from '@/context/TemaContext';
 
 export default function FichaPacienteScreen() {
+  const COLORES = useColores();
+  const styles = useFichaPacienteStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const f = useFichaPaciente(Number(id));
   const m = f.ficha?.mascota;

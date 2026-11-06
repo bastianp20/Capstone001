@@ -5,6 +5,7 @@ import { agregarRegistroAtencion, actualizarPesoPaciente } from '@/Api/postInfo'
 import { PASO_PESO_KG, TEXTOS_REGISTRO_ATENCION as T } from '@/constants/constants';
 import { useVeterinario } from '@/context/VeterinarioContext';
 import type { DatosRegistroAtencion } from '@/interfaces';
+import { redondearAlPaso } from '@/lib/formatos';
 import { formatFechaChilena, hoy, parsearFechaChilena } from '@/lib/fechas';
 import { esErrorDeRed } from '@/lib/red';
 
@@ -23,7 +24,7 @@ export function useRegistrarAtencion(citaId: number, pesoActual: number | null) 
   const [sinConexion, setSinConexion] = useState(false);
 
   const peso = b.valor.pesoKg ?? pesoActual;
-  const cambiarPeso = (nuevo: number) => b.cambiar({ pesoKg: Math.max(0, Math.round(nuevo / PASO_PESO_KG) * PASO_PESO_KG) });
+  const cambiarPeso = (nuevo: number) => b.cambiar({ pesoKg: Math.max(0, redondearAlPaso(nuevo, PASO_PESO_KG)) });
 
   const guardar = async () => {
     if (!cita) return;

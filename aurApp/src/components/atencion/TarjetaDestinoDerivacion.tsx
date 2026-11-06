@@ -2,12 +2,16 @@ import { Pressable, Text, View } from 'react-native';
 
 import { AvatarPersona } from '@/components/ui/AvatarPersona';
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, MAX_CHIPS_DESTINO, TEXTOS_DERIVAR_ATENCION as T, TONOS_ESPECIALIDADES, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaDestinoDerivacionStyles as styles } from '@/css/DerivarPage';
+import { MAX_CHIPS_DESTINO, TEXTOS_DERIVAR_ATENCION as T, TONOS_ESPECIALIDADES } from '@/constants/constants';
+import { useTarjetaDestinoDerivacionStyles } from '@/css/DerivarPage';
 import type { TarjetaDestinoDerivacionProps } from '@/interfaces';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 /** Un colega (con su foto y dónde atiende) o un centro, con sus especialidades. */
 export function TarjetaDestinoDerivacion({ destino: d, seleccionado, onPress }: TarjetaDestinoDerivacionProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaDestinoDerivacionStyles();
   const esVet = d.tipo === 'veterinario';
   const chips = esVet ? d.detalle.split(',').map((x) => x.trim()).filter(Boolean).slice(0, MAX_CHIPS_DESTINO) : [];
   const lugar = esVet ? (d.lugar ?? T.independiente) : d.detalle;

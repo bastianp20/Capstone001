@@ -4,13 +4,16 @@ import { Text, View } from 'react-native';
 import { EnlaceTexto } from '@/components/formulario/EnlaceTexto';
 import { BotonPequeno } from '@/components/ui/BotonPequeno';
 import { Etiqueta } from '@/components/ui/Etiqueta';
-import { COLORES, TEXTOS_MENSAJES as T } from '@/constants/constants';
-import { tarjetaSuperadminStyles as styles } from '@/css/SuperadminPage';
+import { TEXTOS_MENSAJES as T } from '@/constants/constants';
+import { useTarjetaSuperadminStyles } from '@/css/SuperadminPage';
 import type { TarjetaMensajeProps } from '@/interfaces';
 import { formatFechaHoraCita } from '@/lib/fechas';
+import { useColores } from '@/context/TemaContext';
 
 /** Mensaje del formulario de contacto: se despliega para leerlo y responderlo. */
 export function TarjetaMensaje({ mensaje: m, ocupado, onResponder, onCambiarEstado }: TarjetaMensajeProps) {
+  const COLORES = useColores();
+  const styles = useTarjetaSuperadminStyles();
   const [abierto, setAbierto] = useState(false);
   return (
     <View style={styles.tarjeta}>

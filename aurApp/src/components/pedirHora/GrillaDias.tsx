@@ -1,10 +1,11 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { grillaDiasStyles as styles } from '@/css/PedirHoraPage';
+import { useGrillaDiasStyles } from '@/css/PedirHoraPage';
 import type { GrillaDiasProps } from '@/interfaces';
 
 /** Días disponibles en grilla (sin scroll horizontal, que en Android daba problemas). */
 export function GrillaDias({ dias, seleccionado, onElegir }: GrillaDiasProps) {
+  const styles = useGrillaDiasStyles();
   return (
     <View style={styles.grilla}>
       {dias.map((d) => {

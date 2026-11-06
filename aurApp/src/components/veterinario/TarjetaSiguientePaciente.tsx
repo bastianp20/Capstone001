@@ -3,13 +3,16 @@ import { Text, View } from 'react-native';
 import { AvatarMascota } from '@/components/ui/AvatarMascota';
 import { BotonPequeno } from '@/components/ui/BotonPequeno';
 import { Etiqueta } from '@/components/ui/Etiqueta';
-import { COLORES, ESPECIE_LABEL, TEXTOS_VETERINARIO as T } from '@/constants/constants';
-import { tarjetaSiguientePacienteStyles as styles } from '@/css/VeterinarioPage';
+import { ESPECIE_LABEL, TEXTOS_VETERINARIO as T } from '@/constants/constants';
+import { useTarjetaSiguientePacienteStyles } from '@/css/VeterinarioPage';
 import type { TarjetaSiguientePacienteProps } from '@/interfaces';
 import { edadDesde, partesFechaCita } from '@/lib/fechas';
+import { useColores } from '@/context/TemaContext';
 
 /** La cita que viene (o la que está en curso), con acceso a la ficha y al botón de atención. */
 export function TarjetaSiguientePaciente({ cita, ocupado, onVerFicha, onIniciar, onAbrirAtencion }: TarjetaSiguientePacienteProps) {
+  const COLORES = useColores();
+  const styles = useTarjetaSiguientePacienteStyles();
   const descripcion = [cita.raza || (cita.especie ? ESPECIE_LABEL[cita.especie] : null), edadDesde(cita.fechaNacimiento)]
     .filter(Boolean)
     .join(', ');

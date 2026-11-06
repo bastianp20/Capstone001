@@ -2,7 +2,7 @@ import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HUELLAS_ENCABEZADO_PAGINA } from '@/constants/constants';
-import { encabezadoPaginaStyles as styles } from '@/css/Compartido';
+import { useEncabezadoPaginaStyles } from '@/css/Compartido';
 import type { EncabezadoPaginaProps } from '@/interfaces';
 
 import { BotonIcono } from './BotonIcono';
@@ -10,6 +10,7 @@ import { EncabezadoVerde } from './EncabezadoVerde';
 
 /** Encabezado verde compacto con la onda: lo usan Citas, Historial, Perfil y los formularios. */
 export function EncabezadoPagina({ titulo, subtitulo, onVolver, accion, children, centrado }: EncabezadoPaginaProps) {
+  const styles = useEncabezadoPaginaStyles();
   const insets = useSafeAreaInsets();
 
   return (

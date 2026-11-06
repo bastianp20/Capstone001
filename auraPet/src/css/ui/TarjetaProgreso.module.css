@@ -1,0 +1,92 @@
+/* Tarjeta "Completa tu perfil" (components/ui/TarjetaProgreso.tsx).
+   Veterinario y centro. Modo oscuro por los tokens de theme.css. */
+@import '../theme.css';
+
+.tarjeta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 18px;
+  padding: 18px 20px;
+  border: 1px solid var(--color-terciario-borde);
+  border-radius: 12px;
+  background: var(--color-superficie);
+  color: var(--color-terciario-texto);
+}
+
+.titulo {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.porcentaje {
+  margin: 4px 0 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-primario-texto);
+}
+
+.barra {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-terciario-borde);
+  overflow: hidden;
+}
+
+.relleno {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-primario);
+  transition: width 0.3s ease;
+}
+
+.ayuda {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--color-terciario-texto-muted);
+}
+
+.pasos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.paso {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px dashed var(--color-borde-fuerte);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--color-terciario-texto);
+  font-family: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.paso:hover {
+  border-style: solid;
+  border-color: var(--color-primario);
+  background: var(--color-secundario);
+}
+
+.paso span {
+  flex: 1;
+}
+
+@media (max-width: 760px) {
+  .tarjeta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

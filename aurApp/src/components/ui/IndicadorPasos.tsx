@@ -1,10 +1,11 @@
 import { Text, View } from 'react-native';
 
-import { indicadorPasosStyles as styles } from '@/css/Compartido';
+import { useIndicadorPasosStyles } from '@/css/Compartido';
 import type { IndicadorPasosProps } from '@/interfaces';
 
 /** Barras finas por paso y sus nombres: "Mascota · Dónde · Día y hora". */
 export function IndicadorPasos({ pasos, actual }: IndicadorPasosProps) {
+  const styles = useIndicadorPasosStyles();
   return (
     <View style={styles.contenedor} accessibilityRole="progressbar" accessibilityValue={{ min: 1, max: pasos.length, now: actual + 1 }}>
       <View style={styles.barras}>

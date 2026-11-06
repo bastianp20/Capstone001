@@ -1,12 +1,16 @@
 import { Pressable, Text, View } from 'react-native';
 
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, TEXTOS_ATENCION as T, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaAccionAtencionStyles as styles } from '@/css/AtencionPage';
+import { TEXTOS_ATENCION as T } from '@/constants/constants';
+import { useTarjetaAccionAtencionStyles } from '@/css/AtencionPage';
 import type { TarjetaAccionAtencionProps } from '@/interfaces';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 /** Tarjeta grande y táctil: Registrar atención, Receta o Derivar, con "✓ Hecho" cuando corresponde. */
 export function TarjetaAccionAtencion({ icono, tono, titulo, detalle, hecho, onPress }: TarjetaAccionAtencionProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaAccionAtencionStyles();
   const colores = TONOS_TARJETA[tono];
   return (
     <Pressable

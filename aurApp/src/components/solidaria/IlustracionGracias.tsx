@@ -1,9 +1,10 @@
 import Svg, { Circle, Ellipse, Path, Rect } from 'react-native-svg';
-
-import { COLORES, TONOS_TARJETA } from '@/constants/constants';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 /** Perrito feliz con un corazón y confeti (confirmación de una atención solidaria). */
 export function IlustracionGracias() {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
   const linea = COLORES.primarioOscuro;
   return (
     <Svg width={150} height={130} viewBox="0 0 150 130" accessibilityElementsHidden>

@@ -1,8 +1,7 @@
-import { StyleSheet } from 'react-native';
-
+import { crearEstilos } from './crearEstilos';
 // ─── FormularioMascota ───
-export const formularioMascotaStyles = StyleSheet.create({
+export const useFormularioMascotaStyles = crearEstilos(() => ({
   formulario: {
     gap: 16,
   },
-});
+}));

@@ -1,13 +1,14 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { COLORES, ETIQUETAS_ESTADO_CITA, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaCitaGestionStyles as styles } from '@/css/Compartido';
+import { ETIQUETAS_ESTADO_CITA } from '@/constants/constants';
+import { useTarjetaCitaGestionStyles } from '@/css/Compartido';
 import type { TarjetaCitaGestionProps } from '@/interfaces';
 import { formatFechaHoraCita, partesFechaCita } from '@/lib/fechas';
 
 import { AvatarMascota } from './AvatarMascota';
 import { Etiqueta } from './Etiqueta';
 import { Icono } from './Icono';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 /** Cita vista por quien atiende (veterinario o centro): mascota, dueño, motivo, estado y acciones. */
 export function TarjetaCitaGestion({
@@ -26,6 +27,9 @@ export function TarjetaCitaGestion({
   acciones,
   onPress,
 }: TarjetaCitaGestionProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaCitaGestionStyles();
   const colorEstado = COLORES.estados[estado];
   const fondo = tono ? { backgroundColor: TONOS_TARJETA[tono].fondo, borderColor: TONOS_TARJETA[tono].iconoFondo } : null;
 

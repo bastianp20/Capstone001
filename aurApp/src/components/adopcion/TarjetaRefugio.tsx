@@ -4,13 +4,16 @@ import { Text, View } from 'react-native';
 import { BarraProgreso } from '@/components/ui/BarraProgreso';
 import { BotonPequeno } from '@/components/ui/BotonPequeno';
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, ESTILO_RECEPCION_REFUGIO, TEXTOS_REFUGIOS as T } from '@/constants/constants';
-import { tarjetaRefugioStyles as styles } from '@/css/AdoptaPage';
+import { ESTILO_RECEPCION_REFUGIO, TEXTOS_REFUGIOS as T } from '@/constants/constants';
+import { useTarjetaRefugioStyles } from '@/css/AdoptaPage';
 import type { TarjetaRefugioProps } from '@/interfaces';
 import { ocupacionRefugio } from '@/lib/adopcion';
+import { useColores } from '@/context/TemaContext';
 
 /** Un refugio verificado: portada, logo, si recibe animales, sus cupos y cómo ayudar. */
 export function TarjetaRefugio({ refugio: r, onVerAnimales, onContactar }: TarjetaRefugioProps) {
+  const COLORES = useColores();
+  const styles = useTarjetaRefugioStyles();
   const recepcion = ESTILO_RECEPCION_REFUGIO[r.recibe];
   const ocupacion = ocupacionRefugio(r);
   return (

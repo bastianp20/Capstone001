@@ -1,12 +1,15 @@
 import { Pressable, Text } from 'react-native';
 
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, TEXTOS_INICIO } from '@/constants/constants';
+import { TEXTOS_INICIO } from '@/constants/constants';
 import type { BotonPedirHoraProps } from '@/interfaces';
 
-import { botonPedirHoraStyles as styles } from '@/css/InicioPage';
+import { useBotonPedirHoraStyles } from '@/css/InicioPage';
+import { useColores } from '@/context/TemaContext';
 
 export function BotonPedirHora({ onPress }: BotonPedirHoraProps) {
+  const COLORES = useColores();
+  const styles = useBotonPedirHoraStyles();
   return (
     <Pressable
       onPress={onPress}

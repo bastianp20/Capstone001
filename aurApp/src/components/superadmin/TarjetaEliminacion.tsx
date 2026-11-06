@@ -2,15 +2,18 @@ import { Text, View } from 'react-native';
 
 import { BotonPequeno } from '@/components/ui/BotonPequeno';
 import { Etiqueta } from '@/components/ui/Etiqueta';
-import { COLORES, ESTADO_ELIMINACION_LABEL, TEXTOS_ELIMINACIONES as T } from '@/constants/constants';
-import { tarjetaSuperadminStyles as styles } from '@/css/SuperadminPage';
-import type { TarjetaEliminacionProps } from '@/interfaces';
+import { ESTADO_ELIMINACION_LABEL, TEXTOS_ELIMINACIONES as T } from '@/constants/constants';
+import { useTarjetaSuperadminStyles } from '@/css/SuperadminPage';
+import type { Paleta, TarjetaEliminacionProps } from '@/interfaces';
 import { formatFechaHoraCita } from '@/lib/fechas';
 import { capitalizar } from '@/lib/texto';
+import { useColores } from '@/context/TemaContext';
 
-const COLOR = { pendiente: COLORES.estados.pendiente, aprobada: COLORES.estados.completada, rechazada: COLORES.estados.cancelada } as const;
+const colorEstado = (c: Paleta) => ({ pendiente: c.estados.pendiente, aprobada: c.estados.completada, rechazada: c.estados.cancelada });
 
 export function TarjetaEliminacion({ solicitud: e, ocupado, onAprobar, onRechazar }: TarjetaEliminacionProps) {
+  const styles = useTarjetaSuperadminStyles();
+  const COLOR = colorEstado(useColores());
   return (
     <View style={styles.tarjeta}>
       <View style={styles.cabecera}>

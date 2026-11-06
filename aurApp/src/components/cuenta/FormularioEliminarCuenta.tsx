@@ -7,14 +7,20 @@ import { ChipsMultiples } from '@/components/ui/ChipsMultiples';
 import { GrupoCampo } from '@/components/ui/GrupoCampo';
 import { TarjetaAviso } from '@/components/ui/TarjetaAviso';
 import { TarjetaListaIconos } from '@/components/ui/TarjetaListaIconos';
-import { MAX_COMENTARIO_ELIMINACION, MOTIVOS_ELIMINACION, QUE_PASA_ELIMINAR, TEXTOS_ELIMINAR_CUENTA as T } from '@/constants/constants';
-import { eliminarCuentaStyles as styles } from '@/css/CuentaPage';
+import {
+  MAX_COMENTARIO_ELIMINACION,
+  MOTIVOS_ELIMINACION,
+  QUE_PASA_ELIMINAR,
+  TEXTOS_ELIMINAR_CUENTA as T,
+} from '@/constants/constants';
+import { useEliminarCuentaStyles } from '@/css/CuentaPage';
 import type { FormularioEliminarCuentaProps } from '@/interfaces';
 
 import { IlustracionDespedida } from './IlustracionDespedida';
 
 /** Qué pasa, qué se conserva, por qué se va (opcional) y "entiendo". */
 export function FormularioEliminarCuenta({ motivos, onMotivo, comentario, onComentario, entiende, onEntiende, rechazoAnterior }: FormularioEliminarCuentaProps) {
+  const styles = useEliminarCuentaStyles();
   return (
     <View style={styles.formulario}>
       <View style={styles.cabecera}>

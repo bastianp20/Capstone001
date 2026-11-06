@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { UrgenciasScreen } from './screens/Urgencias/UrgenciasScreen';
 import { useAuth } from './Auth/AuthContext';
 import { LoginRol } from './screens/Login/LoginRol';
 import { NuevaPasswordScreen } from './screens/Login/NuevaPasswordScreen';
@@ -19,7 +20,7 @@ import { PostularRefugioScreen } from './screens/Adopciones/PostularRefugioScree
 import { RefugiosScreen } from './screens/Adopciones/RefugiosScreen';
 import { RutaProtegida } from './components/rutas/RutaProtegida';
 import { SoloSinSesion } from './components/rutas/SoloSinSesion';
-import { RUTA_ADOPTA, RUTA_POSTULAR_REFUGIO, RUTA_PUBLICAR_ADOPCION, RUTA_REFUGIOS, RUTA_SUMATE_REFUGIO, RUTA_NUEVA_PASSWORD, RUTA_PANEL, RUTA_SOLICITAR_CENTRO } from './constants';
+import { RUTA_ADOPTA, RUTA_URGENCIAS, RUTA_POSTULAR_REFUGIO, RUTA_PUBLICAR_ADOPCION, RUTA_REFUGIOS, RUTA_SUMATE_REFUGIO, RUTA_NUEVA_PASSWORD, RUTA_PANEL, RUTA_SOLICITAR_CENTRO } from './constants';
 
 export const App = () => {
   const { usuarioActual, cargando, enRecuperacion } = useAuth();
@@ -51,6 +52,7 @@ export const App = () => {
 
       {/* Adopción: pública para todos, con o sin sesión (misma NavBar y Footer) */}
       <Route element={<Layout />}>
+        <Route path={RUTA_URGENCIAS} element={<UrgenciasScreen />} />
         <Route path={RUTA_ADOPTA} element={<AdopcionScreen />} />
         <Route path={RUTA_PUBLICAR_ADOPCION} element={<PublicarAdopcionScreen />} />
         <Route path={RUTA_REFUGIOS} element={<RefugiosScreen />} />

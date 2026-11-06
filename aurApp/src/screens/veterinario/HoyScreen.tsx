@@ -5,6 +5,7 @@ import { EnlaceTexto } from '@/components/formulario/EnlaceTexto';
 import { MensajeFormulario } from '@/components/formulario/MensajeFormulario';
 import { AccionesCitaVeterinario } from '@/components/veterinario/AccionesCitaVeterinario';
 import { AgendaDelDia } from '@/components/veterinario/AgendaDelDia';
+import { ProgresoPerfilVeterinario } from '@/components/veterinario/ProgresoPerfilVeterinario';
 import { TarjetaSiguientePaciente } from '@/components/veterinario/TarjetaSiguientePaciente';
 import { AvatarIniciales } from '@/components/ui/AvatarIniciales';
 import { EncabezadoPagina } from '@/components/ui/EncabezadoPagina';
@@ -16,15 +17,18 @@ import { PantallaLista } from '@/components/ui/PantallaLista';
 import { TarjetaAccion } from '@/components/ui/TarjetaAccion';
 import { TarjetaCitaGestion } from '@/components/ui/TarjetaCitaGestion';
 import { TituloSeccion } from '@/components/ui/TituloSeccion';
-import { COLORES, TEXTOS_CARGA, TEXTOS_VETERINARIO as T } from '@/constants/constants';
-import { hoyStyles as styles } from '@/css/VeterinarioPage';
+import { TEXTOS_CARGA, TEXTOS_VETERINARIO as T } from '@/constants/constants';
+import { useHoyStyles } from '@/css/VeterinarioPage';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
 import { useHoyVeterinario } from '@/hooks/useHoyVeterinario';
+import { useColores } from '@/context/TemaContext';
 
 const MAX_POR_CONFIRMAR = 3;
 const abrirFicha = (mascotaId: number) => router.push({ pathname: '/veterinario/paciente/[id]', params: { id: mascotaId } });
 
 export default function HoyScreen() {
+  const COLORES = useColores();
+  const styles = useHoyStyles();
   useBarraEstadoClara();
   const h = useHoyVeterinario();
   const a = h.acciones;
@@ -55,6 +59,7 @@ export default function HoyScreen() {
         {h.info.estado === 'pendiente' && <MensajeFormulario tipo="aviso" texto={T.cuentaEnRevision} />}
         {h.info.estado === 'rechazado' && <MensajeFormulario tipo="error" texto={T.cuentaRechazada} />}
         <MensajeFormulario tipo="error" texto={a.error} />
+        <ProgresoPerfilVeterinario />
 
         {h.siguiente ? (
           <TarjetaSiguientePaciente

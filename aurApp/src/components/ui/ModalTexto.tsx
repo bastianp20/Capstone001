@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Modal, Platform, Pressable, Text, TextInput, View } from 'react-native';
+import { Modal, Pressable, Text, TextInput, View } from 'react-native';
 
 import { MensajeFormulario } from '@/components/formulario/MensajeFormulario';
-import { COLORES } from '@/constants/constants';
-import { modalTextoStyles as styles } from '@/css/Compartido';
+
+import { useModalTextoStyles } from '@/css/Compartido';
+import { useAltoTeclado } from '@/hooks/useAltoTeclado';
 import type { ModalTextoProps } from '@/interfaces';
 
 import { BotonPequeno } from './BotonPequeno';
+import { useColores } from '@/context/TemaContext';
 
 /** Ventana para escribir un texto antes de una acción: motivo de rechazo, resultado, respuesta. */
 export function ModalTexto({
@@ -22,7 +24,10 @@ export function ModalTexto({
   onConfirmar,
   onCerrar,
 }: ModalTextoProps) {
+  const COLORES = useColores();
+  const styles = useModalTextoStyles();
   const [texto, setTexto] = useState('');
+  const altoTeclado = useAltoTeclado();
 
   // Cada vez que se abre, parte vacía
   useEffect(() => {
@@ -33,7 +38,7 @@ export function ModalTexto({
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCerrar}>
-      <KeyboardAvoidingView style={styles.fondo} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <View style={[styles.fondo, { paddingBottom: altoTeclado }]}>
         <Pressable style={styles.cerrarFondo} onPress={onCerrar} accessibilityLabel="Cerrar" />
         <View style={styles.tarjeta}>
           <Text style={styles.titulo}>{titulo}</Text>
@@ -62,7 +67,7 @@ export function ModalTexto({
             />
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 }

@@ -5,7 +5,7 @@ import type { RolCuenta } from '@/interfaces';
 import { estaEnPanelDelRol } from '@/lib/navegacion';
 
 /**
- * ¿Ya se pueden abrir las pantallas compartidas (Adopción, Mi refugio)?
+ * ¿Ya se pueden abrir las pantallas compartidas (Adopción, Mi refugio, Urgencias)?
  * Al iniciar sesión, el enrutador lleva a la cuenta a "la primera pantalla permitida", eligiendo
  * por orden alfabético de carpetas. Si Adopción estuviera permitida en ese momento, la elegiría
  * antes que el panel del veterinario. Por eso se habilitan recién cuando la cuenta ya está en su

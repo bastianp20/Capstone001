@@ -1,9 +1,10 @@
 import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
-
-import { COLORES, TONOS_TARJETA } from '@/constants/constants';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 /** Corazón con una huellita sobre un círculo durazno (amable, sin alarmas). */
 export function IlustracionDespedida() {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
   const durazno = TONOS_TARJETA.durazno;
   return (
     <Svg width={120} height={120} viewBox="0 0 120 120" accessibilityElementsHidden>

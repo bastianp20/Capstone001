@@ -9,11 +9,12 @@ import { SolicitudEliminacionEnviada } from '@/components/cuenta/SolicitudElimin
 import { EstadoCarga } from '@/components/ui/EstadoCarga';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { TEXTOS_ELIMINAR_CUENTA as T } from '@/constants/constants';
-import { eliminarCuentaStyles as styles } from '@/css/CuentaPage';
+import { useEliminarCuentaStyles } from '@/css/CuentaPage';
 import { useEliminarCuenta } from '@/hooks/useEliminarCuenta';
 
 /** Perfil → "Eliminar mi cuenta": pedirla o, si ya la pidió, verla en revisión y poder cancelarla. */
 export default function EliminarCuentaScreen() {
+  const styles = useEliminarCuentaStyles();
   const e = useEliminarCuenta();
 
   if (e.cargando) {

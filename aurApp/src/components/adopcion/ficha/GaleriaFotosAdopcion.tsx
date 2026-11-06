@@ -5,12 +5,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BotonIcono } from '@/components/ui/BotonIcono';
 import { Icono } from '@/components/ui/Icono';
-import { PROPORCION_GALERIA_ADOPCION, TEXTOS_FICHA_ADOPCION as T, TONOS_TARJETA } from '@/constants/constants';
-import { galeriaFotosStyles as styles } from '@/css/FichaAdopcionPage';
+import { PROPORCION_GALERIA_ADOPCION, TEXTOS_FICHA_ADOPCION as T } from '@/constants/constants';
+import { useGaleriaFotosStyles } from '@/css/FichaAdopcionPage';
 import type { GaleriaFotosAdopcionProps } from '@/interfaces';
+import { useTonosTarjeta } from '@/context/TemaContext';
 
 /** Fotos del animal a todo el ancho (se deslizan), con volver y las acciones arriba. */
 export function GaleriaFotosAdopcion({ fotos, nombre, onVolver, acciones }: GaleriaFotosAdopcionProps) {
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useGaleriaFotosStyles();
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const [actual, setActual] = useState(0);

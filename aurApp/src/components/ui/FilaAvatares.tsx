@@ -1,13 +1,14 @@
 import { Text, View } from 'react-native';
 
 import { MAX_AVATARES_FILA } from '@/constants/constants';
-import { filaAvataresStyles as styles } from '@/css/Compartido';
+import { useFilaAvataresStyles } from '@/css/Compartido';
 import type { FilaAvataresProps } from '@/interfaces';
 
 import { AvatarPersona } from './AvatarPersona';
 
 /** Caras superpuestas (los veterinarios de un centro) y "+N" si hay más. */
 export function FilaAvatares({ personas, tamano = 30, maximo = MAX_AVATARES_FILA }: FilaAvataresProps) {
+  const styles = useFilaAvataresStyles();
   const visibles = personas.slice(0, maximo);
   const resto = personas.length - visibles.length;
   return (

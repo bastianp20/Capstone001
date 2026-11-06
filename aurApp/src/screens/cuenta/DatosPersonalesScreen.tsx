@@ -5,10 +5,11 @@ import { CampoTexto } from '@/components/formulario/CampoTexto';
 import { MensajeFormulario } from '@/components/formulario/MensajeFormulario';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { TEXTOS_DATOS_PERSONALES as T } from '@/constants/constants';
-import { datosPersonalesStyles as styles } from '@/css/CuentaPage';
+import { useDatosPersonalesStyles } from '@/css/CuentaPage';
 import { useDatosPersonales } from '@/hooks/useDatosPersonales';
 
 export default function DatosPersonalesScreen() {
+  const styles = useDatosPersonalesStyles();
   const d = useDatosPersonales();
 
   return (

@@ -1,14 +1,16 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { COLORES } from '@/constants/constants';
-import { tarjetaOpcionStyles as styles } from '@/css/Compartido';
+import { useTarjetaOpcionStyles } from '@/css/Compartido';
 import type { TarjetaOpcionProps } from '@/interfaces';
 
 import { CirculoIcono } from './CirculoIcono';
 import { Icono } from './Icono';
+import { useColores } from '@/context/TemaContext';
 
 /** Opción grande que se elige con un toque (como un radio): centros al pedir hora. */
 export function TarjetaOpcion({ icono, titulo, detalle, seleccionada, onPress }: TarjetaOpcionProps) {
+  const COLORES = useColores();
+  const styles = useTarjetaOpcionStyles();
   return (
     <Pressable
       onPress={onPress}

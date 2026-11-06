@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS, SEPARACION_GRILLA_MASCOTAS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS, SEPARACION_GRILLA_MASCOTAS } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── PerfilScreen ───
-export const perfilScreenStyles = StyleSheet.create({
+export const usePerfilScreenStyles = crearEstilos((COLORES) => ({
   version: {
     fontFamily: FUENTES.medium,
     fontSize: 12,
@@ -11,10 +11,10 @@ export const perfilScreenStyles = StyleSheet.create({
     textAlign: 'center',
     marginTop: -6,
   },
-});
+}));
 
 // ─── CabeceraPerfil ───
-export const cabeceraPerfilStyles = StyleSheet.create({
+export const useCabeceraPerfilStyles = crearEstilos((COLORES) => ({
   contenedor: {
     alignItems: 'center',
     gap: 2,
@@ -26,7 +26,7 @@ export const cabeceraPerfilStyles = StyleSheet.create({
   marco: {
     borderRadius: 50,
     padding: 3,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 8px 20px rgba(11, 59, 53, 0.18)',
   },
   camara: {
@@ -39,7 +39,7 @@ export const cabeceraPerfilStyles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 17,
     borderWidth: 3,
-    borderColor: COLORES.blanco,
+    borderColor: COLORES.superficie,
     backgroundColor: COLORES.coral,
   },
   nombre: {
@@ -54,19 +54,19 @@ export const cabeceraPerfilStyles = StyleSheet.create({
     fontSize: 14,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── GrillaMascotas ───
-export const grillaMascotasStyles = StyleSheet.create({
+export const useGrillaMascotasStyles = crearEstilos(() => ({
   grilla: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: SEPARACION_GRILLA_MASCOTAS,
   },
-});
+}));
 
 // ─── TarjetaMascotaPerfil ───
-export const tarjetaMascotaPerfilStyles = StyleSheet.create({
+export const useTarjetaMascotaPerfilStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     alignItems: 'center',
     gap: 4,
@@ -88,10 +88,10 @@ export const tarjetaMascotaPerfilStyles = StyleSheet.create({
     fontSize: 12,
     color: COLORES.textoSecundario,
   },
-});
+}));
 
 // ─── TarjetaAgregarMascota ───
-export const tarjetaAgregarMascotaStyles = StyleSheet.create({
+export const useTarjetaAgregarMascotaStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -104,7 +104,7 @@ export const tarjetaAgregarMascotaStyles = StyleSheet.create({
     borderColor: COLORES.bordeCampo,
   },
   presionada: {
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   texto: {
     fontFamily: FUENTES.bold,
@@ -112,20 +112,20 @@ export const tarjetaAgregarMascotaStyles = StyleSheet.create({
     color: COLORES.texto,
     textAlign: 'center',
   },
-});
+}));
 
 // ─── MenuPerfil ───
-export const menuPerfilStyles = StyleSheet.create({
+export const useMenuPerfilStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     overflow: 'hidden',
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 6px 18px rgba(11, 59, 53, 0.08)',
   },
-});
+}));
 
 // ─── HojaFotoPerfil ───
-export const hojaFotoPerfilStyles = StyleSheet.create({
+export const useHojaFotoPerfilStyles = crearEstilos((COLORES) => ({
   vista: {
     alignSelf: 'center',
     marginBottom: 4,
@@ -161,4 +161,14 @@ export const hojaFotoPerfilStyles = StyleSheet.create({
     fontSize: 16,
     color: COLORES.texto,
   },
-});
+}));
+
+// ─── HojaApariencia ───
+export const useHojaAparienciaStyles = crearEstilos((COLORES) => ({
+  bajada: {
+    fontFamily: FUENTES.medium,
+    fontSize: 13.5,
+    lineHeight: 19,
+    color: COLORES.textoSecundario,
+  },
+}));

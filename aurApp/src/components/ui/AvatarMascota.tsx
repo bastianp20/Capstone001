@@ -1,14 +1,16 @@
 import { Image } from 'expo-image';
 import { View } from 'react-native';
 
-import { TONOS_TARJETA } from '@/constants/constants';
-import { avatarMascotaStyles as styles } from '@/css/Compartido';
+import { useAvatarMascotaStyles } from '@/css/Compartido';
 import type { AvatarMascotaProps } from '@/interfaces';
 
 import { Icono } from './Icono';
+import { useTonosTarjeta } from '@/context/TemaContext';
 
 /** Foto redonda de la mascota; sin foto, una huellita sobre color pastel. */
 export function AvatarMascota({ nombre, fotoUrl, tamano, tono = 'menta' }: AvatarMascotaProps) {
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useAvatarMascotaStyles();
   const forma = { width: tamano, height: tamano, borderRadius: tamano / 2 };
 
   if (fotoUrl) {

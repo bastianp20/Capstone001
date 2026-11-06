@@ -1,31 +1,31 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS, TONOS_TARJETA } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── ListaCitas ───
-export const listaCitasStyles = StyleSheet.create({
+export const useListaCitasStyles = crearEstilos(() => ({
   contenedor: {
     gap: 22,
   },
   grupo: {
     gap: 12,
   },
-});
+}));
 
 // ─── TarjetaCita ───
-export const tarjetaCitaStyles = StyleSheet.create({
+export const useTarjetaCitaStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   tarjeta: {
     borderRadius: RADIOS.md,
     padding: 16,
     gap: 12,
     borderWidth: 1,
     borderColor: COLORES.borde,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   detallada: {
     borderWidth: 1.5,
     borderColor: COLORES.primario,
-    backgroundColor: '#EAF7F4',
+    backgroundColor: COLORES.fondoMenta,
     boxShadow: '0 10px 24px rgba(11, 59, 53, 0.10)',
   },
   pendiente: {
@@ -84,10 +84,10 @@ export const tarjetaCitaStyles = StyleSheet.create({
     borderTopColor: 'rgba(15, 143, 128, 0.15)',
     paddingTop: 12,
   },
-});
+}));
 
 // ─── BloqueFechaCita ───
-export const bloqueFechaCitaStyles = StyleSheet.create({
+export const useBloqueFechaCitaStyles = crearEstilos((COLORES, TONOS_TARJETA) => ({
   contenedor: {
     alignItems: 'center',
     gap: 8,
@@ -120,14 +120,14 @@ export const bloqueFechaCitaStyles = StyleSheet.create({
     fontSize: 15,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── AccionesCita ───
-export const accionesCitaStyles = StyleSheet.create({
+export const useAccionesCitaStyles = crearEstilos(() => ({
   fila: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-end',
     gap: 8,
   },
-});
+}));

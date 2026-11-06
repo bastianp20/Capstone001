@@ -5,14 +5,18 @@ import { EnlaceTexto } from '@/components/formulario/EnlaceTexto';
 import { CirculoIcono } from '@/components/ui/CirculoIcono';
 import { Etiqueta } from '@/components/ui/Etiqueta';
 import { TarjetaPastel } from '@/components/ui/TarjetaPastel';
-import { COLORES, ESTILO_ITEM_HISTORIAL, TEXTOS_HISTORIAL, TONOS_TARJETA } from '@/constants/constants';
-import { itemLineaDeTiempoStyles as styles } from '@/css/HistorialPage';
+import { ESTILO_ITEM_HISTORIAL, TEXTOS_HISTORIAL } from '@/constants/constants';
+import { useItemLineaDeTiempoStyles } from '@/css/HistorialPage';
 import type { ItemLineaDeTiempoProps } from '@/interfaces';
 
 import { DetalleReceta } from './DetalleReceta';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 /** Un registro en la línea de tiempo: punto de color, ícono y tarjeta según su tipo. */
 export function ItemLineaDeTiempo({ item, mostrarMascota, ultimo }: ItemLineaDeTiempoProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useItemLineaDeTiempoStyles();
   const [recetaAbierta, setRecetaAbierta] = useState(false);
   const estilo = ESTILO_ITEM_HISTORIAL[item.tipo];
   const tono = estilo.tono ? TONOS_TARJETA[estilo.tono] : null;

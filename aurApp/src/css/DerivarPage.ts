@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── DerivarPacienteScreen ───
-export const derivarStyles = StyleSheet.create({
+export const useDerivarStyles = crearEstilos((COLORES) => ({
   cuerpo: {
     gap: 16,
   },
@@ -18,10 +18,10 @@ export const derivarStyles = StyleSheet.create({
   pie: {
     gap: 8,
   },
-});
+}));
 
 // ─── TarjetaDestinoDerivacion ───
-export const tarjetaDestinoDerivacionStyles = StyleSheet.create({
+export const useTarjetaDestinoDerivacionStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -30,7 +30,7 @@ export const tarjetaDestinoDerivacionStyles = StyleSheet.create({
     borderRadius: RADIOS.md,
     borderWidth: 1.5,
     borderColor: COLORES.borde,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   seleccionada: {
     borderWidth: 2,
@@ -87,4 +87,4 @@ export const tarjetaDestinoDerivacionStyles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: COLORES.primario,
   },
-});
+}));

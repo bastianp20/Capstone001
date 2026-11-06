@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── ResumenSuperadminScreen ───
-export const resumenSuperadminStyles = StyleSheet.create({
+export const useResumenSuperadminStyles = crearEstilos(() => ({
   grilla: {
     gap: 10,
     marginTop: -50, // se monta sobre la onda del encabezado
@@ -15,15 +15,15 @@ export const resumenSuperadminStyles = StyleSheet.create({
   seccion: {
     gap: 10,
   },
-});
+}));
 
 // ─── Tarjetas del superadmin (solicitudes, mensajes, eliminaciones, planes) ───
-export const tarjetaSuperadminStyles = StyleSheet.create({
+export const useTarjetaSuperadminStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     gap: 8,
     padding: 14,
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 4px 14px rgba(11, 59, 53, 0.07)',
   },
   cabecera: {
@@ -63,4 +63,4 @@ export const tarjetaSuperadminStyles = StyleSheet.create({
     justifyContent: 'flex-end',
     gap: 8,
   },
-});
+}));

@@ -2,11 +2,12 @@ import { View } from 'react-native';
 
 import { CampoTexto } from '@/components/formulario/CampoTexto';
 import { MAX_TEXTO_POSTULACION, TEXTOS_POSTULACION as T } from '@/constants/constants';
-import { postularAdopcionStyles as styles } from '@/css/PostularAdopcionPage';
+import { usePostularAdopcionStyles } from '@/css/PostularAdopcionPage';
 import type { PasoPostulacionProps } from '@/interfaces';
 
 /** Paso 3 · Experiencia: mascotas que ha tenido (opcional) y por qué quiere adoptar. */
 export function PasoExperienciaPostulacion({ datos: d, errores: e, onCambiar }: PasoPostulacionProps) {
+  const styles = usePostularAdopcionStyles();
   return (
     <View style={styles.paso}>
       <CampoTexto

@@ -1,13 +1,14 @@
-import { DefaultTheme, Stack, ThemeProvider, router } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider, router } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef } from 'react';
 
 import { useAuth } from '@/Auth/AuthContext';
-import { COLORES } from '@/constants/constants';
+
 import { CentroProvider, useCentro } from '@/context/CentroContext';
 import { DatosDuenoProvider } from '@/context/DatosDuenoContext';
 import { SuperadminProvider } from '@/context/SuperadminContext';
+import { useTema } from '@/context/TemaContext';
 import { VeterinarioProvider } from '@/context/VeterinarioContext';
 import { useArranqueApp } from '@/hooks/useArranqueApp';
 import { useRutasCompartidasListas } from '@/hooks/useRutasCompartidasListas';
@@ -15,9 +16,10 @@ import { useRutasCompartidasListas } from '@/hooks/useRutasCompartidasListas';
 import { PantallaSinCentro } from './PantallaSinCentro';
 import { PantallaCargaInicial } from './PantallaCargaInicial';
 
-const temaAuraPet = {
-  ...DefaultTheme,
-  colors: { ...DefaultTheme.colors, background: COLORES.fondo, primary: COLORES.primario },
+// Fondo de la navegación (lo que se ve entre pantallas) según el tema
+const temaNavegacion = (oscuro: boolean, fondo: string, primario: string) => {
+  const base = oscuro ? DarkTheme : DefaultTheme;
+  return { ...base, colors: { ...base.colors, background: fondo, primary: primario } };
 };
 
 /**
@@ -26,6 +28,7 @@ const temaAuraPet = {
  * · dueño → sus pestañas · veterinario → su agenda · administrativo → el panel de su centro
  * · veterinario que además administra un centro → su agenda, y desde Perfil pasa al centro
  * · superadmin → su panel
+ * · todos (incluso sin sesión) → urgencias
  */
 function Rutas() {
   const { usuarioActual } = useAuth();
@@ -79,12 +82,18 @@ function Rutas() {
       <Stack.Protected guard={!conSesion}>
         <Stack.Screen name="login" options={{ animation: 'fade' }} />
       </Stack.Protected>
+      {/* Urgencias se ve sin cuenta y, con sesión, recién cuando la cuenta ya está en su panel
+          (si no, al ingresar el enrutador la elegiría antes que "veterinario", por orden alfabético) */}
+      <Stack.Protected guard={!conSesion || compartidasListas}>
+        <Stack.Screen name="urgencias" />
+      </Stack.Protected>
     </Stack>
   );
 }
 
 export function NavegadorRaiz() {
   const listo = useArranqueApp();
+  const { esOscuro, colores } = useTema();
 
   useEffect(() => {
     if (listo) SplashScreen.hideAsync();
@@ -94,12 +103,12 @@ export function NavegadorRaiz() {
   if (!listo) return null;
 
   return (
-    <ThemeProvider value={temaAuraPet}>
+    <ThemeProvider value={temaNavegacion(esOscuro, colores.fondo, colores.primario)}>
       <DatosDuenoProvider>
         <VeterinarioProvider>
           <CentroProvider>
             <SuperadminProvider>
-              <StatusBar style="dark" />
+              <StatusBar style={esOscuro ? 'light' : 'dark'} />
               <Rutas />
             </SuperadminProvider>
           </CentroProvider>

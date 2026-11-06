@@ -1,14 +1,17 @@
 import { Pressable, Text } from 'react-native';
 
-import { COLORES, TONOS_TARJETA } from '@/constants/constants';
-import { filaOpcionStyles as styles } from '@/css/Compartido';
+import { useFilaOpcionStyles } from '@/css/Compartido';
 import type { FilaOpcionProps } from '@/interfaces';
 
 import { CirculoIcono } from './CirculoIcono';
 import { Icono } from './Icono';
+import { useColores, useTonosTarjeta } from '@/context/TemaContext';
 
 /** Fila de una lista de ajustes: ícono en círculo pastel, texto, valor y flecha. */
 export function FilaOpcion({ icono, tono, texto, valor, onPress, ultima }: FilaOpcionProps) {
+  const COLORES = useColores();
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useFilaOpcionStyles();
   const colores = TONOS_TARJETA[tono];
   return (
     <Pressable

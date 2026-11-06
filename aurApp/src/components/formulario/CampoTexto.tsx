@@ -2,12 +2,15 @@ import { type ComponentRef, useRef, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
 import { Icono } from '@/components/ui/Icono';
-import { COLORES } from '@/constants/constants';
-import { campoTextoStyles as styles } from '@/css/Compartido';
+
+import { useCampoTextoStyles } from '@/css/Compartido';
 import type { CampoTextoProps } from '@/interfaces';
+import { useColores } from '@/context/TemaContext';
 
 /** Campo con ícono y etiqueta dentro de la caja, como en el diseño del login. */
 export function CampoTexto({ etiqueta, icono, error, ayuda, accesorioDerecho, onFocus, onBlur, ...inputProps }: CampoTextoProps) {
+  const COLORES = useColores();
+  const styles = useCampoTextoStyles();
   const input = useRef<ComponentRef<typeof TextInput>>(null);
   const [enfocado, setEnfocado] = useState(false);
 

@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
 import { TEXTOS_HOJA_CONTACTO as T } from '@/constants/constants';
-import { hojaContactoStyles as styles } from '@/css/Compartido';
+import { useHojaContactoStyles } from '@/css/Compartido';
 import type { HojaContactoProps } from '@/interfaces';
 import { escribirCorreo, escribirWhatsapp, llamar } from '@/lib/contacto';
 
@@ -10,6 +10,7 @@ import { OpcionHoja } from './OpcionHoja';
 
 /** Hoja para contactar a alguien: llamar, WhatsApp (con un mensaje listo) o correo. */
 export function HojaContacto({ visible, contacto, onCerrar }: HojaContactoProps) {
+  const styles = useHojaContactoStyles();
   const telefono = contacto?.telefono ?? null;
   const correo = contacto?.correo ?? null;
   return (

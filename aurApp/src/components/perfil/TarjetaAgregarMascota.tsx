@@ -1,11 +1,14 @@
 import { Pressable, Text } from 'react-native';
 
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, TEXTOS_PERFIL } from '@/constants/constants';
-import { tarjetaAgregarMascotaStyles as styles } from '@/css/PerfilPage';
+import { TEXTOS_PERFIL } from '@/constants/constants';
+import { useTarjetaAgregarMascotaStyles } from '@/css/PerfilPage';
 import type { TarjetaAgregarMascotaProps } from '@/interfaces';
+import { useColores } from '@/context/TemaContext';
 
 export function TarjetaAgregarMascota({ ancho, onPress }: TarjetaAgregarMascotaProps) {
+  const COLORES = useColores();
+  const styles = useTarjetaAgregarMascotaStyles();
   return (
     <Pressable
       onPress={onPress}

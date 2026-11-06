@@ -7,10 +7,11 @@ import { EstadoCarga } from '@/components/ui/EstadoCarga';
 import { ModalTexto } from '@/components/ui/ModalTexto';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { TEXTOS_PLANES as T } from '@/constants/constants';
-import { listaGruposStyles as styles } from '@/css/Compartido';
+import { useListaGruposStyles } from '@/css/Compartido';
 import { usePlanesCentro } from '@/hooks/usePlanesCentro';
 
 export default function PlanesScreen() {
+  const styles = useListaGruposStyles();
   const p = usePlanesCentro();
   return (
     <PantallaFormulario titulo={T.titulo}>

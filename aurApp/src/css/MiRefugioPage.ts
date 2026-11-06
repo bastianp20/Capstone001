@@ -1,27 +1,27 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── MiRefugioScreen ───
-export const miRefugioStyles = StyleSheet.create({
+export const useMiRefugioStyles = crearEstilos((COLORES) => ({
   seccion: {
     gap: 12,
     padding: 16,
     borderRadius: RADIOS.lg,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   lista: {
     gap: 12,
   },
-});
+}));
 
 // ─── TarjetaCuposRefugio ───
-export const tarjetaCuposStyles = StyleSheet.create({
+export const useTarjetaCuposStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     gap: 14,
     padding: 18,
     borderRadius: RADIOS.lg,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     boxShadow: '0 8px 20px rgba(11, 59, 53, 0.08)',
   },
   titulo: {
@@ -42,4 +42,4 @@ export const tarjetaCuposStyles = StyleSheet.create({
     color: COLORES.textoSecundario,
     textAlign: 'center',
   },
-});
+}));

@@ -2,11 +2,12 @@ import { Text, View } from 'react-native';
 
 import { AvatarPersona } from '@/components/ui/AvatarPersona';
 import { TEXTOS_FICHA_ADOPCION as T, TIPO_PUBLICADOR_TEXTO } from '@/constants/constants';
-import { tarjetaPublicadorStyles as styles } from '@/css/FichaAdopcionPage';
+import { useTarjetaPublicadorStyles } from '@/css/FichaAdopcionPage';
 import type { TarjetaPublicadorProps } from '@/interfaces';
 
 /** Quién lo cuida: nombre, si es refugio, centro, veterinario o rescatista, y cuántas adopciones lleva. */
 export function TarjetaPublicador({ publicador: p }: TarjetaPublicadorProps) {
+  const styles = useTarjetaPublicadorStyles();
   const detalle = [TIPO_PUBLICADOR_TEXTO[p.tipo] ?? TIPO_PUBLICADOR_TEXTO.particular, p.adopciones > 0 ? T.adopciones(p.adopciones) : null]
     .filter(Boolean)
     .join(' · ');

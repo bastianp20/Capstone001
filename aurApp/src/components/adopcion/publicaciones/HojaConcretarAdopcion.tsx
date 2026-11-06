@@ -7,7 +7,7 @@ import { FilaInterruptor } from '@/components/ui/FilaInterruptor';
 import { HojaInferior } from '@/components/ui/HojaInferior';
 import { TarjetaAviso } from '@/components/ui/TarjetaAviso';
 import { MAX_TESTIMONIO_ADOPCION, TEXTOS_CONCRETAR as T } from '@/constants/constants';
-import { hojaPostulanteStyles as styles } from '@/css/MisPublicacionesPage';
+import { useHojaPostulanteStyles } from '@/css/MisPublicacionesPage';
 import type { HojaConcretarAdopcionProps } from '@/interfaces';
 
 /** "¡Tiene familia!": testimonio opcional, traspasar la ficha a quien adopta y confirmar. */
@@ -24,6 +24,7 @@ export function HojaConcretarAdopcion({
   onConfirmar,
   onCerrar,
 }: HojaConcretarAdopcionProps) {
+  const styles = useHojaPostulanteStyles();
   return (
     <HojaInferior visible={visible} titulo={T.titulo(nombreAnimal)} onCerrar={onCerrar}>
       <View style={styles.contenido}>

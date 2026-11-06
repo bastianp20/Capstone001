@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── LineaDeTiempo ───
-export const lineaDeTiempoStyles = StyleSheet.create({
+export const useLineaDeTiempoStyles = crearEstilos((COLORES) => ({
   contenedor: {
     gap: 8,
   },
@@ -17,10 +17,10 @@ export const lineaDeTiempoStyles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 6,
   },
-});
+}));
 
 // ─── ItemLineaDeTiempo ───
-export const itemLineaDeTiempoStyles = StyleSheet.create({
+export const useItemLineaDeTiempoStyles = crearEstilos((COLORES) => ({
   contenedor: {
     flexDirection: 'row',
     gap: 12,
@@ -52,7 +52,7 @@ export const itemLineaDeTiempoStyles = StyleSheet.create({
     borderRadius: RADIOS.lg,
     borderWidth: 1,
     borderColor: COLORES.borde,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   fila: {
     flexDirection: 'row',
@@ -80,10 +80,10 @@ export const itemLineaDeTiempoStyles = StyleSheet.create({
     lineHeight: 19,
     color: COLORES.texto,
   },
-});
+}));
 
 // ─── DetalleReceta ───
-export const detalleRecetaStyles = StyleSheet.create({
+export const useDetalleRecetaStyles = crearEstilos((COLORES) => ({
   contenedor: {
     alignSelf: 'stretch',
     gap: 8,
@@ -104,4 +104,4 @@ export const detalleRecetaStyles = StyleSheet.create({
     fontSize: 13,
     color: COLORES.textoSecundario,
   },
-});
+}));

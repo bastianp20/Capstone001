@@ -1,13 +1,16 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { COLORES } from '@/constants/constants';
-import { chipIconoStyles, chipsOpcionStyles as styles } from '@/css/Compartido';
+import { useChipIconoStyles, useChipsOpcionStyles } from '@/css/Compartido';
 import type { ChipsOpcionProps } from '@/interfaces';
 
 import { Icono } from './Icono';
+import { useColores } from '@/context/TemaContext';
 
 /** Chips para elegir UNA opción (o ninguna). Con permitirQuitar, tocar la elegida la deja sin elegir. */
 export function ChipsOpcion<V extends string>({ opciones, valor, onCambiar, permitirQuitar = false }: ChipsOpcionProps<V>) {
+  const COLORES = useColores();
+  const chipIconoStyles = useChipIconoStyles();
+  const styles = useChipsOpcionStyles();
   return (
     <View style={styles.contenedor} accessibilityRole="radiogroup">
       {opciones.map((o) => {

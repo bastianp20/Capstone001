@@ -1,12 +1,15 @@
 import { Pressable, Text, View } from 'react-native';
 
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, TEXTOS_RECETA_ATENCION as T } from '@/constants/constants';
-import { tarjetaMedicamentoStyles as styles } from '@/css/RecetaPage';
+import { TEXTOS_RECETA_ATENCION as T } from '@/constants/constants';
+import { useTarjetaMedicamentoStyles } from '@/css/RecetaPage';
 import type { NombreIcono, TarjetaMedicamentoProps } from '@/interfaces';
+import { useColores } from '@/context/TemaContext';
 
 /** Un medicamento de la receta: nombre, dosis, frecuencia y duración; editar y quitar. */
 export function TarjetaMedicamento({ medicamento: m, onEditar, onQuitar }: TarjetaMedicamentoProps) {
+  const COLORES = useColores();
+  const styles = useTarjetaMedicamentoStyles();
   const datos: [NombreIcono, string][] = [
     ['pastilla', m.dosis],
     ['reloj', m.frecuencia],

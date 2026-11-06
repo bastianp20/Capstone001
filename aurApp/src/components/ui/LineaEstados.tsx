@@ -1,13 +1,15 @@
 import { Text, View } from 'react-native';
 
-import { COLORES } from '@/constants/constants';
-import { lineaEstadosStyles as styles } from '@/css/Compartido';
+import { useLineaEstadosStyles } from '@/css/Compartido';
 import type { LineaEstadosProps } from '@/interfaces';
 
 import { Icono } from './Icono';
+import { useColores } from '@/context/TemaContext';
 
 /** Pasos en columna unidos por una línea: ✓ hechos, el actual con anillo y los que faltan en gris. */
 export function LineaEstados({ pasos }: LineaEstadosProps) {
+  const COLORES = useColores();
+  const styles = useLineaEstadosStyles();
   return (
     <View>
       {pasos.map((p, i) => (

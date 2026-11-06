@@ -3,14 +3,17 @@ import { Text, View } from 'react-native';
 import { AnilloProgreso } from '@/components/ui/AnilloProgreso';
 import { Icono } from '@/components/ui/Icono';
 import { TarjetaPastel } from '@/components/ui/TarjetaPastel';
-import { TEXTOS_INICIO, TONOS_TARJETA } from '@/constants/constants';
-import { tarjetaFichaStyles as styles } from '@/css/InicioPage';
+import { TEXTOS_INICIO } from '@/constants/constants';
+import { useTarjetaFichaStyles } from '@/css/InicioPage';
 import type { TarjetaFichaProps } from '@/interfaces';
+import { useTonosTarjeta } from '@/context/TemaContext';
 
 const TAMANO_ANILLO = 96;
 
 /** Qué tan completa está la ficha de la mascota; al tocarla se abre para completarla. */
 export function TarjetaFicha({ nombreMascota, porcentaje, resumen, onPress }: TarjetaFichaProps) {
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useTarjetaFichaStyles();
   const tono = TONOS_TARJETA.menta;
   const completa = porcentaje === 100;
 

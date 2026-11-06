@@ -1,11 +1,14 @@
 import { ActivityIndicator, Pressable, Text } from 'react-native';
 
 import { Icono } from '@/components/ui/Icono';
-import { COLORES } from '@/constants/constants';
-import { botonSecundarioStyles as styles } from '@/css/Compartido';
+
+import { useBotonSecundarioStyles } from '@/css/Compartido';
 import type { BotonSecundarioProps } from '@/interfaces';
+import { useColores } from '@/context/TemaContext';
 
 export function BotonSecundario({ texto, icono, onPress, tono = 'neutro', cargando }: BotonSecundarioProps) {
+  const COLORES = useColores();
+  const styles = useBotonSecundarioStyles();
   const verde = tono === 'verde';
   const color = verde ? COLORES.primario : COLORES.texto;
   return (

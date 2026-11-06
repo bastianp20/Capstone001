@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, RADIOS } from '@/constants/constants';
 
-import { COLORES, FUENTES, RADIOS } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── Pasos (PedirHoraScreen y sus pasos) ───
-export const pasosPedirHoraStyles = StyleSheet.create({
+export const usePasosPedirHoraStyles = crearEstilos((COLORES) => ({
   paso: {
     gap: 16,
   },
@@ -30,15 +30,15 @@ export const pasosPedirHoraStyles = StyleSheet.create({
     fontSize: 14,
     color: COLORES.primarioOscuro,
   },
-});
+}));
 
 // ─── FiltroEspecialidades ───
-export const filtroEspecialidadesStyles = StyleSheet.create({
+export const useFiltroEspecialidadesStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     gap: 4,
     padding: 16,
     borderRadius: RADIOS.md,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     borderWidth: 1,
     borderColor: COLORES.borde,
   },
@@ -70,10 +70,10 @@ export const filtroEspecialidadesStyles = StyleSheet.create({
     color: COLORES.textoSecundario,
     textDecorationLine: 'underline',
   },
-});
+}));
 
 // ─── TarjetaDestinoCita ───
-export const tarjetaDestinoCitaStyles = StyleSheet.create({
+export const useTarjetaDestinoCitaStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -82,7 +82,7 @@ export const tarjetaDestinoCitaStyles = StyleSheet.create({
     borderRadius: RADIOS.md,
     borderWidth: 1.5,
     borderColor: COLORES.borde,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   seleccionada: {
     borderWidth: 2,
@@ -141,10 +141,10 @@ export const tarjetaDestinoCitaStyles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: COLORES.primario,
   },
-});
+}));
 
 // ─── MiniMascotaCita ───
-export const miniMascotaCitaStyles = StyleSheet.create({
+export const useMiniMascotaCitaStyles = crearEstilos((COLORES) => ({
   tarjeta: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -153,7 +153,7 @@ export const miniMascotaCitaStyles = StyleSheet.create({
     borderRadius: RADIOS.md,
     borderWidth: 1,
     borderColor: COLORES.borde,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   texto: {
     flex: 1,
@@ -169,10 +169,10 @@ export const miniMascotaCitaStyles = StyleSheet.create({
     fontSize: 14.5,
     color: COLORES.primario,
   },
-});
+}));
 
 // ─── GrillaDias ───
-export const grillaDiasStyles = StyleSheet.create({
+export const useGrillaDiasStyles = crearEstilos((COLORES) => ({
   grilla: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -185,7 +185,7 @@ export const grillaDiasStyles = StyleSheet.create({
     borderRadius: RADIOS.sm,
     borderWidth: 1.5,
     borderColor: COLORES.bordeCampo,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   diaActivo: {
     borderColor: COLORES.primario,
@@ -210,10 +210,10 @@ export const grillaDiasStyles = StyleSheet.create({
   textoActivo: {
     color: COLORES.blanco,
   },
-});
+}));
 
 // ─── GrillaHoras ───
-export const grillaHorasStyles = StyleSheet.create({
+export const useGrillaHorasStyles = crearEstilos((COLORES) => ({
   grilla: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -226,7 +226,7 @@ export const grillaHorasStyles = StyleSheet.create({
     borderRadius: 18,
     borderWidth: 1.5,
     borderColor: COLORES.bordeCampo,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
   },
   horaActiva: {
     borderColor: COLORES.primario,
@@ -240,4 +240,4 @@ export const grillaHorasStyles = StyleSheet.create({
   textoActivo: {
     color: COLORES.blanco,
   },
-});
+}));

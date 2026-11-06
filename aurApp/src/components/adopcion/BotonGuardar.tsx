@@ -1,13 +1,16 @@
 import { Pressable } from 'react-native';
 
-import { COLORES, TEXTOS_ADOPTA as T } from '@/constants/constants';
-import { botonGuardarStyles as styles } from '@/css/AdoptaPage';
+import { TEXTOS_ADOPTA as T } from '@/constants/constants';
+import { useBotonGuardarStyles } from '@/css/AdoptaPage';
 import type { BotonGuardarProps } from '@/interfaces';
 
 import { Icono } from '@/components/ui/Icono';
+import { useColores } from '@/context/TemaContext';
 
 /** Corazón redondo para guardar un animal (relleno coral cuando está guardado). */
 export function BotonGuardar({ guardado, onPress, tamano = 36 }: BotonGuardarProps) {
+  const COLORES = useColores();
+  const styles = useBotonGuardarStyles();
   return (
     <Pressable
       onPress={onPress}

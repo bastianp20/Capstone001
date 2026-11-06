@@ -11,11 +11,12 @@ import { EstadoCarga } from '@/components/ui/EstadoCarga';
 import { EstadoVacio } from '@/components/ui/EstadoVacio';
 import { PantallaFormulario } from '@/components/ui/PantallaFormulario';
 import { TEXTOS_ATENCION as T } from '@/constants/constants';
-import { atencionStyles as styles } from '@/css/AtencionPage';
+import { useAtencionStyles } from '@/css/AtencionPage';
 import { useAtencion } from '@/hooks/useAtencion';
 
 /** La consulta en curso: el paciente, el motivo y las 3 acciones (registrar, receta, derivar). */
 export default function AtencionScreen() {
+  const styles = useAtencionStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const a = useAtencion(Number(id));
 

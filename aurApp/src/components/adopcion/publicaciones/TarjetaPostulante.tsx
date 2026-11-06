@@ -2,15 +2,18 @@ import { Pressable, Text, View } from 'react-native';
 
 import { Etiqueta } from '@/components/ui/Etiqueta';
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, ESTILO_ESTADO_POSTULACION, TEXTOS_POSTULANTES as T } from '@/constants/constants';
-import { tarjetaPostulanteStyles as styles } from '@/css/MisPublicacionesPage';
+import { ESTILO_ESTADO_POSTULACION, TEXTOS_POSTULANTES as T } from '@/constants/constants';
+import { useTarjetaPostulanteStyles } from '@/css/MisPublicacionesPage';
 import type { TarjetaPostulanteProps } from '@/interfaces';
 import { haceCuanto, lineasHogar } from '@/lib/adopcion';
 
 import { AfinidadAnillo } from './AfinidadAnillo';
+import { useColores } from '@/context/TemaContext';
 
 /** Una persona que postula: afinidad, nombre, estado, su hogar y hace cuánto postuló. */
 export function TarjetaPostulante({ postulante: { postulacion: p, afinidad }, onPress }: TarjetaPostulanteProps) {
+  const COLORES = useColores();
+  const styles = useTarjetaPostulanteStyles();
   const estado = ESTILO_ESTADO_POSTULACION[p.estado];
   return (
     <Pressable

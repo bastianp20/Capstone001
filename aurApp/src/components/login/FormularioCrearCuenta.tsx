@@ -5,7 +5,7 @@ import { CampoPassword } from '@/components/formulario/CampoPassword';
 import { CampoTexto } from '@/components/formulario/CampoTexto';
 import { MensajeFormulario } from '@/components/formulario/MensajeFormulario';
 import { TEXTOS_CONFIRMAR_PASSWORD, TEXTOS_LOGIN } from '@/constants/constants';
-import { formularioLoginStyles as styles } from '@/css/LoginPage';
+import { useFormularioLoginStyles } from '@/css/LoginPage';
 import type { FormularioCrearCuentaProps } from '@/interfaces';
 import { passwordsNoCoinciden } from '@/lib/formularios';
 
@@ -18,6 +18,7 @@ export function FormularioCrearCuenta({
   error,
   onCrear,
 }: FormularioCrearCuentaProps) {
+  const styles = useFormularioLoginStyles();
   const noCoinciden = passwordsNoCoinciden(formulario.password, formulario.confirmacion);
 
   return (

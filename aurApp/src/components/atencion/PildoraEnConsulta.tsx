@@ -2,11 +2,12 @@ import { useEffect, useRef } from 'react';
 import { Animated, Text, View } from 'react-native';
 
 import { TEXTOS_ATENCION as T } from '@/constants/constants';
-import { pildoraEnConsultaStyles as styles } from '@/css/AtencionPage';
+import { usePildoraEnConsultaStyles } from '@/css/AtencionPage';
 import type { PildoraEnConsultaProps } from '@/interfaces';
 
 /** "● En consulta · 18 min" con el punto rojo latiendo. */
 export function PildoraEnConsulta({ minutos }: PildoraEnConsultaProps) {
+  const styles = usePildoraEnConsultaStyles();
   const latido = useRef(new Animated.Value(1)).current;
   useEffect(() => {
     const animacion = Animated.loop(

@@ -1,14 +1,16 @@
 import { Text, View } from 'react-native';
 
-import { COLORES } from '@/constants/constants';
-import { indicadorNumeroStyles as styles } from '@/css/Compartido';
+import { useIndicadorNumeroStyles } from '@/css/Compartido';
 import type { IndicadorNumeroProps } from '@/interfaces';
 
 import { BarraProgreso } from './BarraProgreso';
 import { CirculoIcono } from './CirculoIcono';
+import { useColores } from '@/context/TemaContext';
 
 /** Tarjeta blanca con un número grande: "Citas hoy 6", "Usuarios 128". */
 export function IndicadorNumero({ etiqueta, valor, icono, colorValor, progreso }: IndicadorNumeroProps) {
+  const COLORES = useColores();
+  const styles = useIndicadorNumeroStyles();
   return (
     <View style={styles.tarjeta} accessibilityLabel={`${etiqueta}: ${valor}`}>
       <View style={styles.cabecera}>

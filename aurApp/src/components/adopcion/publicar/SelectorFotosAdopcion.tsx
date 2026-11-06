@@ -3,12 +3,15 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { GrupoCampo } from '@/components/ui/GrupoCampo';
 import { Icono } from '@/components/ui/Icono';
-import { COLORES, MAX_FOTOS_ADOPCION, TEXTOS_PUBLICAR as T } from '@/constants/constants';
-import { selectorFotosStyles as styles } from '@/css/PublicarAdopcionPage';
+import { MAX_FOTOS_ADOPCION, TEXTOS_PUBLICAR as T } from '@/constants/constants';
+import { useSelectorFotosStyles } from '@/css/PublicarAdopcionPage';
 import type { SelectorFotosAdopcionProps } from '@/interfaces';
+import { useColores } from '@/context/TemaContext';
 
 /** Fotos elegidas (la primera es la principal) y el recuadro para agregar otra. */
 export function SelectorFotosAdopcion({ fotos, onAgregar, onQuitar, error }: SelectorFotosAdopcionProps) {
+  const COLORES = useColores();
+  const styles = useSelectorFotosStyles();
   return (
     <GrupoCampo titulo={T.fotos} ayuda={T.fotosAyuda(fotos.length)} error={error}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.fila}>

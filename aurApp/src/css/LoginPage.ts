@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { FUENTES, MARGEN_PANTALLA } from '@/constants/constants';
 
-import { COLORES, FUENTES, MARGEN_PANTALLA } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── LoginScreen ───
-export const loginScreenStyles = StyleSheet.create({
+export const useLoginScreenStyles = crearEstilos((COLORES) => ({
   pantalla: {
     flex: 1,
     backgroundColor: COLORES.fondo,
@@ -17,10 +17,10 @@ export const loginScreenStyles = StyleSheet.create({
     paddingTop: 22,
     gap: 22,
   },
-});
+}));
 
 // ─── EncabezadoLogin ───
-export const encabezadoLoginStyles = StyleSheet.create({
+export const useEncabezadoLoginStyles = crearEstilos((COLORES) => ({
   contenedor: {
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -40,10 +40,10 @@ export const encabezadoLoginStyles = StyleSheet.create({
     // Sobresale un poco por debajo de la onda para dar profundidad
     marginBottom: -12,
   },
-});
+}));
 
 // ─── TituloLogin ───
-export const tituloLoginStyles = StyleSheet.create({
+export const useTituloLoginStyles = crearEstilos((COLORES) => ({
   contenedor: {
     alignItems: 'center',
     gap: 6,
@@ -61,20 +61,20 @@ export const tituloLoginStyles = StyleSheet.create({
     color: COLORES.textoSecundario,
     textAlign: 'center',
   },
-});
+}));
 
 // ─── FormularioIngresar / FormularioCrearCuenta / FormularioRecuperar ───
-export const formularioLoginStyles = StyleSheet.create({
+export const useFormularioLoginStyles = crearEstilos(() => ({
   formulario: {
     gap: 14,
   },
   espacioBoton: {
     paddingTop: 6,
   },
-});
+}));
 
 // ─── PieLogin ───
-export const pieLoginStyles = StyleSheet.create({
+export const usePieLoginStyles = crearEstilos((COLORES) => ({
   contenedor: {
     marginTop: 'auto',
     alignItems: 'center',
@@ -104,4 +104,4 @@ export const pieLoginStyles = StyleSheet.create({
   presionado: {
     opacity: 0.6,
   },
-});
+}));

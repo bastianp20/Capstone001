@@ -11,12 +11,13 @@ import { EstadoVacio } from '@/components/ui/EstadoVacio';
 import { HojaContacto } from '@/components/ui/HojaContacto';
 import { PantallaLista } from '@/components/ui/PantallaLista';
 import { TEXTOS_CARGA, TEXTOS_POSTULANTES as T } from '@/constants/constants';
-import { postulantesStyles as styles } from '@/css/MisPublicacionesPage';
+import { usePostulantesStyles } from '@/css/MisPublicacionesPage';
 import { useBarraEstadoClara } from '@/hooks/useBarraEstadoClara';
 import { usePostulantesAdopcion } from '@/hooks/usePostulantesAdopcion';
 
 /** Elegir familia: quienes postulan a un animal mío, por afinidad, con su detalle, contacto y decisión. */
 export default function PostulantesAdopcionScreen() {
+  const styles = usePostulantesStyles();
   useBarraEstadoClara();
   const { id } = useLocalSearchParams<{ id: string }>();
   const adopcionId = Number(id);

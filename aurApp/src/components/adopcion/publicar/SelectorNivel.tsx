@@ -1,13 +1,14 @@
 import { Pressable, Text, View } from 'react-native';
 
 import { NIVEL_MAXIMO_RASGO, TEXTOS_PUBLICAR as T } from '@/constants/constants';
-import { selectorNivelStyles as styles } from '@/css/PublicarAdopcionPage';
+import { useSelectorNivelStyles } from '@/css/PublicarAdopcionPage';
 import type { SelectorNivelProps } from '@/interfaces';
 
 const NIVELES = Array.from({ length: NIVEL_MAXIMO_RASGO }, (_, i) => i + 1);
 
 /** Elegir de 1 a 5 (o "No sé") para un rasgo, como la energía. */
 export function SelectorNivel({ titulo, valor, onCambiar }: SelectorNivelProps) {
+  const styles = useSelectorNivelStyles();
   return (
     <View style={styles.contenedor}>
       <Text style={styles.titulo}>{titulo}</Text>

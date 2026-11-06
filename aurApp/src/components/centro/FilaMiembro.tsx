@@ -2,12 +2,15 @@ import { Text, View } from 'react-native';
 
 import { AvatarIniciales } from '@/components/ui/AvatarIniciales';
 import { Etiqueta } from '@/components/ui/Etiqueta';
-import { TEXTOS_EQUIPO, TONOS_TARJETA } from '@/constants/constants';
-import { filaMiembroStyles as styles } from '@/css/CentroPage';
+import { TEXTOS_EQUIPO } from '@/constants/constants';
+import { useFilaMiembroStyles } from '@/css/CentroPage';
 import type { FilaMiembroProps } from '@/interfaces';
 import { nombrePropio } from '@/lib/texto';
+import { useTonosTarjeta } from '@/context/TemaContext';
 
 export function FilaMiembro({ miembro, ultima }: FilaMiembroProps) {
+  const TONOS_TARJETA = useTonosTarjeta();
+  const styles = useFilaMiembroStyles();
   const esVet = miembro.tipo === 'veterinario';
   const tono = TONOS_TARJETA[esVet ? 'menta' : 'lavanda'];
   return (

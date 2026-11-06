@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { ALTURA_BARRA_NAVEGACION, FUENTES, MARGEN_PANTALLA } from '@/constants/constants';
 
-import { ALTURA_BARRA_NAVEGACION, COLORES, FUENTES, MARGEN_PANTALLA } from '@/constants/constants';
+import { crearEstilos } from './crearEstilos';
 
 // ─── BarraNavegacion ───
-export const barraNavegacionStyles = StyleSheet.create({
+export const useBarraNavegacionStyles = crearEstilos((COLORES) => ({
   contenedor: {
     position: 'absolute',
     left: 16,
@@ -15,7 +15,7 @@ export const barraNavegacionStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     paddingHorizontal: 8,
-    backgroundColor: COLORES.blanco,
+    backgroundColor: COLORES.superficie,
     borderRadius: ALTURA_BARRA_NAVEGACION / 2,
     boxShadow: '0 10px 30px rgba(11, 59, 53, 0.14)',
   },
@@ -49,10 +49,10 @@ export const barraNavegacionStyles = StyleSheet.create({
     fontFamily: FUENTES.bold,
     color: COLORES.primario,
   },
-});
+}));
 
 // ─── PantallaCargaInicial / PantallaSinCentro ───
-export const pantallaCentradaStyles = StyleSheet.create({
+export const usePantallaCentradaStyles = crearEstilos((COLORES) => ({
   pantalla: {
     flex: 1,
     justifyContent: 'center',
@@ -60,4 +60,4 @@ export const pantallaCentradaStyles = StyleSheet.create({
     paddingHorizontal: MARGEN_PANTALLA,
     backgroundColor: COLORES.fondo,
   },
-});
+}));

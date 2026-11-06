@@ -1,12 +1,13 @@
 import { Text, View } from 'react-native';
 
-import { lineaDeTiempoStyles as styles } from '@/css/HistorialPage';
+import { useLineaDeTiempoStyles } from '@/css/HistorialPage';
 import type { LineaDeTiempoProps } from '@/interfaces';
 
 import { ItemLineaDeTiempo } from './ItemLineaDeTiempo';
 
 /** Historial agrupado por mes, del más reciente al más antiguo. */
 export function LineaDeTiempo({ grupos, mostrarMascota }: LineaDeTiempoProps) {
+  const styles = useLineaDeTiempoStyles();
   return (
     <View style={styles.contenedor}>
       {grupos.map((grupo, g) => (

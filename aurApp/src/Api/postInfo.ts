@@ -49,6 +49,11 @@ import type {
   NuevaRecetaAtencion,
   NuevoRegistroAtencion,
   TipoDestinoDerivacion,
+  DatosBloquearHorario,
+  DatosCancelarCitaVeterinario,
+  DatosEstadoUci,
+  DatosHorarioAtencion,
+  DatosReagendarCita,
 } from '@/interfaces';
 import { fechaDesdeEdad } from '@/lib/adopcion';
 import { nulable } from '@/lib/argumentosRpc';
@@ -545,4 +550,87 @@ export const registrarAtencionAdopcion = async (adopcionId: number, d: DatosAten
 export const cambiarAliadoSolidario = async (activo: boolean) => {
   const { error } = await supabase.rpc('cambiar_aliado_solidario', { p_activo: activo });
   if (error) throw new Error(error.message || TEXTOS_ALIADO_SOLIDARIO.error);
+};
+
+
+// =====================================================================
+// Horario de atención, agenda completa, UCI y urgencias (migraciones 52 a 56)
+// =====================================================================
+
+export const reagendarCitaVeterinario = async (d: DatosReagendarCita) => {
+  const { error } = await supabase.rpc('reagendar_cita_veterinario', {
+    p_cita_id: d.citaId, p_nueva_fecha: d.nuevaFecha, p_mensaje: d.mensaje.trim(), p_avisar_centro: d.avisarCentro,
+  });
+  if (error) throw new Error(error.message || 'No se pudo reagendar la cita.');
+};
+
+export const cancelarCitaVeterinario = async (d: DatosCancelarCitaVeterinario) => {
+  const { error } = await supabase.rpc('cancelar_cita_veterinario', {
+    p_cita_id: d.citaId, p_motivo: d.motivo.trim(), p_mensaje: d.mensaje.trim(), p_avisar_centro: d.avisarCentro,
+  });
+  if (error) throw new Error(error.message || 'No se pudo cancelar la cita.');
+};
+
+export const bloquearMiHorario = async (d: DatosBloquearHorario) => {
+  const { error } = await supabase.rpc('bloquear_mi_horario', {
+    p_desde: d.desde, p_hasta: d.hasta, p_motivo: d.motivo.trim(), p_cancelar_citas: d.cancelarCitas,
+    p_mensaje: d.mensaje.trim(), p_avisar_centro: d.avisarCentro,
+  });
+  if (error) throw new Error(error.message || 'No se pudo bloquear el horario.');
+};
+
+export const quitarBloqueo = async (bloqueoId: number) => {
+  const { error } = await supabase.rpc('quitar_bloqueo', { p_bloqueo_id: bloqueoId });
+  if (error) throw new Error(error.message || 'No se pudo quitar el bloqueo.');
+};
+
+export const marcarAvisoLeido = async (avisoId: number) => {
+  const { error } = await supabase.rpc('marcar_aviso_leido', { p_aviso_id: avisoId });
+  if (error) throw new Error('No se pudo marcar el aviso.');
+};
+
+export const guardarMiHorarioAtencion = async (d: DatosHorarioAtencion) => {
+  const { error } = await supabase.rpc('guardar_mi_horario_atencion', {
+    p_tramos: d.tramos.map((t) => ({ centro_id: t.centroId, dia_semana: t.diaSemana, desde: t.desde, hasta: t.hasta })) as unknown as Json,
+    p_duracion: d.duracion,
+    p_urgencias_24_7: d.urgencias247,
+    p_a_domicilio: d.aDomicilio,
+    p_comunas: d.comunas,
+  });
+  if (error) throw new Error(error.message || 'No se pudo guardar el horario.');
+};
+
+export const registrarMiColegiado = async (numero: string) => {
+  const { error } = await supabase.rpc('registrar_mi_colegiado', { p_numero: numero.trim() });
+  if (error) throw new Error(error.message || 'No se pudo guardar el número.');
+};
+
+export const cambiarTelefonoUrgencias = async (mostrar: boolean) => {
+  const { error } = await supabase.rpc('cambiar_telefono_urgencias', { p_mostrar: mostrar });
+  if (error) throw new Error(error.message || 'No se pudo guardar.');
+};
+
+export const guardarHorarioCentro = async (centroId: number, horarios: { dia_semana: number; abre: string; cierra: string; inicio_colacion: string | null; fin_colacion: string | null }[]) => {
+  const { error } = await supabase.rpc('guardar_horario_centro', { p_centro_id: centroId, p_horarios: horarios as unknown as Json });
+  if (error) throw new Error(error.message || 'No se pudo guardar el horario.');
+};
+
+export const guardarEspecialidadesCentro = async (centroId: number, especialidadIds: number[]) => {
+  const { error } = await supabase.rpc('guardar_especialidades_centro', { p_centro_id: centroId, p_especialidad_ids: especialidadIds });
+  if (error) throw new Error(error.message || 'No se pudieron guardar las especialidades.');
+};
+
+export const guardarUrgenciasCentro = async (centroId: number, tieneUci: boolean, urgencias247: boolean) => {
+  const { error } = await supabase.rpc('guardar_urgencias_centro', { p_centro_id: centroId, p_tiene_uci: tieneUci, p_urgencias_24_7: urgencias247 });
+  if (error) throw new Error(error.message || 'No se pudo guardar.');
+};
+
+export const actualizarEstadoUci = async (centroId: number, d: DatosEstadoUci) => {
+  const { error } = await supabase.rpc('actualizar_estado_uci', {
+    p_centro_id: centroId,
+    p_estado: d.estado,
+    ...(d.motivo && { p_motivo: d.motivo }),
+    ...(d.detalle.trim() && { p_detalle: d.detalle.trim() }),
+  });
+  if (error) throw new Error(error.message || 'No se pudo actualizar el estado de la UCI.');
 };
