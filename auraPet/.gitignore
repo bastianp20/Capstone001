@@ -32,3 +32,6 @@ pruebas/
 datos_prueba*
 *_demo.*
 *.demo.*
+
+# Reporte de cobertura de pruebas (npm run test:coverage)
+coverage/
