@@ -1,6 +1,6 @@
 # AuraPet
 
-**Proyecto Capstone (APT122)** · Equipo: Bastián Palavecino y Alan Penroz
+**Proyecto capstone** · Equipo: Bastián Palavecino y Alan Penroz
 
 > Nombre en evaluación: **PetAin** (posible cambio de nombre).
 
