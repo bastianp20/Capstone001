@@ -1,0 +1,30 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`getAllCitas > pide la página de citas a listar_citas y arma el total 1`] = `
+{
+  "centro": "Clínica Patitas",
+  "dueno": "Dueño desconocido",
+  "esPrueba": true,
+  "estado": "pendiente",
+  "fechaHora": "12/11 · 10:30",
+  "id": 1,
+  "mascota": "Luna",
+  "motivo": "Control",
+  "urgencia": "baja",
+  "veterinario": "Sin asignar",
+}
+`;
+
+exports[`getUrgencias > transforma los datos de la base al formato de la pantalla 1`] = `
+{
+  "comuna": "Ñuñoa",
+  "direccion": "Av. Grecia 123",
+  "estadoUci": null,
+  "horarios": [],
+  "id": 7,
+  "nombre": "Clínica Patitas",
+  "telefono": 56912345678,
+  "tieneUci": false,
+  "urgencias247": true,
+}
+`;

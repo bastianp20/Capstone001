@@ -1,0 +1,111 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FormDatosClinicos > se muestra sin errores 1`] = `
+<div>
+  <form
+    class="_formulario_1fb1ec"
+  >
+    <div
+      class="_fila_1fb1ec"
+    >
+      <div
+        class="_campo_1fb1ec"
+      >
+        <label
+          class="_etiqueta_1fb1ec"
+          for="datos-peso"
+        >
+          Peso (kg)
+        </label>
+        <input
+          class="_control_1fb1ec"
+          id="datos-peso"
+          inputmode="decimal"
+          min="0.01"
+          placeholder="Ej: 12.5"
+          step="0.01"
+          type="number"
+          value=""
+        />
+      </div>
+      <div
+        class="_campo_1fb1ec"
+      >
+        <label
+          class="_etiqueta_1fb1ec"
+          for="datos-microchip"
+        >
+          Microchip
+          <span
+            class="_opcional_1fb1ec"
+          >
+            (opcional)
+          </span>
+        </label>
+        <input
+          class="_control_1fb1ec"
+          id="datos-microchip"
+          placeholder="N° de 15 dígitos"
+          value=""
+        />
+      </div>
+    </div>
+    <div
+      class="_campo_1fb1ec"
+    >
+      <label
+        class="_etiqueta_1fb1ec"
+        for="datos-alergias"
+      >
+        Alergias
+      </label>
+      <textarea
+        class="_control_1fb1ec"
+        id="datos-alergias"
+        maxlength="300"
+        placeholder="Ej: Penicilina. Déjalo vacío si no tiene."
+      />
+    </div>
+    <div
+      class="_campo_1fb1ec"
+    >
+      <label
+        class="_etiqueta_1fb1ec"
+        for="datos-condiciones"
+      >
+        Condiciones crónicas
+      </label>
+      <textarea
+        class="_control_1fb1ec"
+        id="datos-condiciones"
+        maxlength="300"
+        placeholder="Ej: Insuficiencia renal, displasia de cadera…"
+      />
+    </div>
+    <label
+      class="_checkbox_1fb1ec"
+    >
+      <input
+        type="checkbox"
+      />
+      Esterilizado
+    </label>
+    <div
+      class="_acciones_1fb1ec"
+    >
+      <button
+        class="_boton_b049f4 _secundario_b049f4 "
+        type="button"
+      >
+        Cancelar
+      </button>
+      <button
+        class="_boton_b049f4 _primario_b049f4 "
+        type="submit"
+      >
+        Guardar datos
+      </button>
+    </div>
+  </form>
+</div>
+`;

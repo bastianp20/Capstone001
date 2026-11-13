@@ -1,8 +1,7 @@
 import { getHistoriasAdopcion, getResumenRefugios } from "../Api/getInfo";
 import { useConsulta } from "./useConsulta";
 
-// Landing "Súmate a AuraPet": los números reales y una historia real para el testimonio
-// (cada mundo ve los suyos: las cuentas de prueba, los de prueba).
+// ésto es para la vista de la pagina sumate para los refugios, muestra un resumen de los refugios y la historia de adopcion más reciete
 export const useSumateRefugio = () => {
   const resumen = useConsulta(getResumenRefugios, []);
   const historias = useConsulta(getHistoriasAdopcion, []);

@@ -1,0 +1,75 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FormularioCentro > se muestra sin errores 1`] = `
+<div>
+  <section
+    class="_tarjeta_bcf4f9"
+  >
+    <header
+      class="_tarjetaCabecera_bcf4f9"
+    >
+      <h2
+        class="_tarjetaTitulo_bcf4f9"
+      >
+        Datos del centro
+      </h2>
+    </header>
+    <div
+      class="_tarjetaCuerpo_bcf4f9"
+    >
+      <form
+        class="_formulario_bcf4f9"
+      >
+        <label
+          class="_campo_bcf4f9"
+        >
+          Nombre
+          <input
+            class="_control_bcf4f9"
+            value=""
+          />
+        </label>
+        <label
+          class="_campo_bcf4f9"
+        >
+          Dirección
+          <input
+            class="_control_bcf4f9"
+            value=""
+          />
+        </label>
+        <label
+          class="_campo_bcf4f9"
+        >
+          Comuna
+          <input
+            class="_control_bcf4f9"
+            value=""
+          />
+        </label>
+        <label
+          class="_campo_bcf4f9"
+        >
+          Teléfono (+56)
+          <input
+            class="_control_bcf4f9"
+            inputmode="tel"
+            placeholder="2 2345 6789"
+            value="1"
+          />
+        </label>
+        <div
+          class="_formularioPie_bcf4f9"
+        >
+          <button
+            class="_boton_b049f4 _primario_b049f4 "
+            type="submit"
+          >
+            Guardar cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+</div>
+`;

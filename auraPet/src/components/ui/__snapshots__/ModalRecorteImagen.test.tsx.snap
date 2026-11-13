@@ -1,0 +1,168 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ModalRecorteImagen > se muestra sin errores 1`] = `
+<div>
+  <div
+    class="recorte-fondo"
+  >
+    <div
+      aria-labelledby="_r_0_"
+      aria-modal="true"
+      class="recorte-modal"
+      role="dialog"
+    >
+      <header
+        class="recorte-cabecera"
+      >
+        <div>
+          <h2
+            id="_r_0_"
+          />
+          <p>
+            Arrastra la imagen para encuadrarla y usa el zoom para acercarla.
+          </p>
+        </div>
+        <button
+          aria-label="Cancelar"
+          class="recorte-icono"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-x"
+            fill="none"
+            height="18"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="18"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 6 6 18"
+            />
+            <path
+              d="m6 6 12 12"
+            />
+          </svg>
+        </button>
+      </header>
+      <div
+        class="recorte-escenario"
+      >
+        <div
+          class="recorte-marco recorte-marco-1"
+          style="aspect-ratio: 1 / 1;"
+        />
+      </div>
+      <div
+        class="recorte-controles"
+      >
+        <button
+          aria-label="Alejar"
+          class="recorte-icono"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-minus"
+            fill="none"
+            height="16"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M5 12h14"
+            />
+          </svg>
+        </button>
+        <input
+          aria-label="Zoom"
+          max="3"
+          min="1"
+          step="0.01"
+          type="range"
+          value="1"
+        />
+        <button
+          aria-label="Acercar"
+          class="recorte-icono"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-plus"
+            fill="none"
+            height="16"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M5 12h14"
+            />
+            <path
+              d="M12 5v14"
+            />
+          </svg>
+        </button>
+        <button
+          class="recorte-restablecer"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-rotate-ccw"
+            fill="none"
+            height="14"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="14"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
+            />
+            <path
+              d="M3 3v5h5"
+            />
+          </svg>
+           
+          Restablecer
+        </button>
+      </div>
+      <footer
+        class="recorte-pie"
+      >
+        <button
+          class="recorte-btn recorte-btn-borde"
+          type="button"
+        >
+          Cancelar
+        </button>
+        <button
+          class="recorte-btn recorte-btn-primario"
+          disabled=""
+          type="button"
+        >
+          Usar esta imagen
+        </button>
+      </footer>
+    </div>
+  </div>
+</div>
+`;

@@ -1,0 +1,44 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ModalSolicitarCita > se muestra sin errores 1`] = `
+<div>
+  <div
+    class="_fondo_6290a0"
+  >
+    <div
+      class="_modal_6290a0"
+    >
+      <div
+        class="_header_6290a0"
+      >
+        <h2>
+          Solicitar cita
+        </h2>
+        <button
+          aria-label="Cerrar"
+          class="_cerrar_6290a0"
+        >
+          ✕
+        </button>
+      </div>
+      <div
+        class="_exito_6290a0"
+      >
+        <p>
+          Primero registra a tu mascota para poder pedir una hora.
+        </p>
+        <div
+          class="_acciones_6290a0"
+        >
+          <button
+            class="_enviar_6290a0"
+            type="button"
+          >
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`useUrgencias > arranca sin errores 1`] = `
+{
+  "ahora": 2026-11-11T15:00:00.000Z,
+  "cargando": false,
+  "centros": [],
+  "comunas": [],
+  "error": undefined,
+  "filtros": {
+    "comuna": "",
+    "soloAbiertos": false,
+    "soloUciDisponible": false,
+  },
+  "veterinarios": [],
+}
+`;
+
+exports[`useUrgencias > sus acciones se pueden usar 1`] = `
+[
+  "cambiarFiltros",
+]
+`;

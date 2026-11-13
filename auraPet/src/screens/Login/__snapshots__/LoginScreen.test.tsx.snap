@@ -1,0 +1,199 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`LoginScreen > se muestra sin errores 1`] = `
+<div>
+  <div
+    class="login-overlay"
+  >
+    <div
+      class="login-card"
+    >
+      <div
+        class="login-panel-imagen"
+        style="background-image: url("/src/assets/login/fondologin.png");"
+      >
+        <div
+          class="login-panel-overlay"
+        />
+        <div
+          class="login-panel-texto"
+        >
+          <h2>
+            Tu mascota, en buenas manos
+          </h2>
+          <p>
+            Citas, historial y veterinarias de confianza en un solo lugar.
+          </p>
+        </div>
+      </div>
+      <div
+        class="login-panel-form"
+      >
+        <button
+          aria-label="Cerrar"
+          class="login-close-btn"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-x"
+            fill="none"
+            height="18"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="18"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 6 6 18"
+            />
+            <path
+              d="m6 6 12 12"
+            />
+          </svg>
+        </button>
+        <div
+          class="login-contenido"
+        >
+          <h1
+            class="login-titulo"
+          >
+            Bienvenido de vuelta
+          </h1>
+          <p
+            class="login-subtitulo"
+          >
+            Ingresa para continuar
+          </p>
+          <div
+            class="login-tabs"
+          >
+            <button
+              class="login-tab login-tab-activo"
+              type="button"
+            >
+              Ingresar
+            </button>
+            <button
+              class="login-tab "
+              type="button"
+            >
+              Crear cuenta
+            </button>
+          </div>
+          <form>
+            <label
+              class="login-label"
+              for="login-email"
+            >
+              Email
+            </label>
+            <input
+              autocomplete="email"
+              class="login-input"
+              id="login-email"
+              placeholder="tu@email.com"
+              required=""
+              type="email"
+              value=""
+            />
+            <label
+              class="login-label"
+              for="login-password"
+            >
+              Contraseña
+            </label>
+            <div
+              class="login-input-wrapper"
+            >
+              <input
+                autocomplete="current-password"
+                class="login-input"
+                id="login-password"
+                placeholder="••••••••"
+                required=""
+                type="password"
+                value=""
+              />
+              <button
+                aria-label="Mostrar contraseña"
+                class="login-ojo-btn"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-eye"
+                  fill="none"
+                  height="18"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="18"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                  />
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="3"
+                  />
+                </svg>
+              </button>
+            </div>
+            <button
+              class="login-link login-olvidaste"
+              type="button"
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+            <button
+              class="login-btn"
+              type="submit"
+            >
+              Ingresar 
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-arrow-right"
+                fill="none"
+                height="18"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="18"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 12h14"
+                />
+                <path
+                  d="m12 5 7 7-7 7"
+                />
+              </svg>
+            </button>
+          </form>
+        </div>
+        <div
+          class="login-footer"
+        >
+          ¿Tienes un centro veterinario?
+           
+          <button
+            class="login-link"
+            type="button"
+          >
+            Solicita unirte
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

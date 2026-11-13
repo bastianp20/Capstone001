@@ -1,0 +1,90 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FormDerivacion > se muestra sin errores 1`] = `
+<div>
+  <form
+    class="_formulario_1fb1ec"
+  >
+    <div
+      class="_campo_1fb1ec"
+    >
+      <label
+        class="_etiqueta_1fb1ec"
+        for="derivacion-destino"
+      >
+        Derivar a
+        <span
+          aria-hidden="true"
+          class="_requerido_1fb1ec"
+        >
+          *
+        </span>
+      </label>
+      <select
+        class="_control_1fb1ec"
+        id="derivacion-destino"
+        required=""
+      >
+        <option
+          value=""
+        >
+          Elige un veterinario o un centro…
+        </option>
+      </select>
+    </div>
+    <div
+      class="_campo_1fb1ec"
+    >
+      <label
+        class="_etiqueta_1fb1ec"
+        for="derivacion-motivo"
+      >
+        Motivo de la derivación
+        <span
+          aria-hidden="true"
+          class="_requerido_1fb1ec"
+        >
+          *
+        </span>
+      </label>
+      <textarea
+        class="_control_1fb1ec"
+        id="derivacion-motivo"
+        maxlength="500"
+        placeholder="Ej: Sospecha de cardiopatía, se requiere ecocardiograma."
+        required=""
+      />
+      <span
+        aria-live="polite"
+        class="_contador_0a78ee "
+      >
+        0
+         / 
+        500
+      </span>
+    </div>
+    <p
+      class="_ayuda_1fb1ec"
+    >
+      Se agrega al historial del paciente y el destino podrá ver su ficha para atenderlo.
+    </p>
+    <div
+      class="_acciones_1fb1ec"
+    >
+      <button
+        class="_boton_b049f4 _secundario_b049f4 "
+        type="button"
+      >
+        Cancelar
+      </button>
+      <button
+        class="_boton_b049f4 _primario_b049f4 "
+        disabled=""
+        type="submit"
+      >
+        Derivar paciente
+      </button>
+    </div>
+  </form>
+</div>
+`;

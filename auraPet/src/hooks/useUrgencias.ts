@@ -7,11 +7,10 @@ import type { EstadoUciCentro, FiltrosUrgencias } from "../interfaces";
 
 const SIN_FILTROS: FiltrosUrgencias = { comuna: "", soloAbiertos: false, soloUciDisponible: false };
 
-// Página /urgencias: centros y veterinarios que atienden urgencias, con el
-// estado de la UCI EN VIVO (Supabase Realtime) y los filtros de la persona.
+// página de las urgencias en vivo
 export const useUrgencias = () => {
   const { datos, cargando, error } = useConsulta(getUrgencias, []);
-  // Cambios de UCI que llegan por Realtime después de cargar (centro -> estado)
+  // estados en vivo de los centros con uci 
   const [enVivo, setEnVivo] = useState<Record<number, EstadoUciCentro | null>>({});
   const [ahora, setAhora] = useState(() => new Date());
   const [filtros, setFiltros] = useState<FiltrosUrgencias>(SIN_FILTROS);
@@ -29,7 +28,7 @@ export const useUrgencias = () => {
         }
       })
       .subscribe();
-    // "Abierto ahora" y "actualizado hace X" se recalculan cada minuto
+    // ésto es el abierto ahora y calcula hace cunto fue que se actualizó el estado de la uci
     const reloj = setInterval(() => setAhora(new Date()), 60_000);
     return () => {
       clearInterval(reloj);

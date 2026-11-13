@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CeldaAgendaBoton > una hora libre se puede elegir para bloquearla 1`] = `
+<div>
+  <button
+    aria-label="Jueves 12 nov, 10:00: libre. Bloquear esta hora"
+    class="_celda_a336c0 _libre_a336c0"
+    type="button"
+  >
+    Libre
+  </button>
+</div>
+`;

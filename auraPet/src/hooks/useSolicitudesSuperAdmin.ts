@@ -6,12 +6,11 @@ import { useAuth } from "../Auth/AuthContext";
 import { useAccion } from "./useAccion";
 import type { AvisoEstado, SolicitudPendiente, SolicitudesSuperAdmin } from "../interfaces";
 
-// Todo lo de aprobar y rechazar solicitudes, en un solo lugar, para que el
 // Resumen, Aprobaciones y la campana usen lo mismo:
-//   · carga las pendientes (y las recarga cuando cambia "recarga" o se resuelve una),
-//   · aprobar directo (centros y veterinarios) o desde el detalle (solicitudes de centro),
-//   · rechazar con motivo (RechazarModal),
-//   · un aviso de "aprobada / rechazada" que se cierra solo.
+// carga las pendientes (y las recarga cuando cambia "recarga" o se resuelve una),
+// aprobar directo (centros y veterinarios) o desde el detalle (solicitudes de centro),
+// rechazar con motivo (RechazarModal),
+// se lanza un toast de aviso que cuando se aprueba o se rechaza se va solin solito 
 export const useSolicitudesSuperAdmin = (recarga: number): SolicitudesSuperAdmin => {
   const { usuarioActual } = useAuth();
   const [pendientes, setPendientes] = useState<SolicitudPendiente[]>([]);
@@ -22,7 +21,7 @@ export const useSolicitudesSuperAdmin = (recarga: number): SolicitudesSuperAdmin
   const [enDetalle, setEnDetalle] = useState<SolicitudPendiente | null>(null);
   const { ejecutar, ocupado, error: errorDetalle } = useAccion();
 
-  // Pendientes: se piden de nuevo al recargar el panel o al resolver una
+  // Pendientes: se piden de nuevo al recargar el panel o al resolver una solicitud
   useEffect(() => {
     let activo = true;
     getSolicitudesPendientes()
@@ -62,7 +61,7 @@ export const useSolicitudesSuperAdmin = (recarga: number): SolicitudesSuperAdmin
   const aprobar = useCallback(async (s: SolicitudPendiente) => {
     const ok = await resolver(s, "aprobado");
     if (ok) setEnDetalle(null);
-    // Aprobar directo (sin modal): si falla, el error se muestra como aviso
+    // ésto es para aprobar directo, sin el modal, si falla, el error se muestra como aviso
     else if (!enDetalle) setAviso({ tipo: "error", texto: "No se pudo aprobar la solicitud." });
   }, [resolver, enDetalle]);
 

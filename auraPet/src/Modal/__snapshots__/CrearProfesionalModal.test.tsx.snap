@@ -1,0 +1,285 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ModalCrearProfesional > se muestra sin errores 1`] = `
+<div>
+  <div
+    class="_fondo_6290a0"
+  >
+    <div
+      class="_modal_6290a0"
+    >
+      <div
+        class="_header_6290a0"
+      >
+        <h2>
+          Nueva cuenta profesional
+        </h2>
+        <button
+          aria-label="Cerrar"
+          class="_cerrar_6290a0"
+        >
+          ✕
+        </button>
+      </div>
+      <form
+        class="_grid_6290a0"
+        novalidate=""
+      >
+        <label
+          class="_campo_6290a0"
+        >
+          Nombre completo
+          <input
+            type="text"
+            value=""
+          />
+        </label>
+        <label
+          class="_campo_6290a0"
+        >
+          Correo
+          <input
+            type="email"
+            value=""
+          />
+        </label>
+        <label
+          class="_campo_6290a0"
+        >
+          Contraseña
+          <span
+            class="_password_aef063"
+          >
+            <input
+              autocomplete="new-password"
+              minlength="6"
+              type="password"
+              value=""
+            />
+            <button
+              aria-label="Mostrar contraseña"
+              class="_ojo_aef063"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-eye"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="16"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                />
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="3"
+                />
+              </svg>
+            </button>
+          </span>
+          <small
+            class="_ayuda_6290a0"
+          >
+            Mínimo 
+            6
+             caracteres.
+          </small>
+        </label>
+        <label
+          class="_campo_6290a0"
+        >
+          Confirmar contraseña
+          <input
+            aria-invalid="false"
+            autocomplete="new-password"
+            placeholder="Repite la contraseña"
+            type="password"
+            value=""
+          />
+          <small
+            class="_ayuda_6290a0"
+          >
+            Escríbela de nuevo (no se puede pegar).
+          </small>
+        </label>
+        <label
+          class="_campo_6290a0"
+        >
+          Teléfono
+          <div
+            class="_telefono_6290a0"
+          >
+            <span>
+              +56
+            </span>
+            <input
+              placeholder="9 1234 5678"
+              type="tel"
+              value=""
+            />
+          </div>
+        </label>
+        <label
+          class="_campo_6290a0 _completo_6290a0"
+        >
+          N° de colegiatura (opcional)
+          <input
+            placeholder="Ej: 1234"
+            type="text"
+            value=""
+          />
+          <small
+            class="_ayuda_6290a0"
+          >
+            Recomendado: ayuda a validar el perfil del profesional.
+          </small>
+        </label>
+        <div
+          class="_completo_6290a0"
+        >
+          <fieldset
+            class="_grupo_358663"
+          >
+            <legend
+              class="_etiqueta_358663"
+            >
+              ¿Dónde trabajas?
+            </legend>
+            <div
+              class="_opciones_358663"
+              role="radiogroup"
+            >
+              <button
+                aria-checked="true"
+                class="_opcion_358663 _opcionActiva_358663"
+                role="radio"
+                type="button"
+              >
+                <span
+                  class="_opcionTitulo_358663"
+                >
+                  Independiente
+                </span>
+                <span
+                  class="_opcionDetalle_358663"
+                >
+                  Atiendo por mi cuenta, sin un centro
+                </span>
+              </button>
+              <button
+                aria-checked="false"
+                class="_opcion_358663 "
+                role="radio"
+                type="button"
+              >
+                <span
+                  class="_opcionTitulo_358663"
+                >
+                  En un centro de AuraPet
+                </span>
+                <span
+                  class="_opcionDetalle_358663"
+                >
+                  Mi centro ya trabaja con AuraPet
+                </span>
+              </button>
+              <button
+                aria-checked="false"
+                class="_opcion_358663 "
+                role="radio"
+                type="button"
+              >
+                <span
+                  class="_opcionTitulo_358663"
+                >
+                  En otro centro
+                </span>
+                <span
+                  class="_opcionDetalle_358663"
+                >
+                  Mi centro todavía no está en AuraPet
+                </span>
+              </button>
+            </div>
+          </fieldset>
+        </div>
+        <div
+          class="_completo_6290a0"
+        >
+          <fieldset
+            class="_grupo_358663"
+          >
+            <legend
+              class="_etiqueta_358663"
+            >
+              Especialidades
+               
+              <span
+                class="_opcional_358663"
+              >
+                (opcional)
+              </span>
+            </legend>
+            <small
+              class="_ayuda_358663"
+            >
+              Además de medicina general. Marca todas las que tengas o escribe otra.
+            </small>
+            <div
+              class="_chips_358663"
+              role="group"
+            >
+              <button
+                aria-pressed="false"
+                class="_chip_358663 "
+                type="button"
+              >
+                Otra
+              </button>
+            </div>
+          </fieldset>
+        </div>
+        <label
+          class="_check_6290a0 _completo_6290a0"
+        >
+          <input
+            type="checkbox"
+          />
+          <span>
+            Cuenta de prueba
+            <small
+              class="_ayuda_6290a0 _ayudaBloque_2f4499"
+            >
+              Solo para el equipo de desarrollo: verá y usará únicamente los centros de prueba de AuraPet.
+            </small>
+          </span>
+        </label>
+        <div
+          class="_acciones_6290a0 _completo_6290a0"
+        >
+          <button
+            class="_cancelar_6290a0"
+            type="button"
+          >
+            Cancelar
+          </button>
+          <button
+            class="_enviar_6290a0"
+            type="submit"
+          >
+            Crear profesional
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+`;

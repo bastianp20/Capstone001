@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { MS_TOAST } from "../constants";
 
-// Mensaje corto que aparece abajo y se va solo ("Cupos actualizados").
+// el toast es un mensajito que aparece y se va solo, es más que nada para avisar que algo se hizo. 
 export const useToast = () => {
   const [mensaje, setMensaje] = useState<string | null>(null);
   const temporizador = useRef<number | undefined>(undefined);

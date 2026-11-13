@@ -1,0 +1,28 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`useElegirFamilia > arranca sin errores 1`] = `
+{
+  "adoptado": false,
+  "cargando": false,
+  "cerrando": false,
+  "error": undefined,
+  "errorAccion": null,
+  "ficha": null,
+  "nuevas": 0,
+  "ocupado": false,
+  "postulaciones": [],
+  "seleccionada": null,
+}
+`;
+
+exports[`useElegirFamilia > sus acciones se pueden usar 1`] = `
+[
+  "seleccionar",
+  "afinidad",
+  "elegir",
+  "rechazar",
+  "abrirCierre",
+  "cancelarCierre",
+  "concretar",
+]
+`;

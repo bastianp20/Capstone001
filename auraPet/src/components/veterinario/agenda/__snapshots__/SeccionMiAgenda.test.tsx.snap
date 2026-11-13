@@ -1,0 +1,188 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SeccionMiAgenda > se muestra sin errores 1`] = `
+<div>
+  <div
+    class="_seccion_a336c0"
+  >
+    <header>
+      <h1
+        class="_titulo_a336c0"
+      >
+        Mi Agenda
+      </h1>
+      <p
+        class="_subtitulo_a336c0"
+      >
+        Todas tus horas de la semana. Toca una hora libre para bloquearla, o una cita para moverla o cancelarla.
+      </p>
+    </header>
+    <div
+      class="_barra_a336c0"
+    >
+      <div
+        class="_navegacion_a336c0"
+      >
+        <button
+          aria-label="Semana anterior"
+          class="_botonIcono_a336c0"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-chevron-left"
+            fill="none"
+            height="18"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="18"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m15 18-6-6 6-6"
+            />
+          </svg>
+        </button>
+        <span
+          aria-live="polite"
+          class="_rango_a336c0"
+        >
+          Lunes 9 nov – Domingo 15 nov
+        </span>
+        <button
+          aria-label="Semana siguiente"
+          class="_botonIcono_a336c0"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-chevron-right"
+            fill="none"
+            height="18"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="18"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m9 18 6-6-6-6"
+            />
+          </svg>
+        </button>
+        <button
+          class="_botonSecundario_a336c0"
+          disabled=""
+          type="button"
+        >
+          Hoy
+        </button>
+      </div>
+      <div
+        class="_acciones_a336c0"
+      >
+        <button
+          class="_boton_a336c0"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-lock"
+            fill="none"
+            height="15"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="15"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              height="11"
+              rx="2"
+              ry="2"
+              width="18"
+              x="3"
+              y="11"
+            />
+            <path
+              d="M7 11V7a5 5 0 0 1 10 0v4"
+            />
+          </svg>
+           
+          Bloquear horario
+        </button>
+      </div>
+    </div>
+    <div
+      class="_sinHorario_a336c0"
+    >
+      <div>
+        <strong>
+          Todavía no configuras tu horario de atención
+        </strong>
+        <p>
+          Sin horario solo vemos tus citas. Configúralo para ver también tus horas libres.
+        </p>
+      </div>
+      <button
+        class="_boton_a336c0"
+        type="button"
+      >
+        Configurar mi horario
+      </button>
+    </div>
+    <ul
+      aria-label="Qué significa cada color"
+      class="_leyenda_a336c0"
+    >
+      <li>
+        <span
+          aria-hidden="true"
+          class="_muestra_a336c0 _libre_a336c0"
+        />
+        Libre
+      </li>
+      <li>
+        <span
+          aria-hidden="true"
+          class="_muestra_a336c0 _tomada_a336c0"
+        />
+        Con cita
+      </li>
+      <li>
+        <span
+          aria-hidden="true"
+          class="_muestra_a336c0 _pendiente_a336c0"
+        />
+        Por confirmar
+      </li>
+      <li>
+        <span
+          aria-hidden="true"
+          class="_muestra_a336c0 _bloqueada_a336c0"
+        />
+        Bloqueada
+      </li>
+      <li>
+        <span
+          aria-hidden="true"
+          class="_muestra_a336c0 _pasada_a336c0"
+        />
+        Ya pasó
+      </li>
+    </ul>
+    <p
+      class="_vacio_a336c0"
+    >
+      No tienes horas ni citas esta semana.
+    </p>
+  </div>
+</div>
+`;

@@ -1,0 +1,49 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ModalAgenda > se muestra sin errores 1`] = `
+<div>
+  <div
+    class="_overlay_88afd6"
+  >
+    <div
+      class="_modal_88afd6"
+    >
+      <div
+        class="_header_88afd6"
+      >
+        <h3
+          class="_title_88afd6"
+        >
+          Mi Agenda
+        </h3>
+        <button
+          class="_closeButton_88afd6"
+        >
+          ×
+        </button>
+      </div>
+      <div
+        class="_tabs_88afd6"
+      >
+        <button
+          class="_tab_88afd6 "
+        >
+          Por confirmar
+        </button>
+        <button
+          class="_tab_88afd6 "
+        >
+          Agenda
+        </button>
+      </div>
+      <div
+        class="_content_88afd6"
+      >
+        <p>
+          No hay citas asignadas.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;

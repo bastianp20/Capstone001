@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PanelMiRefugio > se muestra sin errores 1`] = `
+<div>
+  <p
+    class="ap-estado"
+    role="alert"
+  >
+    No pudimos cargar tu refugio.
+  </p>
+</div>
+`;

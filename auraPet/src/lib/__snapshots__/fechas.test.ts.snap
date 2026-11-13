@@ -1,0 +1,35 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`fechas > los formatos de fecha que usa la app 1`] = `
+{
+  "caja": {
+    "dia": "11",
+    "mes": "NOV",
+  },
+  "corta": "11/11/2026",
+  "dentroDe": "2026-11-14",
+  "diaConNombre": "Miércoles 11 nov",
+  "diaDelMes": 11,
+  "diaHora": "Miércoles 11 nov, 12:00",
+  "diaMes": "11 nov",
+  "emision": "11 de noviembre de 2026, 12:00 h",
+  "fechaHora": "11/11 · 12:00",
+  "hora12": "12:00 PM",
+  "horario": "09:00",
+  "iso": "2026-11-11T13:00:00.000Z",
+  "larga": "11 nov 2026",
+  "mes": "noviembre",
+  "mesAbreviado": "oct",
+  "rangos": {
+    "diaHoy": 11,
+    "diasDelMes": 30,
+    "inicioHoy": 2026-11-11T03:00:00.000Z,
+    "inicioManana": 2026-11-12T03:00:00.000Z,
+    "inicioMes": 2026-11-01T03:00:00.000Z,
+    "inicioMesSiguiente": 2026-12-01T03:00:00.000Z,
+  },
+  "titulo": "miércoles, 11 de noviembre",
+}
+`;
+
+exports[`fechas > saluda según la hora del día 1`] = `"Buenos días"`;

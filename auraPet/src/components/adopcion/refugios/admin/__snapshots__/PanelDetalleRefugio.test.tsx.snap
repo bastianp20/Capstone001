@@ -1,0 +1,396 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PanelDetalleRefugio > se muestra sin errores 1`] = `
+<div>
+  <div
+    class="ap-lateral-fondo"
+  >
+    <aside
+      aria-labelledby="_r_0_"
+      aria-modal="true"
+      class="ap-lateral ap-lateral-mediano"
+      role="dialog"
+    >
+      <header
+        class="ap-lateral-cabecera"
+      >
+        <h2
+          id="_r_0_"
+        />
+        <button
+          aria-label="Cerrar"
+          class="ap-icono-btn"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-x"
+            fill="none"
+            height="18"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="18"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 6 6 18"
+            />
+            <path
+              d="m6 6 12 12"
+            />
+          </svg>
+        </button>
+      </header>
+      <div
+        class="ap-lateral-cuerpo"
+      >
+        <div
+          class="ra-detalle-portada"
+        >
+          <img
+            alt=""
+            src="1"
+          />
+          <span
+            aria-hidden="true"
+            class="ap-logo-refugio ap-logo-refugio-grande"
+          >
+            <img
+              alt=""
+              src="1"
+            />
+          </span>
+        </div>
+        <div
+          class="ra-detalle-cabecera"
+        >
+          <span
+            class="ap-chip ap-chip-refugio-1"
+          />
+          <span
+            class="ap-chip ap-chip-prueba"
+          >
+            Prueba
+          </span>
+          <p
+            class="ap-suave"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-map-pin"
+              fill="none"
+              height="14"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="14"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
+              />
+              <circle
+                cx="12"
+                cy="10"
+                r="3"
+              />
+            </svg>
+             
+             · 
+          </p>
+          <p
+            class="ra-detalle-contacto"
+          >
+            <span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-phone"
+                fill="none"
+                height="14"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="14"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"
+                />
+              </svg>
+               
+              +1
+            </span>
+            <span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-mail"
+                fill="none"
+                height="14"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="14"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"
+                />
+                <rect
+                  height="16"
+                  rx="2"
+                  width="20"
+                  x="2"
+                  y="4"
+                />
+              </svg>
+               
+            </span>
+          </p>
+          <p />
+        </div>
+        <section
+          class="ra-detalle-bloque ra-postulacion"
+        >
+          <h3>
+            Lo que mandó al postular
+          </h3>
+          <dl
+            class="ra-postulacion-datos"
+          >
+            <div>
+              <dt>
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-user-round lucide-user-2"
+                  fill="none"
+                  height="14"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="14"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="12"
+                    cy="8"
+                    r="5"
+                  />
+                  <path
+                    d="M20 21a8 8 0 0 0-16 0"
+                  />
+                </svg>
+                 
+                Responsable
+              </dt>
+              <dd />
+            </div>
+            <div>
+              <dt>
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-globe"
+                  fill="none"
+                  height="14"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="14"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                  />
+                  <path
+                    d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"
+                  />
+                  <path
+                    d="M2 12h20"
+                  />
+                </svg>
+                 
+                Sitio web
+              </dt>
+              <dd>
+                <a
+                  href="https://1"
+                  rel="noreferrer"
+                  target="_blank"
+                />
+              </dd>
+            </div>
+            <div
+              class="ra-postulacion-mensaje"
+            >
+              <dt>
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-message-square-text"
+                  fill="none"
+                  height="14"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="14"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"
+                  />
+                  <path
+                    d="M7 11h10"
+                  />
+                  <path
+                    d="M7 15h6"
+                  />
+                  <path
+                    d="M7 7h8"
+                  />
+                </svg>
+                 
+                Mensaje
+              </dt>
+              <dd />
+            </div>
+          </dl>
+        </section>
+        <section
+          class="ra-detalle-bloque ra-detalle-capacidad"
+        >
+          <h3>
+            Capacidad
+          </h3>
+          <div
+            aria-label="1/1"
+            class="ap-anillo"
+            role="img"
+            style="width: 72px; height: 72px;"
+          >
+            <svg
+              aria-hidden="true"
+              height="72"
+              viewBox="0 0 72 72"
+              width="72"
+            >
+              <circle
+                cx="36"
+                cy="36"
+                fill="none"
+                r="32.5"
+                stroke="var(--ap-riel)"
+                stroke-width="7"
+              />
+              <circle
+                cx="36"
+                cy="36"
+                fill="none"
+                r="32.5"
+                stroke="var(--ap-acento)"
+                stroke-dasharray="204.20352248333654"
+                stroke-dashoffset="0"
+                stroke-linecap="round"
+                stroke-width="7"
+                transform="rotate(-90 36 36)"
+              />
+            </svg>
+            <span
+              class="ap-anillo-texto"
+            >
+              1/1
+            </span>
+          </div>
+          <div
+            class="ra-detalle-capacidad-texto"
+          >
+            <strong>
+              0 cupos libres
+            </strong>
+            <span
+              class="ap-chip ap-chip-recibe-1"
+            />
+            <span
+              aria-label=""
+              class="ap-especies"
+            />
+          </div>
+        </section>
+        <section
+          class="ra-detalle-bloque"
+        >
+          <h3>
+            Administradores
+          </h3>
+          <p
+            class="ap-suave"
+          >
+            Sin asignar
+          </p>
+        </section>
+        <section
+          class="ra-detalle-bloque"
+        >
+          <h3>
+            Animales publicados
+             
+            <span
+              class="ap-pestana-contador"
+            />
+          </h3>
+          <p
+            class="ap-suave"
+          >
+            Todavía no publica animales.
+          </p>
+        </section>
+      </div>
+      <footer
+        class="ap-lateral-pie"
+      >
+        <button
+          class="ap-btn ap-btn-borde"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-pencil"
+            fill="none"
+            height="16"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+            />
+            <path
+              d="m15 5 4 4"
+            />
+          </svg>
+           
+          Editar
+        </button>
+      </footer>
+    </aside>
+  </div>
+</div>
+`;

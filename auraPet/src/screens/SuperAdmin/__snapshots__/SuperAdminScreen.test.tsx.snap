@@ -1,0 +1,1910 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SuperAdminScreen > cada opción del menú abre su sección 1`] = `
+[
+  "Resumen",
+  "Usuarios",
+  "Centros",
+  "Centros y veterinarios",
+  "Aprobaciones",
+  "Suscripciones",
+  "Mensajes",
+  "Eliminaciones",
+  "Notas",
+  "Citas",
+  "Refugios",
+  "Moderación",
+  "Mis publicaciones",
+]
+`;
+
+exports[`SuperAdminScreen > cada opción del menú abre su sección 2`] = `
+<div>
+  <div
+    class="_pagina_6908c8"
+  >
+    <aside
+      class="_sidebar_6908c8"
+    >
+      <div
+        class="_marca_6908c8"
+      >
+        <img
+          alt=""
+          class="_logo_6908c8"
+          src="/src/assets/logo/LogoAuraPetSinFondo.png"
+        />
+        <span>
+          AuraPet
+        </span>
+      </div>
+      <nav
+        aria-label="Secciones del panel"
+        class="_menu_6908c8"
+      >
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-layout-dashboard"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              height="9"
+              rx="1"
+              width="7"
+              x="3"
+              y="3"
+            />
+            <rect
+              height="5"
+              rx="1"
+              width="7"
+              x="14"
+              y="3"
+            />
+            <rect
+              height="9"
+              rx="1"
+              width="7"
+              x="14"
+              y="12"
+            />
+            <rect
+              height="5"
+              rx="1"
+              width="7"
+              x="3"
+              y="16"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Resumen
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-users"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+            />
+            <path
+              d="M16 3.128a4 4 0 0 1 0 7.744"
+            />
+            <path
+              d="M22 21v-2a4 4 0 0 0-3-3.87"
+            />
+            <circle
+              cx="9"
+              cy="7"
+              r="4"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Usuarios
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-building-complex lucide-building-2"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 12h4"
+            />
+            <path
+              d="M10 8h4"
+            />
+            <path
+              d="M14 21v-3a2 2 0 0 0-4 0v3"
+            />
+            <path
+              d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"
+            />
+            <path
+              d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Centros
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-link-2"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9 17H7A5 5 0 0 1 7 7h2"
+            />
+            <path
+              d="M15 7h2a5 5 0 1 1 0 10h-2"
+            />
+            <line
+              x1="8"
+              x2="16"
+              y1="12"
+              y2="12"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Centros y veterinarios
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-clipboard-check"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              height="4"
+              rx="1"
+              ry="1"
+              width="8"
+              x="8"
+              y="2"
+            />
+            <path
+              d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+            />
+            <path
+              d="m9 14 2 2 4-4"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Aprobaciones
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-credit-card"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              height="14"
+              rx="2"
+              width="20"
+              x="2"
+              y="5"
+            />
+            <line
+              x1="2"
+              x2="22"
+              y1="10"
+              y2="10"
+            />
+            <path
+              d="M6 14h2"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Suscripciones
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-inbox"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <polyline
+              points="22 12 16 12 14 15 10 15 8 12 2 12"
+            />
+            <path
+              d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Mensajes
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-user-x"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+            />
+            <circle
+              cx="9"
+              cy="7"
+              r="4"
+            />
+            <line
+              x1="17"
+              x2="22"
+              y1="8"
+              y2="13"
+            />
+            <line
+              x1="22"
+              x2="17"
+              y1="8"
+              y2="13"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Eliminaciones
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-sticky-note"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21 9a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"
+            />
+            <path
+              d="M15 3v5a1 1 0 0 0 1 1h5"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Notas
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-calendar-days"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M8 2v3"
+            />
+            <path
+              d="M16 2v3"
+            />
+            <rect
+              height="18"
+              rx="2"
+              width="18"
+              x="3"
+              y="3"
+            />
+            <path
+              d="M3 9h18"
+            />
+            <path
+              d="M8 13h.01"
+            />
+            <path
+              d="M12 13h.01"
+            />
+            <path
+              d="M16 13h.01"
+            />
+            <path
+              d="M8 17h.01"
+            />
+            <path
+              d="M12 17h.01"
+            />
+            <path
+              d="M16 17h.01"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Citas
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-house lucide-home"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"
+            />
+            <path
+              d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Refugios
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-shield-alert"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+            />
+            <path
+              d="M12 8v4"
+            />
+            <path
+              d="M12 16h.01"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Moderación
+          </span>
+        </button>
+        <button
+          aria-current="page"
+          class="_itemMenu_6908c8 _itemMenuActivo_6908c8"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-megaphone"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"
+            />
+            <path
+              d="M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14"
+            />
+            <path
+              d="M8 6v8"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Mis publicaciones
+          </span>
+        </button>
+      </nav>
+      <div
+        class="_menuPie_bcf4f9"
+      >
+        <button
+          class="_itemMenu_6908c8"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-heart-handshake"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19.414 14.414C21 12.828 22 11.5 22 9.5a5.5 5.5 0 0 0-9.591-3.676.6.6 0 0 1-.818.001A5.5 5.5 0 0 0 2 9.5c0 2.3 1.5 4 3 5.5l5.535 5.362a2 2 0 0 0 2.879.052 2.12 2.12 0 0 0-.004-3 2.124 2.124 0 1 0 3-3 2.124 2.124 0 0 0 3.004 0 2 2 0 0 0 0-2.828l-1.881-1.882a2.41 2.41 0 0 0-3.409 0l-1.71 1.71a2 2 0 0 1-2.828 0 2 2 0 0 1 0-2.828l2.823-2.762"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Dar en adopción
+          </span>
+        </button>
+      </div>
+    </aside>
+    <div
+      class="_principal_6908c8"
+    >
+      <header
+        class="_topbar_6908c8"
+      >
+        <div
+          class="_crear_6908c8"
+        >
+          <button
+            aria-expanded="false"
+            aria-haspopup="menu"
+            class="_botonCrear_6908c8"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-plus"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 12h14"
+              />
+              <path
+                d="M12 5v14"
+              />
+            </svg>
+            Crear
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down"
+              fill="none"
+              height="15"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="15"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
+        </div>
+        <button
+          aria-label="Solicitudes pendientes: 0"
+          class="_botonIcono_6908c8"
+          title="Solicitudes pendientes"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-bell"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10.268 21a2 2 0 0 0 3.464 0"
+            />
+            <path
+              d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"
+            />
+          </svg>
+        </button>
+        <button
+          aria-label="Configuración"
+          class="_botonIcono_6908c8"
+          title="Configuración"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-settings"
+            fill="none"
+            height="18"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="18"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"
+            />
+            <circle
+              cx="12"
+              cy="12"
+              r="3"
+            />
+          </svg>
+        </button>
+        <div
+          class="_usuario_6908c8"
+        >
+          <span
+            aria-hidden="true"
+            class="foto-perfil _avatar_6908c8"
+          >
+            CR
+          </span>
+          <span
+            class="_nombreUsuario_6908c8"
+          >
+            Camila Rojas
+          </span>
+        </div>
+      </header>
+      <main
+        class="_contenido_6908c8"
+      >
+        <div
+          class="ap"
+        >
+          <header
+            class="ap-encabezado"
+          >
+            <div
+              class="ap-encabezado-texto"
+            >
+              <h1>
+                Mis publicaciones
+              </h1>
+              <p>
+                Cada uno está más cerca de casa
+              </p>
+              <button
+                class="ap-btn ap-btn-primario"
+                type="button"
+              >
+                Dar en adopción
+                 
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-plus"
+                  fill="none"
+                  height="16"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5 12h14"
+                  />
+                  <path
+                    d="M12 5v14"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div
+              class="ap-numeros"
+            >
+              <div
+                class="ap-numero ap-tono-lavanda"
+              >
+                <strong>
+                  0
+                </strong>
+                <span>
+                  publicados
+                </span>
+              </div>
+              <div
+                class="ap-numero ap-tono-durazno"
+              >
+                <strong>
+                  0
+                </strong>
+                <span>
+                  postulaciones nuevas
+                </span>
+              </div>
+              <div
+                class="ap-numero ap-tono-crema"
+              >
+                <strong>
+                  0
+                </strong>
+                <span>
+                  ya tienen familia
+                </span>
+              </div>
+            </div>
+          </header>
+          <div
+            class="ap-vacio"
+          >
+            <span
+              aria-hidden="true"
+              class="ap-vacio-icono"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-megaphone"
+                fill="none"
+                height="34"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="34"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"
+                />
+                <path
+                  d="M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14"
+                />
+                <path
+                  d="M8 6v8"
+                />
+              </svg>
+            </span>
+            <h2>
+              Todavía no has publicado animales
+            </h2>
+            <p>
+              ¿Conoces a un perrito o gatito que busca hogar? Publícalo y te ayudamos a encontrarle familia.
+            </p>
+            <button
+              class="ap-btn ap-btn-primario"
+              type="button"
+            >
+              Dar en adopción
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SuperAdminScreen > muestra el panel con el nombre de la persona 1`] = `
+<div>
+  <div
+    class="_pagina_6908c8"
+  >
+    <aside
+      class="_sidebar_6908c8"
+    >
+      <div
+        class="_marca_6908c8"
+      >
+        <img
+          alt=""
+          class="_logo_6908c8"
+          src="/src/assets/logo/LogoAuraPetSinFondo.png"
+        />
+        <span>
+          AuraPet
+        </span>
+      </div>
+      <nav
+        aria-label="Secciones del panel"
+        class="_menu_6908c8"
+      >
+        <button
+          aria-current="page"
+          class="_itemMenu_6908c8 _itemMenuActivo_6908c8"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-layout-dashboard"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              height="9"
+              rx="1"
+              width="7"
+              x="3"
+              y="3"
+            />
+            <rect
+              height="5"
+              rx="1"
+              width="7"
+              x="14"
+              y="3"
+            />
+            <rect
+              height="9"
+              rx="1"
+              width="7"
+              x="14"
+              y="12"
+            />
+            <rect
+              height="5"
+              rx="1"
+              width="7"
+              x="3"
+              y="16"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Resumen
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-users"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+            />
+            <path
+              d="M16 3.128a4 4 0 0 1 0 7.744"
+            />
+            <path
+              d="M22 21v-2a4 4 0 0 0-3-3.87"
+            />
+            <circle
+              cx="9"
+              cy="7"
+              r="4"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Usuarios
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-building-complex lucide-building-2"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 12h4"
+            />
+            <path
+              d="M10 8h4"
+            />
+            <path
+              d="M14 21v-3a2 2 0 0 0-4 0v3"
+            />
+            <path
+              d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"
+            />
+            <path
+              d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Centros
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-link-2"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9 17H7A5 5 0 0 1 7 7h2"
+            />
+            <path
+              d="M15 7h2a5 5 0 1 1 0 10h-2"
+            />
+            <line
+              x1="8"
+              x2="16"
+              y1="12"
+              y2="12"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Centros y veterinarios
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-clipboard-check"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              height="4"
+              rx="1"
+              ry="1"
+              width="8"
+              x="8"
+              y="2"
+            />
+            <path
+              d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+            />
+            <path
+              d="m9 14 2 2 4-4"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Aprobaciones
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-credit-card"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              height="14"
+              rx="2"
+              width="20"
+              x="2"
+              y="5"
+            />
+            <line
+              x1="2"
+              x2="22"
+              y1="10"
+              y2="10"
+            />
+            <path
+              d="M6 14h2"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Suscripciones
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-inbox"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <polyline
+              points="22 12 16 12 14 15 10 15 8 12 2 12"
+            />
+            <path
+              d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Mensajes
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-user-x"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+            />
+            <circle
+              cx="9"
+              cy="7"
+              r="4"
+            />
+            <line
+              x1="17"
+              x2="22"
+              y1="8"
+              y2="13"
+            />
+            <line
+              x1="22"
+              x2="17"
+              y1="8"
+              y2="13"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Eliminaciones
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-sticky-note"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21 9a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"
+            />
+            <path
+              d="M15 3v5a1 1 0 0 0 1 1h5"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Notas
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-calendar-days"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M8 2v3"
+            />
+            <path
+              d="M16 2v3"
+            />
+            <rect
+              height="18"
+              rx="2"
+              width="18"
+              x="3"
+              y="3"
+            />
+            <path
+              d="M3 9h18"
+            />
+            <path
+              d="M8 13h.01"
+            />
+            <path
+              d="M12 13h.01"
+            />
+            <path
+              d="M16 13h.01"
+            />
+            <path
+              d="M8 17h.01"
+            />
+            <path
+              d="M12 17h.01"
+            />
+            <path
+              d="M16 17h.01"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Citas
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-house lucide-home"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"
+            />
+            <path
+              d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Refugios
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-shield-alert"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+            />
+            <path
+              d="M12 8v4"
+            />
+            <path
+              d="M12 16h.01"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Moderación
+          </span>
+        </button>
+        <button
+          class="_itemMenu_6908c8 "
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-megaphone"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"
+            />
+            <path
+              d="M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14"
+            />
+            <path
+              d="M8 6v8"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Mis publicaciones
+          </span>
+        </button>
+      </nav>
+      <div
+        class="_menuPie_bcf4f9"
+      >
+        <button
+          class="_itemMenu_6908c8"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-heart-handshake"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19.414 14.414C21 12.828 22 11.5 22 9.5a5.5 5.5 0 0 0-9.591-3.676.6.6 0 0 1-.818.001A5.5 5.5 0 0 0 2 9.5c0 2.3 1.5 4 3 5.5l5.535 5.362a2 2 0 0 0 2.879.052 2.12 2.12 0 0 0-.004-3 2.124 2.124 0 1 0 3-3 2.124 2.124 0 0 0 3.004 0 2 2 0 0 0 0-2.828l-1.881-1.882a2.41 2.41 0 0 0-3.409 0l-1.71 1.71a2 2 0 0 1-2.828 0 2 2 0 0 1 0-2.828l2.823-2.762"
+            />
+          </svg>
+          <span
+            class="_itemMenuTexto_6908c8"
+          >
+            Dar en adopción
+          </span>
+        </button>
+      </div>
+    </aside>
+    <div
+      class="_principal_6908c8"
+    >
+      <header
+        class="_topbar_6908c8"
+      >
+        <div
+          class="_crear_6908c8"
+        >
+          <button
+            aria-expanded="false"
+            aria-haspopup="menu"
+            class="_botonCrear_6908c8"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-plus"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 12h14"
+              />
+              <path
+                d="M12 5v14"
+              />
+            </svg>
+            Crear
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down"
+              fill="none"
+              height="15"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="15"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
+        </div>
+        <button
+          aria-label="Solicitudes pendientes: 0"
+          class="_botonIcono_6908c8"
+          title="Solicitudes pendientes"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-bell"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="17"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10.268 21a2 2 0 0 0 3.464 0"
+            />
+            <path
+              d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"
+            />
+          </svg>
+        </button>
+        <button
+          aria-label="Configuración"
+          class="_botonIcono_6908c8"
+          title="Configuración"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-settings"
+            fill="none"
+            height="18"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="18"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"
+            />
+            <circle
+              cx="12"
+              cy="12"
+              r="3"
+            />
+          </svg>
+        </button>
+        <div
+          class="_usuario_6908c8"
+        >
+          <span
+            aria-hidden="true"
+            class="foto-perfil _avatar_6908c8"
+          >
+            CR
+          </span>
+          <span
+            class="_nombreUsuario_6908c8"
+          >
+            Camila Rojas
+          </span>
+        </div>
+      </header>
+      <main
+        class="_contenido_6908c8"
+      >
+        <h1
+          class="_titulo_19b3fe"
+        >
+          Resumen
+        </h1>
+        <p
+          class="_subtitulo_19b3fe"
+        >
+          Lo más importante de AuraPet de un vistazo.
+        </p>
+        <div
+          class="_kpis_19b3fe"
+        >
+          <div
+            class="_tarjeta_041f22 _clickable_041f22"
+            role="button"
+            tabindex="0"
+          >
+            <div
+              class="_cabecera_041f22"
+            >
+              <div
+                class="_icono_041f22"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-users"
+                  fill="none"
+                  height="17"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="17"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+                  />
+                  <path
+                    d="M16 3.128a4 4 0 0 1 0 7.744"
+                  />
+                  <path
+                    d="M22 21v-2a4 4 0 0 0-3-3.87"
+                  />
+                  <circle
+                    cx="9"
+                    cy="7"
+                    r="4"
+                  />
+                </svg>
+              </div>
+              <span
+                class="_etiqueta_041f22"
+              >
+                Usuarios activos
+              </span>
+            </div>
+            <span
+              class="_valor_041f22"
+            >
+              0
+            </span>
+            <span
+              class="_detalle_041f22"
+            >
+              0 dueños · 0 veterinarios · 0 superadmin
+            </span>
+          </div>
+          <div
+            class="_tarjeta_041f22 _clickable_041f22"
+            role="button"
+            tabindex="0"
+          >
+            <div
+              class="_cabecera_041f22"
+            >
+              <div
+                class="_icono_041f22"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-building-complex lucide-building-2"
+                  fill="none"
+                  height="17"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="17"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 12h4"
+                  />
+                  <path
+                    d="M10 8h4"
+                  />
+                  <path
+                    d="M14 21v-3a2 2 0 0 0-4 0v3"
+                  />
+                  <path
+                    d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"
+                  />
+                  <path
+                    d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"
+                  />
+                </svg>
+              </div>
+              <span
+                class="_etiqueta_041f22"
+              >
+                Centros activos
+              </span>
+            </div>
+            <span
+              class="_valor_041f22"
+            >
+              0
+            </span>
+            <span
+              class="_detalle_041f22"
+            >
+              Ninguno de pruebas
+            </span>
+          </div>
+          <div
+            class="_tarjeta_041f22 _clickable_041f22"
+            role="button"
+            tabindex="0"
+          >
+            <div
+              class="_cabecera_041f22"
+            >
+              <div
+                class="_icono_041f22"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-stethoscope"
+                  fill="none"
+                  height="17"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="17"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M11 2v2"
+                  />
+                  <path
+                    d="M5 2v2"
+                  />
+                  <path
+                    d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1"
+                  />
+                  <path
+                    d="M8 15a6 6 0 0 0 12 0v-3"
+                  />
+                  <circle
+                    cx="20"
+                    cy="10"
+                    r="2"
+                  />
+                </svg>
+              </div>
+              <span
+                class="_etiqueta_041f22"
+              >
+                Veterinarios
+              </span>
+            </div>
+            <span
+              class="_valor_041f22"
+            >
+              0
+            </span>
+            <span
+              class="_detalle_041f22"
+            >
+              0 verificados · 0 pendientes
+            </span>
+          </div>
+          <div
+            class="_tarjeta_041f22 _clickable_041f22"
+            role="button"
+            tabindex="0"
+          >
+            <div
+              class="_cabecera_041f22"
+            >
+              <div
+                class="_icono_041f22"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-calendar"
+                  fill="none"
+                  height="17"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="17"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8 2v3"
+                  />
+                  <path
+                    d="M16 2v3"
+                  />
+                  <rect
+                    height="18"
+                    rx="2"
+                    width="18"
+                    x="3"
+                    y="3"
+                  />
+                  <path
+                    d="M3 9h18"
+                  />
+                </svg>
+              </div>
+              <span
+                class="_etiqueta_041f22"
+              >
+                Citas hoy
+              </span>
+            </div>
+            <span
+              class="_valor_041f22"
+            >
+              0
+            </span>
+            <span
+              class="_detalle_041f22"
+            >
+              Sin urgencias
+            </span>
+          </div>
+        </div>
+        <section
+          class="_tarjeta_46be63"
+        >
+          <header
+            class="_cabecera_46be63"
+          >
+            <h2
+              class="_titulo_46be63"
+            >
+              Solicitudes pendientes
+            </h2>
+          </header>
+          <div
+            class="_scroll_46be63"
+          >
+            <div
+              class="_encabezados_46be63"
+              role="row"
+              style="--columnas: 2.4fr 1.2fr 1.3fr 1.7fr;"
+            >
+              <span
+                role="columnheader"
+              >
+                Solicitud
+              </span>
+              <span
+                role="columnheader"
+              >
+                Tipo
+              </span>
+              <span
+                role="columnheader"
+              >
+                Fecha de registro
+              </span>
+              <span
+                role="columnheader"
+              >
+                Acciones
+              </span>
+            </div>
+            <p
+              class="_estado_46be63"
+            >
+              No hay solicitudes pendientes.
+            </p>
+          </div>
+        </section>
+        <section
+          class="_tarjeta_46be63"
+        >
+          <header
+            class="_cabecera_46be63"
+          >
+            <h2
+              class="_titulo_46be63"
+            >
+              Próximas citas
+            </h2>
+            <button
+              class="_link_19b3fe"
+              type="button"
+            >
+              Ver todas
+               
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-right"
+                fill="none"
+                height="15"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="15"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m9 18 6-6-6-6"
+                />
+              </svg>
+            </button>
+          </header>
+          <div
+            class="_scroll_46be63"
+          >
+            <div
+              class="_encabezados_46be63"
+              role="row"
+              style="--columnas: 1.6fr 1.4fr 1.4fr 1.1fr 1fr 0.9fr;"
+            >
+              <span
+                role="columnheader"
+              >
+                Mascota / Dueño
+              </span>
+              <span
+                role="columnheader"
+              >
+                Veterinario
+              </span>
+              <span
+                role="columnheader"
+              >
+                Centro
+              </span>
+              <span
+                role="columnheader"
+              >
+                Fecha/hora
+              </span>
+              <span
+                role="columnheader"
+              >
+                Estado
+              </span>
+              <span
+                role="columnheader"
+              >
+                Urgencia
+              </span>
+            </div>
+            <p
+              class="_estado_46be63"
+            >
+              No hay citas próximas.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+</div>
+`;

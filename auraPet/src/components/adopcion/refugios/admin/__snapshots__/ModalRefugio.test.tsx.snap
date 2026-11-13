@@ -1,0 +1,830 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ModalRefugio > se muestra sin errores 1`] = `
+<div>
+  <div
+    class="ap ra-modal-fondo"
+  >
+    <div
+      aria-labelledby="_r_0_"
+      aria-modal="true"
+      class="ra-modal"
+      role="dialog"
+    >
+      <header
+        class="ra-modal-cabecera"
+      >
+        <div>
+          <h2
+            id="_r_0_"
+          >
+            Editar refugio
+          </h2>
+          <p
+            class="ap-suave"
+          >
+            Lo verán las personas en la página de refugios
+          </p>
+        </div>
+        <button
+          aria-label="Cancelar"
+          class="ap-icono-btn"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-x"
+            fill="none"
+            height="18"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="18"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 6 6 18"
+            />
+            <path
+              d="m6 6 12 12"
+            />
+          </svg>
+        </button>
+      </header>
+      <ol
+        class="ap-stepper"
+      >
+        <li
+          aria-current="step"
+          class="ap-stepper-paso ap-stepper-actual"
+        >
+          <span
+            class="ap-stepper-circulo"
+          >
+            1
+          </span>
+          <span
+            class="ap-stepper-texto"
+          >
+            Datos
+          </span>
+        </li>
+        <li
+          aria-hidden="true"
+          class="ap-stepper-linea "
+        />
+        <li
+          class="ap-stepper-paso ap-stepper-pendiente"
+        >
+          <span
+            class="ap-stepper-circulo"
+          >
+            2
+          </span>
+          <span
+            class="ap-stepper-texto"
+          >
+            Capacidad
+          </span>
+        </li>
+        <li
+          aria-hidden="true"
+          class="ap-stepper-linea "
+        />
+        <li
+          class="ap-stepper-paso ap-stepper-pendiente"
+        >
+          <span
+            class="ap-stepper-circulo"
+          >
+            3
+          </span>
+          <span
+            class="ap-stepper-texto"
+          >
+            Administradores
+          </span>
+        </li>
+      </ol>
+      <div
+        class="ra-modal-cuerpo"
+      >
+        <form
+          class="ra-modal-form"
+          novalidate=""
+        >
+          <div
+            class="ra-paso"
+          >
+            <div
+              class="ap-imagenes-refugio"
+            >
+              <button
+                class="ap-portada-campo ap-portada-campo-llena"
+                type="button"
+              >
+                <img
+                  alt=""
+                  src="1"
+                />
+                <span
+                  class="ap-portada-campo-texto"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-image-plus"
+                    fill="none"
+                    height="22"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="22"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M16 5h6"
+                    />
+                    <path
+                      d="M19 2v6"
+                    />
+                    <path
+                      d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5"
+                    />
+                    <path
+                      d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"
+                    />
+                    <circle
+                      cx="9"
+                      cy="9"
+                      r="2"
+                    />
+                  </svg>
+                   
+                  Cambiar portada
+                </span>
+              </button>
+              <button
+                aria-label="Logo"
+                class="ap-logo-campo"
+                type="button"
+              >
+                <span
+                  aria-hidden="true"
+                  class="ap-logo-refugio ap-logo-refugio-grande"
+                >
+                  <img
+                    alt=""
+                    src="1"
+                  />
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="ap-logo-campo-camara"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-camera"
+                    fill="none"
+                    height="14"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="14"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"
+                    />
+                    <circle
+                      cx="12"
+                      cy="13"
+                      r="3"
+                    />
+                  </svg>
+                </span>
+              </button>
+              <input
+                accept="image/jpeg,image/png,image/webp"
+                hidden=""
+                type="file"
+              />
+              <input
+                accept="image/jpeg,image/png,image/webp"
+                hidden=""
+                type="file"
+              />
+            </div>
+            <div
+              class="adopta-campo"
+            >
+              <label
+                for="refugio-nombre"
+              >
+                Nombre del refugio
+              </label>
+              <input
+                aria-invalid="false"
+                class="adopta-input "
+                id="refugio-nombre"
+                maxlength="80"
+                type="text"
+                value=""
+              />
+              <div
+                class="adopta-campo-pie"
+              >
+                <span />
+              </div>
+            </div>
+            <div
+              class="ra-fila-campos"
+            >
+              <div
+                class="adopta-campo"
+              >
+                <label
+                  for="refugio-region"
+                >
+                  Región
+                </label>
+                <select
+                  aria-invalid="false"
+                  class="adopta-input adopta-select "
+                  id="refugio-region"
+                >
+                  <option
+                    value="Arica y Parinacota"
+                  >
+                    Arica y Parinacota
+                  </option>
+                  <option
+                    value="Tarapacá"
+                  >
+                    Tarapacá
+                  </option>
+                  <option
+                    value="Antofagasta"
+                  >
+                    Antofagasta
+                  </option>
+                  <option
+                    value="Atacama"
+                  >
+                    Atacama
+                  </option>
+                  <option
+                    value="Coquimbo"
+                  >
+                    Coquimbo
+                  </option>
+                  <option
+                    value="Valparaíso"
+                  >
+                    Valparaíso
+                  </option>
+                  <option
+                    value="Metropolitana"
+                  >
+                    Metropolitana
+                  </option>
+                  <option
+                    value="O'Higgins"
+                  >
+                    O'Higgins
+                  </option>
+                  <option
+                    value="Maule"
+                  >
+                    Maule
+                  </option>
+                  <option
+                    value="Ñuble"
+                  >
+                    Ñuble
+                  </option>
+                  <option
+                    value="Biobío"
+                  >
+                    Biobío
+                  </option>
+                  <option
+                    value="Araucanía"
+                  >
+                    Araucanía
+                  </option>
+                  <option
+                    value="Los Ríos"
+                  >
+                    Los Ríos
+                  </option>
+                  <option
+                    value="Los Lagos"
+                  >
+                    Los Lagos
+                  </option>
+                  <option
+                    value="Aysén"
+                  >
+                    Aysén
+                  </option>
+                  <option
+                    value="Magallanes"
+                  >
+                    Magallanes
+                  </option>
+                </select>
+              </div>
+              <div
+                class="adopta-campo"
+              >
+                <label
+                  for="refugio-comuna"
+                >
+                  Comuna
+                </label>
+                <input
+                  class="adopta-input "
+                  id="refugio-comuna"
+                  maxlength="60"
+                  value=""
+                />
+                <datalist
+                  id="refugio-comuna-sugerencias"
+                >
+                  <option
+                    value="Cerrillos"
+                  />
+                  <option
+                    value="Cerro Navia"
+                  />
+                  <option
+                    value="Colina"
+                  />
+                  <option
+                    value="Conchalí"
+                  />
+                  <option
+                    value="El Bosque"
+                  />
+                  <option
+                    value="Estación Central"
+                  />
+                  <option
+                    value="Huechuraba"
+                  />
+                  <option
+                    value="Independencia"
+                  />
+                  <option
+                    value="La Cisterna"
+                  />
+                  <option
+                    value="La Florida"
+                  />
+                  <option
+                    value="La Granja"
+                  />
+                  <option
+                    value="La Pintana"
+                  />
+                  <option
+                    value="La Reina"
+                  />
+                  <option
+                    value="Lampa"
+                  />
+                  <option
+                    value="Las Condes"
+                  />
+                  <option
+                    value="Lo Barnechea"
+                  />
+                  <option
+                    value="Lo Espejo"
+                  />
+                  <option
+                    value="Lo Prado"
+                  />
+                  <option
+                    value="Macul"
+                  />
+                  <option
+                    value="Maipú"
+                  />
+                  <option
+                    value="Ñuñoa"
+                  />
+                  <option
+                    value="Padre Hurtado"
+                  />
+                  <option
+                    value="Pedro Aguirre Cerda"
+                  />
+                  <option
+                    value="Peñaflor"
+                  />
+                  <option
+                    value="Peñalolén"
+                  />
+                  <option
+                    value="Pirque"
+                  />
+                  <option
+                    value="Providencia"
+                  />
+                  <option
+                    value="Pudahuel"
+                  />
+                  <option
+                    value="Puente Alto"
+                  />
+                  <option
+                    value="Quilicura"
+                  />
+                  <option
+                    value="Quinta Normal"
+                  />
+                  <option
+                    value="Recoleta"
+                  />
+                  <option
+                    value="Renca"
+                  />
+                  <option
+                    value="San Bernardo"
+                  />
+                  <option
+                    value="San Joaquín"
+                  />
+                  <option
+                    value="San José de Maipo"
+                  />
+                  <option
+                    value="San Miguel"
+                  />
+                  <option
+                    value="San Ramón"
+                  />
+                  <option
+                    value="Santiago"
+                  />
+                  <option
+                    value="Talagante"
+                  />
+                  <option
+                    value="Vitacura"
+                  />
+                </datalist>
+              </div>
+            </div>
+            <div
+              class="ra-fila-campos"
+            >
+              <div
+                class="adopta-campo"
+              >
+                <label
+                  for="refugio-telefono"
+                >
+                  Teléfono
+                </label>
+                <div
+                  class="ap-telefono adopta-input "
+                >
+                  <span>
+                    +56
+                  </span>
+                  <input
+                    id="refugio-telefono"
+                    inputmode="tel"
+                    maxlength="12"
+                    placeholder="9 1234 5678"
+                    value="1"
+                  />
+                </div>
+              </div>
+              <div
+                class="adopta-campo"
+              >
+                <label
+                  for="refugio-correo"
+                >
+                  Correo
+                </label>
+                <input
+                  aria-invalid="false"
+                  class="adopta-input "
+                  id="refugio-correo"
+                  placeholder="contacto@refugio.cl"
+                  type="text"
+                  value=""
+                />
+                <div
+                  class="adopta-campo-pie"
+                >
+                  <span />
+                </div>
+              </div>
+            </div>
+            <div
+              class="adopta-campo"
+            >
+              <label
+                for="refugio-descripcion"
+              >
+                Descripción
+              </label>
+              <textarea
+                aria-invalid="false"
+                class="adopta-input "
+                id="refugio-descripcion"
+                maxlength="600"
+                placeholder="Cuéntales qué hacen, desde cuándo y qué animales reciben"
+                rows="4"
+              />
+              <div
+                class="adopta-campo-pie"
+              >
+                <span />
+                <span
+                  class="adopta-campo-contador"
+                >
+                  0
+                  /
+                  600
+                </span>
+              </div>
+            </div>
+            <div
+              class="ra-caja-prueba"
+            >
+              <label
+                class="adopta-interruptor"
+              >
+                <input
+                  type="checkbox"
+                />
+                <span
+                  aria-hidden="true"
+                  class="adopta-interruptor-riel"
+                />
+                Refugio de prueba
+              </label>
+              <small
+                class="ap-suave"
+              >
+                Solo lo verán las cuentas de prueba
+              </small>
+            </div>
+          </div>
+        </form>
+        <aside
+          aria-label="Vista previa en vivo"
+          class="ra-vista-previa"
+        >
+          <span
+            class="ra-vista-etiqueta"
+          >
+            <span
+              aria-hidden="true"
+              class="ra-punto-verde"
+            />
+             
+            Vista previa en vivo
+          </span>
+          <div
+            class="ra-vista-tarjeta"
+            inert=""
+          >
+            <article
+              class="ap-refugio"
+            >
+              <div
+                class="ap-refugio-portada"
+              >
+                <img
+                  alt=""
+                  loading="lazy"
+                  src="1"
+                />
+                <span
+                  class="ap-refugio-logo"
+                >
+                  <img
+                    alt=""
+                    src="1"
+                  />
+                </span>
+              </div>
+              <div
+                class="ap-refugio-cuerpo"
+              >
+                <div
+                  class="ap-refugio-cabecera"
+                >
+                  <div>
+                    <h3>
+                      1
+                    </h3>
+                    <p
+                      class="ap-suave"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="lucide lucide-map-pin"
+                        fill="none"
+                        height="13"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="13"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
+                        />
+                        <circle
+                          cx="12"
+                          cy="10"
+                          r="3"
+                        />
+                      </svg>
+                       
+                      1
+                       · 
+                    </p>
+                    <span
+                      class="ap-chip ap-chip-recibe-1"
+                    />
+                  </div>
+                  <div
+                    class="ap-refugio-cupos"
+                  >
+                    <div
+                      aria-label="1/1"
+                      class="ap-anillo"
+                      role="img"
+                      style="width: 64px; height: 64px;"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        height="64"
+                        viewBox="0 0 64 64"
+                        width="64"
+                      >
+                        <circle
+                          cx="32"
+                          cy="32"
+                          fill="none"
+                          r="29"
+                          stroke="var(--ap-riel)"
+                          stroke-width="6"
+                        />
+                        <circle
+                          cx="32"
+                          cy="32"
+                          fill="none"
+                          r="29"
+                          stroke="var(--ap-acento)"
+                          stroke-dasharray="182.212373908208"
+                          stroke-dashoffset="0"
+                          stroke-linecap="round"
+                          stroke-width="6"
+                          transform="rotate(-90 32 32)"
+                        />
+                      </svg>
+                      <span
+                        class="ap-anillo-texto"
+                      >
+                        1/1
+                      </span>
+                    </div>
+                    <small
+                      class="ap-suave"
+                    >
+                      cupos
+                    </small>
+                  </div>
+                </div>
+                <div
+                  class="ap-refugio-animales"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="ap-fotos-apiladas"
+                  />
+                  <strong>
+                    0 esperando hogar
+                  </strong>
+                </div>
+                <div
+                  class="ap-refugio-acciones"
+                >
+                  <button
+                    class="ap-btn ap-btn-primario ap-btn-chico"
+                    disabled=""
+                    type="button"
+                  >
+                    Ver sus animales
+                  </button>
+                  <a
+                    class="ap-btn ap-btn-borde ap-btn-chico"
+                    href="mailto:1"
+                    rel="noreferrer"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-mail"
+                      fill="none"
+                      height="14"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="14"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"
+                      />
+                      <rect
+                        height="16"
+                        rx="2"
+                        width="20"
+                        x="2"
+                        y="4"
+                      />
+                    </svg>
+                     
+                    Contactar
+                  </a>
+                </div>
+              </div>
+            </article>
+          </div>
+          <small
+            class="ap-suave"
+          >
+            Así se verá en /adopta/refugios
+          </small>
+        </aside>
+      </div>
+      <footer
+        class="ra-modal-pie"
+      >
+        <span
+          class="ap-suave"
+        >
+          Paso 1 de 3
+        </span>
+        <div
+          class="ra-modal-botones"
+        >
+          <button
+            class="ap-btn-texto"
+            type="button"
+          >
+            Cancelar
+          </button>
+          <button
+            class="ap-btn ap-btn-primario"
+            type="button"
+          >
+            Siguiente
+             
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-arrow-right"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 12h14"
+              />
+              <path
+                d="m12 5 7 7-7 7"
+              />
+            </svg>
+          </button>
+        </div>
+      </footer>
+    </div>
+  </div>
+</div>
+`;

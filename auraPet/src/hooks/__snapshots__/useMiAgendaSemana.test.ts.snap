@@ -1,0 +1,66 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`useMiAgendaSemana > arranca sin errores 1`] = `
+{
+  "cargando": false,
+  "citas": [],
+  "duracion": 30,
+  "error": null,
+  "esSemanaActual": true,
+  "ocupado": false,
+  "porConfirmar": 0,
+  "semana": {
+    "celdas": {},
+    "dias": [
+      {
+        "esHoy": false,
+        "fecha": "2026-11-09",
+        "titulo": "Lunes 9 nov",
+      },
+      {
+        "esHoy": false,
+        "fecha": "2026-11-10",
+        "titulo": "Martes 10 nov",
+      },
+      {
+        "esHoy": true,
+        "fecha": "2026-11-11",
+        "titulo": "Miércoles 11 nov",
+      },
+      {
+        "esHoy": false,
+        "fecha": "2026-11-12",
+        "titulo": "Jueves 12 nov",
+      },
+      {
+        "esHoy": false,
+        "fecha": "2026-11-13",
+        "titulo": "Viernes 13 nov",
+      },
+      {
+        "esHoy": false,
+        "fecha": "2026-11-14",
+        "titulo": "Sábado 14 nov",
+      },
+      {
+        "esHoy": false,
+        "fecha": "2026-11-15",
+        "titulo": "Domingo 15 nov",
+      },
+    ],
+    "horas": [],
+  },
+  "sinHorario": true,
+}
+`;
+
+exports[`useMiAgendaSemana > sus acciones se pueden usar 1`] = `
+[
+  "horasLibres",
+  "semanaAnterior",
+  "semanaSiguiente",
+  "irAHoy",
+  "quitarBloqueo",
+  "recargar",
+]
+`;

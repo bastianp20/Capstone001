@@ -1,0 +1,157 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FilaRefugioAdmin > se muestra sin errores 1`] = `
+<div>
+  <tr
+    class="ra-fila ra-fila-activa"
+  >
+    <td>
+      <div
+        class="ra-celda-refugio"
+      >
+        <span
+          aria-hidden="true"
+          class="ap-logo-refugio ap-logo-refugio-mediano"
+        >
+          <img
+            alt=""
+            src="1"
+          />
+        </span>
+        <div>
+          <button
+            class="ra-nombre"
+            type="button"
+          />
+          <span
+            class="ap-chip ap-chip-prueba"
+          >
+            Prueba
+          </span>
+          <small>
+            , 
+          </small>
+        </div>
+      </div>
+    </td>
+    <td>
+      <span
+        class="ap-chip ap-chip-refugio-1"
+      />
+    </td>
+    <td>
+      <span
+        class="ra-recepcion"
+      >
+        <span
+          aria-hidden="true"
+          class="ra-punto"
+        />
+      </span>
+    </td>
+    <td>
+      <span
+        class="ra-cupos"
+      >
+        <div
+          aria-label=""
+          class="ap-anillo"
+          role="img"
+          style="width: 26px; height: 26px;"
+        >
+          <svg
+            aria-hidden="true"
+            height="26"
+            viewBox="0 0 26 26"
+            width="26"
+          >
+            <circle
+              cx="13"
+              cy="13"
+              fill="none"
+              r="11"
+              stroke="var(--ap-riel)"
+              stroke-width="4"
+            />
+            <circle
+              cx="13"
+              cy="13"
+              fill="none"
+              r="11"
+              stroke="var(--ap-acento)"
+              stroke-dasharray="69.11503837897544"
+              stroke-dashoffset="0"
+              stroke-linecap="round"
+              stroke-width="4"
+              transform="rotate(-90 13 13)"
+            />
+          </svg>
+          <span
+            class="ap-anillo-texto"
+          />
+        </div>
+        /
+      </span>
+    </td>
+    <td>
+      <span
+        aria-label=""
+        class="ap-especies"
+      />
+    </td>
+    <td
+      class="ra-numero"
+    />
+    <td>
+      <small
+        class="ap-suave"
+      >
+        Sin asignar
+      </small>
+    </td>
+    <td>
+      <div
+        class="ra-menu"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="menu"
+          aria-label="Acciones: 1"
+          class="ap-icono-btn ra-menu-boton"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-ellipsis lucide-more-horizontal"
+            fill="none"
+            height="18"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="18"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="1"
+            />
+            <circle
+              cx="19"
+              cy="12"
+              r="1"
+            />
+            <circle
+              cx="5"
+              cy="12"
+              r="1"
+            />
+          </svg>
+        </button>
+      </div>
+    </td>
+  </tr>
+</div>
+`;

@@ -1,0 +1,131 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ModalEditarCentro > muestra los datos del centro para editarlos 1`] = `
+<div>
+  <div
+    class="_fondo_6290a0"
+  >
+    <div
+      class="_modal_6290a0"
+    >
+      <div
+        class="_header_6290a0"
+      >
+        <h2>
+          Editar centro
+        </h2>
+        <button
+          aria-label="Cerrar"
+          class="_cerrar_6290a0"
+        >
+          ✕
+        </button>
+      </div>
+      <p
+        style="margin: 0px 0px 14px; font-size: 13px; color: rgb(107, 114, 128);"
+      >
+        <span
+          style="color: rgb(15, 143, 128); font-weight: 600;"
+        >
+          Verificado
+        </span>
+         · 
+        <strong
+          style="color: rgb(138, 90, 0);"
+        >
+          Centro de prueba
+        </strong>
+         · 
+        2
+         
+        veterinarios
+      </p>
+      <form
+        class="_grid_6290a0"
+      >
+        <fieldset
+          style="display: contents;"
+        >
+          <label
+            class="_campo_6290a0 _completo_6290a0"
+          >
+            Nombre del centro
+            <input
+              type="text"
+              value="Clínica Patitas"
+            />
+          </label>
+          <label
+            class="_campo_6290a0"
+          >
+            Dirección
+            <input
+              type="text"
+              value="Av. Grecia 123"
+            />
+          </label>
+          <label
+            class="_campo_6290a0"
+          >
+            Comuna
+            <input
+              type="text"
+              value="Ñuñoa"
+            />
+          </label>
+          <label
+            class="_campo_6290a0"
+          >
+            Teléfono
+            <div
+              class="_telefono_6290a0"
+            >
+              <span>
+                +56
+              </span>
+              <input
+                placeholder="2 2345 6789"
+                type="tel"
+                value="912345678"
+              />
+            </div>
+          </label>
+          <label
+            class="_check_6290a0 _completo_6290a0"
+          >
+            <input
+              checked=""
+              type="checkbox"
+            />
+            <span>
+              Centro de prueba
+              <small
+                class="_ayuda_6290a0 _ayudaBloque_2f4499"
+              >
+                Solo lo verán y usarán las cuentas de prueba. Su equipo también debe ser de prueba.
+              </small>
+            </span>
+          </label>
+        </fieldset>
+        <div
+          class="_acciones_6290a0 _completo_6290a0"
+        >
+          <button
+            class="_cancelar_6290a0"
+            type="button"
+          >
+            Cancelar
+          </button>
+          <button
+            class="_enviar_6290a0"
+            disabled=""
+            type="submit"
+          >
+            Guardar cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+`;

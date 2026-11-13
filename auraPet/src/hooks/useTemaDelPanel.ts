@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { aplicarTemaClaro, aplicarTemaGuardado } from "../lib/tema";
 
-// Mientras se ve un panel (con sesión) se usa el tema elegido en Configuración;
-// al salir (cerrar sesión, volver a la página pública) se vuelve a claro.
+// ésto es para que mientras se esté viendo un panel con alguna configuracion de tema, se aplique el
+// tema guardado y al salir (a la pantalla principal) vuelva al claro x defecto. 
 export const useTemaDelPanel = () => {
   useEffect(() => {
     aplicarTemaGuardado();

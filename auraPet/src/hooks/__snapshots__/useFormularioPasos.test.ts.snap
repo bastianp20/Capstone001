@@ -1,0 +1,22 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`useFormularioPasos > arranca sin errores 1`] = `
+{
+  "errores": {},
+  "esPrimero": true,
+  "esUltimo": false,
+  "paso": 0,
+  "valido": true,
+}
+`;
+
+exports[`useFormularioPasos > sus acciones se pueden usar 1`] = `
+[
+  "datos",
+  "actualizar",
+  "pasoActual",
+  "avanzar",
+  "retroceder",
+  "reiniciar",
+]
+`;

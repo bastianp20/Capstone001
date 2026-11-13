@@ -1,0 +1,66 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FichaPacienteModal > se muestra sin errores 1`] = `
+<div>
+  <div
+    class="_overlay_5060f4"
+  >
+    <div
+      aria-labelledby="_r_0_"
+      aria-modal="true"
+      class="_modal_5060f4"
+      role="dialog"
+    >
+      <header
+        class="_header_5060f4"
+      >
+        <div
+          class="_encabezadoTextos_5060f4"
+        >
+          <h3
+            class="_titulo_5060f4"
+            id="_r_0_"
+          >
+            Ficha del paciente
+          </h3>
+        </div>
+        <button
+          aria-label="Cerrar"
+          class="_botonIcono_5060f4"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-x"
+            fill="none"
+            height="20"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 6 6 18"
+            />
+            <path
+              d="m6 6 12 12"
+            />
+          </svg>
+        </button>
+      </header>
+      <div
+        class="_cuerpo_5060f4"
+      >
+        <p
+          class="_estado_5060f4 _estadoError_5060f4"
+        >
+          No pudimos cargar la información.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;

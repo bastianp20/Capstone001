@@ -1,0 +1,214 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`BloquearHorarioModal > se muestra para bloquear un horario 1`] = `
+<div>
+  <div
+    class="_overlay_fa4d38"
+  >
+    <div
+      aria-labelledby="_r_0_-titulo"
+      aria-modal="true"
+      class="_modal_fa4d38 _modalAncho_b409a6"
+      role="dialog"
+    >
+      <header
+        class="_header_fa4d38"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-lock _iconoCalendario_b409a6"
+          fill="none"
+          height="22"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="22"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect
+            height="11"
+            rx="2"
+            ry="2"
+            width="18"
+            x="3"
+            y="11"
+          />
+          <path
+            d="M7 11V7a5 5 0 0 1 10 0v4"
+          />
+        </svg>
+        <div
+          class="_encabezadoTextos_fa4d38"
+        >
+          <h3
+            class="_titulo_fa4d38"
+            id="_r_0_-titulo"
+          >
+            Bloquear horario
+          </h3>
+          <p
+            class="_subtitulo_fa4d38"
+          >
+            En ese rango nadie podrá pedirte hora.
+          </p>
+        </div>
+        <button
+          aria-label="Cerrar"
+          class="_botonCerrar_fa4d38"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-x"
+            fill="none"
+            height="20"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 6 6 18"
+            />
+            <path
+              d="m6 6 12 12"
+            />
+          </svg>
+        </button>
+      </header>
+      <div
+        class="_cuerpo_b409a6"
+      >
+        <div
+          class="_grupo_b409a6"
+        >
+          <label
+            class="_campo_b409a6"
+          >
+            Día
+            <input
+              class="_input_b409a6"
+              min="2026-11-11"
+              type="date"
+              value="2026-11-11"
+            />
+          </label>
+          <div
+            class="_fila_b409a6"
+          >
+            <label
+              class="_campo_b409a6"
+            >
+              Desde
+              <input
+                class="_input_b409a6"
+                step="900"
+                type="time"
+                value="16:00"
+              />
+            </label>
+            <label
+              class="_campo_b409a6"
+            >
+              Hasta
+              <input
+                class="_input_b409a6"
+                step="900"
+                type="time"
+                value="17:00"
+              />
+            </label>
+          </div>
+          <label
+            class="_casilla_b409a6"
+          >
+            <input
+              type="checkbox"
+            />
+            Todo el día
+          </label>
+        </div>
+        <fieldset
+          class="_fieldset_b409a6"
+        >
+          <legend
+            class="_etiqueta_b409a6 _leyenda_b409a6"
+          >
+            Motivo
+          </legend>
+          <div
+            class="_chips_b409a6"
+          >
+            <button
+              aria-pressed="true"
+              class="_chip_b409a6 _chipActivo_b409a6"
+              type="button"
+            >
+              Imprevisto personal
+            </button>
+            <button
+              aria-pressed="false"
+              class="_chip_b409a6 "
+              type="button"
+            >
+              Urgencia médica
+            </button>
+            <button
+              aria-pressed="false"
+              class="_chip_b409a6 "
+              type="button"
+            >
+              Capacitación
+            </button>
+            <button
+              aria-pressed="false"
+              class="_chip_b409a6 "
+              type="button"
+            >
+              Otro
+            </button>
+          </div>
+        </fieldset>
+        <label
+          class="_campo_b409a6"
+        >
+          Detalle (opcional)
+          <input
+            class="_input_b409a6"
+            maxlength="200"
+            type="text"
+            value=""
+          />
+        </label>
+        <p
+          class="_antesAhora_b409a6"
+        >
+          Miércoles 11 nov, 16:00 – 17:00
+        </p>
+      </div>
+      <footer
+        class="_pie_fa4d38"
+      >
+        <button
+          class="_boton_fa4d38 _botonSecundario_fa4d38"
+          type="button"
+        >
+          Volver
+        </button>
+        <button
+          aria-busy="false"
+          class="_boton_fa4d38 _botonPrincipal_b409a6"
+          type="button"
+        >
+          Bloquear
+        </button>
+      </footer>
+    </div>
+  </div>
+</div>
+`;

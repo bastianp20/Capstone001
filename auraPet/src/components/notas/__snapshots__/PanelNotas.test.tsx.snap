@@ -1,0 +1,58 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PanelNotas > se muestra sin errores 1`] = `
+<div>
+  <div
+    class="_panel_da8d7b"
+  >
+    <p
+      class="_descripcion_da8d7b"
+    />
+    <div
+      class="_barra_da8d7b"
+    >
+      <input
+        aria-label="Buscar en mis notas…"
+        class="_buscador_da8d7b"
+        placeholder="Buscar en mis notas…"
+        type="search"
+        value=""
+      />
+      <button
+        class="_boton_b049f4 _primario_b049f4 "
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-plus"
+          fill="none"
+          height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 12h14"
+          />
+          <path
+            d="M12 5v14"
+          />
+        </svg>
+        Nueva nota
+      </button>
+    </div>
+    <p
+      class="_vacio_da8d7b"
+    >
+      Todavía no tienes notas. Crea la primera con "Nueva nota".
+    </p>
+    <div
+      class="_grilla_da8d7b"
+    />
+  </div>
+</div>
+`;

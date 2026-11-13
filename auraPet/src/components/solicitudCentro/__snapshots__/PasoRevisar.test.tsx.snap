@@ -1,0 +1,215 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PasoRevisar > se muestra sin errores 1`] = `
+<div>
+  <div
+    class="solicitud-revisar"
+  >
+    <section
+      class="solicitud-resumen"
+    >
+      <header
+        class="solicitud-resumen-cabecera"
+      >
+        <h3>
+          Tu centro
+        </h3>
+        <button
+          class="solicitud-link"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-pencil"
+            fill="none"
+            height="14"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="14"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+            />
+            <path
+              d="m15 5 4 4"
+            />
+          </svg>
+           
+          Editar
+        </button>
+      </header>
+      <dl
+        class="solicitud-resumen-filas"
+      >
+        <div
+          class="solicitud-resumen-fila"
+        >
+          <dt>
+            Nombre
+          </dt>
+          <dd />
+        </div>
+        <div
+          class="solicitud-resumen-fila"
+        >
+          <dt>
+            Dirección
+          </dt>
+          <dd>
+            1, 1
+          </dd>
+        </div>
+        <div
+          class="solicitud-resumen-fila"
+        >
+          <dt>
+            Teléfono
+          </dt>
+          <dd>
+            +56 1
+          </dd>
+        </div>
+        <div
+          class="solicitud-resumen-fila"
+        >
+          <dt>
+            Especialidades
+          </dt>
+          <dd>
+            —
+          </dd>
+        </div>
+        <div
+          class="solicitud-resumen-fila"
+        >
+          <dt>
+            Sitio web
+          </dt>
+          <dd />
+        </div>
+      </dl>
+    </section>
+    <section
+      class="solicitud-resumen"
+    >
+      <header
+        class="solicitud-resumen-cabecera"
+      >
+        <h3>
+          Responsable
+        </h3>
+        <button
+          class="solicitud-link"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-pencil"
+            fill="none"
+            height="14"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="14"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+            />
+            <path
+              d="m15 5 4 4"
+            />
+          </svg>
+           
+          Editar
+        </button>
+      </header>
+      <dl
+        class="solicitud-resumen-filas"
+      >
+        <div
+          class="solicitud-resumen-fila"
+        >
+          <dt>
+            Nombre
+          </dt>
+          <dd />
+        </div>
+        <div
+          class="solicitud-resumen-fila"
+        >
+          <dt>
+            Cargo
+          </dt>
+          <dd>
+            —
+          </dd>
+        </div>
+        <div
+          class="solicitud-resumen-fila"
+        >
+          <dt>
+            Correo
+          </dt>
+          <dd />
+        </div>
+        <div
+          class="solicitud-resumen-fila"
+        >
+          <dt>
+            Teléfono
+          </dt>
+          <dd>
+            +56 1
+          </dd>
+        </div>
+        <div
+          class="solicitud-resumen-fila"
+        >
+          <dt>
+            Mensaje
+          </dt>
+          <dd />
+        </div>
+      </dl>
+    </section>
+    <div
+      class="solicitud-campo solicitud-campo--error"
+    >
+      <label
+        class="solicitud-check"
+      >
+        <input
+          aria-describedby="solicitud-aceptaContacto-error"
+          aria-invalid="true"
+          id="solicitud-aceptaContacto"
+          type="checkbox"
+        />
+        <span>
+          Acepto que AuraPet me contacte para revisar esta solicitud
+          <span
+            aria-hidden="true"
+            class="solicitud-requerido"
+          >
+            *
+          </span>
+        </span>
+      </label>
+      <p
+        class="solicitud-error"
+        id="solicitud-aceptaContacto-error"
+      />
+    </div>
+    <div
+      class="solicitud-alerta"
+      role="alert"
+    />
+  </div>
+</div>
+`;
